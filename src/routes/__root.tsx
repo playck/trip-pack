@@ -8,7 +8,7 @@ function RootComponent() {
   return (
     <div
       style={{
-        maxWidth: "650px",
+        maxWidth: "600px",
         margin: "0 auto",
         padding: "0 16px",
         width: "100%",
