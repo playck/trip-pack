@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { Provider as ChakraProvider } from "./components/ui/provider";
+import { Provider as ChakraProvider } from "./shared/components/ui/provider";
 
 import { routeTree } from "./routeTree.gen";
 
