@@ -1,5 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
+import Header from "../shared/components/layout/Header";
+
 export const Route = createRootRoute({
   component: RootComponent,
 });
@@ -14,6 +16,7 @@ function RootComponent() {
         width: "100%",
       }}
     >
+      <Header />
       <Outlet />
     </div>
   );
