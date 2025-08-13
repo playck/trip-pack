@@ -4,27 +4,27 @@ import type { ReactNode } from "react";
 
 interface StepIndicatorProps {
   count?: number;
-  defaultStep?: number;
+  currentStep?: number;
   renderContent?: (index: number) => ReactNode;
   completedContent?: ReactNode;
 }
 
 export default function StepIndicator({
   count = 1,
-  defaultStep = 0,
+  currentStep = 0,
   renderContent,
   completedContent,
 }: StepIndicatorProps) {
   const steps = Array.from({ length: count });
 
   return (
-    <Steps.Root defaultStep={defaultStep} count={count}>
+    <Steps.Root step={currentStep} count={count}>
       <Steps.List>
         {steps.map((_, index) => (
           <Steps.Item
             key={index}
             index={index}
-            colorPalette={colors.secondary.palette}
+            colorPalette={colors.primary.palette}
             ml={index !== 0 ? 3 : 0}
           >
             <Steps.Indicator />

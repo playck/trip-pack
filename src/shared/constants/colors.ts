@@ -4,7 +4,7 @@
 /**
  * 🎨 프로젝트 색상 시스템
  * Chakra UI 시맨틱 토큰을 활용한 색상 관리
- * Primary Color: Cyan 🟦
+ * Primary Color: Teal 🟢
  */
 
 // 기본 시스템 색상 (시맨틱 토큰 활용)
@@ -71,27 +71,27 @@ export const statusColors = {
   },
 } as const;
 
-// 브랜드 색상 (프로젝트 고유) - Cyan Primary 🟦
+// 브랜드 색상 (프로젝트 고유) - Teal Primary 🟢
 export const colors = {
   primary: {
-    palette: "cyan", // colorPalette prop에 사용
-    solid: "cyan.solid",
-    contrast: "cyan.contrast",
-    subtle: "cyan.subtle",
-    muted: "cyan.muted",
-    emphasized: "cyan.emphasized",
-    fg: "cyan.fg",
-    focusRing: "cyan.focusRing",
-  },
-
-  secondary: {
-    palette: "teal",
+    palette: "teal", // colorPalette prop에 사용
     solid: "teal.solid",
     contrast: "teal.contrast",
     subtle: "teal.subtle",
     muted: "teal.muted",
     emphasized: "teal.emphasized",
     fg: "teal.fg",
+    focusRing: "teal.focusRing",
+  },
+
+  secondary: {
+    palette: "cyan",
+    solid: "cyan.solid",
+    contrast: "cyan.contrast",
+    subtle: "cyan.subtle",
+    muted: "cyan.muted",
+    emphasized: "cyan.emphasized",
+    fg: "cyan.fg",
   },
 
   accent: {
@@ -128,8 +128,8 @@ export const componentColors = {
 
   // 버튼 컴포넌트
   button: {
-    primary: colors.primary.palette, // cyan
-    secondary: colors.secondary.palette, // teal
+    primary: colors.primary.palette, // teal
+    secondary: colors.secondary.palette, // cyan
     accent: colors.accent.palette, // purple
     danger: statusColors.error.palette, // red
     success: statusColors.success.palette, // green
