@@ -11,6 +11,8 @@ import StepIndicator from "./components/StepIndicator";
 import SearchRegionComboBox from "./components/SearchRegionComboBox";
 import StepBtnContainer from "./components/StepBtnContainer";
 import SearchCalendar from "./components/SearchCalendar";
+import TravelCompanion from "./components/SelectTravleCompanion";
+import { type CompanionType, type CompanionTypeOption } from "./data/data";
 
 export default function PackingCreatePage() {
   const [step, setStep] = useState(0);
@@ -25,12 +27,30 @@ export default function PackingCreatePage() {
     }));
   };
 
+  const handleCompanionChange = (companion: CompanionType) => {
+    setPackingCreateState((prev) => ({
+      ...prev,
+      companion,
+    }));
+  };
+
+  const handleCompanionTypesChange = (
+    companionTypes: CompanionTypeOption[]
+  ) => {
+    setPackingCreateState((prev) => ({
+      ...prev,
+      companionTypes,
+    }));
+  };
+
   const getIsNextDisabled = () => {
     switch (step) {
       case 0:
         return !validation.hasRegion;
       case 1:
         return !validation.hasDates;
+      case 2:
+        return !validation.hasCompanion;
       default:
         return false;
     }
@@ -39,7 +59,7 @@ export default function PackingCreatePage() {
   return (
     <Container maxW="100%" py={6}>
       <StepIndicator
-        count={3}
+        count={4}
         currentStep={step}
         renderContent={() => {
           if (step === 0) {
@@ -65,6 +85,17 @@ export default function PackingCreatePage() {
 
           if (step === 2) {
             return (
+              <TravelCompanion
+                value={packingCreateState.companion || undefined}
+                companionTypes={packingCreateState.companionTypes}
+                onChange={handleCompanionChange}
+                onCompanionTypesChange={handleCompanionTypesChange}
+              />
+            );
+          }
+
+          if (step === 3) {
+            return (
               <VStack gap={4} align="stretch">
                 <Text fontSize="lg" fontWeight="bold">
                   선택한 정보 확인
@@ -78,6 +109,16 @@ export default function PackingCreatePage() {
                     {packingCreateState.dates.startDate?.toLocaleDateString()} ~{" "}
                     {packingCreateState.dates.endDate?.toLocaleDateString()}
                   </Text>
+                  <Text fontWeight="medium">
+                    동행:{" "}
+                    {packingCreateState.companion === "alone"
+                      ? "혼자 가요"
+                      : `일행이 있어요${
+                          packingCreateState.companionTypes.length > 0
+                            ? ` (${packingCreateState.companionTypes.join(", ")})`
+                            : ""
+                        }`}
+                  </Text>
                 </Box>
               </VStack>
             );
@@ -88,14 +129,14 @@ export default function PackingCreatePage() {
       />
       <StepBtnContainer
         currentStep={step}
-        totalSteps={3}
+        totalSteps={4}
         onPrevious={() => {
           if (step > 0) {
             setStep(step - 1);
           }
         }}
         onNext={() => {
-          if (step < 2) {
+          if (step < 3) {
             setStep(step + 1);
           }
         }}

@@ -134,6 +134,12 @@ export const componentColors = {
     danger: statusColors.error.palette, // red
     success: statusColors.success.palette, // green
     ghost: colors.neutral.palette, // gray
+
+    border: {
+      default: systemColors.border.default, // 기본
+      subtle: systemColors.border.subtle, // 연한
+      muted: systemColors.border.muted,
+    },
   },
 
   // Alert 컴포넌트
