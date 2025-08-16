@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Container, Box, Text, VStack } from "@chakra-ui/react";
+import { Container, Text, VStack } from "@chakra-ui/react";
 import { useAtom, useAtomValue } from "jotai";
+
 import type { Region } from "@/shared/data/regions";
 
 import {
@@ -12,7 +13,12 @@ import SearchRegionComboBox from "./components/SearchRegionComboBox";
 import StepBtnContainer from "./components/StepBtnContainer";
 import SearchCalendar from "./components/SearchCalendar";
 import TravelCompanion from "./components/SelectTravleCompanion";
-import { type CompanionType, type CompanionTypeOption } from "./data/data";
+import SelectTripType from "./components/SelectTripType";
+import {
+  type CompanionType,
+  type CompanionTypeOption,
+  type TripTypeOption,
+} from "./data/data";
 
 export default function PackingCreatePage() {
   const [step, setStep] = useState(0);
@@ -43,6 +49,13 @@ export default function PackingCreatePage() {
     }));
   };
 
+  const handleTripTypesChange = (tripTypes: TripTypeOption[]) => {
+    setPackingCreateState((prev) => ({
+      ...prev,
+      tripTypes,
+    }));
+  };
+
   const getIsNextDisabled = () => {
     switch (step) {
       case 0:
@@ -51,6 +64,8 @@ export default function PackingCreatePage() {
         return !validation.hasDates;
       case 2:
         return !validation.hasCompanion;
+      case 3:
+        return !validation.hasTripTypes;
       default:
         return false;
     }
@@ -96,31 +111,10 @@ export default function PackingCreatePage() {
 
           if (step === 3) {
             return (
-              <VStack gap={4} align="stretch">
-                <Text fontSize="lg" fontWeight="bold">
-                  선택한 정보 확인
-                </Text>
-                <Box>
-                  <Text fontWeight="medium">
-                    여행 지역: {packingCreateState.region?.name}
-                  </Text>
-                  <Text fontWeight="medium">
-                    여행 날짜:{" "}
-                    {packingCreateState.dates.startDate?.toLocaleDateString()} ~{" "}
-                    {packingCreateState.dates.endDate?.toLocaleDateString()}
-                  </Text>
-                  <Text fontWeight="medium">
-                    동행:{" "}
-                    {packingCreateState.companion === "alone"
-                      ? "혼자 가요"
-                      : `일행이 있어요${
-                          packingCreateState.companionTypes.length > 0
-                            ? ` (${packingCreateState.companionTypes.join(", ")})`
-                            : ""
-                        }`}
-                  </Text>
-                </Box>
-              </VStack>
+              <SelectTripType
+                value={packingCreateState.tripTypes}
+                onChange={handleTripTypesChange}
+              />
             );
           }
 
@@ -136,8 +130,10 @@ export default function PackingCreatePage() {
           }
         }}
         onNext={() => {
-          if (step < 3) {
+          if (step < 4) {
             setStep(step + 1);
+          } else {
+            console.log("패킹 리스트 생성:", packingCreateState);
           }
         }}
         isNextDisabled={getIsNextDisabled()}
