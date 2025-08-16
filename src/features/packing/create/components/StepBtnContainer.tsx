@@ -1,10 +1,10 @@
 import { Button, HStack } from "@chakra-ui/react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { componentColors } from "@/shared/constants/colors";
+import { Step, LAST_STEP, type StepValue } from "../constants";
 
 interface StepBtnContainerProps {
-  currentStep: number;
+  currentStep: StepValue;
   totalSteps: number;
   isPreviousDisabled?: boolean;
   isNextDisabled?: boolean;
@@ -14,14 +14,13 @@ interface StepBtnContainerProps {
 
 export default function StepBtnContainer({
   currentStep,
-  totalSteps,
   isPreviousDisabled = false,
   isNextDisabled = false,
   onPrevious,
   onNext,
 }: StepBtnContainerProps) {
-  const isFirstStep = currentStep === 0;
-  const isLastStep = currentStep === totalSteps - 1;
+  const isFirstStep = currentStep === Step.REGION;
+  const isLastStep = currentStep === LAST_STEP;
 
   return (
     <HStack
@@ -50,7 +49,6 @@ export default function StepBtnContainer({
           disabled={isPreviousDisabled}
           flex={1}
         >
-          <ChevronLeft size={20} />
           이전
         </Button>
       ) : (
@@ -68,7 +66,6 @@ export default function StepBtnContainer({
           onClick={onNext}
         >
           다음
-          <ChevronRight size={20} />
         </Button>
       ) : (
         <Button

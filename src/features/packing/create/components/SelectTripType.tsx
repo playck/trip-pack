@@ -1,21 +1,24 @@
 import { Button, VStack, Wrap, WrapItem } from "@chakra-ui/react";
+import { useAtom } from "jotai";
 import { componentColors } from "@/shared/constants/colors";
 import { type TripTypeOption, TRIP_TYPE_OPTIONS } from "../data/data";
+import { packingCreateAtom } from "../store/packingCreateAtom";
 
-interface SelectTripTypeProps {
-  value?: TripTypeOption[];
-  onChange: (tripTypes: TripTypeOption[]) => void;
-}
+export default function SelectTripType() {
+  const [packingState, setPackingState] = useAtom(packingCreateAtom);
+  const { tripTypes } = packingState;
 
-export default function SelectTripType({
-  value = [],
-  onChange,
-}: SelectTripTypeProps) {
   const handleTripTypeToggle = (type: TripTypeOption) => {
-    if (value.includes(type)) {
-      onChange(value.filter((t) => t !== type));
+    if (tripTypes.includes(type)) {
+      setPackingState((prev) => ({
+        ...prev,
+        tripTypes: tripTypes.filter((t) => t !== type),
+      }));
     } else {
-      onChange([...value, type]);
+      setPackingState((prev) => ({
+        ...prev,
+        tripTypes: [...tripTypes, type],
+      }));
     }
   };
 
@@ -25,10 +28,10 @@ export default function SelectTripType({
         {TRIP_TYPE_OPTIONS.map((type) => (
           <WrapItem key={type}>
             <Button
-              variant={value.includes(type) ? "solid" : "outline"}
+              variant={tripTypes.includes(type) ? "solid" : "outline"}
               colorPalette={componentColors.button.primary}
               borderColor={
-                value.includes(type)
+                tripTypes.includes(type)
                   ? componentColors.button.primary
                   : componentColors.button.border.default
               }

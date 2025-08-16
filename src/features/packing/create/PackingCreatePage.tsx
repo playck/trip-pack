@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Container } from "@chakra-ui/react";
-import { useAtom, useAtomValue } from "jotai";
-
-import type { Region } from "@/shared/data/regions";
+import { useAtomValue } from "jotai";
 
 import {
   packingCreateAtom,
@@ -15,57 +13,31 @@ import SearchCalendar from "./components/SearchCalendar";
 import TravelCompanion from "./components/SelectTravleCompanion";
 import SelectTripType from "./components/SelectTripType";
 import StepContainer from "./components/StepContainer";
-import {
-  type CompanionType,
-  type CompanionTypeOption,
-  type TripTypeOption,
-} from "./data/data";
+import { Step, type StepValue, LAST_STEP } from "./constants";
+
+const TOTAL_STEPS = 4;
+
+const STEP_TITLES = {
+  [Step.REGION]: "어디로 떠나시나요?",
+  [Step.DATE]: "언제 떠나시나요?",
+  [Step.COMPANION]: "누구와 함께 떠나시나요?",
+  [Step.TRIP_TYPE]: "어떤 여행을 떠나시나요?",
+} as const;
 
 export default function PackingCreatePage() {
-  const [step, setStep] = useState(0);
-  const [packingCreateState, setPackingCreateState] =
-    useAtom(packingCreateAtom);
+  const [step, setStep] = useState<StepValue>(Step.REGION);
+  const packingCreateState = useAtomValue(packingCreateAtom);
   const validation = useAtomValue(packingCreateValidationAtom);
-
-  const handleRegionChange = (region: Region | null) => {
-    setPackingCreateState((prev) => ({
-      ...prev,
-      region,
-    }));
-  };
-
-  const handleCompanionChange = (companion: CompanionType) => {
-    setPackingCreateState((prev) => ({
-      ...prev,
-      companion,
-    }));
-  };
-
-  const handleCompanionTypesChange = (
-    companionTypes: CompanionTypeOption[]
-  ) => {
-    setPackingCreateState((prev) => ({
-      ...prev,
-      companionTypes,
-    }));
-  };
-
-  const handleTripTypesChange = (tripTypes: TripTypeOption[]) => {
-    setPackingCreateState((prev) => ({
-      ...prev,
-      tripTypes,
-    }));
-  };
 
   const getIsNextDisabled = () => {
     switch (step) {
-      case 0:
+      case Step.REGION:
         return !validation.hasRegion;
-      case 1:
+      case Step.DATE:
         return !validation.hasDates;
-      case 2:
+      case Step.COMPANION:
         return !validation.hasCompanion;
-      case 3:
+      case Step.TRIP_TYPE:
         return !validation.hasTripTypes;
       default:
         return false;
@@ -75,48 +47,37 @@ export default function PackingCreatePage() {
   return (
     <Container maxW="100%" py={1} px={1}>
       <StepIndicator
-        count={4}
+        count={TOTAL_STEPS}
         currentStep={step}
         renderContent={() => {
-          if (step === 0) {
+          if (step === Step.REGION) {
             return (
-              <StepContainer title="여행 지역을 선택해주세요">
-                <SearchRegionComboBox
-                  placeholder="예: 제주, Tokyo, 다낭"
-                  onChange={handleRegionChange}
-                />
+              <StepContainer title={STEP_TITLES[Step.REGION]}>
+                <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
               </StepContainer>
             );
           }
 
-          if (step === 1) {
+          if (step === Step.DATE) {
             return (
-              <StepContainer title="여행 날짜를 선택해주세요">
+              <StepContainer title={STEP_TITLES[Step.DATE]}>
                 <SearchCalendar />
               </StepContainer>
             );
           }
 
-          if (step === 2) {
+          if (step === Step.COMPANION) {
             return (
-              <StepContainer title="누구와 함께 떠나시나요?">
-                <TravelCompanion
-                  value={packingCreateState.companion || undefined}
-                  companionTypes={packingCreateState.companionTypes}
-                  onChange={handleCompanionChange}
-                  onCompanionTypesChange={handleCompanionTypesChange}
-                />
+              <StepContainer title={STEP_TITLES[Step.COMPANION]}>
+                <TravelCompanion />
               </StepContainer>
             );
           }
 
-          if (step === 3) {
+          if (step === Step.TRIP_TYPE) {
             return (
-              <StepContainer title="어떤 여행을 떠나시나요?">
-                <SelectTripType
-                  value={packingCreateState.tripTypes}
-                  onChange={handleTripTypesChange}
-                />
+              <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
+                <SelectTripType />
               </StepContainer>
             );
           }
@@ -124,17 +85,18 @@ export default function PackingCreatePage() {
           return null;
         }}
       />
+
       <StepBtnContainer
         currentStep={step}
-        totalSteps={4}
+        totalSteps={TOTAL_STEPS}
         onPrevious={() => {
-          if (step > 0) {
-            setStep(step - 1);
+          if (step > Step.REGION) {
+            setStep((step - 1) as StepValue);
           }
         }}
         onNext={() => {
-          if (step < 4) {
-            setStep(step + 1);
+          if (step < LAST_STEP) {
+            setStep((step + 1) as StepValue);
           } else {
             console.log("패킹 리스트 생성:", packingCreateState);
           }

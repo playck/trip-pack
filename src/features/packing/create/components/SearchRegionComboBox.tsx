@@ -1,8 +1,10 @@
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useDebounceCallback } from "usehooks-ts";
+import { useAtom } from "jotai";
 
 import { Combobox, Portal, createListCollection } from "@chakra-ui/react";
 import { regionsList, type Region } from "@/shared/data/regions";
+import { packingCreateAtom } from "../store/packingCreateAtom";
 
 import { searchRegions } from "../hooks/useSearchRegions";
 import RegionOptionRow from "./RegionOptionRow";
@@ -18,9 +20,6 @@ export interface SearchRegionComboBoxProps {
   width?: string | number;
   size?: Combobox.RootProps["size"];
   variant?: Combobox.RootProps["variant"];
-  valueId?: string;
-  defaultValueId?: string;
-  onChange?: (region: Region | null) => void;
   contentMaxHeight?: string | number;
 }
 
@@ -32,20 +31,14 @@ export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
     width = "100%",
     size = "md",
     variant = "outline",
-    valueId,
-    defaultValueId,
-    onChange,
     contentMaxHeight = "320px",
   } = props;
 
+  const [packingState, setPackingState] = useAtom(packingCreateAtom);
   const [inputValue, setInputValue] = useState("");
   const setInputValueDebounced = useDebounceCallback(setInputValue, 250);
-  const [uncontrolledSelectedId, setUncontrolledSelectedId] = useState<
-    string | null
-  >(defaultValueId ?? null);
 
-  const isControlled = valueId !== undefined;
-  const selectedId = isControlled ? (valueId ?? null) : uncontrolledSelectedId;
+  const selectedId = packingState.region?.id ?? null;
   const comboboxValue = !selectedId ? ([] as string[]) : [selectedId];
 
   const items: RegionItem[] = useMemo(() => {
@@ -63,27 +56,18 @@ export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
     [items]
   );
 
-  useEffect(() => {
-    if (!isControlled && defaultValueId) {
-      const initialRegion =
-        regionsList.find((r) => r.id === defaultValueId) || null;
-      onChange?.(initialRegion);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleValueChange = useCallback(
     (details: Combobox.ValueChangeDetails) => {
       const first = Array.isArray(details.value) ? details.value[0] : undefined;
       const nextRegion =
         items.find((item) => item.value === first)?.region ?? null;
 
-      if (!isControlled) {
-        setUncontrolledSelectedId(nextRegion?.id ?? null);
-      }
-      onChange?.(nextRegion);
+      setPackingState((prev) => ({
+        ...prev,
+        region: nextRegion,
+      }));
     },
-    [isControlled, items, onChange]
+    [items, setPackingState]
   );
 
   const handleInputValueChange = useCallback(
