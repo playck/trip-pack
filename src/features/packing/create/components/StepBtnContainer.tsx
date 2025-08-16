@@ -1,5 +1,6 @@
 import { Button, HStack } from "@chakra-ui/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { componentColors } from "@/shared/constants/colors";
 
 interface StepBtnContainerProps {

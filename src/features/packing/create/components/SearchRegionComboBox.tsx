@@ -14,7 +14,6 @@ export interface RegionItem {
 }
 
 export interface SearchRegionComboBoxProps {
-  label?: string;
   placeholder?: string;
   width?: string | number;
   size?: Combobox.RootProps["size"];
@@ -29,7 +28,6 @@ const DEFAULT_MAX_RESULTS = 100;
 
 export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
   const {
-    label = "",
     placeholder = "지역명을 입력하세요 (예: 서울, Tokyo, 다낭)",
     width = "100%",
     size = "md",
@@ -106,9 +104,6 @@ export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
       onValueChange={handleValueChange}
       multiple={false}
     >
-      <Combobox.Label fontSize="xl" fontWeight="bold" mb="10px">
-        {label}
-      </Combobox.Label>
       <Combobox.Control>
         <Combobox.Input placeholder={placeholder} />
         <Combobox.IndicatorGroup>

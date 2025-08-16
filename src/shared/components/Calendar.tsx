@@ -233,7 +233,7 @@ const CalendarStyle = (selectedDateColor: string) => css`
     flex-direction: column;
     border: none;
     border-radius: 0;
-    padding: 25px 10px;
+    padding: 0;
   }
 
   .react-datepicker__month-container {
@@ -252,10 +252,7 @@ const CalendarStyle = (selectedDateColor: string) => css`
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      padding: 0 18px;
-      @media screen and (max-width: 500px) {
-        padding: 0 10px;
-      }
+      padding: 0 5px;
     }
 
     .date__name {
@@ -263,10 +260,7 @@ const CalendarStyle = (selectedDateColor: string) => css`
       justify-content: center;
       font-size: 16px;
       font-weight: 700;
-      @media screen and (max-width: 500px) {
-        font-size: 14px;
-        margin-bottom: 0px !important;
-      }
+      margin-bottom: 0px !important;
     }
 
     .react-datepicker__day-names__custom {

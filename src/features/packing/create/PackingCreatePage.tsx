@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Text, VStack } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 import { useAtom, useAtomValue } from "jotai";
 
 import type { Region } from "@/shared/data/regions";
@@ -14,6 +14,7 @@ import StepBtnContainer from "./components/StepBtnContainer";
 import SearchCalendar from "./components/SearchCalendar";
 import TravelCompanion from "./components/SelectTravleCompanion";
 import SelectTripType from "./components/SelectTripType";
+import StepContainer from "./components/StepContainer";
 import {
   type CompanionType,
   type CompanionTypeOption,
@@ -72,49 +73,51 @@ export default function PackingCreatePage() {
   };
 
   return (
-    <Container maxW="100%" py={6}>
+    <Container maxW="100%" py={1} px={1}>
       <StepIndicator
         count={4}
         currentStep={step}
         renderContent={() => {
           if (step === 0) {
             return (
-              <SearchRegionComboBox
-                label="여행 지역 검색"
-                placeholder="예: 제주, Tokyo, 다낭"
-                onChange={handleRegionChange}
-              />
+              <StepContainer title="여행 지역을 선택해주세요">
+                <SearchRegionComboBox
+                  placeholder="예: 제주, Tokyo, 다낭"
+                  onChange={handleRegionChange}
+                />
+              </StepContainer>
             );
           }
 
           if (step === 1) {
             return (
-              <VStack gap={4} align="stretch">
-                <Text fontSize="lg" fontWeight="bold">
-                  여행 날짜 선택
-                </Text>
+              <StepContainer title="여행 날짜를 선택해주세요">
                 <SearchCalendar />
-              </VStack>
+              </StepContainer>
             );
           }
 
           if (step === 2) {
             return (
-              <TravelCompanion
-                value={packingCreateState.companion || undefined}
-                companionTypes={packingCreateState.companionTypes}
-                onChange={handleCompanionChange}
-                onCompanionTypesChange={handleCompanionTypesChange}
-              />
+              <StepContainer title="누구와 함께 떠나시나요?">
+                <TravelCompanion
+                  value={packingCreateState.companion || undefined}
+                  companionTypes={packingCreateState.companionTypes}
+                  onChange={handleCompanionChange}
+                  onCompanionTypesChange={handleCompanionTypesChange}
+                />
+              </StepContainer>
             );
           }
 
           if (step === 3) {
             return (
-              <SelectTripType
-                value={packingCreateState.tripTypes}
-                onChange={handleTripTypesChange}
-              />
+              <StepContainer title="어떤 여행을 떠나시나요?">
+                <SelectTripType
+                  value={packingCreateState.tripTypes}
+                  onChange={handleTripTypesChange}
+                />
+              </StepContainer>
             );
           }
 

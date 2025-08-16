@@ -29,10 +29,6 @@ export default function TravelCompanion({
 
   return (
     <VStack gap={6} align="stretch">
-      <Text fontSize="lg" fontWeight="bold">
-        누구와 함께 떠나시나요?
-      </Text>
-
       <HStack gap={4} justify="center">
         <Button
           variant={value === "alone" ? "solid" : "outline"}
@@ -70,7 +66,7 @@ export default function TravelCompanion({
       {value === "withCompanion" && (
         <VStack gap={4} align="stretch">
           <Text fontSize="md" fontWeight="medium" color="gray.600">
-            어떤 일행과 함께 가시나요? (여러개 선택 가능)
+            어떤 일행과 함께 가시나요?
           </Text>
           <Wrap gap={3}>
             {COMPANION_TYPE_OPTIONS.map((type) => (
