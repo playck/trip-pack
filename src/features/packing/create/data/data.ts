@@ -31,7 +31,8 @@ export type TripTypeOption =
   | "액티비티"
   | "휴양"
   | "문화"
-  | "쇼핑";
+  | "쇼핑"
+  | "운동";
 
 export const TRIP_TYPE_OPTIONS: TripTypeOption[] = [
   "미식",
@@ -42,4 +43,5 @@ export const TRIP_TYPE_OPTIONS: TripTypeOption[] = [
   "휴양",
   "문화",
   "쇼핑",
+  "운동",
 ];
