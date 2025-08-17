@@ -25,7 +25,7 @@ export default function StepIndicator({
             key={index}
             index={index}
             colorPalette={colors.primary.palette}
-            ml={index !== 0 ? 3 : 0}
+            gap={0}
           >
             <Steps.Indicator />
             <Steps.Separator />

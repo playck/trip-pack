@@ -64,7 +64,7 @@ export default function PackingCreatePage() {
   };
 
   return (
-    <Container maxW="100%" py={1} px={1}>
+    <Container maxW="100%" pt={6} px={1}>
       <StepIndicator
         count={TOTAL_STEPS}
         currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
