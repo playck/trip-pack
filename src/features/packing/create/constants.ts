@@ -7,6 +7,7 @@ export const Step = {
   DATE: 1,
   COMPANION: 2,
   TRIP_TYPE: 3,
+  LOADING: 4,
 } as const;
 
 export type StepValue = (typeof Step)[keyof typeof Step];

@@ -39,9 +39,7 @@ export default function StepIndicator({
         </Steps.Content>
       ))}
 
-      <Steps.CompletedContent>
-        {completedContent ?? "All steps are complete!"}
-      </Steps.CompletedContent>
+      <Steps.CompletedContent>{completedContent}</Steps.CompletedContent>
     </Steps.Root>
   );
 }

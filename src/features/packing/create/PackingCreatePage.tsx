@@ -6,13 +6,16 @@ import {
   packingCreateAtom,
   packingCreateValidationAtom,
 } from "./store/packingCreateAtom";
-import StepIndicator from "./components/StepIndicator";
-import SearchRegionComboBox from "./components/SearchRegionComboBox";
-import StepBtnContainer from "./components/StepBtnContainer";
-import SearchCalendar from "./components/SearchCalendar";
-import TravelCompanion from "./components/SelectTravleCompanion";
-import SelectTripType from "./components/SelectTripType";
-import StepContainer from "./components/StepContainer";
+import {
+  StepIndicator,
+  SearchRegionComboBox,
+  StepBtnContainer,
+  SearchCalendar,
+  TravelCompanion,
+  SelectTripType,
+  StepContainer,
+  LastStep,
+} from "./components";
 import { Step, type StepValue, LAST_STEP } from "./constants";
 
 const TOTAL_STEPS = 4;
@@ -29,7 +32,7 @@ export default function PackingCreatePage() {
   const packingCreateState = useAtomValue(packingCreateAtom);
   const validation = useAtomValue(packingCreateValidationAtom);
 
-  const getIsNextDisabled = () => {
+  const getIsNextBtnDisabled = () => {
     switch (step) {
       case Step.REGION:
         return !validation.hasRegion;
@@ -44,11 +47,28 @@ export default function PackingCreatePage() {
     }
   };
 
+  const handlePreviousStep = () => {
+    if (step > Step.REGION) {
+      setStep((step - 1) as StepValue);
+    }
+  };
+
+  const handleNextStep = () => {
+    if (step < LAST_STEP) {
+      setStep((step + 1) as StepValue);
+    } else if (step === LAST_STEP) {
+      setStep(Step.LOADING);
+      // TODO: 실제 패킹 리스트 생성 API 호출
+      console.log("패킹 리스트 생성:", packingCreateState);
+    }
+  };
+
   return (
     <Container maxW="100%" py={1} px={1}>
       <StepIndicator
         count={TOTAL_STEPS}
-        currentStep={step}
+        currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
+        completedContent={step === Step.LOADING ? <LastStep /> : undefined}
         renderContent={() => {
           if (step === Step.REGION) {
             return (
@@ -82,27 +102,23 @@ export default function PackingCreatePage() {
             );
           }
 
+          if (step === Step.LOADING) {
+            return <LastStep />;
+          }
+
           return null;
         }}
       />
 
-      <StepBtnContainer
-        currentStep={step}
-        totalSteps={TOTAL_STEPS}
-        onPrevious={() => {
-          if (step > Step.REGION) {
-            setStep((step - 1) as StepValue);
-          }
-        }}
-        onNext={() => {
-          if (step < LAST_STEP) {
-            setStep((step + 1) as StepValue);
-          } else {
-            console.log("패킹 리스트 생성:", packingCreateState);
-          }
-        }}
-        isNextDisabled={getIsNextDisabled()}
-      />
+      {step !== Step.LOADING && (
+        <StepBtnContainer
+          currentStep={step}
+          totalSteps={TOTAL_STEPS}
+          onPrevious={handlePreviousStep}
+          onNext={handleNextStep}
+          isNextDisabled={getIsNextBtnDisabled()}
+        />
+      )}
     </Container>
   );
 }
