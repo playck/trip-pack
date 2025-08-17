@@ -199,6 +199,7 @@ export const countries: Country[] = [
       "cn-yantai",
       "cn-jinan",
       "cn-weihai",
+      "cn-hainan",
     ],
   },
   {
@@ -438,6 +439,24 @@ export const countries: Country[] = [
     englishName: "Kyrgyzstan",
     code: "KG",
     regions: ["kg-bishkek"],
+  },
+  {
+    id: "au",
+    name: "호주",
+    englishName: "Australia",
+    code: "AU",
+    regions: [
+      "au-sydney",
+      "au-melbourne",
+      "au-brisbane",
+      "au-perth",
+      "au-adelaide",
+      "au-canberra",
+      "au-goldcoast",
+      "au-cairns",
+      "au-darwin",
+      "au-hobart",
+    ],
   },
 ];
 
@@ -1183,6 +1202,14 @@ export const regionsList: Region[] = [
     countryCode: "CN",
     searchKeywords: ["위해", "weihai", "ㅇㅎ", "유공도"],
   },
+  {
+    id: "cn-hainan",
+    name: "하이난",
+    englishName: "Hainan",
+    country: "중국",
+    countryCode: "CN",
+    searchKeywords: ["하이난", "hainan", "ㅎㅇㄴ", "유공도"],
+  },
 
   // 일본 (전체 지역)
   {
@@ -1893,6 +1920,47 @@ export const regionsList: Region[] = [
     countryCode: "KG",
     searchKeywords: ["비슈케크", "bishkek", "ㅂㅅㅋㅋ", "알라투"],
   },
+  // 호주
+  {
+    id: "au-sydney",
+    name: "시드니",
+    englishName: "Sydney",
+    country: "호주",
+    countryCode: "AU",
+    searchKeywords: ["시드니", "sydney", "ㅅㄷㄴ", "오페라하우스"],
+  },
+  {
+    id: "au-melbourne",
+    name: "멜버른",
+    englishName: "Melbourne",
+    country: "호주",
+    countryCode: "AU",
+    searchKeywords: ["멜버른", "melbourne", "ㅁㅂㄹ"],
+  },
+  {
+    id: "au-brisbane",
+    name: "브리즈번",
+    englishName: "Brisbane",
+    country: "호주",
+    countryCode: "AU",
+    searchKeywords: ["브리즈번", "brisbane", "ㅂㄹㅈㅂ", "골드코스트"],
+  },
+  {
+    id: "au-canberra",
+    name: "캔버라",
+    englishName: "Canberra",
+    country: "호주",
+    countryCode: "AU",
+    searchKeywords: ["캔버라", "canberra", "ㅋㅂㄹ"],
+  },
+  {
+    id: "au-goldcoast",
+    name: "골드코스트",
+    englishName: "Gold Coast",
+    country: "호주",
+    countryCode: "AU",
+    searchKeywords: ["골드코스트", "goldcoast", "ㄱㄷㅋㅅㅌ"],
+  },
 ];
 
 export function getRegionById(id: string): Region | undefined {
@@ -1959,4 +2027,5 @@ export const regions = {
   키르기스스탄: regionsList
     .filter((r) => r.countryCode === "KG")
     .map((r) => r.name),
+  호주: regionsList.filter((r) => r.countryCode === "AU").map((r) => r.name),
 };

@@ -1,8 +1,24 @@
+import { useEffect, useState } from "react";
 import { Text, VStack, Box } from "@chakra-ui/react";
+import { useAtomValue } from "jotai";
 import Lottie from "lottie-react";
 import animationData from "@/assets/lotties/animated-bot.json";
 
+import useGenerateCheckList, {
+  type GeneratedCheckList,
+} from "../hooks/useGenerateCheckList";
+import { packingCreateAtom } from "../store/packingCreateAtom";
+
 export default function LastStep() {
+  const [checkList, setCheckList] = useState<GeneratedCheckList[]>([]);
+  const packingCreateState = useAtomValue(packingCreateAtom);
+  const { handleSetUpCheckList } = useGenerateCheckList(packingCreateState);
+
+  useEffect(() => {
+    const checkListResult = handleSetUpCheckList();
+    setCheckList(checkListResult);
+  }, []);
+
   return (
     <VStack
       gap={6}

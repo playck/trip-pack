@@ -1,6 +1,6 @@
 type CabinPolicy = "allowed" | "restricted" | "prohibited";
 
-interface PackItem {
+export interface PackItem {
   name: string;
   required?: boolean;
   notes?: string;
