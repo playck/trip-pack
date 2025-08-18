@@ -2,6 +2,7 @@ import { atom } from "jotai";
 
 import type { Region } from "@/shared/data/regions";
 import type { TravelDates } from "@/shared/components/Calendar";
+import type { GeneratedCheckList } from "../hooks/useGenerateCheckList";
 import type {
   CompanionType,
   CompanionTypeOption,
@@ -14,6 +15,7 @@ export type PackingCreateState = {
   companion: CompanionType | null;
   companionTypes: CompanionTypeOption[];
   tripTypes: TripTypeOption[];
+  generatedCheckList?: GeneratedCheckList[];
 };
 
 export const packingCreateAtom = atom<PackingCreateState>({
@@ -25,6 +27,7 @@ export const packingCreateAtom = atom<PackingCreateState>({
   companion: null,
   companionTypes: [],
   tripTypes: [],
+  generatedCheckList: undefined,
 });
 
 export const packingCreateValidationAtom = atom((get) => {

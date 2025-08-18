@@ -1,22 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Text, VStack, Box } from "@chakra-ui/react";
-import { useAtomValue } from "jotai";
+import { useNavigate } from "@tanstack/react-router";
+import { useAtom } from "jotai";
 import Lottie from "lottie-react";
 import animationData from "@/assets/lotties/animated-bot.json";
 
-import useGenerateCheckList, {
-  type GeneratedCheckList,
-} from "../hooks/useGenerateCheckList";
+import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import { packingCreateAtom } from "../store/packingCreateAtom";
 
 export default function LastStep() {
-  const [checkList, setCheckList] = useState<GeneratedCheckList[]>([]);
-  const packingCreateState = useAtomValue(packingCreateAtom);
+  const [packingCreateState, setPackingCreateState] =
+    useAtom(packingCreateAtom);
+  const navigate = useNavigate();
   const { handleSetUpCheckList } = useGenerateCheckList(packingCreateState);
 
   useEffect(() => {
     const checkListResult = handleSetUpCheckList();
-    setCheckList(checkListResult);
+
+    setPackingCreateState((prev) => ({
+      ...prev,
+      generatedCheckList: checkListResult,
+    }));
+
+    const timer = setTimeout(() => {
+      navigate({ to: "/packing" });
+    }, 2200);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
