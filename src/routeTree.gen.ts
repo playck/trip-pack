@@ -9,64 +9,82 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PackingRouteImport } from './routes/packing'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PackingListRouteImport } from './routes/packing.list'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
+import { Route as PackingCategoryCategoryNameRouteImport } from './routes/packing.category.$categoryName'
 
-const PackingRoute = PackingRouteImport.update({
-  id: '/packing',
-  path: '/packing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PackingCreateRoute = PackingCreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => PackingRoute,
+const PackingListRoute = PackingListRouteImport.update({
+  id: '/packing/list',
+  path: '/packing/list',
+  getParentRoute: () => rootRouteImport,
 } as any)
+const PackingCreateRoute = PackingCreateRouteImport.update({
+  id: '/packing/create',
+  path: '/packing/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackingCategoryCategoryNameRoute =
+  PackingCategoryCategoryNameRouteImport.update({
+    id: '/packing/category/$categoryName',
+    path: '/packing/category/$categoryName',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/packing': typeof PackingRouteWithChildren
   '/packing/create': typeof PackingCreateRoute
+  '/packing/list': typeof PackingListRoute
+  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/packing': typeof PackingRouteWithChildren
   '/packing/create': typeof PackingCreateRoute
+  '/packing/list': typeof PackingListRoute
+  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/packing': typeof PackingRouteWithChildren
   '/packing/create': typeof PackingCreateRoute
+  '/packing/list': typeof PackingListRoute
+  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/packing' | '/packing/create'
+  fullPaths:
+    | '/'
+    | '/packing/create'
+    | '/packing/list'
+    | '/packing/category/$categoryName'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/packing' | '/packing/create'
-  id: '__root__' | '/' | '/packing' | '/packing/create'
+  to:
+    | '/'
+    | '/packing/create'
+    | '/packing/list'
+    | '/packing/category/$categoryName'
+  id:
+    | '__root__'
+    | '/'
+    | '/packing/create'
+    | '/packing/list'
+    | '/packing/category/$categoryName'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PackingRoute: typeof PackingRouteWithChildren
+  PackingCreateRoute: typeof PackingCreateRoute
+  PackingListRoute: typeof PackingListRoute
+  PackingCategoryCategoryNameRoute: typeof PackingCategoryCategoryNameRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/packing': {
-      id: '/packing'
-      path: '/packing'
-      fullPath: '/packing'
-      preLoaderRoute: typeof PackingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -74,30 +92,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packing/list': {
+      id: '/packing/list'
+      path: '/packing/list'
+      fullPath: '/packing/list'
+      preLoaderRoute: typeof PackingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packing/create': {
       id: '/packing/create'
-      path: '/create'
+      path: '/packing/create'
       fullPath: '/packing/create'
       preLoaderRoute: typeof PackingCreateRouteImport
-      parentRoute: typeof PackingRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/packing/category/$categoryName': {
+      id: '/packing/category/$categoryName'
+      path: '/packing/category/$categoryName'
+      fullPath: '/packing/category/$categoryName'
+      preLoaderRoute: typeof PackingCategoryCategoryNameRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface PackingRouteChildren {
-  PackingCreateRoute: typeof PackingCreateRoute
-}
-
-const PackingRouteChildren: PackingRouteChildren = {
-  PackingCreateRoute: PackingCreateRoute,
-}
-
-const PackingRouteWithChildren =
-  PackingRoute._addFileChildren(PackingRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PackingRoute: PackingRouteWithChildren,
+  PackingCreateRoute: PackingCreateRoute,
+  PackingListRoute: PackingListRoute,
+  PackingCategoryCategoryNameRoute: PackingCategoryCategoryNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
