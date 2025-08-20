@@ -12,7 +12,10 @@ import { MoreVertical, Edit3, Trash2 } from "lucide-react";
 import { Checkbox, BottomSheet } from "@/shared/components";
 import type { PackItem } from "@/shared/data/checkList";
 
-import { toggleItemAtom, checkedItemsAtom } from "../../store/checklistAtom";
+import {
+  toggleItemAtom,
+  checkedItemsAtom,
+} from "../../list/store/checklistAtom";
 
 interface PackingItemProps {
   item: PackItem;

@@ -20,6 +20,17 @@ export const toggleItemAtom = atom(
   }
 );
 
+export const getCategoryCheckedCountAtom = atom(
+  (get) => (categoryName: string) => {
+    const checkedItems = get(checkedItemsAtom);
+    const categoryCheckedCount = Object.keys(checkedItems).filter(
+      (key) => key.startsWith(`${categoryName}-`) && checkedItems[key]
+    ).length;
+
+    return categoryCheckedCount;
+  }
+);
+
 export const getCategoryProgressAtom = atom(
   (get) => (categoryName: string, totalItems: number) => {
     const checkedItems = get(checkedItemsAtom);
