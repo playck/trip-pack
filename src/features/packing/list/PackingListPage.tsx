@@ -1,9 +1,9 @@
 import { Container, SimpleGrid, Text, VStack } from "@chakra-ui/react";
 import { useAtomValue } from "jotai";
 
+import PageLayout from "@/shared/components/layout/PageLayout";
 import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import { packingCreateAtom } from "../create/store/packingCreateAtom";
-
 import CategoryBox from "./components/CategoryBox";
 
 import {
@@ -39,23 +39,25 @@ export default function PackingListPage() {
   const checklistData = handleSetUpCheckList();
 
   return (
-    <Container maxW="6xl" py={6} px={0}>
-      <VStack gap={4} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-          여행 체크리스트
-        </Text>
+    <PageLayout>
+      <Container maxW="6xl" py={6} px={0}>
+        <VStack gap={4} align="stretch">
+          <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+            여행 체크리스트
+          </Text>
 
-        <SimpleGrid columns={3} gap={4} w="full">
-          {checklistData.map((category) => (
-            <CategoryBox
-              key={category.categoryName}
-              category={category}
-              icon={CATEGORY_ICONS[category.categoryName] || Package}
-            />
-          ))}
-        </SimpleGrid>
-      </VStack>
-    </Container>
+          <SimpleGrid columns={3} gap={4} w="full">
+            {checklistData.map((category) => (
+              <CategoryBox
+                key={category.categoryName}
+                category={category}
+                icon={CATEGORY_ICONS[category.categoryName] || Package}
+              />
+            ))}
+          </SimpleGrid>
+        </VStack>
+      </Container>
+    </PageLayout>
   );
 }
 

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { ArrowLeft } from "lucide-react";
 
+import PageLayout from "@/shared/components/layout/PageLayout";
 import { packingCreateAtom } from "../create/store/packingCreateAtom";
 import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import PackingItemList from "./components/PackingItemList";
@@ -45,42 +46,44 @@ export default function CategoryDetailPage() {
   };
 
   return (
-    <Box bg="gray.50" minH="100vh">
-      <Container maxW="6xl" py={0} px={0}>
-        <VStack gap={0} align="stretch">
-          {/* 헤더 */}
-          <Box
-            bg="white"
-            borderBottom="1px"
-            borderColor="gray.200"
-            px={4}
-            py={4}
-            position="sticky"
-            top={0}
-            zIndex={10}
-          >
-            <HStack gap={3}>
-              <Box
-                as="button"
-                onClick={handleBackClick}
-                p={2}
-                borderRadius="md"
-                _hover={{ bg: "gray.100" }}
-                cursor="pointer"
-              >
-                <ArrowLeft size={20} />
-              </Box>
-              <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                {category.categoryName}
-              </Text>
-            </HStack>
-          </Box>
+    <PageLayout>
+      <Box bg="gray.50" minH="100vh">
+        <Container maxW="6xl" py={0} px={0}>
+          <VStack gap={0} align="stretch">
+            {/* 헤더 */}
+            <Box
+              bg="white"
+              borderBottom="1px"
+              borderColor="gray.200"
+              px={4}
+              py={4}
+              position="sticky"
+              top={0}
+              zIndex={10}
+            >
+              <HStack gap={3}>
+                <Box
+                  as="button"
+                  onClick={handleBackClick}
+                  p={2}
+                  borderRadius="md"
+                  _hover={{ bg: "gray.100" }}
+                  cursor="pointer"
+                >
+                  <ArrowLeft size={20} />
+                </Box>
+                <Text fontSize="xl" fontWeight="bold" color="gray.800">
+                  {category.categoryName}
+                </Text>
+              </HStack>
+            </Box>
 
-          <Box px={3} py={3}>
-            <PackingItemList category={category} />
-          </Box>
-        </VStack>
-      </Container>
-    </Box>
+            <Box px={3} py={3}>
+              <PackingItemList category={category} />
+            </Box>
+          </VStack>
+        </Container>
+      </Box>
+    </PageLayout>
   );
 }

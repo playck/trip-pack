@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container } from "@chakra-ui/react";
 import { useAtomValue } from "jotai";
 
+import PageLayout from "@/shared/components/layout/PageLayout";
 import {
   packingCreateAtom,
   packingCreateValidationAtom,
@@ -64,61 +65,63 @@ export default function PackingCreatePage() {
   };
 
   return (
-    <Container maxW="100%" pt={6} px={1}>
-      <StepIndicator
-        count={TOTAL_STEPS}
-        currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
-        completedContent={step === Step.LOADING ? <LastStep /> : undefined}
-        renderContent={() => {
-          if (step === Step.REGION) {
-            return (
-              <StepContainer title={STEP_TITLES[Step.REGION]}>
-                <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
-              </StepContainer>
-            );
-          }
+    <PageLayout>
+      <Container maxW="100%" pt={6} px={1}>
+        <StepIndicator
+          count={TOTAL_STEPS}
+          currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
+          completedContent={step === Step.LOADING ? <LastStep /> : undefined}
+          renderContent={() => {
+            if (step === Step.REGION) {
+              return (
+                <StepContainer title={STEP_TITLES[Step.REGION]}>
+                  <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
+                </StepContainer>
+              );
+            }
 
-          if (step === Step.DATE) {
-            return (
-              <StepContainer title={STEP_TITLES[Step.DATE]}>
-                <SearchCalendar />
-              </StepContainer>
-            );
-          }
+            if (step === Step.DATE) {
+              return (
+                <StepContainer title={STEP_TITLES[Step.DATE]}>
+                  <SearchCalendar />
+                </StepContainer>
+              );
+            }
 
-          if (step === Step.COMPANION) {
-            return (
-              <StepContainer title={STEP_TITLES[Step.COMPANION]}>
-                <TravelCompanion />
-              </StepContainer>
-            );
-          }
+            if (step === Step.COMPANION) {
+              return (
+                <StepContainer title={STEP_TITLES[Step.COMPANION]}>
+                  <TravelCompanion />
+                </StepContainer>
+              );
+            }
 
-          if (step === Step.TRIP_TYPE) {
-            return (
-              <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
-                <SelectTripType />
-              </StepContainer>
-            );
-          }
+            if (step === Step.TRIP_TYPE) {
+              return (
+                <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
+                  <SelectTripType />
+                </StepContainer>
+              );
+            }
 
-          if (step === Step.LOADING) {
-            return <LastStep />;
-          }
+            if (step === Step.LOADING) {
+              return <LastStep />;
+            }
 
-          return null;
-        }}
-      />
-
-      {step !== Step.LOADING && (
-        <StepBtnContainer
-          currentStep={step}
-          totalSteps={TOTAL_STEPS}
-          onPrevious={handlePreviousStep}
-          onNext={handleNextStep}
-          isNextDisabled={getIsNextBtnDisabled()}
+            return null;
+          }}
         />
-      )}
-    </Container>
+
+        {step !== Step.LOADING && (
+          <StepBtnContainer
+            currentStep={step}
+            totalSteps={TOTAL_STEPS}
+            onPrevious={handlePreviousStep}
+            onNext={handleNextStep}
+            isNextDisabled={getIsNextBtnDisabled()}
+          />
+        )}
+      </Container>
+    </PageLayout>
   );
 }
