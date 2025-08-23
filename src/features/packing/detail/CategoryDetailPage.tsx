@@ -11,22 +11,27 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 
-import { FloatingAddButton } from "@/shared/components";
+import { BottomSheet, FloatingAddButton } from "@/shared/components";
 
 import { packingCreateAtom } from "../create/store/packingCreateAtom";
 import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import PackingItemList from "./components/PackingItemList";
-import { initializeCategoryAtom } from "../list/store/checklistAtom";
+import { ItemForm } from "./components";
+import {
+  initializeCategoryAtom,
+  addItemAtom,
+} from "../list/store/checklistAtom";
 import type { TripTypeOption } from "../create/data/data";
 
 export default function CategoryDetailPage() {
   const navigate = useNavigate();
+  const { open: isOpen, onOpen, onClose } = useDisclosure();
   const { categoryName } = useParams({
     from: "/packing/category/$categoryName",
   });
   const packingState = useAtomValue(packingCreateAtom);
   const initializeCategory = useSetAtom(initializeCategoryAtom);
-  const { onOpen } = useDisclosure();
+  const addItem = useSetAtom(addItemAtom);
 
   // 테스트용 임시 상태 생성
   const testState = {
@@ -71,9 +76,19 @@ export default function CategoryDetailPage() {
   };
 
   const handleAddItem = () => {
-    // TODO: 아이템 추가 로직 구현
-    console.log("아이템 추가 버튼 클릭됨");
     onOpen();
+  };
+
+  const handleSaveItem = (newItem: { name: string; notes?: string }) => {
+    addItem({
+      categoryName: category.categoryName,
+      newItem,
+    });
+    onClose();
+  };
+
+  const handleCancelItem = () => {
+    onClose();
   };
 
   return (
@@ -108,6 +123,10 @@ export default function CategoryDetailPage() {
       </Container>
 
       <FloatingAddButton onClick={handleAddItem} ariaLabel="새 아이템 추가" />
+
+      <BottomSheet isOpen={isOpen} onClose={onClose} title="새 아이템 추가">
+        <ItemForm onSave={handleSaveItem} onCancel={handleCancelItem} />
+      </BottomSheet>
     </Box>
   );
 }

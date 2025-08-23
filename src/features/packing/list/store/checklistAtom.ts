@@ -103,7 +103,7 @@ export const updateItemAtom = atom(
 export const updateItemNameAtom = atom(
   null,
   (
-    get,
+    _get,
     set,
     {
       categoryName,
@@ -131,6 +131,42 @@ export const initializeCategoryAtom = atom(
       ...currentCategories,
       [category.categoryName]: category,
     });
+  }
+);
+
+export const addItemAtom = atom(
+  null,
+  (
+    get,
+    set,
+    {
+      categoryName,
+      newItem,
+    }: {
+      categoryName: string;
+      newItem: { name: string; notes?: string };
+    }
+  ) => {
+    const currentCategories = get(categoryItemsAtom);
+    const category = currentCategories[categoryName];
+
+    if (category) {
+      const newPackItem = {
+        name: newItem.name,
+        notes: newItem.notes,
+        cabin: "allowed" as const,
+      };
+
+      const updatedItems = [...category.items, newPackItem];
+
+      set(categoryItemsAtom, {
+        ...currentCategories,
+        [categoryName]: {
+          ...category,
+          items: updatedItems,
+        },
+      });
+    }
   }
 );
 

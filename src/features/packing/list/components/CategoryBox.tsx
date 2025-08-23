@@ -26,10 +26,7 @@ export default function CategoryBox({
   const getCategoryCheckedCount = useAtomValue(getCategoryCheckedCountAtom);
   const getCategoryProgress = useAtomValue(getCategoryProgressAtom);
   const checkedCount = getCategoryCheckedCount(category.categoryName);
-  const progress = getCategoryProgress(
-    category.categoryName,
-    category.items.length
-  );
+  const progress = getCategoryProgress(category.categoryName);
 
   const handleCategoryClick = () => {
     navigate({
@@ -47,11 +44,6 @@ export default function CategoryBox({
       borderColor="gray.200"
       cursor="pointer"
       onClick={handleCategoryClick}
-      _hover={{
-        bg: "gray.200",
-        transform: "translateY(-2px)",
-        shadow: "lg",
-      }}
       _active={{
         transform: "translateY(0px)",
       }}
