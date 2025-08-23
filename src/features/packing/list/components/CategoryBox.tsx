@@ -3,14 +3,18 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { type LucideIcon } from "lucide-react";
 
-import { type GeneratedCheckList } from "../../create/hooks/useGenerateCheckList";
 import {
   getCategoryCheckedCountAtom,
   getCategoryProgressAtom,
 } from "../store/checklistAtom";
 
+type CategoryWithIcon = {
+  categoryName: string;
+  items: unknown[];
+};
+
 interface CategoryBoxProps {
-  category: GeneratedCheckList;
+  category: CategoryWithIcon;
   icon: LucideIcon;
 }
 

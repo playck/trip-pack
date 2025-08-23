@@ -1,5 +1,5 @@
-import PackingListPage from "@/features/packing/\blist/PackingListPage";
 import { createFileRoute } from "@tanstack/react-router";
+import PackingListPage from "@/features/packing/list/PackingListPage";
 
 export const Route = createFileRoute("/packing/list")({
   component: PackingListPage,

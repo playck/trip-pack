@@ -15,7 +15,7 @@ import type { PackItem } from "@/shared/data/checkList";
 import {
   toggleItemAtom,
   checkedItemsAtom,
-} from "../../list/store/checklistAtom";
+} from "../../list/store/checklistAtom";
 
 interface PackingItemProps {
   item: PackItem;
