@@ -1,19 +1,18 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import { useSetAtom, useAtomValue } from "jotai";
-import { useState } from "react";
 
 import type { PackItem } from "@/shared/data/checkList";
 
 import {
   toggleItemAtom,
   checkedItemsAtom,
-  updateItemNameAtom,
+  updateItemAtom,
   deleteItemAtom,
 } from "../../list/store/checklistAtom";
 
-import EditableItemText from "./EditableItemText";
 import PackingItemContent from "./PackingItemContent";
 import ItemActionsSheet from "./ItemActionsSheet";
+import EditItemSheet from "./EditItemSheet";
 
 interface PackingItemProps {
   item: PackItem;
@@ -21,13 +20,21 @@ interface PackingItemProps {
 }
 
 export default function PackingItem({ item, categoryName }: PackingItemProps) {
-  const { open: isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    open: isActionsOpen,
+    onOpen: onActionsOpen,
+    onClose: onActionsClose,
+  } = useDisclosure();
+  const {
+    open: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
+
   const checkedItems = useAtomValue(checkedItemsAtom);
   const toggleItem = useSetAtom(toggleItemAtom);
-  const updateItemName = useSetAtom(updateItemNameAtom);
+  const updateItem = useSetAtom(updateItemAtom);
   const deleteItem = useSetAtom(deleteItemAtom);
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const isItemChecked = () => {
     const key = `${categoryName}-${item.name}`;
@@ -41,22 +48,20 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
     });
   };
 
-  const handleItemNameEdit = () => {
-    setIsEditing(true);
-    onClose();
+  const handleItemEdit = () => {
+    onActionsClose();
+    onEditOpen();
   };
 
-  const handleItemNameSave = (newName: string) => {
-    updateItemName({
+  const handleItemSave = (updatedItemData: {
+    name: string;
+    notes?: string;
+  }) => {
+    updateItem({
       categoryName,
       oldItemName: item.name,
-      newItemName: newName,
+      updatedItem: updatedItemData,
     });
-    setIsEditing(false);
-  };
-
-  const handleEditCancel = () => {
-    setIsEditing(false);
   };
 
   const handleItemDelete = () => {
@@ -64,7 +69,7 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
       categoryName,
       itemName: item.name,
     });
-    onClose();
+    onActionsClose();
   };
 
   return (
@@ -77,22 +82,12 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
       shadow="xs"
     >
       <VStack gap={1} align="stretch">
-        {isEditing ? (
-          <EditableItemText
-            itemName={item.name}
-            isChecked={isItemChecked()}
-            onToggleCheck={handleItemCheck}
-            onSave={handleItemNameSave}
-            onCancel={handleEditCancel}
-          />
-        ) : (
-          <PackingItemContent
-            itemName={item.name}
-            isChecked={isItemChecked()}
-            onToggleCheck={handleItemCheck}
-            onOpenActions={onOpen}
-          />
-        )}
+        <PackingItemContent
+          itemName={item.name}
+          isChecked={isItemChecked()}
+          onToggleCheck={handleItemCheck}
+          onOpenActions={onActionsOpen}
+        />
 
         {item.notes && (
           <Text fontSize="xs" color="gray.600" lineHeight="1.4" pl="8">
@@ -102,11 +97,18 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
       </VStack>
 
       <ItemActionsSheet
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isActionsOpen}
         itemName={item.name}
-        onEdit={handleItemNameEdit}
+        onClose={onActionsClose}
+        onEdit={handleItemEdit}
         onDelete={handleItemDelete}
+      />
+
+      <EditItemSheet
+        isOpen={isEditOpen}
+        item={item}
+        onClose={onEditClose}
+        onSave={handleItemSave}
       />
     </Box>
   );

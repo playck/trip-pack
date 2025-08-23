@@ -50,6 +50,56 @@ export const getCategoryProgressAtom = atom((get) => (categoryName: string) => {
     : 0;
 });
 
+export const updateItemAtom = atom(
+  null,
+  (
+    get,
+    set,
+    {
+      categoryName,
+      oldItemName,
+      updatedItem,
+    }: {
+      categoryName: string;
+      oldItemName: string;
+      updatedItem: { name: string; notes?: string };
+    }
+  ) => {
+    const currentCategories = get(categoryItemsAtom);
+    const currentChecked = get(checkedItemsAtom);
+    const oldKey = `${categoryName}-${oldItemName}`;
+    const newKey = `${categoryName}-${updatedItem.name}`;
+
+    // 카테고리 아이템에서 이름과 notes 업데이트
+    const category = currentCategories[categoryName];
+    if (category) {
+      const updatedItems = category.items.map((item) =>
+        item.name === oldItemName
+          ? { ...item, name: updatedItem.name, notes: updatedItem.notes }
+          : item
+      );
+
+      set(categoryItemsAtom, {
+        ...currentCategories,
+        [categoryName]: {
+          ...category,
+          items: updatedItems,
+        },
+      });
+    }
+
+    // 이름이 변경된 경우에만 체크 상태 키 변경
+    if (oldItemName !== updatedItem.name) {
+      const updatedChecked = { ...currentChecked };
+      if (updatedChecked[oldKey] !== undefined) {
+        updatedChecked[newKey] = updatedChecked[oldKey];
+        delete updatedChecked[oldKey];
+      }
+      set(checkedItemsAtom, updatedChecked);
+    }
+  }
+);
+
 export const updateItemNameAtom = atom(
   null,
   (
@@ -65,35 +115,11 @@ export const updateItemNameAtom = atom(
       newItemName: string;
     }
   ) => {
-    const currentCategories = get(categoryItemsAtom);
-    const currentChecked = get(checkedItemsAtom);
-    const oldKey = `${categoryName}-${oldItemName}`;
-    const newKey = `${categoryName}-${newItemName}`;
-
-    // 카테고리 아이템에서 이름 업데이트
-    const category = currentCategories[categoryName];
-    if (category) {
-      const updatedItems = category.items.map((item) =>
-        item.name === oldItemName ? { ...item, name: newItemName } : item
-      );
-
-      set(categoryItemsAtom, {
-        ...currentCategories,
-        [categoryName]: {
-          ...category,
-          items: updatedItems,
-        },
-      });
-    }
-
-    // 기존 키에서 새 키로 체크 상태 이동
-    const updatedChecked = { ...currentChecked };
-    if (updatedChecked[oldKey] !== undefined) {
-      updatedChecked[newKey] = updatedChecked[oldKey];
-      delete updatedChecked[oldKey];
-    }
-
-    set(checkedItemsAtom, updatedChecked);
+    set(updateItemAtom, {
+      categoryName,
+      oldItemName,
+      updatedItem: { name: newItemName },
+    });
   }
 );
 
