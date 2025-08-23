@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackingListRouteImport } from './routes/packing.list'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
+import { Route as AuthSignupRouteImport } from './routes/auth.signup'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as PackingCategoryCategoryNameRouteImport } from './routes/packing.category.$categoryName'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +31,16 @@ const PackingCreateRoute = PackingCreateRouteImport.update({
   path: '/packing/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PackingCategoryCategoryNameRoute =
   PackingCategoryCategoryNameRouteImport.update({
     id: '/packing/category/$categoryName',
@@ -38,12 +50,16 @@ const PackingCategoryCategoryNameRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/list': typeof PackingListRoute
   '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/list': typeof PackingListRoute
   '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
@@ -51,6 +67,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/list': typeof PackingListRoute
   '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
@@ -59,18 +77,24 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/packing/create'
     | '/packing/list'
     | '/packing/category/$categoryName'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/packing/create'
     | '/packing/list'
     | '/packing/category/$categoryName'
   id:
     | '__root__'
     | '/'
+    | '/auth/login'
+    | '/auth/signup'
     | '/packing/create'
     | '/packing/list'
     | '/packing/category/$categoryName'
@@ -78,6 +102,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingListRoute: typeof PackingListRoute
   PackingCategoryCategoryNameRoute: typeof PackingCategoryCategoryNameRoute
@@ -106,6 +132,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackingCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packing/category/$categoryName': {
       id: '/packing/category/$categoryName'
       path: '/packing/category/$categoryName'
@@ -118,6 +158,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingListRoute: PackingListRoute,
   PackingCategoryCategoryNameRoute: PackingCategoryCategoryNameRoute,

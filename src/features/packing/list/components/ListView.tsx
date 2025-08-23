@@ -119,6 +119,7 @@ export default function ListView({ categories }: ListViewProps) {
           variant="ghost"
           onClick={toggleAllCategories}
           color="gray.600"
+          pr={0}
         >
           <HStack gap={1}>
             {allExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}

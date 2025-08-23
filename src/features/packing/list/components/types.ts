@@ -1,8 +1,7 @@
 import type { GeneratedCheckList } from "../../create/hooks/useGenerateCheckList";
+import type { PackItem } from "@/shared/data/checkList";
 
-export type CategoryItem =
-  | string
-  | { name: string; required?: boolean; notes?: string };
+export type CategoryItem = string | PackItem;
 
 export type CustomCategory = {
   categoryName: string;
