@@ -5,9 +5,11 @@ import {
   SimpleGrid,
   Text,
   VStack,
+  HStack,
+  SegmentGroup,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Package } from "lucide-react";
+import { Package, Grid3X3, List } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
@@ -22,7 +24,7 @@ import type { GeneratedCheckList } from "../create/hooks/useGenerateCheckList";
 type CustomCategory = {
   categoryName: string;
   iconKey: string;
-  items: unknown[]; // 빈 배열로 초기화
+  items: unknown[];
 };
 
 type CombinedCategory = GeneratedCheckList | CustomCategory;
@@ -33,6 +35,7 @@ export default function PackingListPage() {
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>(
     []
   );
+  const [viewMode, setViewMode] = useState<string>("그리드");
 
   const testState = {
     ...packingState,
@@ -72,11 +75,54 @@ export default function PackingListPage() {
 
   return (
     <PageLayout>
-      <Container maxW="6xl" py={6} px={0}>
+      <Container maxW="6xl" py={5} px={0}>
         <VStack gap={4} align="stretch">
-          <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-            여행 체크리스트
-          </Text>
+          <HStack justify="space-between" align="center">
+            <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+              여행 체크리스트
+            </Text>
+            <SegmentGroup.Root
+              size="sm"
+              value={viewMode}
+              onValueChange={(details) => {
+                if (details.value) {
+                  setViewMode(details.value);
+                }
+              }}
+            >
+              <SegmentGroup.Indicator />
+              <SegmentGroup.Items
+                items={[
+                  {
+                    value: "그리드",
+                    label: (
+                      <HStack gap={2}>
+                        <Grid3X3
+                          size={18}
+                          color={
+                            viewMode === "그리드" ? "#3182CE" : "currentColor"
+                          }
+                        />
+                      </HStack>
+                    ),
+                  },
+                  {
+                    value: "일렬형식",
+                    label: (
+                      <HStack gap={2}>
+                        <List
+                          size={18}
+                          color={
+                            viewMode === "일렬형식" ? "#3182CE" : "currentColor"
+                          }
+                        />
+                      </HStack>
+                    ),
+                  },
+                ]}
+              />
+            </SegmentGroup.Root>
+          </HStack>
 
           <SimpleGrid columns={3} gap={4} w="full">
             {allCategories.map((category) => {
