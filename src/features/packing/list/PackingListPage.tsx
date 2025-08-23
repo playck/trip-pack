@@ -2,32 +2,25 @@ import { useState } from "react";
 import { useAtomValue } from "jotai";
 import {
   Container,
-  SimpleGrid,
   Text,
   VStack,
   HStack,
   SegmentGroup,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Package, Grid3X3, List } from "lucide-react";
+import { Grid3X3, List } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
 
-import CategoryBox from "./components/CategoryBox";
 import CategoryForm from "./components/CategoryForm";
-import { CATEGORY_ICONS } from "./constants/category";
+import GridView, {
+  type CustomCategory,
+  type CombinedCategory,
+} from "./components/GridView";
+import ListView from "./components/ListView";
 import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import { packingCreateAtom } from "../create/store/packingCreateAtom";
-import type { GeneratedCheckList } from "../create/hooks/useGenerateCheckList";
-
-type CustomCategory = {
-  categoryName: string;
-  iconKey: string;
-  items: unknown[];
-};
-
-type CombinedCategory = GeneratedCheckList | CustomCategory;
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
@@ -124,24 +117,11 @@ export default function PackingListPage() {
             </SegmentGroup.Root>
           </HStack>
 
-          <SimpleGrid columns={3} gap={4} w="full">
-            {allCategories.map((category) => {
-              // 사용자 정의 카테고리인 경우 iconKey 사용, 아니면 categoryName으로 매핑
-              const iconKey =
-                "iconKey" in category
-                  ? category.iconKey
-                  : category.categoryName;
-              const icon = CATEGORY_ICONS[iconKey] || Package;
-
-              return (
-                <CategoryBox
-                  key={category.categoryName}
-                  category={category}
-                  icon={icon}
-                />
-              );
-            })}
-          </SimpleGrid>
+          {viewMode === "그리드" ? (
+            <GridView categories={allCategories} />
+          ) : (
+            <ListView categories={allCategories} />
+          )}
         </VStack>
       </Container>
 
