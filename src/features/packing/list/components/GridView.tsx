@@ -3,15 +3,7 @@ import { Package } from "lucide-react";
 
 import CategoryBox from "./CategoryBox";
 import { CATEGORY_ICONS } from "../constants/category";
-import type { GeneratedCheckList } from "../../create/hooks/useGenerateCheckList";
-
-export type CustomCategory = {
-  categoryName: string;
-  iconKey: string;
-  items: unknown[];
-};
-
-export type CombinedCategory = GeneratedCheckList | CustomCategory;
+import type { CombinedCategory } from "./types";
 
 interface GridViewProps {
   categories: CombinedCategory[];

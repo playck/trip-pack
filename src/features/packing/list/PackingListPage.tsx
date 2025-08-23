@@ -14,11 +14,9 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
 
 import CategoryForm from "./components/CategoryForm";
-import GridView, {
-  type CustomCategory,
-  type CombinedCategory,
-} from "./components/GridView";
+import GridView from "./components/GridView";
 import ListView from "./components/ListView";
+import type { CustomCategory, CombinedCategory } from "./components/types";
 import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import { packingCreateAtom } from "../create/store/packingCreateAtom";
 

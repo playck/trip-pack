@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { VStack, Box, Text, HStack, Badge } from "@chakra-ui/react";
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown, ChevronRight, ArrowRight } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { useNavigate } from "@tanstack/react-router";
 
-import type { CombinedCategory } from "./GridView";
+import type { CombinedCategory, CategoryItem } from "./types";
+import { getItemName } from "./types";
 import { CATEGORY_ICONS } from "../constants/category";
 import { checkedItemsAtom } from "../store/checklistAtom";
 
@@ -39,9 +40,49 @@ export default function ListView({ categories }: ListViewProps) {
     return !!checkedItems[key];
   };
 
+  const getCompletionCount = (category: CombinedCategory) => {
+    if (!category.items || category.items.length === 0)
+      return { completed: 0, total: 0 };
+
+    const completed = category.items.filter((item: CategoryItem) => {
+      const itemName = getItemName(item);
+      return isItemChecked(category.categoryName, itemName);
+    }).length;
+
+    return { completed, total: category.items.length };
+  };
+
   const handleItemClick = (categoryName: string) => {
     navigate({ to: `/packing/category/${categoryName}` });
   };
+
+  // 정렬된 아이템 목록을 초기 로딩 시에만 생성
+  const sortedItemsByCategory = useMemo(() => {
+    const result: Record<string, { item: CategoryItem; index: number }[]> = {};
+
+    categories.forEach((category) => {
+      if (!category.items || category.items.length === 0) {
+        result[category.categoryName] = [];
+        return;
+      }
+
+      result[category.categoryName] = category.items
+        .map((item: CategoryItem, index: number) => ({ item, index }))
+        .sort(({ item: itemA }, { item: itemB }) => {
+          const itemNameA = getItemName(itemA);
+          const itemNameB = getItemName(itemB);
+
+          const checkedA = isItemChecked(category.categoryName, itemNameA);
+          const checkedB = isItemChecked(category.categoryName, itemNameB);
+
+          if (checkedA === checkedB) return 0;
+          return checkedA ? 1 : -1;
+        });
+    });
+
+    return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]); // checkedItems는 의도적으로 제외 (초기 로딩 시에만 정렬)
 
   return (
     <VStack gap={2} align="stretch" w="full">
@@ -51,6 +92,8 @@ export default function ListView({ categories }: ListViewProps) {
           "iconKey" in category ? category.iconKey : category.categoryName;
         const IconComponent = CATEGORY_ICONS[iconKey] as LucideIcon;
         const isExpanded = expandedCategories[category.categoryName] ?? true;
+        const { completed, total } = getCompletionCount(category);
+        const sortedItems = sortedItemsByCategory[category.categoryName] || [];
 
         return (
           <VStack
@@ -90,13 +133,13 @@ export default function ListView({ categories }: ListViewProps) {
                     {category.categoryName}
                   </Text>
                 </HStack>
+
+                <Badge colorScheme="blue" size="sm">
+                  {completed} / {total}
+                </Badge>
               </HStack>
 
               <HStack gap={2}>
-                <Badge colorScheme="blue" size="sm">
-                  {category.items?.length || 0}개
-                </Badge>
-
                 {/* 상세 페이지 이동 버튼 */}
                 <Box
                   as="button"
@@ -118,12 +161,9 @@ export default function ListView({ categories }: ListViewProps) {
             {/* 아이템 목록 */}
             {isExpanded && (
               <VStack gap={3} align="stretch">
-                {category.items && category.items.length > 0 ? (
-                  category.items.map((item: unknown, index: number) => {
-                    const itemName =
-                      typeof item === "string"
-                        ? item
-                        : (item as { name?: string })?.name || "아이템";
+                {sortedItems.length > 0 ? (
+                  sortedItems.map(({ item, index }) => {
+                    const itemName = getItemName(item);
                     const checked = isItemChecked(
                       category.categoryName,
                       itemName
