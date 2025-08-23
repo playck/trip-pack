@@ -1,0 +1,30 @@
+import {
+  Plane,
+  Smartphone,
+  Shirt,
+  Droplet,
+  Sparkles,
+  Pill,
+  Package,
+  Baby,
+  Dog,
+  Dumbbell,
+  Waves,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
+
+export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "필수 준비물": Plane,
+  전자제품: Smartphone,
+  의류: Shirt,
+  세면용품: Droplet,
+  화장품: Sparkles,
+  상비약: Pill,
+  기타용품: Package,
+  유아용품: Baby,
+  반려동물용품: Dog,
+  운동: Dumbbell,
+  수영: Waves,
+  한식: UtensilsCrossed,
+};
