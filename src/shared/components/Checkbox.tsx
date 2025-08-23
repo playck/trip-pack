@@ -1,6 +1,8 @@
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { CheckIcon } from "lucide-react";
 
+import { colors } from "@/shared/constants/colors";
+
 interface CheckboxProps {
   isChecked: boolean;
   onChange: () => void;
@@ -21,7 +23,7 @@ export default function Checkbox({
   onChange,
   label,
   size = "md",
-  colorScheme = "blue",
+  colorScheme = colors.primary.palette,
   disabled = false,
 }: CheckboxProps) {
   const { w, h, iconSize, fontSize } = sizeMap[size];
