@@ -5,39 +5,35 @@ import {
   SimpleGrid,
   Text,
   VStack,
-  IconButton,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Package, Plus } from "lucide-react";
+import { Package } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { BottomSheet } from "@/shared/components";
-import { colors } from "@/shared/constants/colors";
+import { BottomSheet, FloatingAddButton } from "@/shared/components";
 
-import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
-import { packingCreateAtom } from "../create/store/packingCreateAtom";
 import CategoryBox from "./components/CategoryBox";
 import CategoryForm from "./components/CategoryForm";
+import { CATEGORY_ICONS } from "./constants/category";
+import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
+import { packingCreateAtom } from "../create/store/packingCreateAtom";
 import type { GeneratedCheckList } from "../create/hooks/useGenerateCheckList";
 
-import { CATEGORY_ICONS } from "./constants/category";
+type CustomCategory = {
+  categoryName: string;
+  iconKey: string;
+  items: unknown[]; // 빈 배열로 초기화
+};
+
+type CombinedCategory = GeneratedCheckList | CustomCategory;
 
 export default function PackingListPage() {
-  const packingState = useAtomValue(packingCreateAtom);
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  type CustomCategory = {
-    categoryName: string;
-    iconKey: string;
-    items: unknown[]; // 빈 배열로 초기화
-  };
-
-  type CombinedCategory = GeneratedCheckList | CustomCategory;
-
+  const packingState = useAtomValue(packingCreateAtom);
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>(
     []
   );
 
-  // 테스트용 임시 상태 생성a
   const testState = {
     ...packingState,
     region: { id: "jp-tokyo", name: "도쿄", countryCode: "JP" as const },
@@ -52,13 +48,11 @@ export default function PackingListPage() {
   );
   const checklistData = handleSetUpCheckList();
 
-  // 전체 카테고리 리스트 (기본 + 사용자 정의)
   const allCategories: CombinedCategory[] = [
     ...checklistData,
     ...customCategories,
   ];
 
-  // CategoryForm 핸들러들
   const handleSaveCategory = (newCategory: {
     categoryName: string;
     iconKey: string;
@@ -66,7 +60,7 @@ export default function PackingListPage() {
     const customCategory: CustomCategory = {
       categoryName: newCategory.categoryName,
       iconKey: newCategory.iconKey,
-      items: [], // 빈 배열로 초기화 - 나중에 항목을 추가할 수 있도록
+      items: [],
     };
     setCustomCategories((prev) => [...prev, customCategory]);
     onClose();
@@ -105,25 +99,8 @@ export default function PackingListPage() {
         </VStack>
       </Container>
 
-      {/* 플로팅 플러스 버튼 */}
-      <IconButton
-        aria-label="새 항목 추가"
-        position="fixed"
-        bottom={6}
-        right={6}
-        size="lg"
-        borderRadius="full"
-        colorPalette={colors.primary.palette}
-        variant="solid"
-        shadow="lg"
-        _hover={{ transform: "scale(1.1)" }}
-        transition="all 0.2s"
-        onClick={onOpen}
-      >
-        <Plus color="white" />
-      </IconButton>
+      <FloatingAddButton onClick={onOpen} ariaLabel="새 카테고리 추가" />
 
-      {/* 카테고리 추가 바텀시트 */}
       <BottomSheet isOpen={isOpen} onClose={onClose} title="새 카테고리 추가">
         <CategoryForm
           onSave={handleSaveCategory}
