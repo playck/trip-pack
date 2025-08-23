@@ -101,7 +101,7 @@ export default function CategoryDetailPage() {
             borderBottom="1px"
             borderColor="gray.200"
             px={4}
-            py={4}
+            py={2}
             position="sticky"
             top={0}
             zIndex={10}

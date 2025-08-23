@@ -101,6 +101,7 @@ export default function CategoryForm({
 
       {/* 저장/취소 버튼*/}
       <Box
+        w="full"
         position="sticky"
         bottom={0}
         left={0}
@@ -111,7 +112,7 @@ export default function CategoryForm({
         borderTop="1px"
         borderColor="gray.100"
       >
-        <HStack gap={3} w="full">
+        <HStack gap={3}>
           <Button
             flex={1}
             variant="outline"

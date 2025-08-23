@@ -79,6 +79,7 @@ export default function ItemForm({
         right={0}
         p={4}
         mt={2}
+        w="full"
         bg="white"
         borderTop="1px"
         borderColor="gray.100"
