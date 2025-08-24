@@ -8,11 +8,11 @@ import {
   Stack,
   Text,
   VStack,
-  Alert,
 } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
+import { supabase } from "@/shared/service/supabase/cilent";
 
 interface LoginForm {
   email: string;
@@ -74,18 +74,38 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      // TODO: Supabase 로그인 API 호출
-      console.log("로그인 데이터:", formData);
+      // Supabase Auth를 사용한 로그인
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
 
-      // 임시로 2초 딜레이 후 성공 처리
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (authError) {
+        // 구체적인 에러 메시지별 처리
+        if (authError.message.includes("Invalid login credentials")) {
+          setErrors({
+            general: "이메일 또는 비밀번호가 올바르지 않습니다.",
+          });
+        } else if (authError.message.includes("Email not confirmed")) {
+          setErrors({
+            general: "계정 활성화가 필요합니다. 관리자에게 문의해주세요.",
+          });
+        } else {
+          setErrors({
+            general: "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+          });
+        }
+        return;
+      }
 
-      // 로그인 성공 후 메인 페이지로 이동
-      navigate({ to: "/" });
-    } catch (error) {
+      // 로그인 성공
+      if (authData.user) {
+        navigate({ to: "/" });
+      }
+    } catch {
       setErrors({
-        general:
-          "로그인 중 오류가 발생했습니다. 이메일과 비밀번호를 확인해주세요.",
+        general: "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
       });
     } finally {
       setIsLoading(false);
@@ -95,7 +115,7 @@ export default function LoginPage() {
   return (
     <PageLayout>
       <Container maxW="100%" pt={8} px={6}>
-        <VStack spacing={8} align="stretch">
+        <VStack gap={8} align="stretch">
           <Box textAlign="center">
             <Heading size="lg" mb={2}>
               로그인
@@ -105,11 +125,18 @@ export default function LoginPage() {
 
           <Box>
             <form onSubmit={handleSubmit}>
-              <Stack spacing={4}>
+              <Stack gap={4}>
                 {errors.general && (
-                  <Alert status="error" borderRadius="md">
+                  <Box
+                    p={3}
+                    bg="red.50"
+                    border="1px solid"
+                    borderColor="red.200"
+                    borderRadius="md"
+                    color="red.700"
+                  >
                     {errors.general}
-                  </Alert>
+                  </Box>
                 )}
 
                 <Box>
@@ -123,7 +150,13 @@ export default function LoginPage() {
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     size="lg"
                     borderRadius="lg"
-                    isInvalid={!!errors.email}
+                    borderColor={errors.email ? "red.300" : "gray.200"}
+                    _focus={{
+                      borderColor: errors.email ? "red.400" : "blue.400",
+                      boxShadow: errors.email
+                        ? "0 0 0 1px red.400"
+                        : "0 0 0 1px blue.400",
+                    }}
                   />
                   {errors.email && (
                     <Text color="red.500" fontSize="sm" mt={1}>
@@ -145,7 +178,13 @@ export default function LoginPage() {
                     }
                     size="lg"
                     borderRadius="lg"
-                    isInvalid={!!errors.password}
+                    borderColor={errors.password ? "red.300" : "gray.200"}
+                    _focus={{
+                      borderColor: errors.password ? "red.400" : "blue.400",
+                      boxShadow: errors.password
+                        ? "0 0 0 1px red.400"
+                        : "0 0 0 1px blue.400",
+                    }}
                   />
                   {errors.password && (
                     <Text color="red.500" fontSize="sm" mt={1}>
@@ -159,11 +198,10 @@ export default function LoginPage() {
                   size="lg"
                   colorScheme="blue"
                   borderRadius="lg"
-                  isLoading={isLoading}
-                  loadingText="로그인 중..."
+                  loading={isLoading}
                   mt={4}
                 >
-                  로그인
+                  {isLoading ? "로그인 중..." : "로그인"}
                 </Button>
 
                 <Box textAlign="center" mt={4}>
