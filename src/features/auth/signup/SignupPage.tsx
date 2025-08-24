@@ -8,11 +8,11 @@ import {
   Stack,
   Text,
   VStack,
-  Alert,
 } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
+import { supabase } from "@/shared/service/supabase/cilent";
 
 interface SignupForm {
   email: string;
@@ -86,15 +86,43 @@ export default function SignupPage() {
     setErrors({});
 
     try {
-      // TODO: Supabase 회원가입 API 호출
-      console.log("회원가입 데이터:", formData);
+      // Supabase Auth를 사용한 회원가입
+      const { error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            username: formData.username,
+          },
+        },
+      });
 
-      // 임시로 2초 딜레이 후 성공 처리
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (authError) {
+        // 구체적인 에러 메시지별 처리
+        if (authError.message.includes("already registered")) {
+          setErrors({
+            email: "이미 가입된 이메일입니다.",
+          });
+        } else if (authError.message.includes("Password should be")) {
+          setErrors({
+            password: "비밀번호는 최소 6자리 이상이어야 합니다.",
+          });
+        } else if (authError.message.includes("Invalid email")) {
+          setErrors({
+            email: "올바르지 않은 이메일 형식입니다.",
+          });
+        } else {
+          setErrors({
+            general: "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
+          });
+        }
+        return;
+      }
 
-      // 회원가입 성공 후 메인 페이지로 이동
-      navigate({ to: "/" });
-    } catch (error) {
+      // 회원가입 성공 메시지 표시 및 로그인 페이지로 이동
+      alert("회원가입이 완료되었습니다! 바로 로그인해주세요.");
+      navigate({ to: "/auth/login" });
+    } catch {
       setErrors({
         general: "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
       });
@@ -106,7 +134,7 @@ export default function SignupPage() {
   return (
     <PageLayout>
       <Container maxW="100%" pt={8} px={6}>
-        <VStack spacing={8} align="stretch">
+        <VStack gap={8} align="stretch">
           <Box textAlign="center">
             <Heading size="lg" mb={2}>
               회원가입
@@ -116,11 +144,18 @@ export default function SignupPage() {
 
           <Box>
             <form onSubmit={handleSubmit}>
-              <Stack spacing={4}>
+              <Stack gap={4}>
                 {errors.general && (
-                  <Alert status="error" borderRadius="md">
+                  <Box
+                    p={3}
+                    bg="red.50"
+                    border="1px solid"
+                    borderColor="red.200"
+                    borderRadius="md"
+                    color="red.700"
+                  >
                     {errors.general}
-                  </Alert>
+                  </Box>
                 )}
 
                 <Box>
@@ -134,7 +169,13 @@ export default function SignupPage() {
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     size="lg"
                     borderRadius="lg"
-                    isInvalid={!!errors.email}
+                    borderColor={errors.email ? "red.300" : "gray.200"}
+                    _focus={{
+                      borderColor: errors.email ? "red.400" : "blue.400",
+                      boxShadow: errors.email
+                        ? "0 0 0 1px red.400"
+                        : "0 0 0 1px blue.400",
+                    }}
                   />
                   {errors.email && (
                     <Text color="red.500" fontSize="sm" mt={1}>
@@ -156,7 +197,13 @@ export default function SignupPage() {
                     }
                     size="lg"
                     borderRadius="lg"
-                    isInvalid={!!errors.password}
+                    borderColor={errors.password ? "red.300" : "gray.200"}
+                    _focus={{
+                      borderColor: errors.password ? "red.400" : "blue.400",
+                      boxShadow: errors.password
+                        ? "0 0 0 1px red.400"
+                        : "0 0 0 1px blue.400",
+                    }}
                   />
                   {errors.password && (
                     <Text color="red.500" fontSize="sm" mt={1}>
@@ -178,7 +225,13 @@ export default function SignupPage() {
                     }
                     size="lg"
                     borderRadius="lg"
-                    isInvalid={!!errors.username}
+                    borderColor={errors.username ? "red.300" : "gray.200"}
+                    _focus={{
+                      borderColor: errors.username ? "red.400" : "blue.400",
+                      boxShadow: errors.username
+                        ? "0 0 0 1px red.400"
+                        : "0 0 0 1px blue.400",
+                    }}
                   />
                   {errors.username && (
                     <Text color="red.500" fontSize="sm" mt={1}>
@@ -192,11 +245,10 @@ export default function SignupPage() {
                   size="lg"
                   colorScheme="blue"
                   borderRadius="lg"
-                  isLoading={isLoading}
-                  loadingText="가입 중..."
+                  loading={isLoading}
                   mt={4}
                 >
-                  회원가입
+                  {isLoading ? "가입 중..." : "회원가입"}
                 </Button>
 
                 <Box textAlign="center" mt={4}>
