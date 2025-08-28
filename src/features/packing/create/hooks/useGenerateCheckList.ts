@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   ESSENTIAL_ITEMS,
   ELECTRONICS_ITEMS,
@@ -38,7 +39,7 @@ const checkVisaRequirement = (
 };
 
 export default function useGenerateCheckList(state: PackingCreateState) {
-  const handleSetUpCheckList = () => {
+  const handleSetUpCheckList = useCallback(() => {
     const result: GeneratedCheckList[] = [];
     const isOverseasTrip = state.region?.countryCode !== "KR";
     const isNeedVisa = checkVisaRequirement(
@@ -99,7 +100,12 @@ export default function useGenerateCheckList(state: PackingCreateState) {
     }
 
     return result;
-  };
+  }, [
+    state.region?.countryCode,
+    state.region?.id,
+    state.companionTypes,
+    state.tripTypes,
+  ]);
 
   return { handleSetUpCheckList };
 }

@@ -14,29 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
+      checklist_categories: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          icon_key: string | null
+          id: string
+          name: string
+          trip_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          name: string
+          trip_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          name?: string
+          trip_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_categories_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_items: {
+        Row: {
+          cabin_notes: string | null
+          cabin_policy: string | null
+          category_id: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_checked: boolean | null
+          is_required: boolean | null
+          name: string
+          notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cabin_notes?: string | null
+          cabin_policy?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_checked?: boolean | null
+          is_required?: boolean | null
+          name: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cabin_notes?: string | null
+          cabin_policy?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_checked?: boolean | null
+          is_required?: boolean | null
+          name?: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           id: string
-          name: string | null
           username: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
-          name?: string | null
           username?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
-          name?: string | null
           username?: string | null
         }
         Relationships: []
+      }
+      trips: {
+        Row: {
+          companion_type: string | null
+          companion_types: Json | null
+          country_code: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          region_id: string | null
+          region_name: string | null
+          start_date: string
+          title: string
+          trip_types: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          companion_type?: string | null
+          companion_types?: Json | null
+          country_code?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          region_id?: string | null
+          region_name?: string | null
+          start_date: string
+          title: string
+          trip_types?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          companion_type?: string | null
+          companion_types?: Json | null
+          country_code?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          region_id?: string | null
+          region_name?: string | null
+          start_date?: string
+          title?: string
+          trip_types?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

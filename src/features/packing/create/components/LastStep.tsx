@@ -1,33 +1,67 @@
-import { useEffect } from "react";
-import { Text, VStack, Box } from "@chakra-ui/react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { Text, VStack, Box } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import Lottie from "lottie-react";
+
 import animationData from "@/assets/lotties/animated-bot.json";
+import { useAuth } from "@/shared/hooks/useAuth";
 
 import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import { packingCreateAtom } from "../store/packingCreateAtom";
+import { useCreateTrip } from "../services/useCreateTrip";
 
 export default function LastStep() {
-  const [packingCreateState, setPackingCreateState] =
-    useAtom(packingCreateAtom);
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [packingCreateState] = useAtom(packingCreateAtom);
+  const [message, setMessage] = useState("체크리스트를 생성 중입니다");
   const { handleSetUpCheckList } = useGenerateCheckList(packingCreateState);
 
+  const hasExecutedRef = useRef(false);
+
+  const completePackingState = useMemo(() => {
+    const generatedCheckList = handleSetUpCheckList();
+    return {
+      ...packingCreateState,
+      generatedCheckList,
+    };
+  }, [packingCreateState, handleSetUpCheckList]);
+
+  const { mutate: createTripMutation } = useCreateTrip({
+    packingCreateState: completePackingState,
+    userId: user?.id ?? "",
+    onSuccess: () => {
+      setMessage("완료되었습니다!");
+      setTimeout(() => {
+        navigate({ to: "/packing/list" });
+      }, 1500);
+    },
+    onError: (error) => {
+      console.error("여행 생성 실패:", error);
+      setMessage("오류가 발생했습니다");
+      setTimeout(() => {
+        navigate({ to: "/packing/list" });
+      }, 2000);
+    },
+  });
+
   useEffect(() => {
-    const checkListResult = handleSetUpCheckList();
+    if (hasExecutedRef.current) return;
+    if (!user?.id) return;
 
-    setPackingCreateState((prev) => ({
-      ...prev,
-      generatedCheckList: checkListResult,
-    }));
+    hasExecutedRef.current = true;
 
-    const timer = setTimeout(() => {
-      navigate({ to: "/packing" });
-    }, 2200);
-
-    return () => clearTimeout(timer);
-  }, []);
+    try {
+      setMessage("여행 정보를 저장 중입니다");
+      createTripMutation();
+    } catch (error) {
+      console.error("데이터 처리 중 오류:", error);
+      setMessage("오류가 발생했습니다");
+      setTimeout(() => navigate({ to: "/packing/list" }), 1500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   return (
     <VStack
@@ -46,7 +80,7 @@ export default function LastStep() {
       </Box>
       <VStack gap={2}>
         <Text fontSize="2xl" fontWeight="semibold">
-          체크리스트를 생성 중입니다
+          {message}
         </Text>
         <Text fontSize="sm" color="gray.500">
           잠시만 기다려 주세요..! ㅎㅅㅎ

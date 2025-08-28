@@ -1,12 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Container } from "@chakra-ui/react";
 import { useAtomValue } from "jotai";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
-import {
-  packingCreateAtom,
-  packingCreateValidationAtom,
-} from "./store/packingCreateAtom";
+import { packingCreateValidationAtom } from "./store/packingCreateAtom";
 import {
   StepIndicator,
   SearchRegionComboBox,
@@ -30,10 +27,9 @@ const STEP_TITLES = {
 
 export default function PackingCreatePage() {
   const [step, setStep] = useState<StepValue>(Step.REGION);
-  const packingCreateState = useAtomValue(packingCreateAtom);
   const validation = useAtomValue(packingCreateValidationAtom);
 
-  const getIsNextBtnDisabled = () => {
+  const getIsNextBtnDisabled = useCallback(() => {
     switch (step) {
       case Step.REGION:
         return !validation.hasRegion;
@@ -46,23 +42,57 @@ export default function PackingCreatePage() {
       default:
         return false;
     }
-  };
+  }, [step, validation]);
 
-  const handlePreviousStep = () => {
+  const handlePreviousStep = useCallback(() => {
     if (step > Step.REGION) {
       setStep((step - 1) as StepValue);
     }
-  };
+  }, [step]);
 
-  const handleNextStep = () => {
+  const handleNextStep = useCallback(() => {
     if (step < LAST_STEP) {
       setStep((step + 1) as StepValue);
     } else if (step === LAST_STEP) {
       setStep(Step.LOADING);
-      // TODO: 실제 패킹 리스트 생성 API 호출
-      console.log("패킹 리스트 생성:", packingCreateState);
     }
-  };
+  }, [step]);
+
+  const renderContent = useCallback(() => {
+    if (step === Step.REGION) {
+      return (
+        <StepContainer title={STEP_TITLES[Step.REGION]}>
+          <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
+        </StepContainer>
+      );
+    }
+
+    if (step === Step.DATE) {
+      return (
+        <StepContainer title={STEP_TITLES[Step.DATE]}>
+          <SearchCalendar />
+        </StepContainer>
+      );
+    }
+
+    if (step === Step.COMPANION) {
+      return (
+        <StepContainer title={STEP_TITLES[Step.COMPANION]}>
+          <TravelCompanion />
+        </StepContainer>
+      );
+    }
+
+    if (step === Step.TRIP_TYPE) {
+      return (
+        <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
+          <SelectTripType />
+        </StepContainer>
+      );
+    }
+
+    return null;
+  }, [step]);
 
   return (
     <PageLayout>
@@ -71,45 +101,7 @@ export default function PackingCreatePage() {
           count={TOTAL_STEPS}
           currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
           completedContent={step === Step.LOADING ? <LastStep /> : undefined}
-          renderContent={() => {
-            if (step === Step.REGION) {
-              return (
-                <StepContainer title={STEP_TITLES[Step.REGION]}>
-                  <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
-                </StepContainer>
-              );
-            }
-
-            if (step === Step.DATE) {
-              return (
-                <StepContainer title={STEP_TITLES[Step.DATE]}>
-                  <SearchCalendar />
-                </StepContainer>
-              );
-            }
-
-            if (step === Step.COMPANION) {
-              return (
-                <StepContainer title={STEP_TITLES[Step.COMPANION]}>
-                  <TravelCompanion />
-                </StepContainer>
-              );
-            }
-
-            if (step === Step.TRIP_TYPE) {
-              return (
-                <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
-                  <SelectTripType />
-                </StepContainer>
-              );
-            }
-
-            if (step === Step.LOADING) {
-              return <LastStep />;
-            }
-
-            return null;
-          }}
+          renderContent={renderContent}
         />
 
         {step !== Step.LOADING && (
