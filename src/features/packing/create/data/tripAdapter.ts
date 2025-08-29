@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import type { TablesInsert } from "@/shared/types/database.type";
 import type { PackingCreateState } from "@/features/packing/create/store/packingCreateAtom";
 import type { GeneratedCheckList } from "@/features/packing/create/hooks/useGenerateCheckList";
@@ -21,15 +22,11 @@ export default class TripAdapter {
 
   private formatTripDates() {
     const startDate = this.packingCreateState.dates.startDate
-      ? new Date(this.packingCreateState.dates.startDate)
-          .toISOString()
-          .split("T")[0]
-      : new Date().toISOString().split("T")[0];
+      ? dayjs(this.packingCreateState.dates.startDate).format("YYYY-MM-DD")
+      : dayjs().format("YYYY-MM-DD");
 
     const endDate = this.packingCreateState.dates.endDate
-      ? new Date(this.packingCreateState.dates.endDate)
-          .toISOString()
-          .split("T")[0]
+      ? dayjs(this.packingCreateState.dates.endDate).format("YYYY-MM-DD")
       : null;
 
     return { startDate, endDate };

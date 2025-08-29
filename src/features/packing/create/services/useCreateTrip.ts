@@ -19,12 +19,10 @@ export const useCreateTrip = ({
   return useMutation({
     mutationFn: () => {
       const tripId = crypto.randomUUID();
+      const generatedCheckList = packingCreateState.generatedCheckList;
 
-      const tripAdapter = new TripAdapter(packingCreateState, userId);
-      const tripData = { ...tripAdapter.adaptTripData(), id: tripId };
       const isCheckListEmpty =
-        !packingCreateState.generatedCheckList ||
-        packingCreateState.generatedCheckList.length === 0;
+        !generatedCheckList || generatedCheckList.length === 0;
 
       if (isCheckListEmpty) {
         throw new Error(
@@ -32,13 +30,17 @@ export const useCreateTrip = ({
         );
       }
 
+      // 여행 및 체크리스트 데이터 변환
+      const tripAdapter = new TripAdapter(packingCreateState, userId);
+      const tripData = { ...tripAdapter.adaptTripData(), id: tripId };
       const { categories, items } = tripAdapter.adaptCheckListData(
-        packingCreateState.generatedCheckList || [],
+        generatedCheckList,
         tripId
       );
 
       return createTripWithChecklist(tripData, categories, items);
     },
+
     retry: false,
     onSuccess: (data) => {
       console.log("🎉 여행 및 체크리스트 생성 성공:", data);
