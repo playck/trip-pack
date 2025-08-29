@@ -2,19 +2,27 @@ import { VStack, Text, Spinner, Box } from "@chakra-ui/react";
 import { colorCombinations } from "@/shared/constants/colors";
 
 import TripCard from "./TripCard";
-import type { Trip } from "../types";
+import { useTripList } from "../hooks/useTripList";
 
-interface TripListProps {
-  trips: Trip[];
-  isLoading?: boolean;
-  onTripClick?: (trip: Trip) => void;
-}
+export default function TripList() {
+  const { trips, isLoading, error } = useTripList();
 
-export default function TripList({
-  trips,
-  isLoading,
-  onTripClick,
-}: TripListProps) {
+  if (error) {
+    return (
+      <Box
+        p={4}
+        bg="red.50"
+        borderRadius="lg"
+        borderWidth="1px"
+        borderColor="red.200"
+      >
+        <Text color="red.600" fontSize="sm">
+          {error}
+        </Text>
+      </Box>
+    );
+  }
+
   if (isLoading) {
     return (
       <VStack gap={4} py={8}>
@@ -62,7 +70,7 @@ export default function TripList({
       <Box w="full" overflowX="auto">
         <VStack gap={4} pb={2} align="stretch">
           {trips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} onClick={onTripClick} />
+            <TripCard key={trip.id} trip={trip} />
           ))}
         </VStack>
       </Box>
