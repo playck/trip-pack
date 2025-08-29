@@ -21,3 +21,29 @@ export const formatDateRange = (
     return `${start} ~ ${end}`;
   }
 };
+
+export const formatTripDateRange = (
+  startDate: string,
+  endDate: string | null
+): string => {
+  const start = dayjs(startDate);
+  const end = endDate ? dayjs(endDate) : null;
+
+  const startStr = start.format("M월 D일");
+
+  if (!end) return startStr;
+
+  const endStr = end.format("M월 D일");
+
+  return `${startStr} ~ ${endStr}`;
+};
+
+export const getDuration = (startDate: string, endDate: string | null) => {
+  if (!endDate) return "1일";
+
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const diffDays = end.diff(start, "day") + 1;
+
+  return `${diffDays}일`;
+};
