@@ -15,12 +15,12 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
     <Box
       position="relative"
       w="full"
-      h="150px"
       bg={colorCombinations.defaultCard.background}
       borderRadius="xl"
       borderWidth="1px"
       borderColor={colorCombinations.defaultCard.border}
       p={4}
+      aspectRatio="2.5 / 1"
       cursor="pointer"
       overflow="hidden"
       onClick={() => onClick?.(trip)}

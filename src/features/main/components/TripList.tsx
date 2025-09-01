@@ -1,11 +1,21 @@
 import { VStack, Text, Spinner, Box } from "@chakra-ui/react";
+import { useNavigate } from "@tanstack/react-router";
 import { colorCombinations } from "@/shared/constants/colors";
 
 import TripCard from "./TripCard";
 import { useTripList } from "../hooks/useTripList";
+import type { Trip } from "../types";
 
 export default function TripList() {
   const { trips, isLoading, error } = useTripList();
+  const navigate = useNavigate();
+
+  const handleTripClick = (trip: Trip) => {
+    navigate({
+      to: "/packing/list",
+      search: { tripId: trip.id },
+    });
+  };
 
   if (error) {
     return (
@@ -70,7 +80,7 @@ export default function TripList() {
       <Box w="full" overflowX="auto">
         <VStack gap={4} pb={2} align="stretch">
           {trips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} />
+            <TripCard key={trip.id} trip={trip} onClick={handleTripClick} />
           ))}
         </VStack>
       </Box>
