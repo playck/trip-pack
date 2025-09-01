@@ -31,17 +31,20 @@ export default function LastStep() {
   const { mutate: createTripMutation } = useCreateTrip({
     packingCreateState: completePackingState,
     userId: user?.id ?? "",
-    onSuccess: () => {
+    onSuccess: (_, tripId) => {
       setMessage("완료되었습니다!");
       setTimeout(() => {
-        navigate({ to: "/packing/list" });
+        navigate({
+          to: "/packing/list/$tripId",
+          params: { tripId },
+        });
       }, 1500);
     },
     onError: (error) => {
       console.error("여행 생성 실패:", error);
       setMessage("오류가 발생했습니다");
       setTimeout(() => {
-        navigate({ to: "/packing/list" });
+        navigate({ to: "/" });
       }, 2000);
     },
   });
@@ -58,7 +61,7 @@ export default function LastStep() {
     } catch (error) {
       console.error("데이터 처리 중 오류:", error);
       setMessage("오류가 발생했습니다");
-      setTimeout(() => navigate({ to: "/packing/list" }), 1500);
+      setTimeout(() => navigate({ to: "/" }), 1500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);

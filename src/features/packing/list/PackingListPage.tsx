@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAtomValue } from "jotai";
 import {
   Container,
   Text,
@@ -7,8 +6,11 @@ import {
   HStack,
   SegmentGroup,
   useDisclosure,
+  Spinner,
+  Box,
 } from "@chakra-ui/react";
 import { Grid3X3, List } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
@@ -17,30 +19,19 @@ import CategoryForm from "./components/CategoryForm";
 import GridView from "./components/GridView";
 import ListView from "./components/ListView";
 import type { CustomCategory, CombinedCategory } from "./components/types";
-import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
-import { packingCreateAtom } from "../create/store/packingCreateAtom";
+import { useTripChecklist } from "./hooks/useTripChecklist";
+import { convertCategoryWithItemsToCheckList } from "./utils/categoryConverter";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const packingState = useAtomValue(packingCreateAtom);
   const [customCategories, setCustomCategories] = useState<CustomCategory[]>(
     []
   );
   const [viewMode, setViewMode] = useState<string>("그리드");
+  const { tripId } = useParams({ from: "/packing/list/$tripId" });
+  const { categories, isLoading, error } = useTripChecklist(tripId);
 
-  const testState = {
-    ...packingState,
-    region: { id: "jp-tokyo", name: "도쿄", countryCode: "JP" as const },
-    dates: { startDate: new Date(), endDate: new Date() },
-    companion: "alone" as const,
-    companionTypes: [],
-    tripTypes: ["관광"] as const,
-  };
-
-  const { handleSetUpCheckList } = useGenerateCheckList(
-    testState as unknown as typeof packingState
-  );
-  const checklistData = handleSetUpCheckList();
+  const checklistData = convertCategoryWithItemsToCheckList(categories);
 
   const allCategories: CombinedCategory[] = [
     ...checklistData,
@@ -63,6 +54,53 @@ export default function PackingListPage() {
   const handleCancelCategory = () => {
     onClose();
   };
+
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <Container maxW="6xl" py={5} px={0}>
+          <VStack gap={4} py={8}>
+            <Spinner size="lg" color="blue.500" />
+            <Text color="gray.600">체크리스트를 불러오고 있어요...</Text>
+          </VStack>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageLayout>
+        <Container maxW="6xl" py={5} px={0}>
+          <Box
+            p={4}
+            bg="red.50"
+            borderRadius="lg"
+            borderWidth="1px"
+            borderColor="red.200"
+          >
+            <Text color="red.600" fontSize="sm">
+              {error}
+            </Text>
+          </Box>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  if (!tripId) {
+    return (
+      <PageLayout>
+        <Container maxW="6xl" py={5} px={0}>
+          <VStack gap={4} py={8}>
+            <Text fontSize="lg" color="gray.600" textAlign="center">
+              여행을 선택해주세요
+            </Text>
+          </VStack>
+        </Container>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout>

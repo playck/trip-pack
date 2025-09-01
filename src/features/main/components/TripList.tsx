@@ -12,8 +12,8 @@ export default function TripList() {
 
   const handleTripClick = (trip: Trip) => {
     navigate({
-      to: "/packing/list",
-      search: { tripId: trip.id },
+      to: "/packing/list/$tripId",
+      params: { tripId: trip.id },
     });
   };
 
