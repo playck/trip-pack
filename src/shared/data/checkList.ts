@@ -1,4 +1,4 @@
-type CabinPolicy = "allowed" | "restricted" | "prohibited";
+export type CabinPolicy = "allowed" | "restricted" | "prohibited";
 
 export interface PackItem {
   name: string;
@@ -6,6 +6,7 @@ export interface PackItem {
   notes?: string;
   cabin?: CabinPolicy;
   cabinNotes?: string;
+  checked?: boolean;
 }
 
 export const ESSENTIAL_ITEMS: PackItem[] = [
