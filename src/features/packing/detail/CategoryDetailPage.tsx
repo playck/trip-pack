@@ -72,7 +72,7 @@ export default function CategoryDetailPage() {
   }
 
   const handleBackClick = () => {
-    navigate({ to: "/packing/list" });
+    navigate({ to: "/" }); // 메인 페이지로 이동
   };
 
   const handleAddItem = () => {

@@ -6,7 +6,7 @@ import TripAdapter from "../data/tripAdapter";
 interface UseCreateTripProps {
   packingCreateState: PackingCreateState;
   userId: string;
-  onSuccess?: (data: unknown) => void;
+  onSuccess?: (data: unknown, tripId: string) => void;
   onError?: (error: Error) => void;
 }
 
@@ -16,9 +16,10 @@ export const useCreateTrip = ({
   onSuccess,
   onError,
 }: UseCreateTripProps) => {
+  const tripId = crypto.randomUUID();
+
   return useMutation({
-    mutationFn: () => {
-      const tripId = crypto.randomUUID();
+    mutationFn: async () => {
       const generatedCheckList = packingCreateState.generatedCheckList;
 
       const isCheckListEmpty =
@@ -38,13 +39,14 @@ export const useCreateTrip = ({
         tripId
       );
 
-      return createTripWithChecklist(tripData, categories, items);
+      const result = await createTripWithChecklist(tripData, categories, items);
+      return { result, tripId };
     },
 
     retry: false,
     onSuccess: (data) => {
       console.log("🎉 여행 및 체크리스트 생성 성공:", data);
-      onSuccess?.(data);
+      onSuccess?.(data, tripId);
     },
     onError: (error) => {
       console.error("💥 여행 및 체크리스트 생성 실패:", error);
