@@ -7,26 +7,31 @@ import {
   useDisclosure,
   Spinner,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
-import { useTripChecklist } from "../list/hooks/useTripChecklist";
 
 import PackingItemList from "./components/PackingItemList";
 import { ItemForm } from "./components";
+import { useTripChecklist } from "../list/hooks/useTripChecklist";
 import type { CategoryWithItems } from "../type";
 
 export default function CategoryDetailPage() {
   const navigate = useNavigate();
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const { categoryName, tripId } = useParams({
-    from: "/packing/category/$tripId/$categoryName",
+  const { tripId } = useParams({
+    from: "/packing/category/$tripId",
   });
+  const search = useSearch({
+    from: "/packing/category/$tripId",
+  });
+  const categoryName = (search as { category?: string }).category || "";
   const { categories, isLoading, error } = useTripChecklist(tripId || "");
 
+  const decodedCategoryName = decodeURIComponent(categoryName);
   const category = categories?.find(
-    (cat: CategoryWithItems) => cat.name === decodeURIComponent(categoryName)
+    (cat: CategoryWithItems) => cat.name === decodedCategoryName
   );
 
   if (isLoading) {

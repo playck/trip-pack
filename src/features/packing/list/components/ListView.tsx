@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { VStack, Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
+import { useAtomValue } from "jotai";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
@@ -8,8 +10,6 @@ import {
   Minimize2,
   Maximize2,
 } from "lucide-react";
-import { useAtomValue } from "jotai";
-import { useNavigate } from "@tanstack/react-router";
 
 import type { CombinedCategory, CategoryItem } from "./types";
 import { getItemName } from "./types";
@@ -22,6 +22,7 @@ interface ListViewProps {
 
 export default function ListView({ categories }: ListViewProps) {
   const navigate = useNavigate();
+  const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >(() => {
@@ -59,7 +60,11 @@ export default function ListView({ categories }: ListViewProps) {
   };
 
   const handleItemClick = (categoryName: string) => {
-    navigate({ to: `/packing/category/${categoryName}` });
+    navigate({
+      to: "/packing/category/$tripId",
+      params: { tripId },
+      search: { category: categoryName },
+    });
   };
 
   // 모든 카테고리가 펼쳐져 있는지 확인

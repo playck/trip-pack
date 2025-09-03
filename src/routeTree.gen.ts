@@ -14,7 +14,7 @@ import { Route as PackingCreateRouteImport } from './routes/packing.create'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tripId'
-import { Route as PackingCategoryCategoryNameRouteImport } from './routes/packing.category.$categoryName'
+import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,19 +41,18 @@ const PackingListTripIdRoute = PackingListTripIdRouteImport.update({
   path: '/packing/list/$tripId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PackingCategoryCategoryNameRoute =
-  PackingCategoryCategoryNameRouteImport.update({
-    id: '/packing/category/$categoryName',
-    path: '/packing/category/$categoryName',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const PackingCategoryTripIdRoute = PackingCategoryTripIdRouteImport.update({
+  id: '/packing/category/$tripId',
+  path: '/packing/category/$tripId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
-  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
+  '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,7 +60,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
-  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
+  '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
 export interface FileRoutesById {
@@ -70,7 +69,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
-  '/packing/category/$categoryName': typeof PackingCategoryCategoryNameRoute
+  '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
 export interface FileRouteTypes {
@@ -80,7 +79,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/packing/create'
-    | '/packing/category/$categoryName'
+    | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,7 +87,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/packing/create'
-    | '/packing/category/$categoryName'
+    | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   id:
     | '__root__'
@@ -96,7 +95,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/packing/create'
-    | '/packing/category/$categoryName'
+    | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   fileRoutesById: FileRoutesById
 }
@@ -105,7 +104,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   PackingCreateRoute: typeof PackingCreateRoute
-  PackingCategoryCategoryNameRoute: typeof PackingCategoryCategoryNameRoute
+  PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
 }
 
@@ -146,11 +145,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackingListTripIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/packing/category/$categoryName': {
-      id: '/packing/category/$categoryName'
-      path: '/packing/category/$categoryName'
-      fullPath: '/packing/category/$categoryName'
-      preLoaderRoute: typeof PackingCategoryCategoryNameRouteImport
+    '/packing/category/$tripId': {
+      id: '/packing/category/$tripId'
+      path: '/packing/category/$tripId'
+      fullPath: '/packing/category/$tripId'
+      preLoaderRoute: typeof PackingCategoryTripIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -161,7 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   PackingCreateRoute: PackingCreateRoute,
-  PackingCategoryCategoryNameRoute: PackingCategoryCategoryNameRoute,
+  PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
 }
 export const routeTree = rootRouteImport

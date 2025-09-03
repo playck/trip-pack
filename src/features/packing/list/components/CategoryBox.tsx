@@ -1,5 +1,5 @@
 import { Box, VStack, Text } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { type LucideIcon } from "lucide-react";
 
@@ -23,16 +23,22 @@ export default function CategoryBox({
   icon: Icon,
 }: CategoryBoxProps) {
   const navigate = useNavigate();
+  const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const getCategoryCheckedCount = useAtomValue(getCategoryCheckedCountAtom);
   const getCategoryProgress = useAtomValue(getCategoryProgressAtom);
   const checkedCount = getCategoryCheckedCount(category.categoryName);
   const progress = getCategoryProgress(category.categoryName);
 
   const handleCategoryClick = () => {
-    navigate({
-      to: "/packing/category/$categoryName",
-      params: { categoryName: encodeURIComponent(category.categoryName) },
-    });
+    try {
+      navigate({
+        to: "/packing/category/$tripId",
+        params: { tripId },
+        search: { category: category.categoryName },
+      });
+    } catch (error) {
+      console.error("페이지 라우팅 오류:", error);
+    }
   };
 
   return (
@@ -44,10 +50,6 @@ export default function CategoryBox({
       borderColor="gray.200"
       cursor="pointer"
       onClick={handleCategoryClick}
-      _active={{
-        transform: "translateY(0px)",
-      }}
-      transition="all 0.2s"
     >
       <VStack gap={3} w="full">
         <Box
