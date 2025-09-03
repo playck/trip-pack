@@ -5,63 +5,58 @@ import {
   Box,
   HStack,
   useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
 import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
 
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
+import { useTripChecklist } from "../list/hooks/useTripChecklist";
 
-import { packingCreateAtom } from "../create/store/packingCreateAtom";
-import useGenerateCheckList from "../create/hooks/useGenerateCheckList";
 import PackingItemList from "./components/PackingItemList";
 import { ItemForm } from "./components";
-import {
-  initializeCategoryAtom,
-  addItemAtom,
-} from "../list/store/checklistAtom";
-import type { TripTypeOption } from "../create/data/data";
+import type { CategoryWithItems } from "../type";
 
 export default function CategoryDetailPage() {
   const navigate = useNavigate();
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const { categoryName } = useParams({
-    from: "/packing/category/$categoryName",
+  const { categoryName, tripId } = useParams({
+    from: "/packing/category/$tripId/$categoryName",
   });
-  const packingState = useAtomValue(packingCreateAtom);
-  const initializeCategory = useSetAtom(initializeCategoryAtom);
-  const addItem = useSetAtom(addItemAtom);
+  const { categories, isLoading, error } = useTripChecklist(tripId || "");
 
-  // 테스트용 임시 상태 생성
-  const testState = {
-    ...packingState,
-    region: {
-      id: "jp-tokyo",
-      name: "도쿄",
-      country: "일본",
-      countryCode: "JP" as const,
-      searchKeywords: ["도쿄", "tokyo"],
-    },
-    dates: { startDate: new Date(), endDate: new Date() },
-    companion: "alone" as const,
-    companionTypes: [],
-    tripTypes: ["관광"] as TripTypeOption[],
-  };
-
-  const { handleSetUpCheckList } = useGenerateCheckList(testState);
-  const checklistData = handleSetUpCheckList();
-
-  // URL에서 받은 카테고리명으로 해당 카테고리 찾기
-  const category = checklistData.find(
-    (cat) => cat.categoryName === decodeURIComponent(categoryName)
+  const category = categories?.find(
+    (cat: CategoryWithItems) => cat.name === decodeURIComponent(categoryName)
   );
 
-  useEffect(() => {
-    if (category) {
-      initializeCategory(category);
-    }
-  }, [category, initializeCategory]);
+  if (isLoading) {
+    return (
+      <Container maxW="6xl" py={6}>
+        <VStack gap={4} py={8}>
+          <Spinner size="lg" color="blue.500" />
+          <Text color="gray.600">체크리스트를 불러오고 있어요...</Text>
+        </VStack>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxW="6xl" py={6}>
+        <Box
+          p={4}
+          bg="red.50"
+          borderRadius="lg"
+          borderWidth="1px"
+          borderColor="red.200"
+        >
+          <Text color="red.600" fontSize="sm">
+            체크리스트를 불러오는 중 오류가 발생했습니다: {error}
+          </Text>
+        </Box>
+      </Container>
+    );
+  }
 
   if (!category) {
     return (
@@ -72,7 +67,10 @@ export default function CategoryDetailPage() {
   }
 
   const handleBackClick = () => {
-    navigate({ to: "/" }); // 메인 페이지로 이동
+    navigate({
+      to: "/packing/list/$tripId",
+      params: { tripId },
+    });
   };
 
   const handleAddItem = () => {
@@ -80,10 +78,8 @@ export default function CategoryDetailPage() {
   };
 
   const handleSaveItem = (newItem: { name: string; notes?: string }) => {
-    addItem({
-      categoryName: category.categoryName,
-      newItem,
-    });
+    // TODO: DB에 새 아이템 추가 API 호출
+    console.log("새 아이템 추가:", newItem);
     onClose();
   };
 
@@ -111,13 +107,13 @@ export default function CategoryDetailPage() {
                 <ArrowLeft size={20} />
               </Box>
               <Text fontSize="xl" fontWeight="bold" color="gray.800">
-                {category.categoryName}
+                {category.name}
               </Text>
             </HStack>
           </Box>
 
           <Box px={5} py={3}>
-            <PackingItemList category={category} />
+            <PackingItemList category={category} tripId={tripId} />
           </Box>
         </VStack>
       </Container>
