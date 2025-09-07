@@ -8,32 +8,63 @@ import {
   Box,
   Textarea,
 } from "@chakra-ui/react";
+import { toaster } from "@/shared/components/ui/toaster";
 import { colors } from "@/shared/constants/colors";
+import { useCreateItem } from "../../list/hooks/useCreateItem";
 
 interface ItemFormProps {
-  onSave: (item: { name: string; notes?: string }) => void;
-  onCancel: () => void;
+  tripId?: string;
+  categoryId?: string;
   initialData?: { name: string; notes?: string };
+  onClose: () => void;
 }
 
 export default function ItemForm({
-  onSave,
-  onCancel,
+  tripId,
+  categoryId,
   initialData,
+  onClose,
 }: ItemFormProps) {
   const [itemName, setItemName] = useState(initialData?.name || "");
   const [notes, setNotes] = useState(initialData?.notes || "");
 
-  const handleSave = () => {
+  const createItemMutation = useCreateItem(tripId, {
+    onSuccess: () => {
+      onClose();
+    },
+  });
+  const { isPending: isLoading } = createItemMutation;
+
+  const handleItemSave = () => {
     if (!itemName.trim()) {
-      alert("아이템 이름을 입력해주세요.");
+      toaster.create({
+        title: "입력 오류",
+        description: "아이템 이름을 입력해주세요.",
+        type: "error",
+        duration: 3000,
+      });
       return;
     }
 
-    onSave({
+    if (!categoryId) {
+      toaster.create({
+        title: "오류가 발생했습니다",
+        description: "카테고리 정보를 찾을 수 없습니다.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    createItemMutation.mutate({
+      categoryId,
       name: itemName.trim(),
       notes: notes.trim() || undefined,
     });
+  };
+
+  const handleCancel = () => {
+    onClose();
   };
 
   return (
@@ -90,7 +121,8 @@ export default function ItemForm({
             variant="outline"
             size="lg"
             borderRadius="xl"
-            onClick={onCancel}
+            onClick={handleCancel}
+            disabled={isLoading}
           >
             취소
           </Button>
@@ -100,7 +132,9 @@ export default function ItemForm({
             variant="solid"
             size="lg"
             borderRadius="xl"
-            onClick={handleSave}
+            onClick={handleItemSave}
+            loading={isLoading}
+            disabled={isLoading}
           >
             저장
           </Button>

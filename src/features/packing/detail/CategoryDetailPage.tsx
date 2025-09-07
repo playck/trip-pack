@@ -82,16 +82,6 @@ export default function CategoryDetailPage() {
     onOpen();
   };
 
-  const handleSaveItem = (newItem: { name: string; notes?: string }) => {
-    // TODO: DB에 새 아이템 추가 API 호출
-    console.log("새 아이템 추가:", newItem);
-    onClose();
-  };
-
-  const handleCancelItem = () => {
-    onClose();
-  };
-
   return (
     <Box bg="gray.50" minH="100vh">
       <Container maxW="6xl" py={0} px={0}>
@@ -126,7 +116,7 @@ export default function CategoryDetailPage() {
       <FloatingAddButton onClick={handleAddItem} ariaLabel="새 아이템 추가" />
 
       <BottomSheet isOpen={isOpen} onClose={onClose} title="새 아이템 추가">
-        <ItemForm onSave={handleSaveItem} onCancel={handleCancelItem} />
+        <ItemForm tripId={tripId} categoryId={category?.id} onClose={onClose} />
       </BottomSheet>
     </Box>
   );
