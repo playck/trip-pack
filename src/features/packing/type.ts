@@ -1,12 +1,14 @@
 import type { Database } from "@/shared/types/database.type";
 
-type ChecklistCategory =
+export type ChecklistCategory =
   Database["public"]["Tables"]["checklist_categories"]["Row"];
-type ChecklistItem = Database["public"]["Tables"]["checklist_items"]["Row"];
+export type ChecklistItem =
+  Database["public"]["Tables"]["checklist_items"]["Row"];
 
 export interface CategoryWithItems extends ChecklistCategory {
   items: ChecklistItem[];
 }
+
 export interface UseTripChecklistReturn {
   categories: CategoryWithItems[];
   isLoading: boolean;

@@ -3,7 +3,16 @@ import { getTripChecklist, updateItemCheckedStatus } from "./api";
 import type {
   UseTripChecklistReturn,
   UseUpdateItemCheckedStatusParams,
+  CategoryWithItems,
 } from "../../type";
+
+export const queryKeys = {
+  tripChecklist: (tripId: string) => ["tripChecklist", tripId] as const,
+  category: (tripId: string, categoryId: string) =>
+    ["tripChecklist", tripId, "category", categoryId] as const,
+  item: (tripId: string, itemId: string) =>
+    ["tripChecklist", tripId, "item", itemId] as const,
+};
 
 export function useTripChecklist(
   tripId: string | undefined
@@ -14,7 +23,7 @@ export function useTripChecklist(
     error,
     refetch,
   } = useQuery({
-    queryKey: ["tripChecklist", tripId],
+    queryKey: tripId ? queryKeys.tripChecklist(tripId) : [],
     queryFn: () => {
       if (!tripId) {
         throw new Error("Trip ID가 필요합니다.");
@@ -32,20 +41,47 @@ export function useTripChecklist(
   };
 }
 
-export function useUpdateItemCheckedStatus() {
+export function useUpdateItemCheckedStatus(tripId?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ itemId, isChecked }: UseUpdateItemCheckedStatusParams) => {
       return updateItemCheckedStatus(itemId, isChecked);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["tripChecklist"],
-      });
+    onMutate: async ({ itemId, isChecked }) => {
+      if (!tripId) return;
+
+      const queryKey = queryKeys.tripChecklist(tripId);
+      const previousData =
+        queryClient.getQueryData<CategoryWithItems[]>(queryKey);
+
+      if (previousData) {
+        const updatedData = previousData.map((category) => ({
+          ...category,
+          items: category.items.map((item) =>
+            item.id === itemId ? { ...item, is_checked: isChecked } : item
+          ),
+        }));
+
+        queryClient.setQueryData(queryKey, updatedData);
+      }
+
+      return { previousData };
     },
-    onError: (error) => {
-      console.error("체크리스트 아이템 업데이트 실패:", error);
+    onError: (e, _, context) => {
+      if (tripId && context?.previousData) {
+        queryClient.setQueryData(
+          queryKeys.tripChecklist(tripId),
+          context.previousData
+        );
+      }
+    },
+    onSettled: () => {
+      if (tripId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tripChecklist(tripId),
+        });
+      }
     },
   });
 }

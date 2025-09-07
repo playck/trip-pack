@@ -1,25 +1,17 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
-import { useSetAtom, useAtomValue } from "jotai";
-
-import type { PackItem } from "@/shared/data/checkList";
-
-import {
-  toggleItemAtom,
-  checkedItemsAtom,
-  updateItemAtom,
-  deleteItemAtom,
-} from "../../list/store/checklistAtom";
+import { useParams } from "@tanstack/react-router";
 
 import PackingItemContent from "./PackingItemContent";
 import ItemActionsSheet from "./ItemActionsSheet";
 import EditItemSheet from "./EditItemSheet";
+import type { ChecklistItem } from "../../type";
+import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 
 interface PackingItemProps {
-  item: PackItem;
-  categoryName: string;
+  item: ChecklistItem;
 }
 
-export default function PackingItem({ item, categoryName }: PackingItemProps) {
+export default function PackingItem({ item }: PackingItemProps) {
   const {
     open: isActionsOpen,
     onOpen: onActionsOpen,
@@ -31,20 +23,21 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
     onClose: onEditClose,
   } = useDisclosure();
 
-  const checkedItems = useAtomValue(checkedItemsAtom);
-  const toggleItem = useSetAtom(toggleItemAtom);
-  const updateItem = useSetAtom(updateItemAtom);
-  const deleteItem = useSetAtom(deleteItemAtom);
+  const { tripId } = useParams({
+    from: "/packing/category/$tripId",
+  });
+  const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
 
   const isItemChecked = () => {
-    const key = `${categoryName}-${item.name}`;
-    return !!checkedItems[key];
+    return !!item.is_checked;
   };
 
   const handleItemCheck = () => {
-    toggleItem({
-      categoryName,
-      itemName: item.name,
+    if (!item.id) return;
+
+    updateItemCheckedMutation.mutate({
+      itemId: item.id,
+      isChecked: !item.is_checked,
     });
   };
 
@@ -57,18 +50,14 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
     name: string;
     notes?: string;
   }) => {
-    updateItem({
-      categoryName,
-      oldItemName: item.name,
-      updatedItem: updatedItemData,
-    });
+    // TODO: 실제 API 호출로 아이템 업데이트
+    console.log("아이템 업데이트:", updatedItemData);
+    onEditClose();
   };
 
   const handleItemDelete = () => {
-    deleteItem({
-      categoryName,
-      itemName: item.name,
-    });
+    // TODO: 실제 API 호출로 아이템 삭제
+    console.log("아이템 삭제:", item.name);
     onActionsClose();
   };
 
@@ -106,7 +95,7 @@ export default function PackingItem({ item, categoryName }: PackingItemProps) {
 
       <EditItemSheet
         isOpen={isEditOpen}
-        item={item}
+        item={{ name: item.name, notes: item.notes || undefined }}
         onClose={onEditClose}
         onSave={handleItemSave}
       />

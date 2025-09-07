@@ -26,12 +26,12 @@ export default function CategoryDetailPage() {
   const search = useSearch({
     from: "/packing/category/$tripId",
   });
-  const categoryName = (search as { category?: string }).category || "";
+  const categoryParam = (search as { category?: string }).category || "";
   const { categories, isLoading, error } = useTripChecklist(tripId || "");
 
-  const decodedCategoryName = decodeURIComponent(categoryName);
+  const categoryName = decodeURIComponent(categoryParam);
   const category = categories?.find(
-    (cat: CategoryWithItems) => cat.name === decodedCategoryName
+    (cat: CategoryWithItems) => cat.name === categoryName
   );
 
   if (isLoading) {
@@ -118,7 +118,7 @@ export default function CategoryDetailPage() {
           </Box>
 
           <Box px={5} py={3}>
-            <PackingItemList category={category} tripId={tripId} />
+            <PackingItemList category={category} />
           </Box>
         </VStack>
       </Container>
