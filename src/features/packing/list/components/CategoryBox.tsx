@@ -1,20 +1,12 @@
+import { useMemo } from "react";
 import { Box, VStack, Text } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useAtomValue } from "jotai";
 import { type LucideIcon } from "lucide-react";
 
-import {
-  getCategoryCheckedCountAtom,
-  getCategoryProgressAtom,
-} from "../store/checklistAtom";
-
-type CategoryWithIcon = {
-  categoryName: string;
-  items: unknown[];
-};
+import type { CategoryWithItems } from "../../type";
 
 interface CategoryBoxProps {
-  category: CategoryWithIcon;
+  category: CategoryWithItems;
   icon: LucideIcon;
 }
 
@@ -24,17 +16,27 @@ export default function CategoryBox({
 }: CategoryBoxProps) {
   const navigate = useNavigate();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
-  const getCategoryCheckedCount = useAtomValue(getCategoryCheckedCountAtom);
-  const getCategoryProgress = useAtomValue(getCategoryProgressAtom);
-  const checkedCount = getCategoryCheckedCount(category.categoryName);
-  const progress = getCategoryProgress(category.categoryName);
+
+  const { checkedCount, progress } = useMemo(() => {
+    const totalItems = category.items.length;
+    const checkedItems = category.items.filter(
+      (item) => item.is_checked
+    ).length;
+    const progressPercentage =
+      totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+
+    return {
+      checkedCount: checkedItems,
+      progress: progressPercentage,
+    };
+  }, [category.items]);
 
   const handleCategoryClick = () => {
     try {
       navigate({
         to: "/packing/category/$tripId",
         params: { tripId },
-        search: { category: category.categoryName },
+        search: { category: category.name },
       });
     } catch (error) {
       console.error("페이지 라우팅 오류:", error);
@@ -71,7 +73,7 @@ export default function CategoryBox({
             textAlign="center"
             color="gray.700"
           >
-            {category.categoryName}
+            {category.name}
           </Text>
           <VStack gap={1} w="full">
             <Box

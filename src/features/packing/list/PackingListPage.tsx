@@ -18,36 +18,20 @@ import { BottomSheet, FloatingAddButton } from "@/shared/components";
 import CategoryForm from "./components/CategoryForm";
 import GridView from "./components/GridView";
 import ListView from "./components/ListView";
-import type { CustomCategory, CombinedCategory } from "./components/types";
 import { useTripChecklist } from "./hooks/useTripChecklist";
-import { convertCategoryWithItemsToCheckList } from "./utils/categoryConverter";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const [customCategories, setCustomCategories] = useState<CustomCategory[]>(
-    []
-  );
   const [viewMode, setViewMode] = useState<string>("그리드");
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const { categories, isLoading, error } = useTripChecklist(tripId);
-
-  const checklistData = convertCategoryWithItemsToCheckList(categories);
-
-  const allCategories: CombinedCategory[] = [
-    ...checklistData,
-    ...customCategories,
-  ];
 
   const handleSaveCategory = (newCategory: {
     categoryName: string;
     iconKey: string;
   }) => {
-    const customCategory: CustomCategory = {
-      categoryName: newCategory.categoryName,
-      iconKey: newCategory.iconKey,
-      items: [],
-    };
-    setCustomCategories((prev) => [...prev, customCategory]);
+    // TODO: 실제 API 호출로 새 카테고리 추가
+    console.log("새 카테고리 추가:", newCategory);
     onClose();
   };
 
@@ -154,9 +138,9 @@ export default function PackingListPage() {
           </HStack>
 
           {viewMode === "그리드" ? (
-            <GridView categories={allCategories} />
+            <GridView categories={categories} />
           ) : (
-            <ListView categories={allCategories} />
+            <ListView categories={categories} />
           )}
         </VStack>
       </Container>

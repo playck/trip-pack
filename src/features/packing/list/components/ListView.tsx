@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { VStack, Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
-import { useAtomValue } from "jotai";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -9,15 +8,15 @@ import {
   ArrowRight,
   Minimize2,
   Maximize2,
+  Package,
 } from "lucide-react";
 
-import type { CombinedCategory, CategoryItem } from "./types";
-import { getItemName } from "./types";
+import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
-import { checkedItemsAtom } from "../store/checklistAtom";
 
+type ChecklistItem = CategoryWithItems["items"][0];
 interface ListViewProps {
-  categories: CombinedCategory[];
+  categories: CategoryWithItems[];
 }
 
 export default function ListView({ categories }: ListViewProps) {
@@ -28,12 +27,10 @@ export default function ListView({ categories }: ListViewProps) {
   >(() => {
     const initialState: Record<string, boolean> = {};
     categories.forEach((category) => {
-      initialState[category.categoryName] = true;
+      initialState[category.name] = true;
     });
     return initialState;
   });
-
-  const checkedItems = useAtomValue(checkedItemsAtom);
 
   const toggleCategory = (categoryName: string) => {
     setExpandedCategories((prev) => ({
@@ -42,19 +39,11 @@ export default function ListView({ categories }: ListViewProps) {
     }));
   };
 
-  const isItemChecked = (categoryName: string, itemName: string) => {
-    const key = `${categoryName}-${itemName}`;
-    return !!checkedItems[key];
-  };
-
-  const getCompletionCount = (category: CombinedCategory) => {
+  const getCompletionCount = (category: CategoryWithItems) => {
     if (!category.items || category.items.length === 0)
       return { completed: 0, total: 0 };
 
-    const completed = category.items.filter((item: CategoryItem) => {
-      const itemName = getItemName(item);
-      return isItemChecked(category.categoryName, itemName);
-    }).length;
+    const completed = category.items.filter((item) => item.is_checked).length;
 
     return { completed, total: category.items.length };
   };
@@ -67,44 +56,38 @@ export default function ListView({ categories }: ListViewProps) {
     });
   };
 
-  // 모든 카테고리가 펼쳐져 있는지 확인
   const isAllExpanded = () => {
     return categories.every(
-      (category) => expandedCategories[category.categoryName] !== false
+      (category) => expandedCategories[category.name] !== false
     );
   };
   const allExpanded = isAllExpanded();
 
-  // 모든 카테고리 접기/펼치기 토글
   const toggleAllCategories = () => {
     const shouldExpandAll = !isAllExpanded();
     const newState: Record<string, boolean> = {};
 
     categories.forEach((category) => {
-      newState[category.categoryName] = shouldExpandAll;
+      newState[category.name] = shouldExpandAll;
     });
 
     setExpandedCategories(newState);
   };
 
-  // 정렬된 아이템 목록을 초기 로딩 시에만 생성
   const sortedItemsByCategory = useMemo(() => {
-    const result: Record<string, { item: CategoryItem; index: number }[]> = {};
+    const result: Record<string, { item: ChecklistItem; index: number }[]> = {};
 
     categories.forEach((category) => {
       if (!category.items || category.items.length === 0) {
-        result[category.categoryName] = [];
+        result[category.name] = [];
         return;
       }
 
-      result[category.categoryName] = category.items
-        .map((item: CategoryItem, index: number) => ({ item, index }))
+      result[category.name] = category.items
+        .map((item, index: number) => ({ item, index }))
         .sort(({ item: itemA }, { item: itemB }) => {
-          const itemNameA = getItemName(itemA);
-          const itemNameB = getItemName(itemB);
-
-          const checkedA = isItemChecked(category.categoryName, itemNameA);
-          const checkedB = isItemChecked(category.categoryName, itemNameB);
+          const checkedA = itemA.is_checked || false;
+          const checkedB = itemB.is_checked || false;
 
           if (checkedA === checkedB) return 0;
           return checkedA ? 1 : -1;
@@ -112,8 +95,7 @@ export default function ListView({ categories }: ListViewProps) {
     });
 
     return result;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categories]); // checkedItems는 의도적으로 제외 (초기 로딩 시에만 정렬)
+  }, [categories]);
 
   return (
     <VStack gap={2} align="stretch" w="full">
@@ -135,28 +117,17 @@ export default function ListView({ categories }: ListViewProps) {
 
       <VStack gap={2} align="stretch" w="full">
         {categories.map((category) => {
-          // 사용자 정의 카테고리인 경우 iconKey 사용, 아니면 categoryName으로 매핑
-          const iconKey =
-            "iconKey" in category ? category.iconKey : category.categoryName;
-          const IconComponent = CATEGORY_ICONS[iconKey] as LucideIcon;
-          const isExpanded = expandedCategories[category.categoryName] ?? true;
+          const IconComponent = (CATEGORY_ICONS[category.name] ||
+            Package) as LucideIcon;
+          const isExpanded = expandedCategories[category.name] ?? true;
           const { completed, total } = getCompletionCount(category);
-          const sortedItems =
-            sortedItemsByCategory[category.categoryName] || [];
+          const sortedItems = sortedItemsByCategory[category.name] || [];
 
           return (
-            <VStack
-              key={category.categoryName}
-              gap={isExpanded ? 3 : 0}
-              align="stretch"
-            >
+            <VStack key={category.id} gap={isExpanded ? 3 : 0} align="stretch">
               {/* 카테고리 헤더 */}
               <HStack justify="space-between" align="center" w="full">
-                <HStack
-                  gap={1}
-                  onClick={() => toggleCategory(category.categoryName)}
-                >
-                  {/* 펼침/접힘 버튼 */}
+                <HStack gap={1} onClick={() => toggleCategory(category.name)}>
                   <Box
                     as="button"
                     w="6"
@@ -180,7 +151,7 @@ export default function ListView({ categories }: ListViewProps) {
                       <IconComponent size={18} color="#3182CE" />
                     )}
                     <Text fontSize="md" fontWeight="semibold" color="gray.800">
-                      {category.categoryName}
+                      {category.name}
                     </Text>
                   </HStack>
 
@@ -190,7 +161,6 @@ export default function ListView({ categories }: ListViewProps) {
                 </HStack>
 
                 <HStack gap={2}>
-                  {/* 상세 페이지 이동 버튼 */}
                   <Box
                     as="button"
                     w="8"
@@ -199,7 +169,7 @@ export default function ListView({ categories }: ListViewProps) {
                     alignItems="center"
                     justifyContent="center"
                     borderRadius="md"
-                    onClick={() => handleItemClick(category.categoryName)}
+                    onClick={() => handleItemClick(category.name)}
                     cursor="pointer"
                   >
                     <ArrowRight size={16} color="#6B7280" />
@@ -212,15 +182,11 @@ export default function ListView({ categories }: ListViewProps) {
                 <VStack gap={3} align="stretch">
                   {sortedItems.length > 0 ? (
                     sortedItems.map(({ item, index }) => {
-                      const itemName = getItemName(item);
-                      const checked = isItemChecked(
-                        category.categoryName,
-                        itemName
-                      );
+                      const checked = item.is_checked || false;
 
                       return (
                         <Box
-                          key={index}
+                          key={item.id || index}
                           p={3}
                           bg={checked ? "blue.50" : "white"}
                           borderRadius="md"
@@ -229,7 +195,7 @@ export default function ListView({ categories }: ListViewProps) {
                           shadow="xs"
                         >
                           <Text fontSize="sm" color="gray.700">
-                            {itemName}
+                            {item.name}
                           </Text>
                         </Box>
                       );
