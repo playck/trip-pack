@@ -4,6 +4,7 @@ import type {
   CategoryWithItems,
   TripWithProgress,
   UseCreateItemParams,
+  UseUpdateItemParams,
 } from "../../type";
 
 // 여행의 체크리스트 카테고리와 아이템을 가져오는 API
@@ -109,6 +110,24 @@ export const createChecklistItem = async (
   }
 
   return { id: data.id };
+};
+
+// 체크리스트 아이템을 업데이트하는 API
+export const updateChecklistItem = async (
+  params: UseUpdateItemParams
+): Promise<void> => {
+  const { error } = await supabase
+    .from("checklist_items")
+    .update({
+      name: params.name,
+      notes: params.notes || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", params.itemId);
+
+  if (error) {
+    throw new Error(`아이템 업데이트 실패: ${error.message}`);
+  }
 };
 
 // 여행의 체크리스트 진행 상태를 가져오는 API (RPC)

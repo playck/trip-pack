@@ -9,33 +9,59 @@ import {
 import { useState, useEffect } from "react";
 
 import { BottomSheet } from "@/shared/components";
+import { toaster } from "@/shared/components/ui/toaster";
 import { colors } from "@/shared/constants/colors";
-import type { PackItem } from "@/shared/data/checkList";
+import { useUpdateItem } from "../../list/hooks/useCreateItem";
+import type { ChecklistItem } from "../../type";
 
 interface EditItemSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  item: PackItem;
-  onSave: (updatedItem: { name: string; notes?: string }) => void;
+  item: ChecklistItem;
+  tripId?: string;
 }
 
 export default function EditItemSheet({
   isOpen,
   onClose,
   item,
-  onSave,
+  tripId,
 }: EditItemSheetProps) {
   const [itemName, setItemName] = useState(item.name);
   const [itemNotes, setItemNotes] = useState(item.notes || "");
 
-  const handleItemSave = () => {
-    if (!itemName.trim()) return;
+  const updateItemMutation = useUpdateItem(tripId, {
+    onSuccess: () => {
+      onClose();
+    },
+  });
 
-    onSave({
+  const handleItemSave = () => {
+    if (!itemName.trim()) {
+      toaster.create({
+        title: "입력 오류",
+        description: "아이템 이름을 입력해주세요.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!item.id) {
+      toaster.create({
+        title: "오류가 발생했습니다",
+        description: "아이템 정보를 찾을 수 없습니다.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    updateItemMutation.mutate({
+      itemId: item.id,
       name: itemName.trim(),
       notes: itemNotes.trim() || undefined,
     });
-    onClose();
   };
 
   const handleCancel = () => {
@@ -100,6 +126,7 @@ export default function EditItemSheet({
             borderColor="gray.300"
             color="gray.700"
             onClick={handleCancel}
+            disabled={updateItemMutation.isPending}
           >
             취소
           </Button>
@@ -107,7 +134,8 @@ export default function EditItemSheet({
             size="lg"
             flex={1}
             colorPalette={colors.primary.palette}
-            disabled={!itemName.trim()}
+            disabled={!itemName.trim() || updateItemMutation.isPending}
+            loading={updateItemMutation.isPending}
             _disabled={{
               opacity: 0.6,
               cursor: "not-allowed",

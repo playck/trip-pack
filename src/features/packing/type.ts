@@ -37,3 +37,9 @@ export interface UseCreateItemParams {
   name: string;
   notes?: string;
 }
+
+export interface UseUpdateItemParams {
+  itemId: string;
+  name: string;
+  notes?: string;
+}

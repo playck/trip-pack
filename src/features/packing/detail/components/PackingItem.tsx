@@ -1,11 +1,12 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 
+import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
+import type { ChecklistItem } from "../../type";
+
 import PackingItemContent from "./PackingItemContent";
 import ItemActionsSheet from "./ItemActionsSheet";
 import EditItemSheet from "./EditItemSheet";
-import type { ChecklistItem } from "../../type";
-import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 
 interface PackingItemProps {
   item: ChecklistItem;
@@ -44,15 +45,6 @@ export default function PackingItem({ item }: PackingItemProps) {
   const handleItemEdit = () => {
     onActionsClose();
     onEditOpen();
-  };
-
-  const handleItemSave = (updatedItemData: {
-    name: string;
-    notes?: string;
-  }) => {
-    // TODO: 실제 API 호출로 아이템 업데이트
-    console.log("아이템 업데이트:", updatedItemData);
-    onEditClose();
   };
 
   const handleItemDelete = () => {
@@ -95,9 +87,9 @@ export default function PackingItem({ item }: PackingItemProps) {
 
       <EditItemSheet
         isOpen={isEditOpen}
-        item={{ name: item.name, notes: item.notes || undefined }}
+        item={item}
+        tripId={tripId}
         onClose={onEditClose}
-        onSave={handleItemSave}
       />
     </Box>
   );
