@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTripsWithProgress } from "./api";
+import { getTripsWithProgress } from "../services/api";
 
 export const useCheckListProgress = (tripId: string) => {
   return useQuery({

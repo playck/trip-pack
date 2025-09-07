@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getTripChecklist, updateItemCheckedStatus } from "./api";
+import { getTripChecklist, updateItemCheckedStatus } from "../services/api";
 import type {
   UseTripChecklistReturn,
   UseUpdateItemCheckedStatusParams,
@@ -68,7 +68,7 @@ export function useUpdateItemCheckedStatus(tripId?: string) {
 
       return { previousData };
     },
-    onError: (e, _, context) => {
+    onError: (_, __, context) => {
       if (tripId && context?.previousData) {
         queryClient.setQueryData(
           queryKeys.tripChecklist(tripId),

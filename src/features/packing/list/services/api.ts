@@ -1,6 +1,10 @@
 import { supabase } from "@/shared/service/supabase/cilent";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { CategoryWithItems, TripWithProgress } from "../../type";
+import type {
+  CategoryWithItems,
+  TripWithProgress,
+  UseCreateItemParams,
+} from "../../type";
 
 // 여행의 체크리스트 카테고리와 아이템을 가져오는 API
 export const getTripChecklist = async (
@@ -65,6 +69,46 @@ export const updateItemCheckedStatus = async (
   if (error) {
     throw new Error(`체크리스트 아이템 업데이트 실패: ${error.message}`);
   }
+};
+
+// 새로운 체크리스트 아이템을 추가하는 API
+export const createChecklistItem = async (
+  params: UseCreateItemParams
+): Promise<{ id: string }> => {
+  const { data: lastItem } = await supabase
+    .from("checklist_items")
+    .select("display_order")
+    .eq("category_id", params.categoryId)
+    .order("display_order", { ascending: false })
+    .limit(1)
+    .single();
+
+  const nextDisplayOrder = (lastItem?.display_order || 0) + 1;
+
+  const { data, error } = await supabase
+    .from("checklist_items")
+    .insert({
+      category_id: params.categoryId,
+      name: params.name,
+      notes: params.notes || null,
+      is_required: false,
+      is_checked: false,
+      cabin_policy: "allowed",
+      cabin_notes: null,
+      display_order: nextDisplayOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(`아이템 추가 실패: ${error.message}`);
+  }
+
+  if (!data?.id) {
+    throw new Error("아이템 추가 후 ID를 받을 수 없습니다");
+  }
+
+  return { id: data.id };
 };
 
 // 여행의 체크리스트 진행 상태를 가져오는 API (RPC)

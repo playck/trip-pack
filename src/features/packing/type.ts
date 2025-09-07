@@ -31,3 +31,9 @@ export interface TripWithProgress {
   checked_items: number;
   progress_percentage: number;
 }
+
+export interface UseCreateItemParams {
+  categoryId: string;
+  name: string;
+  notes?: string;
+}
