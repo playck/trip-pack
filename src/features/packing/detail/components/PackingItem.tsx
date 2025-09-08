@@ -47,12 +47,6 @@ export default function PackingItem({ item }: PackingItemProps) {
     onEditOpen();
   };
 
-  const handleItemDelete = () => {
-    // TODO: 실제 API 호출로 아이템 삭제
-    console.log("아이템 삭제:", item.name);
-    onActionsClose();
-  };
-
   return (
     <Box
       p={3}
@@ -79,10 +73,11 @@ export default function PackingItem({ item }: PackingItemProps) {
 
       <ItemActionsSheet
         isOpen={isActionsOpen}
+        itemId={item.id}
         itemName={item.name}
-        onClose={onActionsClose}
+        tripId={tripId}
         onEdit={handleItemEdit}
-        onDelete={handleItemDelete}
+        onClose={onActionsClose}
       />
 
       <EditItemSheet

@@ -130,6 +130,18 @@ export const updateChecklistItem = async (
   }
 };
 
+// 체크리스트 아이템을 삭제하는 API
+export const deleteChecklistItem = async (itemId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("checklist_items")
+    .delete()
+    .eq("id", itemId);
+
+  if (error) {
+    throw new Error(`아이템 삭제 실패: ${error.message}`);
+  }
+};
+
 // 여행의 체크리스트 진행 상태를 가져오는 API (RPC)
 export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
   const {
