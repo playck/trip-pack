@@ -19,23 +19,30 @@ import CategoryForm from "./components/CategoryForm";
 import GridView from "./components/GridView";
 import ListView from "./components/ListView";
 import { useTripChecklist } from "./hooks/useTripChecklist";
+import { useCreateCategory } from "./hooks/useCreateCategory";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const [viewMode, setViewMode] = useState<string>("그리드");
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
+  const [viewMode, setViewMode] = useState<string>("그리드");
   const { categories, isLoading, error } = useTripChecklist(tripId);
+
+  const createCategoryMutation = useCreateCategory(tripId, {
+    onSuccess: () => {
+      onClose();
+    },
+  });
 
   const handleSaveCategory = (newCategory: {
     categoryName: string;
     iconKey: string;
   }) => {
-    // TODO: 실제 API 호출로 새 카테고리 추가
-    console.log("새 카테고리 추가:", newCategory);
-    onClose();
+    createCategoryMutation.mutate(newCategory);
   };
 
-  const handleCancelCategory = () => {
+  const isCanAddMoreCategories = categories.length < 15;
+
+  const handleCancelCategoryCreate = () => {
     onClose();
   };
 
@@ -142,15 +149,34 @@ export default function PackingListPage() {
           ) : (
             <ListView categories={categories} />
           )}
+
+          {!isCanAddMoreCategories && (
+            <Box
+              p={3}
+              bg="orange.50"
+              borderRadius="lg"
+              borderWidth="1px"
+              borderColor="orange.200"
+              mt={4}
+            >
+              <Text fontSize="sm" color="orange.700" textAlign="center">
+                카테고리는 최대 15개까지 생성할 수 있습니다. (
+                {categories.length}/15)
+              </Text>
+            </Box>
+          )}
         </VStack>
       </Container>
 
-      <FloatingAddButton onClick={onOpen} ariaLabel="새 카테고리 추가" />
+      {isCanAddMoreCategories && (
+        <FloatingAddButton onClick={onOpen} ariaLabel="새 카테고리 추가" />
+      )}
 
       <BottomSheet isOpen={isOpen} onClose={onClose} title="새 카테고리 추가">
         <CategoryForm
           onSave={handleSaveCategory}
-          onCancel={handleCancelCategory}
+          onCancel={handleCancelCategoryCreate}
+          isLoading={createCategoryMutation.isPending}
         />
       </BottomSheet>
     </PageLayout>

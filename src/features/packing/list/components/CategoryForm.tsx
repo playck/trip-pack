@@ -15,12 +15,14 @@ interface CategoryFormProps {
   onSave: (category: { categoryName: string; iconKey: string }) => void;
   onCancel: () => void;
   initialData?: { categoryName: string; iconKey: string };
+  isLoading?: boolean;
 }
 
 export default function CategoryForm({
   onSave,
   onCancel,
   initialData,
+  isLoading = false,
 }: CategoryFormProps) {
   const [categoryName, setCategoryName] = useState(
     initialData?.categoryName || ""
@@ -29,9 +31,24 @@ export default function CategoryForm({
     initialData?.iconKey || ""
   );
 
-  const handleSave = () => {
-    if (!categoryName.trim()) {
+  const handlAddCategory = () => {
+    const name = categoryName.trim();
+
+    if (!name) {
       alert("카테고리 이름을 입력해주세요.");
+      return;
+    }
+
+    if (name.length > 20) {
+      alert("카테고리 이름은 20자 이하로 입력해주세요.");
+      return;
+    }
+
+    const validNameRegex = /^[가-힣a-zA-Z0-9\s\-_]+$/;
+    if (!validNameRegex.test(name)) {
+      alert(
+        "카테고리 이름에는 한글, 영문, 숫자, 공백, -, _ 만 사용할 수 있습니다."
+      );
       return;
     }
 
@@ -41,7 +58,7 @@ export default function CategoryForm({
     }
 
     onSave({
-      categoryName: categoryName.trim(),
+      categoryName: name,
       iconKey: selectedIconKey,
     });
   };
@@ -56,11 +73,12 @@ export default function CategoryForm({
               카테고리명
             </Text>
             <Input
-              placeholder="카테고리 이름을 입력하세요"
+              placeholder="카테고리 이름을 입력하세요 (최대 20자)"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
               size="lg"
               borderRadius="xl"
+              maxLength={20}
             />
           </VStack>
 
@@ -119,6 +137,7 @@ export default function CategoryForm({
             size="lg"
             borderRadius="xl"
             onClick={onCancel}
+            disabled={isLoading}
           >
             취소
           </Button>
@@ -128,7 +147,8 @@ export default function CategoryForm({
             variant="solid"
             size="lg"
             borderRadius="xl"
-            onClick={handleSave}
+            onClick={handlAddCategory}
+            loading={isLoading}
           >
             저장
           </Button>

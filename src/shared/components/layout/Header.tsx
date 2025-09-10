@@ -1,5 +1,6 @@
 import { Box, Flex, Text, IconButton } from "@chakra-ui/react";
 import { ChevronLeft, Menu } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -45,16 +46,18 @@ export default function Header({
           )}
         </Flex>
 
-        <Text
-          fontSize="lg"
-          fontWeight="semibold"
-          color="fg.emphasized"
-          textAlign="center"
-          lineHeight="1"
-          truncate
-        >
-          Trip Pack
-        </Text>
+        <Link to="/">
+          <Text
+            fontSize="lg"
+            fontWeight="semibold"
+            color="fg.emphasized"
+            textAlign="center"
+            lineHeight="1"
+            truncate
+          >
+            Trip Pack
+          </Text>
+        </Link>
 
         <Flex align="center" minW="40px" justify="flex-end">
           <Menu size="20" />

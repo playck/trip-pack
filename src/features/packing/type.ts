@@ -43,3 +43,9 @@ export interface UseUpdateItemParams {
   name: string;
   notes?: string;
 }
+
+export interface UseCreateCategoryParams {
+  tripId: string;
+  categoryName: string;
+  iconKey: string;
+}
