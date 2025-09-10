@@ -5,6 +5,7 @@ import type {
   TripWithProgress,
   UseCreateItemParams,
   UseUpdateItemParams,
+  UseCreateCategoryParams,
 } from "../../type";
 
 // 여행의 체크리스트 카테고리와 아이템을 가져오는 API
@@ -76,6 +77,32 @@ export const updateItemCheckedStatus = async (
 export const createChecklistItem = async (
   params: UseCreateItemParams
 ): Promise<{ id: string }> => {
+  // 1. 아이템명 유효성 검사
+  const name = params.name.trim();
+  if (!name) {
+    throw new Error("아이템 이름을 입력해주세요.");
+  }
+
+  // 2. 같은 카테고리 내 중복 아이템명 검사
+  const { data: existingItems, error: checkError } = await supabase
+    .from("checklist_items")
+    .select("name")
+    .eq("category_id", params.categoryId);
+
+  if (checkError) {
+    throw new Error(`아이템 확인 실패: ${checkError.message}`);
+  }
+
+  // 중복 아이템명 검사 (대소문자 구분 없음)
+  const isDuplicate = existingItems?.some(
+    (item) => item.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (isDuplicate) {
+    throw new Error("이미 존재하는 아이템 이름입니다.");
+  }
+
+  // 3. display_order 조회
   const { data: lastItem } = await supabase
     .from("checklist_items")
     .select("display_order")
@@ -86,12 +113,13 @@ export const createChecklistItem = async (
 
   const nextDisplayOrder = (lastItem?.display_order || 0) + 1;
 
+  // 4. 아이템 생성
   const { data, error } = await supabase
     .from("checklist_items")
     .insert({
       category_id: params.categoryId,
-      name: params.name,
-      notes: params.notes || null,
+      name: name,
+      notes: params.notes?.trim() || null,
       is_required: false,
       is_checked: false,
       cabin_policy: "allowed",
@@ -116,11 +144,49 @@ export const createChecklistItem = async (
 export const updateChecklistItem = async (
   params: UseUpdateItemParams
 ): Promise<void> => {
+  // 1. 아이템명 유효성 검사
+  const name = params.name.trim();
+  if (!name) {
+    throw new Error("아이템 이름을 입력해주세요.");
+  }
+
+  // 2. 현재 아이템의 카테고리 ID 조회
+  const { data: currentItem, error: currentError } = await supabase
+    .from("checklist_items")
+    .select("category_id")
+    .eq("id", params.itemId)
+    .single();
+
+  if (currentError || !currentItem || !currentItem.category_id) {
+    throw new Error(`아이템 정보를 찾을 수 없습니다: ${currentError?.message}`);
+  }
+
+  // 3. 같은 카테고리 내 중복 아이템명 검사
+  const { data: existingItems, error: checkError } = await supabase
+    .from("checklist_items")
+    .select("name")
+    .eq("category_id", currentItem.category_id)
+    .neq("id", params.itemId);
+
+  if (checkError) {
+    throw new Error(`아이템 확인 실패: ${checkError.message}`);
+  }
+
+  // 중복 아이템명 검사
+  const isDuplicate = existingItems?.some(
+    (item) => item.name.toLowerCase() === name.toLowerCase()
+  );
+
+  if (isDuplicate) {
+    throw new Error("이미 존재하는 아이템 이름입니다.");
+  }
+
+  // 4. 아이템 업데이트
   const { error } = await supabase
     .from("checklist_items")
     .update({
-      name: params.name,
-      notes: params.notes || null,
+      name: name,
+      notes: params.notes?.trim() || null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", params.itemId);
@@ -132,6 +198,7 @@ export const updateChecklistItem = async (
 
 // 체크리스트 아이템을 삭제하는 API
 export const deleteChecklistItem = async (itemId: string): Promise<void> => {
+  // RLS가 자동으로 권한 확인
   const { error } = await supabase
     .from("checklist_items")
     .delete()
@@ -160,4 +227,92 @@ export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
   if (error) throw new Error(`여행 목록 조회 실패: ${error.message}`);
 
   return data || [];
+};
+
+// 새로운 체크리스트 카테고리를 추가하는 API
+export const createChecklistCategory = async (
+  params: UseCreateCategoryParams
+): Promise<{ id: string }> => {
+  // 1. 카테고리명 유효성 검사
+  const name = params.categoryName.trim();
+  if (!name) {
+    throw new Error("카테고리 이름을 입력해주세요.");
+  }
+
+  if (name.length > 15) {
+    throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
+  }
+
+  // 2. 현재 카테고리 개수 확인
+  const { data: existingCategories, error: checkError } = await supabase
+    .from("checklist_categories")
+    .select("id")
+    .eq("trip_id", params.tripId);
+
+  if (checkError) {
+    throw new Error(`카테고리 확인 실패: ${checkError.message}`);
+  }
+
+  // 3. 카테고리 개수 제한 (최대 15개)
+  if (existingCategories && existingCategories.length >= 15) {
+    throw new Error("카테고리는 최대 15개까지만 생성할 수 있습니다.");
+  }
+
+  // 3. 마지막 display_order 조회
+  const { data: lastCategory } = await supabase
+    .from("checklist_categories")
+    .select("display_order")
+    .eq("trip_id", params.tripId)
+    .order("display_order", { ascending: false })
+    .limit(1)
+    .single();
+
+  const nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
+
+  // 4. 카테고리 생성
+  const { data, error } = await supabase
+    .from("checklist_categories")
+    .insert({
+      trip_id: params.tripId,
+      name: name,
+      icon_key: params.iconKey,
+      display_order: nextDisplayOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(`카테고리 추가 실패: ${error.message}`);
+  }
+
+  if (!data?.id) {
+    throw new Error("카테고리 추가 후 ID를 받을 수 없습니다");
+  }
+
+  return { id: data.id };
+};
+
+// 체크리스트 카테고리를 삭제하는 API
+export const deleteChecklistCategory = async (
+  categoryId: string
+): Promise<void> => {
+  // 1. 해당 카테고리의 모든 아이템 먼저 삭제
+  const { error: itemsError } = await supabase
+    .from("checklist_items")
+    .delete()
+    .eq("category_id", categoryId);
+
+  if (itemsError) {
+    throw new Error(`카테고리 아이템 삭제 실패: ${itemsError.message}`);
+  }
+
+  // 2. 카테고리 삭제
+  const { error: categoryError } = await supabase
+    .from("checklist_categories")
+    .delete()
+    .eq("id", categoryId);
+
+  if (categoryError) {
+    throw new Error(`카테고리 삭제 실패: ${categoryError.message}`);
+  }
 };
