@@ -13,6 +13,8 @@ import {
 
 import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
+import { CabinPolicyIcon } from "@/shared/components";
+import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
 
 type ChecklistItem = CategoryWithItems["items"][0];
 interface ListViewProps {
@@ -194,9 +196,15 @@ export default function ListView({ categories }: ListViewProps) {
                           borderColor={checked ? "blue.200" : "gray.200"}
                           shadow="xs"
                         >
-                          <Text fontSize="sm" color="gray.700">
-                            {item.name}
-                          </Text>
+                          <HStack justify="space-between" align="center">
+                            <Text fontSize="sm" color="gray.700">
+                              {item.name}
+                            </Text>
+                            <CabinPolicyIcon
+                              policy={item.cabin_policy as CabinPolicy}
+                              size={12}
+                            />
+                          </HStack>
                         </Box>
                       );
                     })

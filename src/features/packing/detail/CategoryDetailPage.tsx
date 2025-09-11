@@ -94,8 +94,9 @@ export default function CategoryDetailPage() {
             px={4}
             py={2}
             position="sticky"
-            top={0}
-            zIndex={10}
+            top="56px"
+            zIndex={100}
+            boxShadow="0 1px 2px rgba(0, 0, 0, 0.1)"
           >
             <HStack gap={2} align="center">
               <Box as="button" p={1} cursor="pointer" onClick={handleBackClick}>

@@ -1,5 +1,6 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
+import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
 
 import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 import type { ChecklistItem } from "../../type";
@@ -29,9 +30,7 @@ export default function PackingItem({ item }: PackingItemProps) {
   });
   const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
 
-  const isItemChecked = () => {
-    return !!item.is_checked;
-  };
+  const isItemChecked = !!item.is_checked;
 
   const handleItemCheck = () => {
     if (!item.id) return;
@@ -59,7 +58,9 @@ export default function PackingItem({ item }: PackingItemProps) {
       <VStack gap={1} align="stretch">
         <PackingItemContent
           itemName={item.name}
-          isChecked={isItemChecked()}
+          isChecked={isItemChecked}
+          cabinPolicy={item.cabin_policy as CabinPolicy}
+          cabinNotes={item.cabin_notes}
           onToggleCheck={handleItemCheck}
           onOpenActions={onActionsOpen}
         />
