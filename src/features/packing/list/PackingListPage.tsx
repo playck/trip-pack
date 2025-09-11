@@ -20,11 +20,14 @@ import GridView from "./components/GridView";
 import ListView from "./components/ListView";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
+import { STORAGE_KEYS } from "@/shared/constants/stroage";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
-  const [viewMode, setViewMode] = useState<string>("그리드");
+  const [viewMode, setViewMode] = useState<string>(() => {
+    return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
+  });
   const { categories, isLoading, error } = useTripChecklist(tripId);
 
   const createCategoryMutation = useCreateCategory(tripId, {
@@ -107,6 +110,10 @@ export default function PackingListPage() {
               onValueChange={(details) => {
                 if (details.value) {
                   setViewMode(details.value);
+                  localStorage.setItem(
+                    STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
+                    details.value
+                  );
                 }
               }}
             >

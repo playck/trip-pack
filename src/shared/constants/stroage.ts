@@ -1,0 +1,3 @@
+export const STORAGE_KEYS = {
+  TRIP_PACK_VIEW_MODE: "TRIP_PACK_VIEW_MODE",
+};
