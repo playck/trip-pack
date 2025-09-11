@@ -12,7 +12,6 @@ import type {
 export const getTripChecklist = async (
   tripId: string
 ): Promise<CategoryWithItems[]> => {
-  // 1. 해당 trip의 카테고리들을 가져온다
   const { data: categories, error: categoriesError } = await supabase
     .from("checklist_categories")
     .select("*")
@@ -29,7 +28,6 @@ export const getTripChecklist = async (
     return [];
   }
 
-  // 2. 각 카테고리의 아이템들을 가져온다
   const categoryIds = categories.map((cat) => cat.id);
 
   const { data: items, error: itemsError } = await supabase
@@ -44,7 +42,6 @@ export const getTripChecklist = async (
     );
   }
 
-  // 3. 카테고리별로 아이템들을 그룹핑한다
   const categoriesWithItems: CategoryWithItems[] = categories.map(
     (category) => ({
       ...category,
@@ -198,7 +195,6 @@ export const updateChecklistItem = async (
 
 // 체크리스트 아이템을 삭제하는 API
 export const deleteChecklistItem = async (itemId: string): Promise<void> => {
-  // RLS가 자동으로 권한 확인
   const { error } = await supabase
     .from("checklist_items")
     .delete()
@@ -233,7 +229,18 @@ export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
 export const createChecklistCategory = async (
   params: UseCreateCategoryParams
 ): Promise<{ id: string }> => {
-  // 1. 카테고리명 유효성 검사
+  // 1. 여행 존재 여부 및 권한 확인
+  const { data: trip, error: tripError } = await supabase
+    .from("trips")
+    .select("id")
+    .eq("id", params.tripId)
+    .single();
+
+  if (tripError || !trip) {
+    throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
+  }
+
+  // 2. 카테고리명 유효성 검사
   const name = params.categoryName.trim();
   if (!name) {
     throw new Error("카테고리 이름을 입력해주세요.");
@@ -243,7 +250,7 @@ export const createChecklistCategory = async (
     throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
   }
 
-  // 2. 현재 카테고리 개수 확인
+  // 3. 현재 카테고리 개수 확인
   const { data: existingCategories, error: checkError } = await supabase
     .from("checklist_categories")
     .select("id")
@@ -253,12 +260,12 @@ export const createChecklistCategory = async (
     throw new Error(`카테고리 확인 실패: ${checkError.message}`);
   }
 
-  // 3. 카테고리 개수 제한 (최대 15개)
+  // 4. 카테고리 개수 제한 (최대 15개)
   if (existingCategories && existingCategories.length >= 15) {
     throw new Error("카테고리는 최대 15개까지만 생성할 수 있습니다.");
   }
 
-  // 3. 마지막 display_order 조회
+  // 5. 마지막 display_order 조회
   const { data: lastCategory } = await supabase
     .from("checklist_categories")
     .select("display_order")
@@ -269,7 +276,7 @@ export const createChecklistCategory = async (
 
   const nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
 
-  // 4. 카테고리 생성
+  // 6. 카테고리 생성
   const { data, error } = await supabase
     .from("checklist_categories")
     .insert({
