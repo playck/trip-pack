@@ -14,13 +14,14 @@ import { useParams } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
+import { STORAGE_KEYS } from "@/shared/constants/stroage";
 
 import CategoryForm from "./components/CategoryForm";
 import GridView from "./components/GridView";
 import ListView from "./components/ListView";
+import { ProgressBar } from "./components";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
-import { STORAGE_KEYS } from "@/shared/constants/stroage";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
@@ -28,7 +29,7 @@ export default function PackingListPage() {
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
-  const { categories, isLoading, error } = useTripChecklist(tripId);
+  const { categories, isLoading, error, progress } = useTripChecklist(tripId);
 
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
@@ -150,6 +151,8 @@ export default function PackingListPage() {
               />
             </SegmentGroup.Root>
           </HStack>
+
+          <ProgressBar progress={progress} />
 
           {viewMode === "그리드" ? (
             <GridView categories={categories} />

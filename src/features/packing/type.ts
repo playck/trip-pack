@@ -14,6 +14,11 @@ export interface UseTripChecklistReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
+  progress: {
+    totalItems: number;
+    checkedItems: number;
+    progressPercentage: number;
+  };
 }
 
 export interface UseUpdateItemCheckedStatusParams {

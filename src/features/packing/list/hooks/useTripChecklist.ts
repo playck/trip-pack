@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTripChecklist, updateItemCheckedStatus } from "../services/api";
+import { calculateChecklistProgress } from "../utils/progressCalculator";
 import type {
   UseTripChecklistReturn,
   UseUpdateItemCheckedStatusParams,
@@ -33,9 +34,12 @@ export function useTripChecklist(
     enabled: !!tripId,
   });
 
+  const progress = calculateChecklistProgress(categories);
+
   return {
     categories,
     isLoading,
+    progress,
     error: error?.message || null,
     refetch,
   };
