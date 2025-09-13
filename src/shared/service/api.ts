@@ -25,3 +25,12 @@ export const updateTripTitle = async (
     throw new Error(`여행명 수정 실패: ${error.message}`);
   }
 };
+
+// 여행을 삭제하는 API
+export const deleteTrip = async (tripId: string): Promise<void> => {
+  const { error } = await supabase.from("trips").delete().eq("id", tripId);
+
+  if (error) {
+    throw new Error(`여행 삭제 실패: ${error.message}`);
+  }
+};
