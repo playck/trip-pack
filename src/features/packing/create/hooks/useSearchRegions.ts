@@ -45,17 +45,28 @@ export function searchRegions(query: string): Region[] {
   if (!q) return [];
   const results = new Set<Region>();
 
+  // 정확한 이름 매치
   const exact = searchIndex.byName.get(q);
   if (exact) results.add(exact);
 
+  // 국가명으로 검색
+  searchIndex.byCountry.forEach((regions, countryName) => {
+    if (countryName.includes(q) || q.includes(countryName)) {
+      regions.forEach((r) => results.add(r));
+    }
+  });
+
+  // 키워드 검색
   searchIndex.byKeyword.forEach((regions, k) => {
     if (k.includes(q) || q.includes(k)) regions.forEach((r) => results.add(r));
   });
 
+  // 지역명 부분 매치
   regionsList.forEach((r) => {
     if (
       r.name.toLowerCase().includes(q) ||
-      r.englishName?.toLowerCase().includes(q)
+      r.englishName?.toLowerCase().includes(q) ||
+      r.country.toLowerCase().includes(q)
     ) {
       results.add(r);
     }
