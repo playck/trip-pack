@@ -13,18 +13,16 @@ import { useNavigate } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
+import {
+  validateSignupForm,
+  handleSignupError,
+  type SignupFormErrors,
+} from "../validation";
 
 interface SignupForm {
   email: string;
   password: string;
   username: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-  username?: string;
-  general?: string;
 }
 
 export default function SignupPage() {
@@ -34,34 +32,15 @@ export default function SignupPage() {
     password: "",
     username: "",
   });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<SignupFormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // 이메일 검증
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
-    }
-
-    // 비밀번호 검증
-    if (!formData.password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "비밀번호는 최소 6자리 이상이어야 합니다.";
-    }
-
-    // 유저명 검증
-    if (!formData.username) {
-      newErrors.username = "유저명을 입력해주세요.";
-    } else if (formData.username.length < 2) {
-      newErrors.username = "유저명은 최소 2자리 이상이어야 합니다.";
-    }
-
+    const newErrors = validateSignupForm(
+      formData.email,
+      formData.password,
+      formData.username
+    );
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -69,7 +48,6 @@ export default function SignupPage() {
   const handleInputChange = (field: keyof SignupForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // 입력 시 해당 필드의 에러 메시지 제거
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -86,7 +64,6 @@ export default function SignupPage() {
     setErrors({});
 
     try {
-      // Supabase Auth를 사용한 회원가입
       const { error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -98,28 +75,10 @@ export default function SignupPage() {
       });
 
       if (authError) {
-        // 구체적인 에러 메시지별 처리
-        if (authError.message.includes("already registered")) {
-          setErrors({
-            email: "이미 가입된 이메일입니다.",
-          });
-        } else if (authError.message.includes("Password should be")) {
-          setErrors({
-            password: "비밀번호는 최소 6자리 이상이어야 합니다.",
-          });
-        } else if (authError.message.includes("Invalid email")) {
-          setErrors({
-            email: "올바르지 않은 이메일 형식입니다.",
-          });
-        } else {
-          setErrors({
-            general: "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
-          });
-        }
+        setErrors(handleSignupError(authError));
         return;
       }
 
-      // 회원가입 성공 메시지 표시 및 로그인 페이지로 이동
       alert("회원가입이 완료되었습니다! 바로 로그인해주세요.");
       navigate({ to: "/auth/login" });
     } catch {

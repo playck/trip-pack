@@ -73,3 +73,38 @@ export const validateSignupForm = (
 
   return errors;
 };
+
+// Auth 에러 처리 함수들
+export const handleSignupError = (error: {
+  message: string;
+}): SignupFormErrors => {
+  const errors: SignupFormErrors = {};
+
+  if (error.message.includes("already registered")) {
+    errors.email = "이미 가입된 이메일입니다.";
+  } else if (error.message.includes("Password should be")) {
+    errors.password = "비밀번호는 최소 6자리 이상이어야 합니다.";
+  } else if (error.message.includes("Invalid email")) {
+    errors.email = "올바르지 않은 이메일 형식입니다.";
+  } else {
+    errors.general = "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.";
+  }
+
+  return errors;
+};
+
+export const handleLoginError = (error: {
+  message: string;
+}): LoginFormErrors => {
+  const errors: LoginFormErrors = {};
+
+  if (error.message.includes("Invalid login credentials")) {
+    errors.general = "이메일 또는 비밀번호가 올바르지 않습니다.";
+  } else if (error.message.includes("Email not confirmed")) {
+    errors.general = "계정 활성화가 필요합니다. 관리자에게 문의해주세요.";
+  } else {
+    errors.general = "로그인 중 오류가 발생했습니다. 다시 시도해주세요.";
+  }
+
+  return errors;
+};

@@ -10,19 +10,19 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
+import type { Provider } from "@supabase/supabase-js";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
+import {
+  validateLoginForm,
+  handleLoginError,
+  type LoginFormErrors,
+} from "../validation";
 
 interface LoginForm {
   email: string;
   password: string;
-}
-
-interface FormErrors {
-  email?: string;
-  password?: string;
-  general?: string;
 }
 
 export default function LoginPage() {
@@ -31,25 +31,25 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<LoginFormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleKakaoLogin = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "kakao" as Provider,
+        options: {
+          redirectTo: window.location.origin,
+          queryParams: { prompt: "login" },
+        },
+      });
+    } catch {
+      setErrors({ general: "카카오 로그인 중 오류가 발생했습니다." });
+    }
+  };
+
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // 이메일 검증
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "이메일을 입력해주세요.";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
-    }
-
-    // 비밀번호 검증
-    if (!formData.password) {
-      newErrors.password = "비밀번호를 입력해주세요.";
-    }
-
+    const newErrors = validateLoginForm(formData.email, formData.password);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -57,7 +57,6 @@ export default function LoginPage() {
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // 입력 시 해당 필드의 에러 메시지 제거
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -74,7 +73,6 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      // Supabase Auth를 사용한 로그인
       const { data: authData, error: authError } =
         await supabase.auth.signInWithPassword({
           email: formData.email,
@@ -82,24 +80,10 @@ export default function LoginPage() {
         });
 
       if (authError) {
-        // 구체적인 에러 메시지별 처리
-        if (authError.message.includes("Invalid login credentials")) {
-          setErrors({
-            general: "이메일 또는 비밀번호가 올바르지 않습니다.",
-          });
-        } else if (authError.message.includes("Email not confirmed")) {
-          setErrors({
-            general: "계정 활성화가 필요합니다. 관리자에게 문의해주세요.",
-          });
-        } else {
-          setErrors({
-            general: "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
-          });
-        }
+        setErrors(handleLoginError(authError));
         return;
       }
 
-      // 로그인 성공
       if (authData.user) {
         navigate({ to: "/" });
       }
@@ -202,6 +186,32 @@ export default function LoginPage() {
                   mt={4}
                 >
                   {isLoading ? "로그인 중..." : "로그인"}
+                </Button>
+
+                <Button
+                  size="lg"
+                  borderRadius="lg"
+                  onClick={handleKakaoLogin}
+                  bg="#FEE500"
+                  color="#000000"
+                  fontWeight="bold"
+                  _active={{
+                    bg: "#F9A825",
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                >
+                  <Box
+                    width="20px"
+                    height="20px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text fontSize="16px">🗨️</Text>
+                  </Box>
+                  카카오로 계속하기
                 </Button>
 
                 <Box textAlign="center" mt={4}>
