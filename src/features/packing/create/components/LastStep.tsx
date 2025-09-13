@@ -25,6 +25,7 @@ export default function LastStep() {
     return {
       ...packingCreateState,
       generatedCheckList,
+      tripTitle: packingCreateState.region?.name ?? "",
     };
   }, [packingCreateState, handleSetUpCheckList]);
 
@@ -37,11 +38,11 @@ export default function LastStep() {
         navigate({
           to: "/packing/list/$tripId",
           params: { tripId },
+          search: { tripTitle: packingCreateState.region?.name ?? "" },
         });
       }, 1500);
     },
-    onError: (error) => {
-      console.error("여행 생성 실패:", error);
+    onError: () => {
       setMessage("오류가 발생했습니다");
       setTimeout(() => {
         navigate({ to: "/" });

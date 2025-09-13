@@ -5,6 +5,7 @@ export interface Region {
   country: string;
   countryCode: string;
   searchKeywords: string[];
+  flag: string;
 }
 
 export interface Country {
@@ -13,6 +14,7 @@ export interface Country {
   englishName: string;
   code: string;
   regions: string[];
+  flag: string;
 }
 
 export const countries: Country[] = [
@@ -21,6 +23,7 @@ export const countries: Country[] = [
     name: "대한민국",
     englishName: "South Korea",
     code: "KR",
+    flag: "🇰🇷",
     regions: [
       "kr-seoul",
       "kr-busan",
@@ -64,6 +67,7 @@ export const countries: Country[] = [
     name: "태국",
     englishName: "Thailand",
     code: "TH",
+    flag: "🇹🇭",
     regions: [
       "th-bangkok",
       "th-pattaya",
@@ -79,6 +83,7 @@ export const countries: Country[] = [
     name: "싱가포르",
     englishName: "Singapore",
     code: "SG",
+    flag: "🇸🇬",
     regions: [],
   },
   {
@@ -86,6 +91,7 @@ export const countries: Country[] = [
     name: "몰디브",
     englishName: "Maldives",
     code: "MV",
+    flag: "🇲🇻",
     regions: [],
   },
   {
@@ -93,6 +99,7 @@ export const countries: Country[] = [
     name: "필리핀",
     englishName: "Philippines",
     code: "PH",
+    flag: "🇵🇭",
     regions: [
       "ph-boracay",
       "ph-cebu",
@@ -107,6 +114,7 @@ export const countries: Country[] = [
     name: "베트남",
     englishName: "Vietnam",
     code: "VN",
+    flag: "🇻🇳",
     regions: [
       "vn-danang",
       "vn-nhatrang",
@@ -124,6 +132,7 @@ export const countries: Country[] = [
     name: "캄보디아",
     englishName: "Cambodia",
     code: "KH",
+    flag: "🇰🇭",
     regions: ["kh-siemreap", "kh-phnompenh"],
   },
   {
@@ -131,6 +140,7 @@ export const countries: Country[] = [
     name: "말레이시아",
     englishName: "Malaysia",
     code: "MY",
+    flag: "🇲🇾",
     regions: ["my-kotakinabalu", "my-kualalumpur"],
   },
   {
@@ -138,6 +148,7 @@ export const countries: Country[] = [
     name: "인도네시아",
     englishName: "Indonesia",
     code: "ID",
+    flag: "🇮🇩",
     regions: ["id-bali", "id-batam", "id-manado"],
   },
   {
@@ -145,6 +156,7 @@ export const countries: Country[] = [
     name: "라오스",
     englishName: "Laos",
     code: "LA",
+    flag: "🇱🇦",
     regions: ["la-vangvieng", "la-luangprabang", "la-vientiane"],
   },
   {
@@ -152,6 +164,7 @@ export const countries: Country[] = [
     name: "대만",
     englishName: "Taiwan",
     code: "TW",
+    flag: "🇹🇼",
     regions: ["tw-taipei", "tw-taichung", "tw-kaohsiung", "tw-tainan"],
   },
   {
@@ -159,6 +172,7 @@ export const countries: Country[] = [
     name: "인도",
     englishName: "India",
     code: "IN",
+    flag: "🇮🇳",
     regions: [],
   },
   {
@@ -166,6 +180,7 @@ export const countries: Country[] = [
     name: "네팔",
     englishName: "Nepal",
     code: "NP",
+    flag: "🇳🇵",
     regions: [],
   },
   {
@@ -173,6 +188,7 @@ export const countries: Country[] = [
     name: "스리랑카",
     englishName: "Sri Lanka",
     code: "LK",
+    flag: "🇱🇰",
     regions: [],
   },
   {
@@ -180,6 +196,7 @@ export const countries: Country[] = [
     name: "중국",
     englishName: "China",
     code: "CN",
+    flag: "🇨🇳",
     regions: [
       "cn-zhangjiajie",
       "cn-changbaishan",
@@ -207,6 +224,7 @@ export const countries: Country[] = [
     name: "일본",
     englishName: "Japan",
     code: "JP",
+    flag: "🇯🇵",
     regions: [
       "jp-tokyo",
       "jp-shizuoka",
@@ -265,6 +283,7 @@ export const countries: Country[] = [
     name: "서유럽",
     englishName: "Western Europe",
     code: "WEU",
+    flag: "🇪🇺",
     regions: [
       "weu-uk",
       "weu-switzerland",
@@ -282,6 +301,7 @@ export const countries: Country[] = [
     name: "동유럽",
     englishName: "Eastern Europe",
     code: "EEU",
+    flag: "🇪🇺",
     regions: ["eeu-austria", "eeu-czech", "eeu-hungary"],
   },
   {
@@ -289,6 +309,7 @@ export const countries: Country[] = [
     name: "크로아티아",
     englishName: "Croatia",
     code: "HR",
+    flag: "🇭🇷",
     regions: [],
   },
   {
@@ -296,6 +317,7 @@ export const countries: Country[] = [
     name: "슬로베니아",
     englishName: "Slovenia",
     code: "SI",
+    flag: "🇸🇮",
     regions: [],
   },
   {
@@ -303,6 +325,7 @@ export const countries: Country[] = [
     name: "스페인",
     englishName: "Spain",
     code: "ES",
+    flag: "🇪🇸",
     regions: [],
   },
   {
@@ -310,6 +333,7 @@ export const countries: Country[] = [
     name: "포르투갈",
     englishName: "Portugal",
     code: "PT",
+    flag: "🇵🇹",
     regions: [],
   },
   {
@@ -317,6 +341,7 @@ export const countries: Country[] = [
     name: "모로코",
     englishName: "Morocco",
     code: "MA",
+    flag: "🇲🇦",
     regions: [],
   },
   {
@@ -324,6 +349,7 @@ export const countries: Country[] = [
     name: "터키",
     englishName: "Turkey",
     code: "TR",
+    flag: "🇹🇷",
     regions: [],
   },
   {
@@ -331,6 +357,7 @@ export const countries: Country[] = [
     name: "그리스",
     englishName: "Greece",
     code: "GR",
+    flag: "🇬🇷",
     regions: [],
   },
   {
@@ -338,6 +365,7 @@ export const countries: Country[] = [
     name: "이집트",
     englishName: "Egypt",
     code: "EG",
+    flag: "🇪🇬",
     regions: [],
   },
   {
@@ -345,6 +373,7 @@ export const countries: Country[] = [
     name: "조지아",
     englishName: "Georgia",
     code: "GE",
+    flag: "🇬🇪",
     regions: [],
   },
   {
@@ -352,6 +381,7 @@ export const countries: Country[] = [
     name: "아제르바이잔",
     englishName: "Azerbaijan",
     code: "AZ",
+    flag: "🇦🇿",
     regions: [],
   },
   {
@@ -359,6 +389,7 @@ export const countries: Country[] = [
     name: "아르메니아",
     englishName: "Armenia",
     code: "AM",
+    flag: "🇦🇲",
     regions: [],
   },
   {
@@ -366,6 +397,7 @@ export const countries: Country[] = [
     name: "중동",
     englishName: "Middle East",
     code: "ME",
+    flag: "🇦🇪",
     regions: ["me-dubai", "me-jordan", "me-saudi", "me-oman", "me-tunisia"],
   },
   {
@@ -373,6 +405,7 @@ export const countries: Country[] = [
     name: "북유럽",
     englishName: "Northern Europe",
     code: "NEU",
+    flag: "🇪🇺",
     regions: [
       "neu-norway",
       "neu-finland",
@@ -389,6 +422,7 @@ export const countries: Country[] = [
     name: "아프리카",
     englishName: "Africa",
     code: "AF",
+    flag: "🇦🇫",
     regions: ["af-kenya", "af-southafrica", "af-tanzania"],
   },
   {
@@ -396,6 +430,7 @@ export const countries: Country[] = [
     name: "몽골",
     englishName: "Mongolia",
     code: "MN",
+    flag: "🇲🇳",
     regions: ["mn-ulaanbaatar"],
   },
   {
@@ -403,6 +438,7 @@ export const countries: Country[] = [
     name: "내몽골",
     englishName: "Inner Mongolia",
     code: "IMN",
+    flag: "🇨🇳",
     regions: ["imn-innermongolia"],
   },
   {
@@ -410,6 +446,7 @@ export const countries: Country[] = [
     name: "홍콩",
     englishName: "Hong Kong",
     code: "HK",
+    flag: "🇭🇰",
     regions: [],
   },
   {
@@ -417,6 +454,7 @@ export const countries: Country[] = [
     name: "마카오",
     englishName: "Macau",
     code: "MO",
+    flag: "🇲🇴",
     regions: [],
   },
   {
@@ -424,6 +462,7 @@ export const countries: Country[] = [
     name: "우즈베키스탄",
     englishName: "Uzbekistan",
     code: "UZ",
+    flag: "🇺🇿",
     regions: ["uz-tashkent"],
   },
   {
@@ -431,6 +470,7 @@ export const countries: Country[] = [
     name: "카자흐스탄",
     englishName: "Kazakhstan",
     code: "KZ",
+    flag: "🇰🇿",
     regions: ["kz-almaty"],
   },
   {
@@ -438,6 +478,7 @@ export const countries: Country[] = [
     name: "키르기스스탄",
     englishName: "Kyrgyzstan",
     code: "KG",
+    flag: "🇰🇬",
     regions: ["kg-bishkek"],
   },
   {
@@ -445,6 +486,7 @@ export const countries: Country[] = [
     name: "호주",
     englishName: "Australia",
     code: "AU",
+    flag: "🇦🇺",
     regions: [
       "au-sydney",
       "au-melbourne",
@@ -468,6 +510,7 @@ export const regionsList: Region[] = [
     englishName: "Seoul",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["서울", "seoul", "ㅅㅇ", "수도"],
   },
   {
@@ -476,6 +519,7 @@ export const regionsList: Region[] = [
     englishName: "Busan",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["부산", "busan", "ㅂㅅ", "해운대"],
   },
   {
@@ -484,6 +528,7 @@ export const regionsList: Region[] = [
     englishName: "Jeju",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["제주도", "jeju", "ㅈㅈ", "제주", "한라산"],
   },
   {
@@ -492,6 +537,7 @@ export const regionsList: Region[] = [
     englishName: "Gyeongju",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["경주", "gyeongju", "ㄱㅈ", "불국사", "첨성대"],
   },
   {
@@ -500,6 +546,7 @@ export const regionsList: Region[] = [
     englishName: "Jeonju",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["전주", "jeonju", "ㅈㅈ", "한옥마을", "비빔밥"],
   },
   {
@@ -508,6 +555,7 @@ export const regionsList: Region[] = [
     englishName: "Gangneung",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["강릉", "gangneung", "ㄱㄹ", "경포대", "커피"],
   },
   {
@@ -516,6 +564,7 @@ export const regionsList: Region[] = [
     englishName: "Yeosu",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["여수", "yeosu", "ㅇㅅ", "밤바다", "엑스포"],
   },
   {
@@ -524,6 +573,7 @@ export const regionsList: Region[] = [
     englishName: "Daegu",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["대구", "daegu", "ㄷㄱ", "동성로"],
   },
   {
@@ -532,6 +582,7 @@ export const regionsList: Region[] = [
     englishName: "Incheon",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["인천", "incheon", "ㅇㅊ", "공항", "차이나타운"],
   },
   {
@@ -540,6 +591,7 @@ export const regionsList: Region[] = [
     englishName: "Chuncheon",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["춘천", "chuncheon", "ㅊㅊ", "닭갈비", "남이섬"],
   },
   {
@@ -548,6 +600,7 @@ export const regionsList: Region[] = [
     englishName: "Andong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["안동", "andong", "ㅇㄷ", "하회마을"],
   },
   {
@@ -556,6 +609,7 @@ export const regionsList: Region[] = [
     englishName: "Tongyeong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["통영", "tongyeong", "ㅌㅇ", "케이블카"],
   },
   {
@@ -564,6 +618,7 @@ export const regionsList: Region[] = [
     englishName: "Pohang",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["포항", "pohang", "ㅍㅎ", "호미곶"],
   },
   {
@@ -572,6 +627,7 @@ export const regionsList: Region[] = [
     englishName: "Ulsan",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["울산", "ulsan", "ㅇㅅ", "태화강"],
   },
   {
@@ -580,6 +636,7 @@ export const regionsList: Region[] = [
     englishName: "Daejeon",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["대전", "daejeon", "ㄷㅈ", "과학도시"],
   },
   {
@@ -588,6 +645,7 @@ export const regionsList: Region[] = [
     englishName: "Gwangju",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["광주", "gwangju", "ㄱㅈ", "무등산"],
   },
   {
@@ -596,6 +654,7 @@ export const regionsList: Region[] = [
     englishName: "Sokcho",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["속초", "sokcho", "ㅅㅊ", "설악산", "아바이마을"],
   },
   {
@@ -604,6 +663,7 @@ export const regionsList: Region[] = [
     englishName: "Gapyeong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["가평", "gapyeong", "ㄱㅍ", "남이섬", "쁘띠프랑스"],
   },
   {
@@ -612,6 +672,7 @@ export const regionsList: Region[] = [
     englishName: "Nami Island",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["남이섬", "nami", "ㄴㅇㅅ", "겨울연가"],
   },
   {
@@ -620,6 +681,7 @@ export const regionsList: Region[] = [
     englishName: "Seoraksan",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["설악산", "seoraksan", "ㅅㅇㅅ", "단풍", "케이블카"],
   },
   {
@@ -628,6 +690,7 @@ export const regionsList: Region[] = [
     englishName: "Jirisan",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["지리산", "jirisan", "ㅈㄹㅅ", "천왕봉"],
   },
   {
@@ -636,6 +699,7 @@ export const regionsList: Region[] = [
     englishName: "Hallasan",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["한라산", "hallasan", "ㅎㄹㅅ", "제주", "백록담"],
   },
   {
@@ -644,6 +708,7 @@ export const regionsList: Region[] = [
     englishName: "Taean",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["태안", "taean", "ㅌㅇ", "안면도"],
   },
   {
@@ -652,6 +717,7 @@ export const regionsList: Region[] = [
     englishName: "Boryeong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["보령", "boryeong", "ㅂㄹ", "머드축제", "대천해수욕장"],
   },
   {
@@ -660,6 +726,7 @@ export const regionsList: Region[] = [
     englishName: "Danyang",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["단양", "danyang", "ㄷㅇ", "도담삼봉"],
   },
   {
@@ -668,6 +735,7 @@ export const regionsList: Region[] = [
     englishName: "Yeongwol",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["영월", "yeongwol", "ㅇㅇ", "별마로천문대"],
   },
   {
@@ -676,6 +744,7 @@ export const regionsList: Region[] = [
     englishName: "Jeongseon",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["정선", "jeongseon", "ㅈㅅ", "아리랑"],
   },
   {
@@ -684,6 +753,7 @@ export const regionsList: Region[] = [
     englishName: "Pyeongchang",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["평창", "pyeongchang", "ㅍㅊ", "올림픽", "스키"],
   },
   {
@@ -692,6 +762,7 @@ export const regionsList: Region[] = [
     englishName: "Goseong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["고성", "goseong", "ㄱㅅ", "DMZ"],
   },
   {
@@ -700,6 +771,7 @@ export const regionsList: Region[] = [
     englishName: "Yangyang",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["양양", "yangyang", "ㅇㅇ", "낙산사", "서핑"],
   },
   {
@@ -708,6 +780,7 @@ export const regionsList: Region[] = [
     englishName: "Suncheon",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["순천", "suncheon", "ㅅㅊ", "습지", "정원"],
   },
   {
@@ -716,6 +789,7 @@ export const regionsList: Region[] = [
     englishName: "Damyang",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["담양", "damyang", "ㄷㅇ", "죽녹원", "대나무"],
   },
   {
@@ -724,6 +798,7 @@ export const regionsList: Region[] = [
     englishName: "Hwasun",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["화순", "hwasun", "ㅎㅅ", "고인돌"],
   },
   {
@@ -732,6 +807,7 @@ export const regionsList: Region[] = [
     englishName: "Gokseong",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["곡성", "gokseong", "ㄱㅅ", "기차마을"],
   },
   {
@@ -740,6 +816,7 @@ export const regionsList: Region[] = [
     englishName: "Gurye",
     country: "대한민국",
     countryCode: "KR",
+    flag: "🇰🇷",
     searchKeywords: ["구례", "gurye", "ㄱㄹ", "산수유"],
   },
 
@@ -750,6 +827,7 @@ export const regionsList: Region[] = [
     englishName: "Bangkok",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["방콕", "bangkok", "ㅂㅋ", "왓포", "카오산로드"],
   },
   {
@@ -758,6 +836,7 @@ export const regionsList: Region[] = [
     englishName: "Pattaya",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["파타야", "pattaya", "ㅍㅌㅇ", "워킹스트리트"],
   },
   {
@@ -766,6 +845,7 @@ export const regionsList: Region[] = [
     englishName: "Phuket",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["푸껫", "phuket", "ㅍㅋ", "파통비치"],
   },
   {
@@ -774,6 +854,7 @@ export const regionsList: Region[] = [
     englishName: "Chiang Mai",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["치앙마이", "chiangmai", "ㅊㅇㅁㅇ", "도이수텝"],
   },
   {
@@ -782,6 +863,7 @@ export const regionsList: Region[] = [
     englishName: "Ayutthaya",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["아유타야", "ayutthaya", "ㅇㅇㅌㅇ", "유적지"],
   },
   {
@@ -790,6 +872,7 @@ export const regionsList: Region[] = [
     englishName: "Kanchanaburi",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["칸차나부리", "kanchanaburi", "ㅋㅊㄴㅂㄹ", "콰이강다리"],
   },
   {
@@ -798,6 +881,7 @@ export const regionsList: Region[] = [
     englishName: "Koh Samui",
     country: "태국",
     countryCode: "TH",
+    flag: "🇹🇭",
     searchKeywords: ["코사무이", "kohsamui", "ㅋㅅㅁㅇ", "풀문파티"],
   },
 
@@ -808,6 +892,7 @@ export const regionsList: Region[] = [
     englishName: "Boracay",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["보라카이", "boracay", "ㅂㄹㅋㅇ", "화이트비치"],
   },
   {
@@ -816,6 +901,7 @@ export const regionsList: Region[] = [
     englishName: "Cebu",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["세부", "cebu", "ㅅㅂ", "막탄섬"],
   },
   {
@@ -824,6 +910,7 @@ export const regionsList: Region[] = [
     englishName: "Bohol",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["보홀", "bohol", "ㅂㅎ", "초콜릿힐스"],
   },
   {
@@ -832,6 +919,7 @@ export const regionsList: Region[] = [
     englishName: "Manila",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["마닐라", "manila", "ㅁㄴㄹ", "인트라무로스"],
   },
   {
@@ -840,6 +928,7 @@ export const regionsList: Region[] = [
     englishName: "Clark",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["클락", "clark", "ㅋㄹ", "수빅베이"],
   },
   {
@@ -848,6 +937,7 @@ export const regionsList: Region[] = [
     englishName: "Palawan",
     country: "필리핀",
     countryCode: "PH",
+    flag: "🇵🇭",
     searchKeywords: ["팔라완", "palawan", "ㅍㄹㅇ", "엘니도"],
   },
 
@@ -858,6 +948,7 @@ export const regionsList: Region[] = [
     englishName: "Da Nang",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["다낭", "danang", "ㄷㄴ", "바나힐", "용다리"],
   },
   {
@@ -866,6 +957,7 @@ export const regionsList: Region[] = [
     englishName: "Nha Trang",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["나트랑", "nhatrang", "ㄴㅌㄹ", "빈펄랜드"],
   },
   {
@@ -874,6 +966,7 @@ export const regionsList: Region[] = [
     englishName: "Da Lat",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["달랏", "dalat", "ㄷㄹ", "꽃도시"],
   },
   {
@@ -882,6 +975,7 @@ export const regionsList: Region[] = [
     englishName: "Phu Quoc",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["푸꾸옥", "phuquoc", "ㅍㄲㅇ", "케이블카"],
   },
   {
@@ -890,6 +984,7 @@ export const regionsList: Region[] = [
     englishName: "Hanoi/Ha Long Bay",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["하노이", "hanoi", "ㅎㄴㅇ", "하롱베이", "halongbay"],
   },
   {
@@ -898,6 +993,7 @@ export const regionsList: Region[] = [
     englishName: "Ho Chi Minh",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["호치민", "hochiminh", "ㅎㅊㅁ", "사이공"],
   },
   {
@@ -906,6 +1002,7 @@ export const regionsList: Region[] = [
     englishName: "Mui Ne",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["무이네", "muine", "ㅁㅇㄴ", "사막"],
   },
   {
@@ -914,6 +1011,7 @@ export const regionsList: Region[] = [
     englishName: "Sapa",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["사파", "sapa", "ㅅㅍ", "계단식논"],
   },
   {
@@ -922,6 +1020,7 @@ export const regionsList: Region[] = [
     englishName: "Dong Hoi",
     country: "베트남",
     countryCode: "VN",
+    flag: "🇻🇳",
     searchKeywords: ["동허이", "donghoi", "ㄷㅎㅇ", "퐁냐케방"],
   },
 
@@ -932,6 +1031,7 @@ export const regionsList: Region[] = [
     englishName: "Siem Reap (Angkor Wat)",
     country: "캄보디아",
     countryCode: "KH",
+    flag: "🇰🇭",
     searchKeywords: ["시엠립", "siemreap", "ㅅㅇㄹ", "앙코르와트", "angkorwat"],
   },
   {
@@ -940,6 +1040,7 @@ export const regionsList: Region[] = [
     englishName: "Phnom Penh",
     country: "캄보디아",
     countryCode: "KH",
+    flag: "🇰🇭",
     searchKeywords: ["프놈펜", "phnompenh", "ㅍㄴㅍ", "왕궁"],
   },
 
@@ -950,6 +1051,7 @@ export const regionsList: Region[] = [
     englishName: "Kota Kinabalu",
     country: "말레이시아",
     countryCode: "MY",
+    flag: "🇲🇾",
     searchKeywords: [
       "코타키나발루",
       "kotakinabalu",
@@ -963,6 +1065,7 @@ export const regionsList: Region[] = [
     englishName: "Kuala Lumpur",
     country: "말레이시아",
     countryCode: "MY",
+    flag: "🇲🇾",
     searchKeywords: [
       "쿠알라룸푸르",
       "kualalumpur",
@@ -978,6 +1081,7 @@ export const regionsList: Region[] = [
     englishName: "Bali",
     country: "인도네시아",
     countryCode: "ID",
+    flag: "🇮🇩",
     searchKeywords: ["발리", "bali", "ㅂㄹ", "우붓", "꾸따"],
   },
   {
@@ -986,6 +1090,7 @@ export const regionsList: Region[] = [
     englishName: "Batam",
     country: "인도네시아",
     countryCode: "ID",
+    flag: "🇮🇩",
     searchKeywords: ["바탐", "batam", "ㅂㅌ", "골프"],
   },
   {
@@ -994,6 +1099,7 @@ export const regionsList: Region[] = [
     englishName: "Manado",
     country: "인도네시아",
     countryCode: "ID",
+    flag: "🇮🇩",
     searchKeywords: ["마나도", "manado", "ㅁㄴㄷ", "부나켄"],
   },
 
@@ -1004,6 +1110,7 @@ export const regionsList: Region[] = [
     englishName: "Vang Vieng",
     country: "라오스",
     countryCode: "LA",
+    flag: "🇱🇦",
     searchKeywords: ["방비엥", "vangvieng", "ㅂㅂㅇ", "카약"],
   },
   {
@@ -1012,6 +1119,7 @@ export const regionsList: Region[] = [
     englishName: "Luang Prabang",
     country: "라오스",
     countryCode: "LA",
+    flag: "🇱🇦",
     searchKeywords: ["루앙프라방", "luangprabang", "ㄹㅇㅍㄹㅂ", "왕궁박물관"],
   },
   {
@@ -1020,6 +1128,7 @@ export const regionsList: Region[] = [
     englishName: "Vientiane",
     country: "라오스",
     countryCode: "LA",
+    flag: "🇱🇦",
     searchKeywords: ["비엔티안", "vientiane", "ㅂㅇㅌㅇ", "왓시사켓"],
   },
 
@@ -1030,6 +1139,7 @@ export const regionsList: Region[] = [
     englishName: "Taipei",
     country: "대만",
     countryCode: "TW",
+    flag: "🇹🇼",
     searchKeywords: ["타이베이", "taipei", "ㅌㅇㅂㅇ", "101타워"],
   },
   {
@@ -1038,6 +1148,7 @@ export const regionsList: Region[] = [
     englishName: "Taichung",
     country: "대만",
     countryCode: "TW",
+    flag: "🇹🇼",
     searchKeywords: ["타이중", "taichung", "ㅌㅇㅈ", "일월담"],
   },
   {
@@ -1046,6 +1157,7 @@ export const regionsList: Region[] = [
     englishName: "Kaohsiung",
     country: "대만",
     countryCode: "TW",
+    flag: "🇹🇼",
     searchKeywords: ["가오슝", "kaohsiung", "ㄱㅇㅅ", "로투스연못"],
   },
   {
@@ -1054,6 +1166,7 @@ export const regionsList: Region[] = [
     englishName: "Tainan",
     country: "대만",
     countryCode: "TW",
+    flag: "🇹🇼",
     searchKeywords: ["타이난", "tainan", "ㅌㅇㄴ", "적간루"],
   },
 
@@ -1064,6 +1177,7 @@ export const regionsList: Region[] = [
     englishName: "Zhangjiajie",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["장가계", "zhangjiajie", "ㅈㄱㄱ", "아바타산"],
   },
   {
@@ -1072,6 +1186,7 @@ export const regionsList: Region[] = [
     englishName: "Changbai Mountain",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["백두산", "changbaishan", "ㅂㄷㅅ", "천지"],
   },
   {
@@ -1080,6 +1195,7 @@ export const regionsList: Region[] = [
     englishName: "Shanghai",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["상해", "shanghai", "ㅅㅎ", "와이탄"],
   },
   {
@@ -1088,6 +1204,7 @@ export const regionsList: Region[] = [
     englishName: "Beijing",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["북경", "beijing", "ㅂㄱ", "만리장성", "자금성"],
   },
   {
@@ -1096,6 +1213,7 @@ export const regionsList: Region[] = [
     englishName: "Chengdu",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["성도", "chengdu", "ㅅㄷ", "판다"],
   },
   {
@@ -1104,6 +1222,7 @@ export const regionsList: Region[] = [
     englishName: "Jiuzhaigou",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["구채구", "jiuzhaigou", "ㄱㅊㄱ", "칠채못"],
   },
   {
@@ -1112,6 +1231,7 @@ export const regionsList: Region[] = [
     englishName: "Guiyang",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["귀양", "guiyang", "ㄱㅇ", "황과수폭포"],
   },
   {
@@ -1120,6 +1240,7 @@ export const regionsList: Region[] = [
     englishName: "Anshun",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["안순", "anshun", "ㅇㅅ", "황과수"],
   },
   {
@@ -1128,6 +1249,7 @@ export const regionsList: Region[] = [
     englishName: "Tibet",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["티벳", "tibet", "ㅌㅂ", "라싸", "포탈라궁"],
   },
   {
@@ -1136,6 +1258,7 @@ export const regionsList: Region[] = [
     englishName: "Chongqing",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["중경", "chongqing", "ㅈㄱ", "홍애동"],
   },
   {
@@ -1144,6 +1267,7 @@ export const regionsList: Region[] = [
     englishName: "Harbin",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["하얼빈", "harbin", "ㅎㅇㅂ", "빙등축제"],
   },
   {
@@ -1152,6 +1276,7 @@ export const regionsList: Region[] = [
     englishName: "Huangshan",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["황산", "huangshan", "ㅎㅅ", "영주"],
   },
   {
@@ -1160,6 +1285,7 @@ export const regionsList: Region[] = [
     englishName: "Xian",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["서안", "xian", "ㅅㅇ", "병마용"],
   },
   {
@@ -1168,6 +1294,7 @@ export const regionsList: Region[] = [
     englishName: "Dalian",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["대련", "dalian", "ㄷㄹ", "성해광장"],
   },
   {
@@ -1176,6 +1303,7 @@ export const regionsList: Region[] = [
     englishName: "Qingdao",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["신선거", "qingdao", "ㅅㅅㄱ", "청도맥주"],
   },
   {
@@ -1184,6 +1312,7 @@ export const regionsList: Region[] = [
     englishName: "Yantai",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["연태", "yantai", "ㅇㅌ", "장도"],
   },
   {
@@ -1192,6 +1321,7 @@ export const regionsList: Region[] = [
     englishName: "Jinan",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["제남", "jinan", "ㅈㄴ", "천불산"],
   },
   {
@@ -1200,6 +1330,7 @@ export const regionsList: Region[] = [
     englishName: "Weihai",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["위해", "weihai", "ㅇㅎ", "유공도"],
   },
   {
@@ -1208,6 +1339,7 @@ export const regionsList: Region[] = [
     englishName: "Hainan",
     country: "중국",
     countryCode: "CN",
+    flag: "🇨🇳",
     searchKeywords: ["하이난", "hainan", "ㅎㅇㄴ", "유공도"],
   },
 
@@ -1218,6 +1350,7 @@ export const regionsList: Region[] = [
     englishName: "Tokyo",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["도쿄", "tokyo", "ㄷㅋ", "시부야", "아사쿠사"],
   },
   {
@@ -1226,6 +1359,7 @@ export const regionsList: Region[] = [
     englishName: "Shizuoka",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["시즈오카", "shizuoka", "ㅅㅈㅇㅋ", "후지산"],
   },
   {
@@ -1234,6 +1368,7 @@ export const regionsList: Region[] = [
     englishName: "Izu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["이즈", "izu", "ㅇㅈ", "온천"],
   },
   {
@@ -1242,6 +1377,7 @@ export const regionsList: Region[] = [
     englishName: "Hakone",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["하코네", "hakone", "ㅎㅋㄴ", "온천", "아시노코"],
   },
   {
@@ -1250,6 +1386,7 @@ export const regionsList: Region[] = [
     englishName: "Fuji",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["후지산", "fuji", "ㅎㅈㅅ", "후지", "등반"],
   },
   {
@@ -1258,6 +1395,7 @@ export const regionsList: Region[] = [
     englishName: "Yokohama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["요코하마", "yokohama", "ㅇㅋㅎㅁ", "미나토미라이"],
   },
   {
@@ -1266,6 +1404,7 @@ export const regionsList: Region[] = [
     englishName: "Kamakura",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["가마쿠라", "kamakura", "ㄱㅁㅋㄹ", "대불"],
   },
   {
@@ -1274,6 +1413,7 @@ export const regionsList: Region[] = [
     englishName: "Yamanashi",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["야마나시", "yamanashi", "ㅇㅁㄴㅅ", "포도"],
   },
   {
@@ -1282,6 +1422,7 @@ export const regionsList: Region[] = [
     englishName: "Osaka",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["오사카", "osaka", "ㅇㅅㅋ", "도톤보리", "유니버셜"],
   },
   {
@@ -1290,6 +1431,7 @@ export const regionsList: Region[] = [
     englishName: "Kyoto",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["교토", "kyoto", "ㄱㅌ", "기요미즈데라", "기온"],
   },
   {
@@ -1298,6 +1440,7 @@ export const regionsList: Region[] = [
     englishName: "Kobe",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["고베", "kobe", "ㄱㅂ", "고베규", "항구"],
   },
   {
@@ -1306,6 +1449,7 @@ export const regionsList: Region[] = [
     englishName: "Wakayama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["와카야마", "wakayama", "ㅇㅋㅇㅁ", "구마노"],
   },
   {
@@ -1314,6 +1458,7 @@ export const regionsList: Region[] = [
     englishName: "Sarayama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["사라야마", "sarayama", "ㅅㄹㅇㅁ"],
   },
   {
@@ -1322,6 +1467,7 @@ export const regionsList: Region[] = [
     englishName: "Fukuoka",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["후쿠오카", "fukuoka", "ㅎㅋㅇㅋ", "하카타", "라멘"],
   },
   {
@@ -1330,6 +1476,7 @@ export const regionsList: Region[] = [
     englishName: "Beppu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["벳푸", "beppu", "ㅂㅍ", "온천", "지옥순회"],
   },
   {
@@ -1338,6 +1485,7 @@ export const regionsList: Region[] = [
     englishName: "Yufuin",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["유후인", "yufuin", "ㅇㅎㅇ", "온천"],
   },
   {
@@ -1346,6 +1494,7 @@ export const regionsList: Region[] = [
     englishName: "Saga",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["사가", "saga", "ㅅㄱ", "아리타"],
   },
   {
@@ -1354,6 +1503,7 @@ export const regionsList: Region[] = [
     englishName: "Oita",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["오이타", "oita", "ㅇㅇㅌ", "온천"],
   },
   {
@@ -1362,6 +1512,7 @@ export const regionsList: Region[] = [
     englishName: "Kumamoto",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["구마모토", "kumamoto", "ㄱㅁㅁㅌ", "구마몬", "성"],
   },
   {
@@ -1370,6 +1521,7 @@ export const regionsList: Region[] = [
     englishName: "Nagasaki",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["나가사키", "nagasaki", "ㄴㄱㅅㅋ", "글로버가든"],
   },
   {
@@ -1378,6 +1530,7 @@ export const regionsList: Region[] = [
     englishName: "Kagoshima",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["가고시마", "kagoshima", "ㄱㄱㅅㅁ", "사쿠라지마"],
   },
   {
@@ -1386,6 +1539,7 @@ export const regionsList: Region[] = [
     englishName: "Miyazaki",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["미야자키", "miyazaki", "ㅁㅇㅈㅋ", "망고"],
   },
   {
@@ -1394,6 +1548,7 @@ export const regionsList: Region[] = [
     englishName: "Kitakyushu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["기타규슈", "kitakyushu", "ㄱㅌㄱㅅ"],
   },
   {
@@ -1402,6 +1557,7 @@ export const regionsList: Region[] = [
     englishName: "Yamaguchi",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["야마구치", "yamaguchi", "ㅇㅁㄱㅊ", "시모노세키"],
   },
   {
@@ -1410,6 +1566,7 @@ export const regionsList: Region[] = [
     englishName: "Sapporo",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["삿포로", "sapporo", "ㅅㅍㄹ", "맥주", "눈축제"],
   },
   {
@@ -1418,6 +1575,7 @@ export const regionsList: Region[] = [
     englishName: "Furano",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["후라노", "furano", "ㅎㄹㄴ", "라벤더", "스키"],
   },
   {
@@ -1426,6 +1584,7 @@ export const regionsList: Region[] = [
     englishName: "Biei",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["비에이", "biei", "ㅂㅇㅇ", "꽃밭"],
   },
   {
@@ -1434,6 +1593,7 @@ export const regionsList: Region[] = [
     englishName: "Asahikawa",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["아사히카와", "asahikawa", "ㅇㅅㅎㅋㅇ", "동물원"],
   },
   {
@@ -1442,6 +1602,7 @@ export const regionsList: Region[] = [
     englishName: "Noboribetsu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["노보리베츠", "noboribetsu", "ㄴㅂㄹㅂㅊ", "온천"],
   },
   {
@@ -1450,6 +1611,7 @@ export const regionsList: Region[] = [
     englishName: "Hakodate",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["하코다테", "hakodate", "ㅎㅋㄷㅌ", "야경", "아침시장"],
   },
   {
@@ -1458,6 +1620,7 @@ export const regionsList: Region[] = [
     englishName: "Takamatsu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["다카마츠", "takamatsu", "ㄷㅋㅁㅊ", "우동"],
   },
   {
@@ -1466,6 +1629,7 @@ export const regionsList: Region[] = [
     englishName: "Naoshima",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["나오시마", "naoshima", "ㄴㅇㅅㅁ", "예술섬"],
   },
   {
@@ -1474,6 +1638,7 @@ export const regionsList: Region[] = [
     englishName: "Matsuyama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["마츠야마", "matsuyama", "ㅁㅊㅇㅁ", "도고온천"],
   },
   {
@@ -1482,6 +1647,7 @@ export const regionsList: Region[] = [
     englishName: "Tokushima",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["도쿠시마", "tokushima", "ㄷㅋㅅㅁ", "아와오도리"],
   },
   {
@@ -1490,6 +1656,7 @@ export const regionsList: Region[] = [
     englishName: "Tottori",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["돗토리", "tottori", "ㄷㅌㄹ", "사구"],
   },
   {
@@ -1498,6 +1665,7 @@ export const regionsList: Region[] = [
     englishName: "Yonago",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["요나고", "yonago", "ㅇㄴㄱ", "다이센"],
   },
   {
@@ -1506,6 +1674,7 @@ export const regionsList: Region[] = [
     englishName: "Hiroshima",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: [
       "히로시마",
       "hiroshima",
@@ -1520,6 +1689,7 @@ export const regionsList: Region[] = [
     englishName: "Okayama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["오카야마", "okayama", "ㅇㅋㅇㅁ", "고라쿠엔"],
   },
   {
@@ -1528,6 +1698,7 @@ export const regionsList: Region[] = [
     englishName: "Okinawa",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["오키나와", "okinawa", "ㅇㅋㄴㅇ", "나하", "추라우미"],
   },
   {
@@ -1536,6 +1707,7 @@ export const regionsList: Region[] = [
     englishName: "Ishigaki",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["이시가키", "ishigaki", "ㅇㅅㄱㅋ", "다이빙"],
   },
   {
@@ -1544,6 +1716,7 @@ export const regionsList: Region[] = [
     englishName: "Toyama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["도야마", "toyama", "ㄷㅇㅁ", "다테야마"],
   },
   {
@@ -1552,6 +1725,7 @@ export const regionsList: Region[] = [
     englishName: "Alpen Route",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["알펜루트", "alpenroute", "ㅇㅍㄹㅌ", "다테야마쿠로베"],
   },
   {
@@ -1560,6 +1734,7 @@ export const regionsList: Region[] = [
     englishName: "Nagoya",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["나고야", "nagoya", "ㄴㄱㅇ", "성"],
   },
   {
@@ -1568,6 +1743,7 @@ export const regionsList: Region[] = [
     englishName: "Takayama",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["다카야마", "takayama", "ㄷㅋㅇㅁ", "히다규"],
   },
   {
@@ -1576,6 +1752,7 @@ export const regionsList: Region[] = [
     englishName: "Komatsu",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["고마츠", "komatsu", "ㄱㅁㅊ", "가나자와"],
   },
   {
@@ -1584,6 +1761,7 @@ export const regionsList: Region[] = [
     englishName: "Niigata",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["니가타", "niigata", "ㄴㄱㅌ", "사케", "쌀"],
   },
   {
@@ -1592,6 +1770,7 @@ export const regionsList: Region[] = [
     englishName: "Aomori",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["아오모리", "aomori", "ㅇㅇㅁㄹ", "사과"],
   },
   {
@@ -1600,6 +1779,7 @@ export const regionsList: Region[] = [
     englishName: "Akita",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["아키타", "akita", "ㅇㅋㅌ", "나마하게"],
   },
   {
@@ -1608,6 +1788,7 @@ export const regionsList: Region[] = [
     englishName: "Sendai",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["센다이", "sendai", "ㅅㄷㅇ", "규탄"],
   },
   {
@@ -1616,6 +1797,7 @@ export const regionsList: Region[] = [
     englishName: "Yamagata",
     country: "일본",
     countryCode: "JP",
+    flag: "🇯🇵",
     searchKeywords: ["야마가타", "yamagata", "ㅇㅁㄱㅌ", "체리"],
   },
 
@@ -1626,6 +1808,7 @@ export const regionsList: Region[] = [
     englishName: "United Kingdom",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇬🇧",
     searchKeywords: ["영국", "uk", "ㅇㄱ", "런던", "빅벤"],
   },
   {
@@ -1634,6 +1817,7 @@ export const regionsList: Region[] = [
     englishName: "Switzerland",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇨🇭",
     searchKeywords: ["스위스", "switzerland", "ㅅㅇㅅ", "융프라우", "마터호른"],
   },
   {
@@ -1642,6 +1826,7 @@ export const regionsList: Region[] = [
     englishName: "Italy",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇮🇹",
     searchKeywords: ["이탈리아", "italy", "ㅇㅌㄹㅇ", "로마", "베니스"],
   },
   {
@@ -1650,6 +1835,7 @@ export const regionsList: Region[] = [
     englishName: "France",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇫🇷",
     searchKeywords: ["프랑스", "france", "ㅍㄹㅅ", "파리", "에펠탑"],
   },
   {
@@ -1658,6 +1844,7 @@ export const regionsList: Region[] = [
     englishName: "Netherlands",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇳🇱",
     searchKeywords: [
       "네덜란드",
       "netherlands",
@@ -1672,6 +1859,7 @@ export const regionsList: Region[] = [
     englishName: "Belgium",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇧🇪",
     searchKeywords: ["벨기에", "belgium", "ㅂㄱㅇ", "브뤼셀", "와플"],
   },
   {
@@ -1680,6 +1868,7 @@ export const regionsList: Region[] = [
     englishName: "Romania",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇷🇴",
     searchKeywords: [
       "루마니아",
       "romania",
@@ -1694,6 +1883,7 @@ export const regionsList: Region[] = [
     englishName: "Germany",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇩🇪",
     searchKeywords: ["독일", "germany", "ㄷㅇ", "베를린", "맥주"],
   },
   {
@@ -1702,6 +1892,7 @@ export const regionsList: Region[] = [
     englishName: "Ireland",
     country: "서유럽",
     countryCode: "WEU",
+    flag: "🇮🇪",
     searchKeywords: ["아일랜드", "ireland", "ㅇㅇㄹㄷ", "더블린", "클리프"],
   },
 
@@ -1712,6 +1903,7 @@ export const regionsList: Region[] = [
     englishName: "Austria",
     country: "동유럽",
     countryCode: "EEU",
+    flag: "🇦🇹",
     searchKeywords: ["오스트리아", "austria", "ㅇㅅㅌㄹㅇ", "빈", "잘츠부르크"],
   },
   {
@@ -1720,6 +1912,7 @@ export const regionsList: Region[] = [
     englishName: "Czech Republic",
     country: "동유럽",
     countryCode: "EEU",
+    flag: "🇨🇿",
     searchKeywords: ["체코", "czech", "ㅊㅋ", "프라하", "카를교"],
   },
   {
@@ -1728,6 +1921,7 @@ export const regionsList: Region[] = [
     englishName: "Hungary",
     country: "동유럽",
     countryCode: "EEU",
+    flag: "🇭🇺",
     searchKeywords: ["헝가리", "hungary", "ㅎㄱㄹ", "부다페스트", "온천"],
   },
 
@@ -1738,6 +1932,7 @@ export const regionsList: Region[] = [
     englishName: "Dubai",
     country: "중동",
     countryCode: "ME",
+    flag: "🇦🇪",
     searchKeywords: ["두바이", "dubai", "ㄷㅂㅇ", "부르즈칼리파"],
   },
   {
@@ -1746,6 +1941,7 @@ export const regionsList: Region[] = [
     englishName: "Jordan",
     country: "중동",
     countryCode: "ME",
+    flag: "🇯🇴",
     searchKeywords: ["요르단", "jordan", "ㅇㄹㄷ", "페트라"],
   },
   {
@@ -1754,6 +1950,7 @@ export const regionsList: Region[] = [
     englishName: "Saudi Arabia",
     country: "중동",
     countryCode: "ME",
+    flag: "🇸🇦",
     searchKeywords: [
       "사우디아라비아",
       "saudi",
@@ -1768,6 +1965,7 @@ export const regionsList: Region[] = [
     englishName: "Oman",
     country: "중동",
     countryCode: "ME",
+    flag: "🇴🇲",
     searchKeywords: ["오만", "oman", "ㅇㅁ", "무스카트", "사막"],
   },
   {
@@ -1776,6 +1974,7 @@ export const regionsList: Region[] = [
     englishName: "Tunisia",
     country: "중동",
     countryCode: "ME",
+    flag: "🇹🇳",
     searchKeywords: ["튀니지", "tunisia", "ㅌㄴㅈ", "튀니스", "사하라"],
   },
 
@@ -1786,6 +1985,7 @@ export const regionsList: Region[] = [
     englishName: "Norway",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇳🇴",
     searchKeywords: ["노르웨이", "norway", "ㄴㄹㅇㅇ", "오로라", "피오르드"],
   },
   {
@@ -1794,6 +1994,7 @@ export const regionsList: Region[] = [
     englishName: "Finland",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇫🇮",
     searchKeywords: ["핀란드", "finland", "ㅍㄹㄷ", "헬싱키", "사우나"],
   },
   {
@@ -1802,6 +2003,7 @@ export const regionsList: Region[] = [
     englishName: "Denmark",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇩🇰",
     searchKeywords: ["덴마크", "denmark", "ㄷㅁㅋ", "코펜하겐", "레고"],
   },
   {
@@ -1810,6 +2012,7 @@ export const regionsList: Region[] = [
     englishName: "Sweden",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇸🇪",
     searchKeywords: ["스웨덴", "sweden", "ㅅㅇㄷ", "스톡홀름", "이케아"],
   },
   {
@@ -1818,6 +2021,7 @@ export const regionsList: Region[] = [
     englishName: "Lithuania",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇱🇹",
     searchKeywords: ["리투아니아", "lithuania", "ㄹㅌㅇㄴㅇ", "빌뉴스"],
   },
   {
@@ -1826,6 +2030,7 @@ export const regionsList: Region[] = [
     englishName: "Estonia",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇪🇪",
     searchKeywords: ["에스토니아", "estonia", "ㅇㅅㅌㄴㅇ", "탈린"],
   },
   {
@@ -1834,6 +2039,7 @@ export const regionsList: Region[] = [
     englishName: "Latvia",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇱🇻",
     searchKeywords: ["라트비아", "latvia", "ㄹㅌㅂㅇ", "리가"],
   },
   {
@@ -1842,6 +2048,7 @@ export const regionsList: Region[] = [
     englishName: "Iceland",
     country: "북유럽",
     countryCode: "NEU",
+    flag: "🇮🇸",
     searchKeywords: ["아이슬란드", "iceland", "ㅇㅇㅅㄹㄷ", "블루라군"],
   },
 
@@ -1852,6 +2059,7 @@ export const regionsList: Region[] = [
     englishName: "Kenya",
     country: "아프리카",
     countryCode: "AF",
+    flag: "🇰🇪",
     searchKeywords: ["케냐", "kenya", "ㅋㄴ", "사파리"],
   },
   {
@@ -1860,6 +2068,7 @@ export const regionsList: Region[] = [
     englishName: "South Africa",
     country: "아프리카",
     countryCode: "AF",
+    flag: "🇿🇦",
     searchKeywords: ["남아공", "southafrica", "ㄴㅇㄱ", "케이프타운"],
   },
   {
@@ -1868,6 +2077,7 @@ export const regionsList: Region[] = [
     englishName: "Tanzania",
     country: "아프리카",
     countryCode: "AF",
+    flag: "🇹🇿",
     searchKeywords: [
       "탄자니아",
       "tanzania",
@@ -1884,6 +2094,7 @@ export const regionsList: Region[] = [
     englishName: "Ulaanbaatar",
     country: "몽골",
     countryCode: "MN",
+    flag: "🇲🇳",
     searchKeywords: ["울란바토르", "ulaanbaatar", "ㅇㄹㅂㅌㄹ", "게르"],
   },
   {
@@ -1892,6 +2103,7 @@ export const regionsList: Region[] = [
     englishName: "Inner Mongolia",
     country: "내몽골",
     countryCode: "IMN",
+    flag: "🇨🇳",
     searchKeywords: ["내몽고", "innermongolia", "ㄴㅁㄱ", "초원"],
   },
 
@@ -1902,6 +2114,7 @@ export const regionsList: Region[] = [
     englishName: "Tashkent",
     country: "우즈베키스탄",
     countryCode: "UZ",
+    flag: "🇺🇿",
     searchKeywords: ["타슈켄트", "tashkent", "ㅌㅅㅋㅌ", "실크로드"],
   },
   {
@@ -1910,6 +2123,7 @@ export const regionsList: Region[] = [
     englishName: "Almaty",
     country: "카자흐스탄",
     countryCode: "KZ",
+    flag: "🇰🇿",
     searchKeywords: ["알마티", "almaty", "ㅇㅁㅌ", "메데우"],
   },
   {
@@ -1918,6 +2132,7 @@ export const regionsList: Region[] = [
     englishName: "Bishkek",
     country: "키르기스스탄",
     countryCode: "KG",
+    flag: "🇰🇬",
     searchKeywords: ["비슈케크", "bishkek", "ㅂㅅㅋㅋ", "알라투"],
   },
   // 호주
@@ -1927,6 +2142,7 @@ export const regionsList: Region[] = [
     englishName: "Sydney",
     country: "호주",
     countryCode: "AU",
+    flag: "🇦🇺",
     searchKeywords: ["시드니", "sydney", "ㅅㄷㄴ", "오페라하우스"],
   },
   {
@@ -1935,6 +2151,7 @@ export const regionsList: Region[] = [
     englishName: "Melbourne",
     country: "호주",
     countryCode: "AU",
+    flag: "🇦🇺",
     searchKeywords: ["멜버른", "melbourne", "ㅁㅂㄹ"],
   },
   {
@@ -1943,6 +2160,7 @@ export const regionsList: Region[] = [
     englishName: "Brisbane",
     country: "호주",
     countryCode: "AU",
+    flag: "🇦🇺",
     searchKeywords: ["브리즈번", "brisbane", "ㅂㄹㅈㅂ", "골드코스트"],
   },
   {
@@ -1951,6 +2169,7 @@ export const regionsList: Region[] = [
     englishName: "Canberra",
     country: "호주",
     countryCode: "AU",
+    flag: "🇦🇺",
     searchKeywords: ["캔버라", "canberra", "ㅋㅂㄹ"],
   },
   {
@@ -1959,6 +2178,7 @@ export const regionsList: Region[] = [
     englishName: "Gold Coast",
     country: "호주",
     countryCode: "AU",
+    flag: "🇦🇺",
     searchKeywords: ["골드코스트", "goldcoast", "ㄱㄷㅋㅅㅌ"],
   },
 ];
