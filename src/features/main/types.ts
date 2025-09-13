@@ -5,3 +5,10 @@ export interface Trip {
   end_date: string | null;
   region_name: string | null;
 }
+
+export interface TripListData {
+  currentTrips: Trip[] | null;
+  futureTrips: Trip[];
+  pastTrips: Trip[];
+  allTrips: Trip[];
+}

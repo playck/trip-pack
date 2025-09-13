@@ -1,8 +1,9 @@
+import dayjs from "dayjs";
 import { supabase } from "../../../shared/service/supabase/cilent";
-import type { Trip } from "../types";
+import type { Trip, TripListData } from "../types";
 
 // 유저의 여행 목록을 가져오는 API
-export const getTripList = async (): Promise<Trip[]> => {
+export const getTripList = async (): Promise<TripListData> => {
   const {
     data: { user },
     error: authError,
@@ -13,24 +14,75 @@ export const getTripList = async (): Promise<Trip[]> => {
   }
 
   if (!user) {
-    return [];
+    return {
+      currentTrips: null,
+      futureTrips: [],
+      pastTrips: [],
+      allTrips: [],
+    };
   }
 
-  const { data: trips, error: tripsError } = await supabase
+  const today = dayjs().format("YYYY-MM-DD");
+
+  const { data: currentTrips, error: currentError } = await supabase
     .from("trips")
     .select("id, title, start_date, end_date, region_name")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .lte("start_date", today)
+    .or(`end_date.gte.${today},end_date.is.null`)
+    .order("start_date", { ascending: true });
 
-  if (tripsError) {
-    throw new Error(`여행 목록을 불러올 수 없습니다: ${tripsError.message}`);
+  if (currentError) {
+    throw new Error(
+      `여행중인 목록을 불러올 수 없습니다: ${currentError.message}`
+    );
   }
 
-  return trips.map((trip) => ({
+  // 미래 여행 (시작일 > 오늘)
+  const { data: futureTrips, error: futureError } = await supabase
+    .from("trips")
+    .select("id, title, start_date, end_date, region_name")
+    .eq("user_id", user.id)
+    .gt("start_date", today)
+    .order("start_date", { ascending: true });
+
+  if (futureError) {
+    throw new Error(
+      `예정된 여행 목록을 불러올 수 없습니다: ${futureError.message}`
+    );
+  }
+
+  // 과거 여행 (종료일 < 오늘 또는 시작일 < 오늘 && 종료일이 null)
+  const { data: pastTrips, error: pastError } = await supabase
+    .from("trips")
+    .select("id, title, start_date, end_date, region_name")
+    .eq("user_id", user.id)
+    .or(`end_date.lt.${today},and(start_date.lt.${today},end_date.is.null)`)
+    .not("start_date", "gte", today)
+    .order("start_date", { ascending: false });
+
+  if (pastError) {
+    throw new Error(
+      `지난 여행 목록을 불러올 수 없습니다: ${pastError.message}`
+    );
+  }
+
+  const allTrip = (trip: Trip): Trip => ({
     id: trip.id,
     title: trip.title,
     start_date: trip.start_date,
     end_date: trip.end_date,
     region_name: trip.region_name,
-  }));
+  });
+
+  const mappedCurrentTrips = (currentTrips || []).map(allTrip);
+  const mappedFutureTrips = (futureTrips || []).map(allTrip);
+  const mappedPastTrips = (pastTrips || []).map(allTrip);
+
+  return {
+    currentTrips: mappedCurrentTrips,
+    futureTrips: mappedFutureTrips,
+    pastTrips: mappedPastTrips,
+    allTrips: [...mappedCurrentTrips, ...mappedFutureTrips, ...mappedPastTrips],
+  };
 };
