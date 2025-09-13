@@ -8,23 +8,32 @@ import {
   useDisclosure,
   Spinner,
   Box,
+  IconButton,
 } from "@chakra-ui/react";
-import { Grid3X3, List } from "lucide-react";
+import { Grid3X3, List, Download } from "lucide-react";
 import { useParams } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 
-import CategoryForm from "./components/CategoryForm";
-import GridView from "./components/GridView";
-import ListView from "./components/ListView";
-import { ProgressBar } from "./components";
+import {
+  ProgressBar,
+  CheckListCopySheet,
+  CategoryForm,
+  GridView,
+  ListView,
+} from "./components";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    open: isCheckListCopyOpen,
+    onOpen: onCheckListCopyOpen,
+    onClose: onCheckListCopyClose,
+  } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
@@ -37,14 +46,14 @@ export default function PackingListPage() {
     },
   });
 
+  const isCanAddMoreCategories = categories.length < 15;
+
   const handleSaveCategory = (newCategory: {
     categoryName: string;
     iconKey: string;
   }) => {
     createCategoryMutation.mutate(newCategory);
   };
-
-  const isCanAddMoreCategories = categories.length < 15;
 
   const handleCancelCategoryCreate = () => {
     onClose();
@@ -105,51 +114,63 @@ export default function PackingListPage() {
             <Text fontSize="2xl" fontWeight="bold" color="gray.800">
               여행 체크리스트
             </Text>
-            <SegmentGroup.Root
-              size="sm"
-              value={viewMode}
-              onValueChange={(details) => {
-                if (details.value) {
-                  setViewMode(details.value);
-                  localStorage.setItem(
-                    STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
-                    details.value
-                  );
-                }
-              }}
-            >
-              <SegmentGroup.Indicator />
-              <SegmentGroup.Items
-                items={[
-                  {
-                    value: "그리드",
-                    label: (
-                      <HStack gap={2}>
-                        <Grid3X3
-                          size={18}
-                          color={
-                            viewMode === "그리드" ? "#3182CE" : "currentColor"
-                          }
-                        />
-                      </HStack>
-                    ),
-                  },
-                  {
-                    value: "일렬형식",
-                    label: (
-                      <HStack gap={2}>
-                        <List
-                          size={18}
-                          color={
-                            viewMode === "일렬형식" ? "#3182CE" : "currentColor"
-                          }
-                        />
-                      </HStack>
-                    ),
-                  },
-                ]}
-              />
-            </SegmentGroup.Root>
+            <HStack gap={2}>
+              {/* <IconButton
+                aria-label="체크리스트 텍스트로 추출"
+                size="sm"
+                variant="outline"
+                onClick={onCheckListCopyOpen}
+              >
+                <Download size={16} />
+              </IconButton> */}
+              <SegmentGroup.Root
+                size="sm"
+                value={viewMode}
+                onValueChange={(details) => {
+                  if (details.value) {
+                    setViewMode(details.value);
+                    localStorage.setItem(
+                      STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
+                      details.value
+                    );
+                  }
+                }}
+              >
+                <SegmentGroup.Indicator />
+                <SegmentGroup.Items
+                  items={[
+                    {
+                      value: "그리드",
+                      label: (
+                        <HStack gap={2}>
+                          <Grid3X3
+                            size={18}
+                            color={
+                              viewMode === "그리드" ? "#3182CE" : "currentColor"
+                            }
+                          />
+                        </HStack>
+                      ),
+                    },
+                    {
+                      value: "일렬형식",
+                      label: (
+                        <HStack gap={2}>
+                          <List
+                            size={18}
+                            color={
+                              viewMode === "일렬형식"
+                                ? "#3182CE"
+                                : "currentColor"
+                            }
+                          />
+                        </HStack>
+                      ),
+                    },
+                  ]}
+                />
+              </SegmentGroup.Root>
+            </HStack>
           </HStack>
 
           <ProgressBar progress={progress} />
@@ -187,6 +208,17 @@ export default function PackingListPage() {
           onSave={handleSaveCategory}
           onCancel={handleCancelCategoryCreate}
           isLoading={createCategoryMutation.isPending}
+        />
+      </BottomSheet>
+
+      <BottomSheet
+        isOpen={isCheckListCopyOpen}
+        onClose={onCheckListCopyClose}
+        title=""
+      >
+        <CheckListCopySheet
+          categories={categories}
+          onClose={onCheckListCopyClose}
         />
       </BottomSheet>
     </PageLayout>
