@@ -10,10 +10,11 @@ export default function TripList() {
   const { trips, isLoading, error } = useTripList();
   const navigate = useNavigate();
 
-  const handleTripClick = (trip: Trip) => {
+  const goToTripPage = (trip: Trip) => {
     navigate({
       to: "/packing/list/$tripId",
       params: { tripId: trip.id },
+      search: { tripTitle: trip.title },
     });
   };
 
@@ -80,7 +81,7 @@ export default function TripList() {
       <Box w="full" overflowX="auto">
         <VStack gap={4} pb={2} align="stretch">
           {trips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} onClick={handleTripClick} />
+            <TripCard key={trip.id} trip={trip} onClick={goToTripPage} />
           ))}
         </VStack>
       </Box>

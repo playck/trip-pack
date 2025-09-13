@@ -8,10 +8,9 @@ import {
   useDisclosure,
   Spinner,
   Box,
-  IconButton,
 } from "@chakra-ui/react";
-import { Grid3X3, List, Download } from "lucide-react";
-import { useParams } from "@tanstack/react-router";
+import { Grid3X3, List } from "lucide-react";
+import { useParams, useSearch } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { BottomSheet, FloatingAddButton } from "@/shared/components";
@@ -29,12 +28,13 @@ import { useCreateCategory } from "./hooks/useCreateCategory";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    open: isCheckListCopyOpen,
-    onOpen: onCheckListCopyOpen,
-    onClose: onCheckListCopyClose,
-  } = useDisclosure();
+  const { open: isCheckListCopyOpen, onClose: onCheckListCopyClose } =
+    useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
+  const search = useSearch({ from: "/packing/list/$tripId" }) as {
+    tripTitle?: string;
+  };
+  const tripTitle = search?.tripTitle || "여행";
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
@@ -110,12 +110,13 @@ export default function PackingListPage() {
     <PageLayout>
       <Container maxW="6xl" py={5} px={0}>
         <VStack gap={4} align="stretch">
-          <HStack justify="space-between" align="center">
+          <VStack align="stretch" gap={3}>
             <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-              여행 체크리스트
+              {tripTitle}
             </Text>
-            <HStack gap={2}>
-              {/* <IconButton
+            <HStack justify="flex-end" align="center">
+              <HStack gap={2}>
+                {/* <IconButton
                 aria-label="체크리스트 텍스트로 추출"
                 size="sm"
                 variant="outline"
@@ -123,55 +124,58 @@ export default function PackingListPage() {
               >
                 <Download size={16} />
               </IconButton> */}
-              <SegmentGroup.Root
-                size="sm"
-                value={viewMode}
-                onValueChange={(details) => {
-                  if (details.value) {
-                    setViewMode(details.value);
-                    localStorage.setItem(
-                      STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
-                      details.value
-                    );
-                  }
-                }}
-              >
-                <SegmentGroup.Indicator />
-                <SegmentGroup.Items
-                  items={[
-                    {
-                      value: "그리드",
-                      label: (
-                        <HStack gap={2}>
-                          <Grid3X3
-                            size={18}
-                            color={
-                              viewMode === "그리드" ? "#3182CE" : "currentColor"
-                            }
-                          />
-                        </HStack>
-                      ),
-                    },
-                    {
-                      value: "일렬형식",
-                      label: (
-                        <HStack gap={2}>
-                          <List
-                            size={18}
-                            color={
-                              viewMode === "일렬형식"
-                                ? "#3182CE"
-                                : "currentColor"
-                            }
-                          />
-                        </HStack>
-                      ),
-                    },
-                  ]}
-                />
-              </SegmentGroup.Root>
+                <SegmentGroup.Root
+                  size="sm"
+                  value={viewMode}
+                  onValueChange={(details) => {
+                    if (details.value) {
+                      setViewMode(details.value);
+                      localStorage.setItem(
+                        STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
+                        details.value
+                      );
+                    }
+                  }}
+                >
+                  <SegmentGroup.Indicator />
+                  <SegmentGroup.Items
+                    items={[
+                      {
+                        value: "그리드",
+                        label: (
+                          <HStack gap={2}>
+                            <Grid3X3
+                              size={18}
+                              color={
+                                viewMode === "그리드"
+                                  ? "#3182CE"
+                                  : "currentColor"
+                              }
+                            />
+                          </HStack>
+                        ),
+                      },
+                      {
+                        value: "일렬형식",
+                        label: (
+                          <HStack gap={2}>
+                            <List
+                              size={18}
+                              color={
+                                viewMode === "일렬형식"
+                                  ? "#3182CE"
+                                  : "currentColor"
+                              }
+                            />
+                          </HStack>
+                        ),
+                      },
+                    ]}
+                  />
+                </SegmentGroup.Root>
+              </HStack>
             </HStack>
-          </HStack>
+          </VStack>
 
           <ProgressBar progress={progress} />
 
