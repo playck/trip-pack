@@ -1,7 +1,8 @@
-import { Box, Text, VStack, Flex } from "@chakra-ui/react";
+import { Box, Text, VStack, Flex, Badge } from "@chakra-ui/react";
+import dayjs from "dayjs";
 
 import type { Trip } from "../types";
-import { colorCombinations } from "../../../shared/constants/colors";
+import { colorCombinations, colors } from "../../../shared/constants/colors";
 import { formatTripDateRange } from "../../../shared/utiles/date";
 
 interface TripCardProps {
@@ -10,6 +11,33 @@ interface TripCardProps {
 }
 
 export default function TripCard({ trip, onClick }: TripCardProps) {
+  // D-Day 계산 함수
+  const getTripStatus = (
+    startDate: string,
+    endDate: string | null
+  ): string | null => {
+    const today = dayjs().startOf("day");
+    const tripStartDate = dayjs(startDate);
+    const tripEndDate = endDate ? dayjs(endDate) : tripStartDate;
+
+    const isTripInProgress =
+      !today.isBefore(tripStartDate) && !today.isAfter(tripEndDate);
+
+    if (isTripInProgress) {
+      return "여행중";
+    }
+
+    const isTripEnded = today.isAfter(tripEndDate);
+    if (isTripEnded) {
+      return "여행종료";
+    }
+
+    const diffDays = tripStartDate.diff(today, "day");
+    return `D-${diffDays}`;
+  };
+
+  const tripStatus = getTripStatus(trip.start_date, trip.end_date);
+
   return (
     <Box
       position="relative"
@@ -42,6 +70,27 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
         position="relative"
         zIndex={1}
       >
+        {tripStatus && (
+          <Badge
+            colorPalette={
+              tripStatus === "여행중"
+                ? "orange"
+                : tripStatus === "여행종료"
+                  ? "gray"
+                  : colors.primary.palette
+            }
+            variant="solid"
+            fontSize="xs"
+            px={2}
+            py={1}
+            alignSelf="flex-start"
+            borderRadius="md"
+            fontWeight="bold"
+          >
+            {tripStatus}
+          </Badge>
+        )}
+
         <VStack justify="end" align="start" gap={1} flex={1}>
           <Text
             fontSize="lg"

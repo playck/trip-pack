@@ -1,14 +1,17 @@
 import { VStack, Text, Spinner, Box } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
-import { colorCombinations } from "@/shared/constants/colors";
+import { colorCombinations, colors } from "@/shared/constants/colors";
 
 import TripCard from "./TripCard";
 import { useTripList } from "../hooks/useTripList";
+import { useUpcomingTrip } from "../hooks/useUpcomingTrip";
 import type { Trip } from "../types";
 
 export default function TripList() {
-  const { trips, isLoading, error } = useTripList();
   const navigate = useNavigate();
+  const { currentTrips, futureTrips, pastTrips, isLoading, error } =
+    useTripList();
+  const upcomingTripInfo = useUpcomingTrip(futureTrips);
 
   const goToTripPage = (trip: Trip) => {
     navigate({
@@ -45,7 +48,12 @@ export default function TripList() {
     );
   }
 
-  if (trips.length === 0) {
+  const noTripList =
+    currentTrips?.length === 0 &&
+    futureTrips.length === 0 &&
+    pastTrips.length === 0;
+
+  if (noTripList) {
     return (
       <VStack gap={4} py={8}>
         <Text
@@ -69,20 +77,118 @@ export default function TripList() {
   }
 
   return (
-    <VStack align="start" gap={4} w="full">
+    <VStack align="start" gap={3} w="full">
       <Text
         fontSize="xl"
         fontWeight="bold"
         color={colorCombinations.defaultCard.text}
       >
-        내 여행 계획
+        여행 리스트
       </Text>
 
       <Box w="full" overflowX="auto">
         <VStack gap={4} pb={2} align="stretch">
-          {trips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} onClick={goToTripPage} />
-          ))}
+          {/* 다가오는 여행 알림 */}
+          {upcomingTripInfo && (
+            <Box
+              w="full"
+              p={3}
+              bg={colors.primary.subtle}
+              borderRadius="xl"
+              borderLeft="4px solid"
+              borderLeftColor={colors.primary.solid}
+              cursor="pointer"
+              onClick={() => goToTripPage(upcomingTripInfo.trip)}
+            >
+              <VStack align="start" gap={2}>
+                <Text
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color={colors.primary.fg}
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                >
+                  🎒 {upcomingTripInfo.trip.title}
+                </Text>
+                <Text
+                  ml="24px"
+                  fontSize="md"
+                  color={colors.primary.fg}
+                  opacity={0.8}
+                >
+                  {upcomingTripInfo.message}
+                </Text>
+              </VStack>
+            </Box>
+          )}
+
+          {/* 여행중인 여행 섹션 */}
+          {currentTrips && currentTrips?.length > 0 && (
+            <VStack gap={3} align="stretch" w="full" pl={2}>
+              {currentTrips.map((trip) => (
+                <Box
+                  key={trip.id}
+                  _hover={{ transform: "translateY(-2px)" }}
+                  transition="transform 0.2s"
+                >
+                  <TripCard trip={trip} onClick={goToTripPage} />
+                </Box>
+              ))}
+            </VStack>
+          )}
+
+          {/* 미래 여행 섹션 */}
+          {futureTrips.length > 0 && (
+            <VStack gap={3} align="stretch" w="full" pl={2}>
+              {futureTrips.map((trip) => (
+                <Box
+                  key={trip.id}
+                  _hover={{ transform: "translateY(-2px)" }}
+                  transition="transform 0.2s"
+                >
+                  <TripCard trip={trip} onClick={goToTripPage} />
+                </Box>
+              ))}
+            </VStack>
+          )}
+
+          {/* 과거 여행 섹션 */}
+          {pastTrips.length > 0 && (
+            <VStack align="start" gap={4} w="full">
+              <Box
+                w="full"
+                p={3}
+                bg="gray.50"
+                borderRadius="xl"
+                borderLeft="4px solid"
+                borderLeftColor="gray.300"
+              >
+                <VStack align="start" gap={1}>
+                  <Text
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color="gray.600"
+                    display="flex"
+                    alignItems="center"
+                    gap={2}
+                  >
+                    ✈️ 추억이 된 여행
+                  </Text>
+                  <Text fontSize="sm" color="gray.500" fontStyle="italic">
+                    소중한 기억들이 담긴 여행들이에요
+                  </Text>
+                </VStack>
+              </Box>
+              <VStack gap={3} align="stretch" w="full" pl={2}>
+                {pastTrips.map((trip) => (
+                  <Box key={trip.id} opacity={0.8}>
+                    <TripCard trip={trip} onClick={goToTripPage} />
+                  </Box>
+                ))}
+              </VStack>
+            </VStack>
+          )}
         </VStack>
       </Box>
     </VStack>
