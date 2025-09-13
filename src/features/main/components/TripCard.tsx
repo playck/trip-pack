@@ -1,9 +1,8 @@
-import { Box, Text, VStack, HStack } from "@chakra-ui/react";
-import { Calendar } from "lucide-react";
+import { Box, Text, VStack, Flex } from "@chakra-ui/react";
 
 import type { Trip } from "../types";
 import { colorCombinations } from "../../../shared/constants/colors";
-import { getDuration, formatTripDateRange } from "../../../shared/utiles/date";
+import { formatTripDateRange } from "../../../shared/utiles/date";
 
 interface TripCardProps {
   trip: Trip;
@@ -38,12 +37,12 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
 
       <VStack
         h="full"
-        justify="space-between"
+        justify="start"
         align="start"
         position="relative"
         zIndex={1}
       >
-        <VStack align="start" gap={1} flex={1}>
+        <VStack justify="end" align="start" gap={1} flex={1}>
           <Text
             fontSize="lg"
             fontWeight="bold"
@@ -53,33 +52,29 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
           >
             {trip.title}
           </Text>
-          {trip.region_name && (
+          <Flex gap={1} align="center">
+            {trip.region_name && (
+              <Text
+                as="span"
+                fontSize="sm"
+                color={colorCombinations.defaultCard.text}
+                opacity={0.7}
+                lineClamp={1}
+              >
+                {trip.region_name}
+              </Text>
+            )}
+            <Text> · </Text>
             <Text
+              as="span"
               fontSize="sm"
               color={colorCombinations.defaultCard.text}
               opacity={0.7}
-              lineClamp={1}
             >
-              {trip.region_name}
+              {formatTripDateRange(trip.start_date, trip.end_date)}
             </Text>
-          )}
+          </Flex>
         </VStack>
-
-        <HStack gap={2} align="center">
-          <Calendar
-            size={14}
-            color={colorCombinations.defaultCard.text}
-            opacity={0.7}
-          />
-          <Text
-            fontSize="sm"
-            color={colorCombinations.defaultCard.text}
-            opacity={0.7}
-          >
-            {formatTripDateRange(trip.start_date, trip.end_date)} ·{" "}
-            {getDuration(trip.start_date, trip.end_date)}
-          </Text>
-        </HStack>
       </VStack>
     </Box>
   );
