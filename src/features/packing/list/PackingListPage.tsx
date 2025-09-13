@@ -22,6 +22,7 @@ import {
   CategoryForm,
   GridView,
   ListView,
+  TripTitle,
 } from "./components";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
@@ -34,7 +35,7 @@ export default function PackingListPage() {
   const search = useSearch({ from: "/packing/list/$tripId" }) as {
     tripTitle?: string;
   };
-  const tripTitle = search?.tripTitle || "여행";
+  const initialTripTitle = search?.tripTitle || "여행";
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
@@ -111,9 +112,8 @@ export default function PackingListPage() {
       <Container maxW="6xl" py={5} px={0}>
         <VStack gap={4} align="stretch">
           <VStack align="stretch" gap={3}>
-            <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-              {tripTitle}
-            </Text>
+            <TripTitle tripId={tripId} initialTitle={initialTripTitle} />
+
             <HStack justify="flex-end" align="center">
               <HStack gap={2}>
                 {/* <IconButton
