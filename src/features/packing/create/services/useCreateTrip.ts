@@ -35,9 +35,8 @@ export const useCreateTrip = ({
 
       // 여행 및 체크리스트 데이터 변환
       const tripAdapter = new TripAdapter(packingCreateState, userId);
-      const tripData = tripAdapter.adaptTripData(); // id 제거
+      const tripData = tripAdapter.adaptTripData();
 
-      // 먼저 여행을 생성하고 실제 ID를 받음
       const actualTripId = await createTripWithChecklist(tripData, [], []);
 
       // 실제 ID로 카테고리와 아이템 생성

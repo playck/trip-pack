@@ -32,15 +32,15 @@ export default class TripAdapter {
     return { startDate, endDate };
   }
 
-  private generateTripTitle(startDate: string): string {
+  private generateTripTitle(): string {
     return this.packingCreateState.region
-      ? `${this.packingCreateState.region.name} 여행 ${startDate}`
-      : `여행 ${startDate}`;
+      ? `${this.packingCreateState.region.name}`
+      : "";
   }
 
   private convertToTripData(): TablesInsert<"trips"> {
     const { startDate, endDate } = this.formatTripDates();
-    const title = this.generateTripTitle(startDate);
+    const title = this.generateTripTitle();
 
     return {
       title,
