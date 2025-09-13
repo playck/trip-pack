@@ -38,7 +38,7 @@ export default function PackingCreatePage() {
       case Step.COMPANION:
         return !validation.hasCompanion;
       case Step.TRIP_TYPE:
-        return !validation.hasTripTypes;
+        return false;
       default:
         return false;
     }

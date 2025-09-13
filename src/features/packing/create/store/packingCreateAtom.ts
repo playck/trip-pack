@@ -38,6 +38,5 @@ export const packingCreateValidationAtom = atom((get) => {
     hasCompanion:
       !!state.companion &&
       (state.companion === "alone" || state.companionTypes.length > 0),
-    hasTripTypes: state.tripTypes.length > 0,
   };
 });
