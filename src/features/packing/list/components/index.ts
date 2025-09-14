@@ -5,4 +5,5 @@ export { default as ListView } from "./ListView";
 export { default as ProgressBar } from "./ProgressBar";
 export { default as CheckListCopySheet } from "./CheckListCopySheet";
 export { default as TripTitle } from "./TripTitle";
+export { DeleteTripModal } from "./DeleteTripModal";
 export * from "./types";
