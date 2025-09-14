@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { Text, HStack, IconButton, Input } from "@chakra-ui/react";
-import { toaster } from "@/shared/components/ui/toaster";
-import { Edit3, Check, X } from "lucide-react";
+import {
+  Text,
+  HStack,
+  IconButton,
+  Input,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { Edit3, Check, X, Trash2 } from "lucide-react";
 
 import { useUpdateTripTitle } from "@/shared/hooks/useUpdateTripTitle";
+import { useDeleteTrip } from "@/shared/hooks/useDeleteTrip";
+import { DeleteTripModal } from "./DeleteTripModal";
 
 interface TripTitleProps {
   tripId: string;
@@ -11,30 +18,21 @@ interface TripTitleProps {
 }
 
 export default function TripTitle({ tripId, initialTitle }: TripTitleProps) {
+  const {
+    open: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onClose: onDeleteModalClose,
+  } = useDisclosure();
   const [tripTitle, setTripTitle] = useState(initialTitle);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitleValue, setEditTitleValue] = useState("");
 
   const updateTripTitleMutation = useUpdateTripTitle(tripId, {
-    onSuccess: (newTitle: string) => {
-      setTripTitle(newTitle);
-      setIsEditingTitle(false);
-      toaster.create({
-        title: "여행명이 수정되었습니다",
-        description: `'${newTitle}'로 변경되었습니다`,
-        type: "success",
-        duration: 2000,
-      });
-    },
-    onError: (error) => {
-      toaster.create({
-        title: "여행명 수정 실패",
-        description: error.message,
-        type: "error",
-        duration: 2000,
-      });
-    },
+    setTripTitle,
+    setIsEditingTitle,
   });
+
+  const deleteTripMutation = useDeleteTrip();
 
   const handleStartEditTitle = () => {
     setEditTitleValue(tripTitle);
@@ -52,6 +50,11 @@ export default function TripTitle({ tripId, initialTitle }: TripTitleProps) {
   const handleCancelEditTitle = () => {
     setEditTitleValue("");
     setIsEditingTitle(false);
+  };
+
+  const handleDeleteTrip = () => {
+    deleteTripMutation.mutate(tripId);
+    onDeleteModalClose();
   };
 
   if (isEditingTitle) {
@@ -97,26 +100,48 @@ export default function TripTitle({ tripId, initialTitle }: TripTitleProps) {
   }
 
   return (
-    <HStack justify="space-between" align="center" h="40px">
-      <Text
-        flex={1}
-        fontSize="xl"
-        fontWeight="bold"
-        color="gray.800"
-        lineHeight="28px"
-      >
-        {tripTitle}
-      </Text>
-      <IconButton
-        aria-label="여행명 수정"
-        size="xs"
-        variant="solid"
-        bg="transparent"
-        color="gray.600"
-        onClick={handleStartEditTitle}
-      >
-        <Edit3 size={12} />
-      </IconButton>
-    </HStack>
+    <>
+      <HStack justify="space-between" align="center" h="40px">
+        <Text
+          flex={1}
+          fontSize="xl"
+          fontWeight="bold"
+          color="gray.800"
+          lineHeight="28px"
+        >
+          {tripTitle}
+        </Text>
+        <HStack gap={1}>
+          <IconButton
+            aria-label="여행명 수정"
+            size="xs"
+            variant="solid"
+            bg="transparent"
+            color="gray.600"
+            onClick={handleStartEditTitle}
+          >
+            <Edit3 size={12} />
+          </IconButton>
+          <IconButton
+            aria-label="여행 삭제"
+            size="xs"
+            variant="solid"
+            bg="transparent"
+            color="red.500"
+            onClick={onDeleteModalOpen}
+          >
+            <Trash2 size={12} />
+          </IconButton>
+        </HStack>
+      </HStack>
+
+      <DeleteTripModal
+        isOpen={isDeleteModalOpen}
+        onClose={onDeleteModalClose}
+        tripTitle={tripTitle}
+        onDeleteTrip={handleDeleteTrip}
+        isLoading={deleteTripMutation.isPending}
+      />
+    </>
   );
 }
