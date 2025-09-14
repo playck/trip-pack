@@ -1,6 +1,7 @@
-import { VStack, Text, Spinner, Box } from "@chakra-ui/react";
+import { VStack, Text, Box } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
 import { colorCombinations, colors } from "@/shared/constants/colors";
+import { LoadingSpinner } from "@/shared/components";
 
 import TripCard from "./TripCard";
 import { useTripList } from "../hooks/useTripList";
@@ -38,14 +39,7 @@ export default function TripList() {
   }
 
   if (isLoading) {
-    return (
-      <VStack gap={4} py={8}>
-        <Spinner size="lg" color={colorCombinations.defaultCard.text} />
-        <Text color={colorCombinations.defaultCard.text} opacity={0.7}>
-          여행 목록을 불러오고 있어요...
-        </Text>
-      </VStack>
-    );
+    return <LoadingSpinner message="여행 목록을 불러오고 있어요..." centered />;
   }
 
   const noTripList =

@@ -5,14 +5,17 @@ import {
   Box,
   HStack,
   useDisclosure,
-  Spinner,
   IconButton,
 } from "@chakra-ui/react";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-import { BottomSheet, FloatingAddButton } from "@/shared/components";
+import {
+  BottomSheet,
+  FloatingAddButton,
+  LoadingSpinner,
+} from "@/shared/components";
 
 import PackingItemList from "./components/PackingItemList";
 import { ItemForm, DeleteCategoryModal, SearchBar } from "./components";
@@ -47,10 +50,7 @@ export default function CategoryDetailPage() {
   if (isLoading) {
     return (
       <Container maxW="6xl" py={6}>
-        <VStack gap={4} py={8}>
-          <Spinner size="lg" color="blue.500" />
-          <Text color="gray.600">체크리스트를 불러오고 있어요...</Text>
-        </VStack>
+        <LoadingSpinner message="체크리스트를 불러오고 있어요..." centered />
       </Container>
     );
   }

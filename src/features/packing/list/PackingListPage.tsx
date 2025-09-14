@@ -6,14 +6,17 @@ import {
   HStack,
   SegmentGroup,
   useDisclosure,
-  Spinner,
   Box,
 } from "@chakra-ui/react";
 import { Grid3X3, List } from "lucide-react";
 import { useParams, useSearch } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { BottomSheet, FloatingAddButton } from "@/shared/components";
+import {
+  BottomSheet,
+  FloatingAddButton,
+  LoadingSpinner,
+} from "@/shared/components";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 
 import {
@@ -64,10 +67,7 @@ export default function PackingListPage() {
     return (
       <PageLayout>
         <Container maxW="6xl" py={5} px={0}>
-          <VStack gap={4} py={8}>
-            <Spinner size="lg" color="blue.500" />
-            <Text color="gray.600">체크리스트를 불러오고 있어요...</Text>
-          </VStack>
+          <LoadingSpinner message="체크리스트를 불러오고 있어요..." centered />
         </Container>
       </PageLayout>
     );
