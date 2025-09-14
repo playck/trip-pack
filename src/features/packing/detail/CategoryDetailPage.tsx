@@ -13,6 +13,7 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  ErrorMessage,
   FloatingAddButton,
   LoadingSpinner,
 } from "@/shared/components";
@@ -49,27 +50,22 @@ export default function CategoryDetailPage() {
 
   if (isLoading) {
     return (
-      <Container maxW="6xl" py={6}>
-        <LoadingSpinner message="체크리스트를 불러오고 있어요..." centered />
-      </Container>
+      <LoadingSpinner
+        message="체크리스트를 불러오고 있어요..."
+        centered
+        fullScreen
+      />
     );
   }
 
   if (error) {
     return (
-      <Container maxW="6xl" py={6}>
-        <Box
-          p={4}
-          bg="red.50"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="red.200"
-        >
-          <Text color="red.600" fontSize="sm">
-            체크리스트를 불러오는 중 오류가 발생했습니다: {error}
-          </Text>
-        </Box>
-      </Container>
+      <ErrorMessage
+        message={error || "알 수 없는 오류가 발생했습니다"}
+        title="체크리스트 불러오기 실패"
+        centered
+        fullScreen
+      />
     );
   }
 

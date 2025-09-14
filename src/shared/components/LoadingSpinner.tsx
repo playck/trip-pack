@@ -1,4 +1,4 @@
-import { VStack, Text, Spinner, Flex } from "@chakra-ui/react";
+import { VStack, Text, Spinner, Flex, Container } from "@chakra-ui/react";
 import { colorCombinations } from "@/shared/constants/colors";
 
 interface LoadingSpinnerProps {
@@ -8,6 +8,7 @@ interface LoadingSpinnerProps {
   py?: number;
   gap?: number;
   centered?: boolean;
+  fullScreen?: boolean;
 }
 
 export default function LoadingSpinner({
@@ -17,6 +18,7 @@ export default function LoadingSpinner({
   py = 8,
   gap = 4,
   centered = false,
+  fullScreen = false,
 }: LoadingSpinnerProps) {
   const content = (
     <VStack gap={gap} py={py}>
@@ -28,11 +30,26 @@ export default function LoadingSpinner({
   );
 
   if (centered) {
-    return (
-      <Flex justify="center" align="center" minH="50vh" w="full">
+    const centerContainer = (
+      <Flex
+        justify="center"
+        align="center"
+        minH={fullScreen ? "calc(100vh - 120px)" : "50vh"}
+        w="full"
+      >
         {content}
       </Flex>
     );
+
+    if (fullScreen) {
+      return (
+        <Container maxW="6xl" py={5} px={0}>
+          {centerContainer}
+        </Container>
+      );
+    }
+
+    return centerContainer;
   }
 
   return content;

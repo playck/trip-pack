@@ -1,7 +1,7 @@
 import { VStack, Text, Box } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
 import { colorCombinations, colors } from "@/shared/constants/colors";
-import { LoadingSpinner } from "@/shared/components";
+import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 
 import TripCard from "./TripCard";
 import { useTripList } from "../hooks/useTripList";
@@ -10,7 +10,7 @@ import type { Trip } from "../types";
 
 export default function TripList() {
   const navigate = useNavigate();
-  const { currentTrips, futureTrips, pastTrips, isLoading, error } =
+  const { currentTrips, futureTrips, pastTrips, isLoading, error, noTripList } =
     useTripList();
   const upcomingTripInfo = useUpcomingTrip(futureTrips);
 
@@ -24,28 +24,17 @@ export default function TripList() {
 
   if (error) {
     return (
-      <Box
-        p={4}
-        bg="red.50"
-        borderRadius="lg"
-        borderWidth="1px"
-        borderColor="red.200"
-      >
-        <Text color="red.600" fontSize="sm">
-          {error}
-        </Text>
-      </Box>
+      <ErrorMessage
+        message={error}
+        title="여행 목록 불러오기 실패"
+        variant="minimal"
+      />
     );
   }
 
   if (isLoading) {
     return <LoadingSpinner message="여행 목록을 불러오고 있어요..." centered />;
   }
-
-  const noTripList =
-    currentTrips?.length === 0 &&
-    futureTrips.length === 0 &&
-    pastTrips.length === 0;
 
   if (noTripList) {
     return (

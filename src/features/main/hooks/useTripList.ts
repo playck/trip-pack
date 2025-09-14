@@ -9,6 +9,7 @@ export interface UseTripListReturn {
   trips: Trip[];
   isLoading: boolean;
   error: string | null;
+  noTripList: boolean;
 }
 
 export function useTripList(): UseTripListReturn {
@@ -18,12 +19,18 @@ export function useTripList(): UseTripListReturn {
     retry: false,
   });
 
+  const noTripList =
+    data?.currentTrips?.length === 0 &&
+    data?.futureTrips.length === 0 &&
+    data?.pastTrips.length === 0;
+
   return {
     currentTrips: data?.currentTrips || [],
     futureTrips: data?.futureTrips || [],
     pastTrips: data?.pastTrips || [],
     trips: data?.allTrips || [],
     isLoading,
+    noTripList,
     error: error?.message || null,
   };
 }
