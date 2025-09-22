@@ -21,7 +21,6 @@ interface TripWeatherDay {
   description: string;
   icon: string;
   isToday?: boolean;
-  isTripDay?: boolean;
 }
 
 interface TripWeatherData {
@@ -61,23 +60,22 @@ export const useTripWeather = ({
       try {
         const weatherData = await getWeatherByCity(cityName);
 
-        // 여행 기간에 해당하는 날씨만 필터링
+        // 오늘부터 여행 끝까지의 날씨만 필터링
         const tripForecast = weatherData.forecast.filter((day) => {
           const dayDate = dayjs(day.date);
+
           return (
-            dayDate.isSameOrAfter(tripStart, "day") &&
+            dayDate.isSameOrAfter(now, "day") &&
             dayDate.isSameOrBefore(tripEnd, "day")
           );
         });
 
-        // 여행 날씨 데이터로 변환
         const forecast: TripWeatherDay[] = tripForecast.map((day) => ({
           date: day.date,
           avgTemp: day.avgTemp,
           description: day.description,
           icon: day.icon,
           isToday: dayjs(day.date).isSame(now, "day"),
-          isTripDay: true,
         }));
 
         return {
