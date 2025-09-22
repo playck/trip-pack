@@ -38,7 +38,7 @@ export default function PackingItemList({
   }
 
   return (
-    <VStack gap={3} align="stretch">
+    <VStack gap={3} align="stretch" pb="60px">
       {filteredItems.map((item, idx) => (
         <PackingItem
           key={item.id || `${item.name}-${idx}`}
