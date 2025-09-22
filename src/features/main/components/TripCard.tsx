@@ -101,28 +101,30 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
           >
             {trip.title}
           </Text>
-          <Flex gap={1} align="center">
-            {trip.region_name && (
+          <VStack align="start" gap={1}>
+            <Flex gap={1} align="center">
+              {trip.region_name && (
+                <Text
+                  as="span"
+                  fontSize="sm"
+                  color={colorCombinations.defaultCard.text}
+                  opacity={0.7}
+                  lineClamp={1}
+                >
+                  {trip.region_name}
+                </Text>
+              )}
+              <Text> · </Text>
               <Text
                 as="span"
                 fontSize="sm"
                 color={colorCombinations.defaultCard.text}
                 opacity={0.7}
-                lineClamp={1}
               >
-                {trip.region_name}
+                {formatTripDateRange(trip.start_date, trip.end_date)}
               </Text>
-            )}
-            <Text> · </Text>
-            <Text
-              as="span"
-              fontSize="sm"
-              color={colorCombinations.defaultCard.text}
-              opacity={0.7}
-            >
-              {formatTripDateRange(trip.start_date, trip.end_date)}
-            </Text>
-          </Flex>
+            </Flex>
+          </VStack>
         </VStack>
       </VStack>
     </Box>

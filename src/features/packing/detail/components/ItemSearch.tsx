@@ -9,7 +9,7 @@ interface ItemSearchProps {
 
 export default function ItemSearch({
   onSearch,
-  placeholder = "아이템 검색...",
+  placeholder = "아이템 검색",
 }: ItemSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
