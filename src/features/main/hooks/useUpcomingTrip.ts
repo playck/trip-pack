@@ -39,3 +39,25 @@ export function useUpcomingTrip(futureTrips: Trip[]): UpcomingTripInfo | null {
     return upcomingTrip ? createUpcomingTripInfo(upcomingTrip) : null;
   }, [futureTrips]);
 }
+
+// 여행 상태 계산 (예정, 진행중, 완료)
+export const getTripStatus = (
+  startDate: string,
+  endDate: string
+): "upcoming" | "ongoing" | "completed" => {
+  const today = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  today.setHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(23, 59, 59, 999);
+
+  if (today < start) {
+    return "upcoming";
+  } else if (today <= end) {
+    return "ongoing";
+  } else {
+    return "completed";
+  }
+};

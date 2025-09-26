@@ -47,3 +47,24 @@ export const getDuration = (startDate: string, endDate: string | null) => {
 
   return `${diffDays}일`;
 };
+
+// 여행까지 남은 일수 계산
+export const getDaysUntilTrip = (startDate: string): number => {
+  const start = new Date(startDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
+
+  const diffTime = start.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
+// 여행 기간 계산 유틸리티
+export const getTripDuration = (startDate: string, endDate: string): number => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
