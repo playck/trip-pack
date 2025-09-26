@@ -25,7 +25,6 @@ export function useUpdateTripTitle(
       if (callback?.onSuccess) {
         callback.onSuccess(newTitle);
       } else {
-        // 기본 상태 업데이트
         callback?.setTripTitle?.(newTitle);
         callback?.setIsEditingTitle?.(false);
 

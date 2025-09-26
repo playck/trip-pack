@@ -18,7 +18,9 @@ import {
   FloatingAddButton,
   LoadingSpinner,
 } from "@/shared/components";
+import WeatherCard from "@/shared/components/weather/weatherCard";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
+import { useTripInfo } from "@/shared/hooks/useTripQuery";
 
 import {
   ProgressBar,
@@ -44,6 +46,7 @@ export default function PackingListPage() {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
   const { categories, isLoading, error, progress } = useTripChecklist(tripId);
+  const { data: tripInfo } = useTripInfo(tripId);
 
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
@@ -52,6 +55,8 @@ export default function PackingListPage() {
   });
 
   const isCanAddMoreCategories = categories.length < 15;
+  const isShowWeatherCard =
+    tripInfo?.regionName && tripInfo.startDate && tripInfo.endDate;
 
   const handleSaveCategory = (newCategory: {
     categoryName: string;
@@ -76,7 +81,7 @@ export default function PackingListPage() {
     );
   }
 
-  if (!error) {
+  if (error) {
     return (
       <PageLayout>
         <ErrorMessage
@@ -174,6 +179,15 @@ export default function PackingListPage() {
           </VStack>
 
           <ProgressBar progress={progress} />
+
+          {/* 여행지 날씨 정보 */}
+          {isShowWeatherCard && (
+            <WeatherCard
+              cityName={tripInfo.regionName || ""}
+              startDate={tripInfo.startDate}
+              endDate={tripInfo.endDate}
+            />
+          )}
 
           {viewMode === "그리드" ? (
             <GridView categories={categories} />
