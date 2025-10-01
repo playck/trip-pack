@@ -18,6 +18,7 @@ import {
   FloatingAddButton,
   LoadingSpinner,
 } from "@/shared/components";
+import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
@@ -35,8 +36,11 @@ import { useCreateCategory } from "./hooks/useCreateCategory";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const { open: isCheckListCopyOpen, onClose: onCheckListCopyClose } =
-    useDisclosure();
+  const {
+    open: isCheckListCopyOpen,
+    onOpen: onCheckListCopyOpen,
+    onClose: onCheckListCopyClose,
+  } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const search = useSearch({ from: "/packing/list/$tripId" }) as {
     tripTitle?: string;
@@ -68,6 +72,28 @@ export default function PackingListPage() {
   const handleCancelCategoryCreate = () => {
     onClose();
   };
+
+  const menuItems: FloatingMenuItem[] = [
+    {
+      label: "체크리스트 저장",
+      onClick: () => {
+        // TODO: 체크리스트 저장 로직 구현
+        console.log("체크리스트 저장");
+      },
+    },
+    {
+      label: "체크리스트 가져오기",
+      onClick: () => {
+        onCheckListCopyOpen();
+      },
+    },
+    {
+      label: "카테고리 추가",
+      onClick: () => {
+        onOpen();
+      },
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -213,9 +239,7 @@ export default function PackingListPage() {
         </VStack>
       </Container>
 
-      {isCanAddMoreCategories && (
-        <FloatingAddButton onClick={onOpen} ariaLabel="새 카테고리 추가" />
-      )}
+      <FloatingAddButton menuItems={menuItems} ariaLabel="액션 메뉴" />
 
       <BottomSheet isOpen={isOpen} onClose={onClose} title="새 카테고리 추가">
         <CategoryForm
