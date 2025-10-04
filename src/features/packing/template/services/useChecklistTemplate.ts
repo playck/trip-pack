@@ -10,29 +10,28 @@ export const useChecklistTemplate = () => {
   });
 };
 
-export const useCreateChecklistTemplate = (
-  template: TablesInsert<"checklist_templates">
-) => {
+export const useCreateChecklistTemplate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => createChecklistTemplate(template),
+    mutationFn: (template: TablesInsert<"checklist_templates">) =>
+      createChecklistTemplate(template),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["checklistTemplates"],
       });
       toaster.create({
-        title: "체크리스트 템플릿 생성 성공",
+        title: "체크리스트을 저장했습니다",
         type: "success",
-        duration: 1500,
+        duration: 2000,
       });
     },
     onError: (error: Error) => {
       toaster.create({
-        title: "체크리스트 템플릿 생성 실패",
+        title: "체크리스트 저장에 실패했습니다",
         description: error.message,
         type: "error",
-        duration: 2500,
+        duration: 2000,
       });
     },
   });

@@ -33,6 +33,7 @@ import {
 } from "./components";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
+import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
@@ -51,12 +52,12 @@ export default function PackingListPage() {
   });
   const { categories, isLoading, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
-
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
       onClose();
     },
   });
+  const { handleSaveAsTemplate } = useSaveAsTemplate();
 
   const isCanAddMoreCategories = categories.length < 15;
   const isShowWeatherCard =
@@ -76,10 +77,7 @@ export default function PackingListPage() {
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
-      onClick: () => {
-        // TODO: 체크리스트 저장 로직 구현
-        console.log("체크리스트 저장");
-      },
+      onClick: () => handleSaveAsTemplate(tripInfo, categories),
     },
     {
       label: "체크리스트 가져오기",
