@@ -22,10 +22,10 @@ import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { TemplateListSheet } from "@/shared/components/checklist-template";
 
 import {
   ProgressBar,
-  CheckListCopySheet,
   CategoryForm,
   GridView,
   ListView,
@@ -38,9 +38,9 @@ import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 export default function PackingListPage() {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
   const {
-    open: isCheckListCopyOpen,
-    onOpen: onCheckListCopyOpen,
-    onClose: onCheckListCopyClose,
+    open: isCheckListOpen,
+    onOpen: onCheckListOpen,
+    onClose: onCheckListClose,
   } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const search = useSearch({ from: "/packing/list/$tripId" }) as {
@@ -82,7 +82,7 @@ export default function PackingListPage() {
     {
       label: "체크리스트 가져오기",
       onClick: () => {
-        onCheckListCopyOpen();
+        onCheckListOpen();
       },
     },
     {
@@ -248,14 +248,11 @@ export default function PackingListPage() {
       </BottomSheet>
 
       <BottomSheet
-        isOpen={isCheckListCopyOpen}
-        onClose={onCheckListCopyClose}
-        title=""
+        isOpen={isCheckListOpen}
+        onClose={onCheckListClose}
+        title="체크리스트 모음"
       >
-        <CheckListCopySheet
-          categories={categories}
-          onClose={onCheckListCopyClose}
-        />
+        <TemplateListSheet onClose={onCheckListClose} />
       </BottomSheet>
     </PageLayout>
   );
