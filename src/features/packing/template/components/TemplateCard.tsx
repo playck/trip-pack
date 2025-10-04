@@ -7,7 +7,6 @@ interface PackingTemplate {
   description: string;
   category: string;
   items: string[];
-  tags: string[];
 }
 
 interface TemplateCardProps {

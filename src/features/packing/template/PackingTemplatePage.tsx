@@ -2,30 +2,55 @@ import { Container, Text, VStack } from "@chakra-ui/react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { colorCombinations } from "@/shared/constants/colors";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { TemplateCard } from "./components";
+import { useChecklistTemplate } from "./hooks";
 
-// 템플릿 데이터 타입
 interface PackingTemplate {
   id: string;
   title: string;
   description: string;
   category: string;
   items: string[];
-  tags: string[];
 }
 
-const filteredTemplates: PackingTemplate[] = [
-  {
-    id: "1",
-    title: "해외 여행 기본템",
-    description: "해외 여행시 꼭 필요한 필수 아이템들",
-    category: "해외여행",
-    items: ["여권", "비행기표", "숙박 예약증", "여행자보험", "환전"],
-    tags: ["필수", "해외", "기본"],
-  },
-];
-
 export default function PackingTemplatePage() {
+  const { data: templates = [], isLoading, error } = useChecklistTemplate();
+
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <Container maxW="container.md" py={4}>
+          <LoadingSpinner />
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageLayout>
+        <Container maxW="container.md" py={4}>
+          <VStack gap={4} py={8}>
+            <Text color="red.500" textAlign="center">
+              템플릿을 불러오는 중 오류가 발생했습니다: {error?.message}
+            </Text>
+          </VStack>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  const convertedTemplates: PackingTemplate[] = templates.map((template) => ({
+    id: template.id,
+    title: template.title,
+    description: template.description || "",
+    category: "템플릿",
+    items: Array.isArray(template.checklist_data)
+      ? (template.checklist_data as string[])
+      : [],
+  }));
+
   return (
     <PageLayout>
       <Container maxW="container.md" py={4}>
@@ -35,7 +60,7 @@ export default function PackingTemplatePage() {
           </Text>
 
           <VStack gap={4}>
-            {filteredTemplates.map((template) => (
+            {convertedTemplates.map((template) => (
               <TemplateCard
                 key={template.id}
                 template={template}
@@ -47,13 +72,13 @@ export default function PackingTemplatePage() {
             ))}
           </VStack>
 
-          {filteredTemplates.length === 0 && (
+          {convertedTemplates.length === 0 && (
             <VStack gap={4} py={8}>
               <Text
                 color={colorCombinations.defaultCard.textMuted}
                 textAlign="center"
               >
-                해당 카테고리에 템플릿이 없습니다.
+                등록된 템플릿이 없습니다.
               </Text>
             </VStack>
           )}
