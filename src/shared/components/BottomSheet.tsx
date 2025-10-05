@@ -7,6 +7,7 @@ interface BottomSheetProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
+  minHeight?: string;
 }
 
 export default function BottomSheet({
@@ -14,6 +15,7 @@ export default function BottomSheet({
   onClose,
   title,
   children,
+  minHeight,
 }: BottomSheetProps) {
   return (
     <Drawer.Root
@@ -28,6 +30,7 @@ export default function BottomSheet({
             borderTopRadius="xl"
             borderBottomRadius="none"
             pb="env(safe-area-inset-bottom)"
+            minHeight={minHeight}
           >
             <Drawer.Header
               px={4}
