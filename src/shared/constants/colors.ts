@@ -7,32 +7,37 @@
  * Primary Color: Teal 🟢
  */
 
-// 기본 시스템 색상 (시맨틱 토큰 활용)
+// 기본 시스템 색상
 export const systemColors = {
   background: {
-    primary: "bg", // 메인 배경
-    secondary: "bg.subtle", // 서브 배경
-    muted: "bg.muted", // 음소거 배경
-    emphasized: "bg.emphasized", // 강조 배경
-    panel: "bg.panel", // 패널 배경
+    primary: "white",
+    secondary: "gray.50",
+    muted: "gray.100",
+    emphasized: "gray.200",
+    panel: "white",
   },
 
   text: {
-    primary: "fg", // 메인 텍스트
-    secondary: "fg.muted", // 보조 텍스트
-    subtle: "fg.subtle", // 미묘한 텍스트
-    inverted: "fg.inverted", // 반전 텍스트
+    primary: "gray.900",
+    secondary: "gray.700",
+    tertiary: "gray.600",
+    muted: "gray.500",
+    subtle: "gray.400",
   },
 
   border: {
-    default: "border",
-    subtle: "border.subtle",
-    emphasized: "border.emphasized",
-    muted: "border.muted",
+    default: "gray.200",
+    subtle: "gray.100",
+    emphasized: "gray.300",
+    muted: "gray.150",
   },
 } as const;
 
-// 상태별 색상 (시맨틱 토큰 활용)
+export const backgrounds = systemColors.background;
+export const textColors = systemColors.text;
+export const borderColors = systemColors.border;
+
+// 상태별 색상
 export const statusColors = {
   success: {
     bg: "bg.success",
@@ -74,7 +79,7 @@ export const statusColors = {
 // 브랜드 색상 (프로젝트 고유) - Teal Primary 🟢
 export const colors = {
   primary: {
-    palette: "teal", // colorPalette prop에 사용
+    palette: "teal",
     solid: "teal.solid",
     contrast: "teal.contrast",
     subtle: "teal.subtle",
@@ -119,10 +124,10 @@ export const colors = {
 export const componentColors = {
   // 카드 컴포넌트
   card: {
-    background: systemColors.background.panel,
-    border: systemColors.border.default,
-    text: systemColors.text.primary,
-    textMuted: systemColors.text.secondary,
+    background: backgrounds.panel,
+    border: borderColors.default,
+    text: textColors.primary,
+    textMuted: textColors.secondary,
     shadow: "md",
   },
 
@@ -136,9 +141,9 @@ export const componentColors = {
     ghost: colors.neutral.palette, // gray
 
     border: {
-      default: systemColors.border.default, // 기본
-      subtle: systemColors.border.subtle, // 연한
-      muted: systemColors.border.muted,
+      default: borderColors.default,
+      subtle: borderColors.subtle,
+      muted: borderColors.muted,
     },
   },
 
@@ -151,7 +156,7 @@ export const componentColors = {
   },
 } as const;
 
-// 색상 조합 헬퍼 (자주 사용하는 조합들)
+// 색상 조합 헬퍼
 export const colorCombinations = {
   // 메인 브랜드 조합
   primaryBrand: {
@@ -163,10 +168,10 @@ export const colorCombinations = {
 
   // 카드 기본 조합
   defaultCard: {
-    background: systemColors.background.panel,
-    text: systemColors.text.primary,
-    textMuted: systemColors.text.secondary,
-    border: systemColors.border.default,
+    background: backgrounds.panel,
+    text: textColors.primary,
+    textMuted: textColors.secondary,
+    border: borderColors.default,
   },
 
   // 강조 카드 조합
@@ -180,6 +185,9 @@ export const colorCombinations = {
 
 // 타입 정의
 export type SystemColors = typeof systemColors;
+export type Backgrounds = typeof backgrounds;
+export type TextColors = typeof textColors;
+export type BorderColors = typeof borderColors;
 export type StatusColors = typeof statusColors;
 export type Colors = typeof colors;
 export type ComponentColors = typeof componentColors;
