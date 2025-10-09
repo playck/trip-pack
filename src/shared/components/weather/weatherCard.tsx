@@ -9,11 +9,7 @@ import {
   Skeleton,
   Flex,
 } from "@chakra-ui/react";
-import {
-  useTripWeather,
-  getTripStatus,
-  getWeatherEmoji,
-} from "./useTripWeahter";
+import { useTripWeather, getWeatherEmoji } from "./useTripWeahter";
 import { colorCombinations } from "../../constants/colors";
 
 dayjs.locale("ko");
@@ -38,8 +34,6 @@ export default function WeatherCard({
     startDate,
     endDate,
   });
-
-  const tripStatus = getTripStatus(startDate, endDate);
 
   if (error) {
     return (
@@ -94,12 +88,9 @@ export default function WeatherCard({
     >
       <VStack gap={2} align="stretch">
         {/* 헤더 */}
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box>
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             {tripWeather.cityName} 날씨
-          </Text>
-          <Text fontSize="xs" color="blue.500" fontWeight="medium">
-            {tripStatus.message}
           </Text>
         </Box>
 
@@ -107,7 +98,7 @@ export default function WeatherCard({
           templateColumns={`repeat(${Math.min(tripWeather.forecast.length, 4)}, 1fr)`}
           gap={2}
         >
-          {tripWeather.forecast.slice(0, 6).map((day, index) => (
+          {tripWeather.forecast.slice(0, 4).map((day, index) => (
             <GridItem key={day.date}>
               <Box
                 p={2}
