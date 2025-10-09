@@ -252,7 +252,7 @@ export default function PackingListPage() {
         onClose={onCheckListClose}
         title="체크리스트 모음"
       >
-        <TemplateListSheet onClose={onCheckListClose} />
+        <TemplateListSheet onClose={onCheckListClose} tripId={tripId} />
       </BottomSheet>
     </PageLayout>
   );

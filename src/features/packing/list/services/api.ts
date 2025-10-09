@@ -250,22 +250,7 @@ export const createChecklistCategory = async (
     throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
   }
 
-  // 3. 현재 카테고리 개수 확인
-  const { data: existingCategories, error: checkError } = await supabase
-    .from("checklist_categories")
-    .select("id")
-    .eq("trip_id", params.tripId);
-
-  if (checkError) {
-    throw new Error(`카테고리 확인 실패: ${checkError.message}`);
-  }
-
-  // 4. 카테고리 개수 제한 (최대 15개)
-  if (existingCategories && existingCategories.length >= 15) {
-    throw new Error("카테고리는 최대 15개까지만 생성할 수 있습니다.");
-  }
-
-  // 5. 마지막 display_order 조회
+  // 3. 마지막 display_order 조회
   const { data: lastCategory } = await supabase
     .from("checklist_categories")
     .select("display_order")
@@ -276,7 +261,7 @@ export const createChecklistCategory = async (
 
   const nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
 
-  // 6. 카테고리 생성
+  // 4. 카테고리 생성
   const { data, error } = await supabase
     .from("checklist_categories")
     .insert({
@@ -322,4 +307,101 @@ export const deleteChecklistCategory = async (
   if (categoryError) {
     throw new Error(`카테고리 삭제 실패: ${categoryError.message}`);
   }
+};
+
+// 체크리스트 템플릿에서 여러 카테고리와 아이템을 한 번에 추가하는 API
+export const createCategoriesFromCheckList = async (
+  tripId: string,
+  categories: CategoryWithItems[]
+): Promise<{
+  successCount: number;
+  totalCount: number;
+  failedCategories: string[];
+}> => {
+  // 1. 여행 존재 여부 및 권한 확인
+  const { data: trip, error: tripError } = await supabase
+    .from("trips")
+    .select("id")
+    .eq("id", tripId)
+    .single();
+
+  if (tripError || !trip) {
+    throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
+  }
+
+  // 2. 마지막 카테고리 아이템 조회
+  const { data: lastCategory } = await supabase
+    .from("checklist_categories")
+    .select("display_order")
+    .eq("trip_id", tripId)
+    .order("display_order", { ascending: false })
+    .limit(1)
+    .single();
+
+  let nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
+
+  // 3. 카테고리와 아이템 생성
+  let successCount = 0;
+  const failedCategories: string[] = [];
+
+  for (const category of categories) {
+    try {
+      const categoryName = category.name.trim();
+
+      // 카테고리 생성
+      const { data: newCategory, error: categoryError } = await supabase
+        .from("checklist_categories")
+        .insert({
+          trip_id: tripId,
+          name: categoryName,
+          icon_key: category.icon_key || null,
+          display_order: nextDisplayOrder,
+        })
+        .select("id")
+        .single();
+
+      if (categoryError || !newCategory?.id) {
+        failedCategories.push(categoryName);
+        continue;
+      }
+
+      // 아이템 생성
+      if (category.items && category.items.length > 0) {
+        const item = category.items.map((item, index) => ({
+          category_id: newCategory.id,
+          name: item.name.trim(),
+          notes: item.notes?.trim() || null,
+          is_required: item.is_required || false,
+          is_checked: false,
+          cabin_policy: item.cabin_policy || "allowed",
+          cabin_notes: item.cabin_notes || null,
+          display_order: index + 1,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from("checklist_items")
+          .insert(item);
+
+        if (itemsError) {
+          await supabase
+            .from("checklist_categories")
+            .delete()
+            .eq("id", newCategory.id);
+          failedCategories.push(categoryName);
+          continue;
+        }
+      }
+
+      successCount++;
+      nextDisplayOrder++;
+    } catch {
+      failedCategories.push(category.name);
+    }
+  }
+
+  return {
+    successCount,
+    totalCount: categories.length,
+    failedCategories,
+  };
 };
