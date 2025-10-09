@@ -3,14 +3,17 @@ import { VStack, Text, Button, Box } from "@chakra-ui/react";
 import { useChecklistTemplate } from "@/features/packing/template/hooks";
 import { LoadingSpinner, ErrorMessage } from "@/shared/components";
 import { CheckListBottomSheet } from "@/shared/components/checklist-template";
-import { colors } from "@/shared/constants/colors";
 import type { CategoryWithItems } from "@/features/packing/type";
 
 interface TemplateListSheetProps {
   onClose: () => void;
+  tripId: string;
 }
 
-export default function TemplateListSheet({ onClose }: TemplateListSheetProps) {
+export default function TemplateListSheet({
+  onClose,
+  tripId,
+}: TemplateListSheetProps) {
   const { data: templates = [], isLoading, error } = useChecklistTemplate();
   const [isCheckListOpen, setIsCheckListOpen] = useState(false);
   const [selectedCheckList, setSelectedCheckList] = useState<{
@@ -19,7 +22,6 @@ export default function TemplateListSheet({ onClose }: TemplateListSheetProps) {
   } | null>(null);
 
   const handleSelectTemplate = (
-    templateId: string,
     templateTitle: string,
     checklistData: unknown
   ) => {
@@ -50,67 +52,59 @@ export default function TemplateListSheet({ onClose }: TemplateListSheetProps) {
     );
   }
 
-  return (
-    <VStack gap={4} align="stretch" p={4} maxH="600px">
-      {templates.length === 0 ? (
+  if (templates.length === 0) {
+    return (
+      <VStack gap={4} align="stretch" p={4}>
         <VStack gap={4} py={8}>
           <Text color="gray.500" textAlign="center">
             저장된 템플릿이 없습니다.
           </Text>
-          <Button onClick={onClose}>닫기</Button>
         </VStack>
-      ) : (
-        <>
-          <Box flex="1" overflowY="auto" pr={2}>
-            <VStack gap={3}>
-              {templates.map((template) => (
-                <Box
-                  key={template.id}
-                  w="full"
-                  bg={colors.primary.subtle}
-                  borderRadius="lg"
-                  p={4}
-                  cursor="pointer"
-                  borderWidth="8px"
-                  borderColor={colors.primary.muted}
-                  onClick={() => {
-                    handleSelectTemplate(
-                      template.id,
-                      template.title,
-                      template.checklist_data
-                    );
-                  }}
-                >
-                  <VStack align="start" gap={1}>
-                    <Text
-                      fontWeight="bold"
-                      fontSize="md"
-                      color="gray.800"
-                      lineHeight="1.2"
-                    >
-                      {template.title}
-                    </Text>
-                    {template.description && (
-                      <Text
-                        color="gray.600"
-                        fontSize="sm"
-                        lineClamp={2}
-                        lineHeight="1.5"
-                      >
-                        {template.description}
-                      </Text>
-                    )}
-                  </VStack>
-                </Box>
-              ))}
-            </VStack>
-          </Box>
+      </VStack>
+    );
+  }
 
-          <Button variant="outline" onClick={onClose} flexShrink={0}>
-            닫기
-          </Button>
-        </>
-      )}
+  return (
+    <VStack gap={4} align="stretch" p={4} maxH="600px">
+      <Box flex="1" overflowY="auto" pr={2}>
+        <VStack gap={2}>
+          {templates.map((template) => (
+            <Box
+              key={template.id}
+              w="full"
+              bg="gray.50"
+              borderRadius="lg"
+              p={4}
+              borderWidth="3px"
+              borderColor="gray.200"
+              cursor="pointer"
+              onClick={() => {
+                handleSelectTemplate(template.title, template.checklist_data);
+              }}
+            >
+              <VStack align="start" gap={1}>
+                <Text fontWeight="bold" fontSize="md" lineHeight="1.2">
+                  {template.title}
+                </Text>
+                {template.description && (
+                  <Text
+                    color="gray.600"
+                    fontSize="sm"
+                    lineClamp={2}
+                    lineHeight="1.5"
+                  >
+                    {template.description}
+                  </Text>
+                )}
+              </VStack>
+            </Box>
+          ))}
+        </VStack>
+      </Box>
+
+      <Button variant="outline" onClick={onClose} flexShrink={0}>
+        닫기
+      </Button>
 
       {selectedCheckList && (
         <CheckListBottomSheet
@@ -118,6 +112,7 @@ export default function TemplateListSheet({ onClose }: TemplateListSheetProps) {
           onClose={() => setIsCheckListOpen(false)}
           title={selectedCheckList.title}
           categories={selectedCheckList.categories}
+          tripId={tripId}
         />
       )}
     </VStack>

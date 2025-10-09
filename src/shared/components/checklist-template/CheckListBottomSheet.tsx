@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Box, Button, Flex, HStack } from "@chakra-ui/react";
 import type { CategoryWithItems } from "@/features/packing/type";
 import { backgrounds, borderColors, colors } from "@/shared/constants/colors";
+import { useCreateCategoriesFromCheckList } from "@/features/packing/list/hooks/useCreateCategoriesFromCheckList";
 import CheckList from "./CheckList";
 import BottomSheet from "../BottomSheet";
 
@@ -9,19 +11,49 @@ interface CheckListBottomSheetProps {
   onClose: () => void;
   title?: string;
   categories: CategoryWithItems[];
+  tripId: string;
 }
 
 export default function CheckListBottomSheet({
   isOpen,
   onClose,
-  title = "체크리스트 미리보기",
+  title,
   categories,
+  tripId,
 }: CheckListBottomSheetProps) {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const createCategories = useCreateCategoriesFromCheckList(tripId, {
+    onSuccess: () => {
+      onClose();
+      setSelectedIds(new Set());
+    },
+  });
+
+  const handleAddCategories = () => {
+    const selectedCategories = categories.filter((cat) =>
+      selectedIds.has(cat.id)
+    );
+
+    if (selectedCategories.length === 0) return;
+
+    createCategories.mutate(selectedCategories);
+  };
+
+  const handleClose = () => {
+    setSelectedIds(new Set());
+    onClose();
+  };
+
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
+    <BottomSheet isOpen={isOpen} onClose={handleClose} title={title}>
       <Flex flexDirection="column" h="100%" minHeight="65vh">
         <Box px={4} py={4} flex={1} overflowY="auto">
-          <CheckList categories={categories} />
+          <CheckList
+            categories={categories}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+          />
         </Box>
         <Box
           w="full"
@@ -41,7 +73,7 @@ export default function CheckListBottomSheet({
               variant="outline"
               size="lg"
               borderRadius="xl"
-              // onClick={onCancel}
+              onClick={handleClose}
             >
               취소
             </Button>
@@ -51,9 +83,11 @@ export default function CheckListBottomSheet({
               variant="solid"
               size="lg"
               borderRadius="xl"
-              // onClick={handlAddCategory}
+              onClick={handleAddCategories}
+              disabled={selectedIds.size === 0 || createCategories.isPending}
+              loading={createCategories.isPending}
             >
-              저장
+              추가 {selectedIds.size > 0 && `(${selectedIds.size})`}
             </Button>
           </HStack>
         </Box>
