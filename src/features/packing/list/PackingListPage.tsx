@@ -58,22 +58,6 @@ export default function PackingListPage() {
     },
   });
   const { handleSaveAsTemplate } = useSaveAsTemplate();
-
-  const isCanAddMoreCategories = categories.length < 15;
-  const isShowWeatherCard =
-    tripInfo?.regionName && tripInfo.startDate && tripInfo.endDate;
-
-  const handleSaveCategory = (newCategory: {
-    categoryName: string;
-    iconKey: string;
-  }) => {
-    createCategoryMutation.mutate(newCategory);
-  };
-
-  const handleCancelCategoryCreate = () => {
-    onClose();
-  };
-
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
@@ -92,6 +76,21 @@ export default function PackingListPage() {
       },
     },
   ];
+
+  const isCanAddMoreCategories = categories.length < 20;
+  const isShowWeatherCard =
+    tripInfo?.regionName && tripInfo.startDate && tripInfo.endDate;
+
+  const handleSaveCategory = (newCategory: {
+    categoryName: string;
+    iconKey: string;
+  }) => {
+    createCategoryMutation.mutate(newCategory);
+  };
+
+  const handleCancelCategoryCreate = () => {
+    onClose();
+  };
 
   if (isLoading) {
     return (
@@ -229,8 +228,8 @@ export default function PackingListPage() {
               mt={4}
             >
               <Text fontSize="sm" color="orange.700" textAlign="center">
-                카테고리는 최대 15개까지 생성할 수 있습니다. (
-                {categories.length}/15)
+                카테고리는 최대 20개까지 생성할 수 있습니다. (
+                {categories.length}/20)
               </Text>
             </Box>
           )}

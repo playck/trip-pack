@@ -100,7 +100,7 @@ export default function ListView({ categories }: ListViewProps) {
   }, [categories]);
 
   return (
-    <VStack gap={2} align="stretch" w="full">
+    <VStack gap={2} align="stretch" w="full" pb="60px">
       {/* 모든 카테고리 접기/펼치기 버튼 */}
       <HStack justify="flex-end" w="full">
         <Button
