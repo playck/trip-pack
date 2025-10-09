@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
@@ -20,6 +21,11 @@ import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.cate
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScheduleTripIdRoute = ScheduleTripIdRouteImport.update({
+  id: '/schedule/$tripId',
+  path: '/schedule/$tripId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PackingTemplateRoute = PackingTemplateRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
+  '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
+  '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
+  '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/packing/create'
     | '/packing/template'
+    | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/packing/create'
     | '/packing/template'
+    | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/packing/create'
     | '/packing/template'
+    | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   AuthSignupRoute: typeof AuthSignupRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
+  ScheduleTripIdRoute: typeof ScheduleTripIdRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
 }
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schedule/$tripId': {
+      id: '/schedule/$tripId'
+      path: '/schedule/$tripId'
+      fullPath: '/schedule/$tripId'
+      preLoaderRoute: typeof ScheduleTripIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/packing/template': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignupRoute: AuthSignupRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
+  ScheduleTripIdRoute: ScheduleTripIdRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
 }
