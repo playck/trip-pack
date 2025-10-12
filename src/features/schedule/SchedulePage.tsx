@@ -1,10 +1,11 @@
-import { Container, VStack, Text, HStack, Box } from "@chakra-ui/react";
+import { Container, VStack, Text, HStack, Badge } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
-import { Calendar } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { formatTripDateRange } from "@/shared/utiles/date";
+import { GoogleMapView } from "./components";
 
 export default function SchedulePage() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
@@ -57,22 +58,67 @@ export default function SchedulePage() {
     <PageLayout>
       <Container maxW="6xl" py={5} px={0}>
         <VStack gap={4} align="stretch">
-          {/* 헤더 */}
-          <VStack align="stretch" gap={2}>
-            <HStack justify="space-between" align="center">
-              <HStack gap={2}>
-                <Calendar size={24} />
-                <Text fontSize="2xl" fontWeight="bold">
-                  여행 일정표
-                </Text>
-              </HStack>
-            </HStack>
+          <VStack align="stretch" gap={3}>
             {tripInfo && (
-              <Text fontSize="md" color="gray.600">
-                {tripInfo.regionName || "여행지"} 일정
-              </Text>
+              <VStack align="stretch" gap={2}>
+                <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+                  {tripInfo.title || `${tripInfo.regionName} 여행지`}
+                </Text>
+                <HStack gap={2} flexWrap="wrap" align="center">
+                  <Text fontSize="sm" color="gray.600">
+                    {formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
+                  </Text>
+                  {tripInfo.companionTypes &&
+                    tripInfo.companionTypes.length > 0 && (
+                      <>
+                        <Text fontSize="sm" color="gray.400">
+                          •
+                        </Text>
+                        <HStack gap={1}>
+                          {tripInfo.companionTypes.map((companion) => (
+                            <Badge
+                              key={companion}
+                              size="sm"
+                              variant="subtle"
+                              colorPalette="blue"
+                            >
+                              {companion}
+                            </Badge>
+                          ))}
+                        </HStack>
+                      </>
+                    )}
+                  {tripInfo.tripTypes && tripInfo.tripTypes.length > 0 && (
+                    <>
+                      <Text fontSize="sm" color="gray.400">
+                        •
+                      </Text>
+                      <HStack gap={1}>
+                        {tripInfo.tripTypes.map((type) => (
+                          <Badge
+                            key={type}
+                            size="sm"
+                            variant="outline"
+                            colorPalette="purple"
+                          >
+                            {type}
+                          </Badge>
+                        ))}
+                      </HStack>
+                    </>
+                  )}
+                </HStack>
+              </VStack>
             )}
           </VStack>
+
+          <GoogleMapView
+            center={
+              tripInfo?.regionName ? undefined : { lat: 37.5665, lng: 126.978 }
+            }
+            zoom={13}
+            height="300px"
+          />
         </VStack>
       </Container>
     </PageLayout>
