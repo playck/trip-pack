@@ -1,5 +1,6 @@
 import { Box } from "@chakra-ui/react";
-import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import Marker from "./Marker";
 
 interface Location {
   lat: number;
@@ -13,8 +14,10 @@ interface GoogleMapViewProps {
     id: string;
     position: Location;
     title?: string;
+    label?: string | number; // 마커에 표시할 숫자나 텍스트
   }>;
   height?: string;
+  onMarkerClick?: (markerId: string) => void;
 }
 
 export default function GoogleMapView({
@@ -22,6 +25,7 @@ export default function GoogleMapView({
   zoom = 12,
   markers = [],
   height = "300px",
+  onMarkerClick,
 }: GoogleMapViewProps) {
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -52,13 +56,17 @@ export default function GoogleMapView({
           disableDefaultUI={false}
           mapId="schedule-map"
         >
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              position={marker.position}
-              title={marker.title}
-            />
-          ))}
+          {markers.map((marker) =>
+            marker.label ? (
+              <Marker
+                key={marker.id}
+                position={marker.position}
+                label={marker.label}
+                title={marker.title}
+                onClick={() => onMarkerClick?.(marker.id)}
+              />
+            ) : null
+          )}
         </Map>
       </APIProvider>
     </Box>

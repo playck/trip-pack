@@ -1,4 +1,4 @@
-import { Container, VStack, Text, HStack, Badge } from "@chakra-ui/react";
+import { Container, VStack, Text, HStack, Badge, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -10,6 +10,34 @@ import { GoogleMapView } from "./components";
 export default function SchedulePage() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
+
+  // 테스트용 샘플 마커들 (서울 주요 관광지)
+  const sampleMarkers = [
+    {
+      id: "1",
+      position: { lat: 37.5665, lng: 126.978 }, // 서울 시청
+      title: "서울 시청",
+      label: 1,
+    },
+    {
+      id: "2",
+      position: { lat: 37.5796, lng: 126.977 }, // 경복궁
+      title: "경복궁",
+      label: 2,
+    },
+    {
+      id: "3",
+      position: { lat: 37.5701, lng: 126.9868 }, // 명동
+      title: "명동",
+      label: 3,
+    },
+    {
+      id: "4",
+      position: { lat: 37.5511, lng: 126.9882 }, // 남산타워
+      title: "N서울타워",
+      label: 4,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -113,12 +141,50 @@ export default function SchedulePage() {
           </VStack>
 
           <GoogleMapView
-            center={
-              tripInfo?.regionName ? undefined : { lat: 37.5665, lng: 126.978 }
-            }
+            center={{ lat: 37.5665, lng: 126.978 }}
             zoom={13}
-            height="300px"
+            height="400px"
+            markers={sampleMarkers}
           />
+
+          {/* 일정 목록 (샘플) */}
+          <VStack align="stretch" gap={2}>
+            <Text fontSize="lg" fontWeight="bold">
+              여행 일정
+            </Text>
+            {sampleMarkers.map((marker, index) => (
+              <Box
+                key={marker.id}
+                p={3}
+                bg="white"
+                borderRadius="md"
+                borderWidth="1px"
+                borderColor="gray.200"
+                _hover={{ bg: "gray.50" }}
+                cursor="pointer"
+              >
+                <HStack gap={3}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color="blue.600"
+                    minW="20px"
+                  >
+                    {index + 1}
+                  </Text>
+                  <VStack align="start" gap={0} flex={1}>
+                    <Text fontSize="md" fontWeight="semibold">
+                      {marker.title}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      {marker.position.lat.toFixed(4)},{" "}
+                      {marker.position.lng.toFixed(4)}
+                    </Text>
+                  </VStack>
+                </HStack>
+              </Box>
+            ))}
+          </VStack>
         </VStack>
       </Container>
     </PageLayout>
