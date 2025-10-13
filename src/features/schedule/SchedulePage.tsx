@@ -6,38 +6,26 @@ import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { GoogleMapView } from "./components";
+import { useGeocoding } from "./hooks";
 
 export default function SchedulePage() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
 
-  // 테스트용 샘플 마커들 (서울 주요 관광지)
-  const sampleMarkers = [
-    {
-      id: "1",
-      position: { lat: 37.5665, lng: 126.978 }, // 서울 시청
-      title: "서울 시청",
-      label: 1,
-    },
-    {
-      id: "2",
-      position: { lat: 37.5796, lng: 126.977 }, // 경복궁
-      title: "경복궁",
-      label: 2,
-    },
-    {
-      id: "3",
-      position: { lat: 37.5701, lng: 126.9868 }, // 명동
-      title: "명동",
-      label: 3,
-    },
-    {
-      id: "4",
-      position: { lat: 37.5511, lng: 126.9882 }, // 남산타워
-      title: "N서울타워",
-      label: 4,
-    },
-  ];
+  const { coordinates: regionCoordinates } = useGeocoding(
+    tripInfo?.regionName,
+    tripInfo?.countryCode
+  );
+
+  const mapCenter = regionCoordinates || { lat: 37.5665, lng: 126.978 };
+
+  // TODO: 실제 일정 데이터로 교체 예정
+  const scheduleMarkers: Array<{
+    id: string;
+    position: { lat: number; lng: number };
+    title: string;
+    label: number;
+  }> = [];
 
   if (isLoading) {
     return (
@@ -141,49 +129,67 @@ export default function SchedulePage() {
           </VStack>
 
           <GoogleMapView
-            center={{ lat: 37.5665, lng: 126.978 }}
+            center={mapCenter}
             zoom={13}
             height="400px"
-            markers={sampleMarkers}
+            markers={scheduleMarkers}
           />
 
-          {/* 일정 목록 (샘플) */}
-          <VStack align="stretch" gap={2}>
-            <Text fontSize="lg" fontWeight="bold">
-              여행 일정
-            </Text>
-            {sampleMarkers.map((marker, index) => (
-              <Box
-                key={marker.id}
-                p={3}
-                bg="white"
-                borderRadius="md"
-                borderWidth="1px"
-                borderColor="gray.200"
-                cursor="pointer"
-              >
-                <HStack gap={3}>
-                  <Text
-                    fontSize="sm"
-                    fontWeight="bold"
-                    color="blue.600"
-                    minW="20px"
-                  >
-                    {index + 1}
-                  </Text>
-                  <VStack align="start" gap={0} flex={1}>
-                    <Text fontSize="md" fontWeight="semibold">
-                      {marker.title}
+          {scheduleMarkers.length > 0 ? (
+            <VStack align="stretch" gap={2}>
+              <Text fontSize="lg" fontWeight="bold">
+                여행 일정
+              </Text>
+              {scheduleMarkers.map((marker, index) => (
+                <Box
+                  key={marker.id}
+                  p={3}
+                  bg="white"
+                  borderRadius="md"
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                  cursor="pointer"
+                >
+                  <HStack gap={3}>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="bold"
+                      color="blue.600"
+                      minW="20px"
+                    >
+                      {index + 1}
                     </Text>
-                    <Text fontSize="xs" color="gray.500">
-                      {marker.position.lat.toFixed(4)},{" "}
-                      {marker.position.lng.toFixed(4)}
-                    </Text>
-                  </VStack>
-                </HStack>
-              </Box>
-            ))}
-          </VStack>
+                    <VStack align="start" gap={0} flex={1}>
+                      <Text fontSize="md" fontWeight="semibold">
+                        {marker.title}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {marker.position.lat.toFixed(4)},{" "}
+                        {marker.position.lng.toFixed(4)}
+                      </Text>
+                    </VStack>
+                  </HStack>
+                </Box>
+              ))}
+            </VStack>
+          ) : (
+            <Box
+              p={8}
+              borderRadius="lg"
+              borderWidth="1px"
+              borderColor="gray.200"
+              textAlign="center"
+            >
+              <VStack gap={2}>
+                <Text fontSize="lg" color="gray.600">
+                  아직 등록된 일정이 없습니다
+                </Text>
+                <Text fontSize="sm" color="gray.400">
+                  일정을 추가하여 여행 계획을 세워보세요
+                </Text>
+              </VStack>
+            </Box>
+          )}
         </VStack>
       </Container>
     </PageLayout>
