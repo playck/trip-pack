@@ -1,5 +1,6 @@
 import { Container, VStack, Text, HStack, Badge, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { ErrorMessage, LoadingSpinner } from "@/shared/components";
@@ -8,13 +9,13 @@ import { formatTripDateRange } from "@/shared/utiles/date";
 import { GoogleMapView } from "./components";
 import { useGeocoding } from "./hooks";
 
-export default function SchedulePage() {
+function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
-    tripInfo?.countryCode
+    tripInfo?.regionId
   );
 
   const mapCenter = regionCoordinates || { lat: 37.5665, lng: 126.978 };
@@ -128,12 +129,14 @@ export default function SchedulePage() {
             )}
           </VStack>
 
-          <GoogleMapView
-            center={mapCenter}
-            zoom={13}
-            height="400px"
-            markers={scheduleMarkers}
-          />
+          <Box h="400px" w="full">
+            <GoogleMapView
+              center={mapCenter}
+              zoom={13}
+              height="400px"
+              markers={scheduleMarkers}
+            />
+          </Box>
 
           {scheduleMarkers.length > 0 ? (
             <VStack align="stretch" gap={2}>
@@ -193,5 +196,35 @@ export default function SchedulePage() {
         </VStack>
       </Container>
     </PageLayout>
+  );
+}
+
+export default function SchedulePage() {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  if (!apiKey) {
+    return (
+      <PageLayout>
+        <Container maxW="6xl" py={5} px={0}>
+          <Box
+            p={8}
+            borderRadius="lg"
+            bg="red.50"
+            borderWidth="1px"
+            borderColor="red.200"
+          >
+            <Text color="red.700">
+              Google Maps API 키가 설정되지 않았습니다.
+            </Text>
+          </Box>
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  return (
+    <APIProvider apiKey={apiKey}>
+      <SchedulePageContent />
+    </APIProvider>
   );
 }

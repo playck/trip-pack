@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
 interface Coordinates {
   lat: number;
@@ -6,32 +7,49 @@ interface Coordinates {
 }
 
 /**
- * 최적의 Geocoding 검색어 생성
- * 우선순위: regionName + countryCode > regionName만
+ * regionId 파싱
+ * 예: "cn-jiuzhaigou" → { countryCode: "CN", regionName: "jiuzhaigou" }
  */
+const parseRegionId = (
+  regionId: string | null | undefined
+): { countryCode: string; regionName: string } | null => {
+  if (!regionId) return null;
+
+  const parts = regionId.split("-");
+  if (parts.length < 2) return null;
+
+  return {
+    countryCode: parts[0].toUpperCase(),
+    regionName: parts.slice(1).join("-"),
+  };
+};
+
 const makeOptimalSearchQuery = (
   regionName: string | null | undefined,
-  countryCode?: string | null | undefined
+  regionId: string | null | undefined
 ): string | null => {
-  if (!regionName) return null;
+  const parsed = parseRegionId(regionId);
 
-  if (countryCode) {
-    return `${regionName}, ${countryCode}`;
+  if (parsed) {
+    return `${parsed.regionName}, ${parsed.countryCode}`;
   }
 
-  return regionName;
+  return regionName || null;
 };
 
 export const useGeocoding = (
   regionName: string | null | undefined,
-  countryCode?: string | null | undefined
+  regionId: string | null | undefined
 ) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const geocodingLib = useMapsLibrary("geocoding");
 
   useEffect(() => {
-    const searchQuery = makeOptimalSearchQuery(regionName, countryCode);
+    if (!geocodingLib) return;
+
+    const searchQuery = makeOptimalSearchQuery(regionName, regionId);
 
     if (!searchQuery) {
       setCoordinates(null);
@@ -43,7 +61,14 @@ export const useGeocoding = (
       setError(null);
 
       try {
-        const geocoder = new google.maps.Geocoder();
+        const geocoder = new geocodingLib.Geocoder();
+
+        console.log("🗺️ Geocoding 검색:", {
+          searchQuery,
+          regionName,
+          regionId,
+          parsed: parseRegionId(regionId),
+        });
 
         const result = await geocoder.geocode({ address: searchQuery });
 
@@ -54,8 +79,15 @@ export const useGeocoding = (
             lng: location.lng(),
           };
 
+          console.log("✅ Geocoding 성공:", {
+            query: searchQuery,
+            result: coords,
+            foundAddress: result.results[0].formatted_address,
+          });
+
           setCoordinates(coords);
         } else {
+          console.warn("⚠️ Geocoding 결과 없음:", searchQuery);
           setError("위치를 찾을 수 없습니다");
         }
       } catch (error) {
@@ -67,7 +99,7 @@ export const useGeocoding = (
     };
 
     geocodeAddress();
-  }, [regionName, countryCode]);
+  }, [geocodingLib, regionName, regionId]);
 
   return { coordinates, isLoading, error };
 };
