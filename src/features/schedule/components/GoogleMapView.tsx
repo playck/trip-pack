@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import Marker from "./Marker";
+import RouteLine from "./RouteLine";
 
 interface Location {
   lat: number;
@@ -14,10 +15,11 @@ interface GoogleMapViewProps {
     id: string;
     position: Location;
     title?: string;
-    label?: string | number; // 마커에 표시할 숫자나 텍스트
+    label?: string | number;
   }>;
   height?: string;
   onMarkerClick?: (markerId: string) => void;
+  showRoute?: boolean;
 }
 
 export default function GoogleMapView({
@@ -26,8 +28,11 @@ export default function GoogleMapView({
   markers = [],
   height = "300px",
   onMarkerClick,
+  showRoute = true,
 }: GoogleMapViewProps) {
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  const routePath = markers.map((marker) => marker.position);
 
   if (!googleMapsApiKey) {
     return (
@@ -56,6 +61,10 @@ export default function GoogleMapView({
           disableDefaultUI={false}
           mapId="schedule-map"
         >
+          {/* 경로선 */}
+          {showRoute && routePath.length > 1 && <RouteLine path={routePath} />}
+
+          {/* 마커들 */}
           {markers.map((marker) =>
             marker.label ? (
               <Marker

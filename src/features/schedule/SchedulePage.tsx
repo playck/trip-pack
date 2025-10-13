@@ -160,7 +160,6 @@ export default function SchedulePage() {
                 borderRadius="md"
                 borderWidth="1px"
                 borderColor="gray.200"
-                _hover={{ bg: "gray.50" }}
                 cursor="pointer"
               >
                 <HStack gap={3}>
