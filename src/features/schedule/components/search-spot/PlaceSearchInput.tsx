@@ -1,21 +1,33 @@
+import { useState, useEffect } from "react";
+import { useDebounceValue } from "usehooks-ts";
 import { Box, Input } from "@chakra-ui/react";
 import { Search } from "lucide-react";
 
 interface PlaceSearchInputProps {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchChange: (debouncedQuery: string) => void;
 }
 
 export default function PlaceSearchInput({
-  value,
-  onChange,
+  onSearchChange,
 }: PlaceSearchInputProps) {
+  const [inputValue, setInputValue] = useState("");
+  const [debouncedValue] = useDebounceValue(inputValue, 350);
+
+  useEffect(() => {
+    onSearchChange(debouncedValue);
+  }, [debouncedValue, onSearchChange]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setInputValue(query);
+  };
+
   return (
     <Box py={4} position="relative">
       <Input
         placeholder="장소를 검색하세요"
-        value={value}
-        onChange={onChange}
+        value={inputValue}
+        onChange={handleChange}
         size="lg"
         pl={10}
         autoFocus

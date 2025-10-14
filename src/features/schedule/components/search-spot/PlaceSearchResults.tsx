@@ -7,18 +7,16 @@ import SearchStateMessage from "./SearchStateMessage";
 interface PlaceSearchResultsProps {
   results: PlaceResult[];
   isLoading: boolean;
-  searchQuery: string;
   onSelectPlace: (place: PlaceResult) => void;
 }
 
 export default function PlaceSearchResults({
   results,
   isLoading,
-  searchQuery,
   onSelectPlace,
 }: PlaceSearchResultsProps) {
   const hasResults = results.length > 0;
-  const hasSearchQuery = searchQuery.trim().length > 0;
+  const hasSearchQuery = isLoading || hasResults;
   const isShowResults = !isLoading && hasResults;
 
   return (
