@@ -161,6 +161,146 @@ export type Database = {
         };
         Relationships: [];
       };
+      trip_expenses: {
+        Row: {
+          amount: number;
+          amount_in_krw: number | null;
+          created_at: string | null;
+          currency: string | null;
+          day_number: number;
+          description: string | null;
+          exchange_rate: number | null;
+          expense_category: string;
+          expense_date: string;
+          id: string;
+          merchant_name: string | null;
+          notes: string | null;
+          payment_method: string | null;
+          receipt_url: string | null;
+          schedule_id: string | null;
+          trip_id: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          amount: number;
+          amount_in_krw?: number | null;
+          created_at?: string | null;
+          currency?: string | null;
+          day_number: number;
+          description?: string | null;
+          exchange_rate?: number | null;
+          expense_category: string;
+          expense_date: string;
+          id?: string;
+          merchant_name?: string | null;
+          notes?: string | null;
+          payment_method?: string | null;
+          receipt_url?: string | null;
+          schedule_id?: string | null;
+          trip_id: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          amount?: number;
+          amount_in_krw?: number | null;
+          created_at?: string | null;
+          currency?: string | null;
+          day_number?: number;
+          description?: string | null;
+          exchange_rate?: number | null;
+          expense_category?: string;
+          expense_date?: string;
+          id?: string;
+          merchant_name?: string | null;
+          notes?: string | null;
+          payment_method?: string | null;
+          receipt_url?: string | null;
+          schedule_id?: string | null;
+          trip_id?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trip_expenses_schedule_id_fkey";
+            columns: ["schedule_id"];
+            isOneToOne: false;
+            referencedRelation: "trip_schedules";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "trip_expenses_trip_id_fkey";
+            columns: ["trip_id"];
+            isOneToOne: false;
+            referencedRelation: "trips";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      trip_schedules: {
+        Row: {
+          category: string | null;
+          created_at: string | null;
+          day_number: number;
+          duration_minutes: number | null;
+          id: string;
+          latitude: number | null;
+          longitude: number | null;
+          notes: string | null;
+          place_address: string | null;
+          place_id: string;
+          place_name: string;
+          schedule_date: string;
+          start_time: string | null;
+          trip_id: string;
+          updated_at: string | null;
+          visit_order: number;
+        };
+        Insert: {
+          category?: string | null;
+          created_at?: string | null;
+          day_number: number;
+          duration_minutes?: number | null;
+          id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          notes?: string | null;
+          place_address?: string | null;
+          place_id: string;
+          place_name: string;
+          schedule_date: string;
+          start_time?: string | null;
+          trip_id: string;
+          updated_at?: string | null;
+          visit_order: number;
+        };
+        Update: {
+          category?: string | null;
+          created_at?: string | null;
+          day_number?: number;
+          duration_minutes?: number | null;
+          id?: string;
+          latitude?: number | null;
+          longitude?: number | null;
+          notes?: string | null;
+          place_address?: string | null;
+          place_id?: string;
+          place_name?: string;
+          schedule_date?: string;
+          start_time?: string | null;
+          trip_id?: string;
+          updated_at?: string | null;
+          visit_order?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "trip_schedules_trip_id_fkey";
+            columns: ["trip_id"];
+            isOneToOne: false;
+            referencedRelation: "trips";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       trips: {
         Row: {
           companion_type: string | null;
