@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Container, VStack, Text, HStack, Badge, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
@@ -5,13 +6,21 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { colors, textColors } from "@/shared/constants/colors";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { GoogleMapView } from "./components";
+import { GoogleMapView, DayScheduleList, AddScheduleSheet } from "./components";
 import { useGeocoding } from "./hooks";
+import type { PlaceResult } from "./hooks";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
+
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<{
+    dayNumber: number;
+    date: string;
+  } | null>(null);
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
@@ -19,6 +28,20 @@ function SchedulePageContent() {
   );
 
   const mapCenter = regionCoordinates || { lat: 37.5665, lng: 126.978 };
+
+  // 일정 추가 버튼 클릭 핸들러
+  const handleAddSchedule = (dayNumber: number, date: string) => {
+    setSelectedDay({ dayNumber, date });
+    setIsSheetOpen(true);
+  };
+
+  // 장소 선택 핸들러
+  const handleSelectPlace = (place: PlaceResult) => {
+    console.log("선택된 장소:", place);
+    console.log("일차:", selectedDay?.dayNumber);
+    console.log("날짜:", selectedDay?.date);
+    // TODO: 다음 단계에서 실제 일정 추가 구현
+  };
 
   // TODO: 실제 일정 데이터로 교체 예정
   const scheduleMarkers: Array<{
@@ -78,17 +101,21 @@ function SchedulePageContent() {
           <VStack align="stretch" gap={3}>
             {tripInfo && (
               <VStack align="stretch" gap={2}>
-                <Text fontSize="3xl" fontWeight="bold" color="gray.800">
+                <Text
+                  fontSize="3xl"
+                  fontWeight="bold"
+                  color={textColors.primary}
+                >
                   {tripInfo.title || `${tripInfo.regionName} 여행지`}
                 </Text>
                 <HStack gap={2} flexWrap="wrap" align="center">
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color={textColors.tertiary}>
                     {formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
                   </Text>
                   {tripInfo.companionTypes &&
                     tripInfo.companionTypes.length > 0 && (
                       <>
-                        <Text fontSize="sm" color="gray.400">
+                        <Text fontSize="sm" color={textColors.subtle}>
                           •
                         </Text>
                         <HStack gap={1}>
@@ -97,7 +124,7 @@ function SchedulePageContent() {
                               key={companion}
                               size="sm"
                               variant="subtle"
-                              colorPalette="blue"
+                              colorPalette={colors.secondary.palette}
                             >
                               {companion}
                             </Badge>
@@ -107,7 +134,7 @@ function SchedulePageContent() {
                     )}
                   {tripInfo.tripTypes && tripInfo.tripTypes.length > 0 && (
                     <>
-                      <Text fontSize="sm" color="gray.400">
+                      <Text fontSize="sm" color={textColors.subtle}>
                         •
                       </Text>
                       <HStack gap={1}>
@@ -116,7 +143,7 @@ function SchedulePageContent() {
                             key={type}
                             size="sm"
                             variant="outline"
-                            colorPalette="purple"
+                            colorPalette={colors.accent.palette}
                           >
                             {type}
                           </Badge>
@@ -138,62 +165,29 @@ function SchedulePageContent() {
             />
           </Box>
 
-          {scheduleMarkers.length > 0 ? (
-            <VStack align="stretch" gap={2}>
-              <Text fontSize="lg" fontWeight="bold">
-                여행 일정
-              </Text>
-              {scheduleMarkers.map((marker, index) => (
-                <Box
-                  key={marker.id}
-                  p={3}
-                  bg="white"
-                  borderRadius="md"
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  cursor="pointer"
-                >
-                  <HStack gap={3}>
-                    <Text
-                      fontSize="sm"
-                      fontWeight="bold"
-                      color="blue.600"
-                      minW="20px"
-                    >
-                      {index + 1}
-                    </Text>
-                    <VStack align="start" gap={0} flex={1}>
-                      <Text fontSize="md" fontWeight="semibold">
-                        {marker.title}
-                      </Text>
-                      <Text fontSize="xs" color="gray.500">
-                        {marker.position.lat.toFixed(4)},{" "}
-                        {marker.position.lng.toFixed(4)}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </Box>
-              ))}
-            </VStack>
-          ) : (
-            <Box
-              p={8}
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.200"
-              textAlign="center"
-            >
-              <VStack gap={2}>
-                <Text fontSize="lg" color="gray.600">
-                  아직 등록된 일정이 없습니다
-                </Text>
-                <Text fontSize="sm" color="gray.400">
-                  일정을 추가하여 여행 계획을 세워보세요
-                </Text>
-              </VStack>
-            </Box>
+          {/* 일정표 */}
+          {tripInfo && (
+            <DayScheduleList
+              startDate={tripInfo.startDate}
+              endDate={tripInfo.endDate}
+              onAddSchedule={handleAddSchedule}
+              onAddMemo={(dayNumber, date) =>
+                console.log(`${dayNumber}일차 메모 추가 (${date})`)
+              }
+            />
           )}
         </VStack>
+
+        {/* 일정 추가 바텀시트 */}
+        {selectedDay && (
+          <AddScheduleSheet
+            isOpen={isSheetOpen}
+            onClose={() => setIsSheetOpen(false)}
+            onSelectPlace={handleSelectPlace}
+            dayNumber={selectedDay.dayNumber}
+            date={selectedDay.date}
+          />
+        )}
       </Container>
     </PageLayout>
   );
