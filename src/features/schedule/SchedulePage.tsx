@@ -9,7 +9,7 @@ import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { colors, textColors } from "@/shared/constants/colors";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { GoogleMapView, DayScheduleList, AddScheduleSheet } from "./components";
-import { useGeocoding } from "./hooks";
+import { useGeocoding, useCreateSchedule } from "./hooks";
 import type { PlaceResult } from "./hooks";
 
 function SchedulePageContent() {
@@ -29,18 +29,32 @@ function SchedulePageContent() {
 
   const mapCenter = regionCoordinates || { lat: 37.5665, lng: 126.978 };
 
-  // 일정 추가 버튼 클릭 핸들러
+  const createScheduleMutation = useCreateSchedule(tripId || "", {
+    onSuccess: () => {
+      console.log("✅ 일정이 성공적으로 추가되었습니다");
+    },
+  });
+
   const handleAddSchedule = (dayNumber: number, date: string) => {
     setSelectedDay({ dayNumber, date });
     setIsSheetOpen(true);
   };
 
-  // 장소 선택 핸들러
   const handleSelectPlace = (place: PlaceResult) => {
-    console.log("선택된 장소:", place);
-    console.log("일차:", selectedDay?.dayNumber);
-    console.log("날짜:", selectedDay?.date);
-    // TODO: 다음 단계에서 실제 일정 추가 구현
+    if (!tripId || !selectedDay) {
+      return;
+    }
+
+    createScheduleMutation.mutate({
+      tripId,
+      dayNumber: selectedDay.dayNumber,
+      scheduleDate: selectedDay.date,
+      placeId: place.placeId,
+      placeName: place.name,
+      placeAddress: place.address,
+      latitude: place.location?.lat,
+      longitude: place.location?.lng,
+    });
   };
 
   // TODO: 실제 일정 데이터로 교체 예정
@@ -166,8 +180,9 @@ function SchedulePageContent() {
           </Box>
 
           {/* 일정표 */}
-          {tripInfo && (
+          {tripInfo && tripId && (
             <DayScheduleList
+              tripId={tripId}
               startDate={tripInfo.startDate}
               endDate={tripInfo.endDate}
               onAddSchedule={handleAddSchedule}

@@ -1,4 +1,4 @@
-import { VStack, HStack, Text, Box, IconButton } from "@chakra-ui/react";
+import { HStack, Text, Box, IconButton, Timeline } from "@chakra-ui/react";
 import { Plus, StickyNote } from "lucide-react";
 import {
   colors,
@@ -6,8 +6,12 @@ import {
   borderColors,
   textColors,
 } from "@/shared/constants/colors";
+import { useSchedulesByDay } from "../hooks/useSchedulesByDay";
+import { ScheduleItem } from "./";
+import type { Schedule } from "../types";
 
 interface DayScheduleCardProps {
+  tripId: string;
   dayNumber: number;
   date: string;
   formattedDate: string;
@@ -16,11 +20,21 @@ interface DayScheduleCardProps {
 }
 
 export default function DayScheduleCard({
+  tripId,
   dayNumber,
   formattedDate,
   onAddSchedule,
   onAddMemo,
 }: DayScheduleCardProps) {
+  const { schedules, isLoading } = useSchedulesByDay(tripId, dayNumber);
+
+  const renderTimelineContent = () => {
+    if (isLoading) return <TimelineLoading />;
+    if (schedules.length === 0)
+      return <TimelineEmpty onAddSchedule={onAddSchedule} />;
+    return <TimelineContent schedules={schedules} />;
+  };
+
   return (
     <Box
       borderRadius="lg"
@@ -71,24 +85,42 @@ export default function DayScheduleCard({
         </HStack>
       </HStack>
 
-      {/* 타임라인 영역 */}
       <Box p={3} minH="100px">
-        <VStack align="stretch" gap={2}>
-          {/* TODO: 타임라인 컴포넌트가 들어갈 자리 */}
-          <Box
-            p={6}
-            borderRadius="md"
-            borderWidth="2px"
-            borderStyle="dashed"
-            borderColor={borderColors.emphasized}
-            textAlign="center"
-          >
-            <Text fontSize="sm" color={textColors.subtle}>
-              일정을 추가해주세요
-            </Text>
-          </Box>
-        </VStack>
+        {renderTimelineContent()}
       </Box>
     </Box>
   );
 }
+
+const TimelineLoading = () => (
+  <Box p={6} textAlign="center">
+    <Text fontSize="sm" color={textColors.subtle}>
+      불러오는 중...
+    </Text>
+  </Box>
+);
+
+const TimelineEmpty = ({ onAddSchedule }: { onAddSchedule?: () => void }) => (
+  <Box
+    p={6}
+    borderRadius="md"
+    borderWidth="2px"
+    borderStyle="dashed"
+    borderColor={borderColors.emphasized}
+    textAlign="center"
+    cursor="pointer"
+    onClick={onAddSchedule}
+  >
+    <Text fontSize="sm" color={textColors.subtle}>
+      일정을 추가해주세요
+    </Text>
+  </Box>
+);
+
+const TimelineContent = ({ schedules }: { schedules: Schedule[] }) => (
+  <Timeline.Root size="sm" variant="subtle">
+    {schedules.map((schedule) => (
+      <ScheduleItem key={schedule.id} schedule={schedule} />
+    ))}
+  </Timeline.Root>
+);

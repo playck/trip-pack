@@ -6,6 +6,7 @@ import { getTripDays, getDayDate } from "@/shared/utiles/date";
 import { DayScheduleCard } from "./";
 
 interface DayScheduleListProps {
+  tripId: string;
   startDate: string;
   endDate: string;
   onAddSchedule?: (dayNumber: number, date: string) => void;
@@ -13,6 +14,7 @@ interface DayScheduleListProps {
 }
 
 export default function DayScheduleList({
+  tripId,
   startDate,
   endDate,
   onAddSchedule,
@@ -35,6 +37,7 @@ export default function DayScheduleList({
         return (
           <DayScheduleCard
             key={date}
+            tripId={tripId}
             dayNumber={dayNumber}
             date={date}
             formattedDate={formattedDate}
