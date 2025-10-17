@@ -17,3 +17,11 @@ export interface CreateScheduleParams {
   notes?: string;
   category?: string;
 }
+
+export interface UpdateScheduleParams {
+  scheduleId: string;
+  placeName?: string;
+  placeAddress?: string;
+  startTime?: string | null;
+  notes?: string | null;
+}

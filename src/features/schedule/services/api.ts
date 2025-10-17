@@ -1,5 +1,10 @@
 import { supabase } from "@/shared/service/supabase/cilent";
-import type { CreateScheduleParams, Schedule, ScheduleInsert } from "../types";
+import type {
+  CreateScheduleParams,
+  Schedule,
+  ScheduleInsert,
+  UpdateScheduleParams,
+} from "../types";
 
 /**
  * 일정 생성
@@ -81,4 +86,38 @@ export const getLastVisitOrder = async (
   }
 
   return data?.visit_order || 0;
+};
+
+/**
+ * 일정 수정
+ */
+export const updateSchedule = async (
+  params: UpdateScheduleParams
+): Promise<void> => {
+  const { scheduleId, ...updateData } = params;
+
+  const { error } = await supabase
+    .from("trip_schedules")
+    .update(updateData)
+    .eq("id", scheduleId);
+
+  if (error) {
+    console.error("일정 수정 실패:", error);
+    throw new Error(`일정 수정에 실패했습니다: ${error.message}`);
+  }
+};
+
+/**
+ * 일정 삭제
+ */
+export const deleteSchedule = async (scheduleId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("trip_schedules")
+    .delete()
+    .eq("id", scheduleId);
+
+  if (error) {
+    console.error("일정 삭제 실패:", error);
+    throw new Error(`일정 삭제에 실패했습니다: ${error.message}`);
+  }
 };
