@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useState, useCallback, useRef } from "react";
+import { useMapsLibrary, useMap } from "@vis.gl/react-google-maps";
 
 /**
  * Google Places 검색 결과 타입
@@ -22,8 +22,52 @@ export const usePlacesAutocomplete = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Google Places 라이브러리 로드
   const placesLib = useMapsLibrary("places");
+  const map = useMap();
+
+  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(
+    null
+  );
+
+  const getPlaceDetails = useCallback(
+    (placeId: string): Promise<PlaceResult> => {
+      return new Promise((resolve, reject) => {
+        if (!placesLib || !map) {
+          reject(new Error("Places library or map not ready"));
+          return;
+        }
+
+        if (!placesServiceRef.current) {
+          placesServiceRef.current = new placesLib.PlacesService(map);
+        }
+
+        const request: google.maps.places.PlaceDetailsRequest = {
+          placeId,
+          fields: ["place_id", "name", "formatted_address", "geometry"],
+        };
+
+        placesServiceRef.current.getDetails(request, (place, status) => {
+          if (status === placesLib.PlacesServiceStatus.OK && place) {
+            const result: PlaceResult = {
+              placeId: place.place_id || placeId,
+              name: place.name || "",
+              address: place.formatted_address || "",
+              location: place.geometry?.location
+                ? {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                  }
+                : undefined,
+            };
+            resolve(result);
+          } else {
+            reject(new Error(`Failed to get place details: ${status}`));
+          }
+        });
+      });
+    },
+    [placesLib, map]
+  );
 
   /**
    * 장소 검색 함수
@@ -90,6 +134,7 @@ export const usePlacesAutocomplete = () => {
   return {
     searchPlaces,
     clearResults,
+    getPlaceDetails,
     results,
     isLoading,
     error,
