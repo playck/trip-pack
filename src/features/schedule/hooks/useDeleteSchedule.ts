@@ -16,7 +16,7 @@ export function useDeleteSchedule(
     mutationFn: (scheduleId: string) => deleteSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["trip-schedules", tripId],
+        queryKey: ["tripSchedules", tripId],
       });
 
       toaster.create({

@@ -7,7 +7,7 @@ import {
   textColors,
 } from "@/shared/constants/colors";
 import { useSchedulesByDay } from "../hooks/useSchedulesByDay";
-import { ScheduleItem } from "./";
+import { SwipeableScheduleItem } from "./";
 import type { Schedule } from "../types";
 
 interface DayScheduleCardProps {
@@ -32,7 +32,7 @@ export default function DayScheduleCard({
     if (isLoading) return <TimelineLoading />;
     if (schedules.length === 0)
       return <TimelineEmpty onAddSchedule={onAddSchedule} />;
-    return <TimelineContent schedules={schedules} />;
+    return <TimelineContent schedules={schedules} tripId={tripId} />;
   };
 
   return (
@@ -117,10 +117,20 @@ const TimelineEmpty = ({ onAddSchedule }: { onAddSchedule?: () => void }) => (
   </Box>
 );
 
-const TimelineContent = ({ schedules }: { schedules: Schedule[] }) => (
+const TimelineContent = ({
+  schedules,
+  tripId,
+}: {
+  schedules: Schedule[];
+  tripId: string;
+}) => (
   <Timeline.Root size="sm" variant="subtle">
     {schedules.map((schedule) => (
-      <ScheduleItem key={schedule.id} schedule={schedule} />
+      <SwipeableScheduleItem
+        key={schedule.id}
+        schedule={schedule}
+        tripId={tripId}
+      />
     ))}
   </Timeline.Root>
 );
