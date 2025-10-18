@@ -22,7 +22,7 @@ export default function AddScheduleSheet({
   dayNumber,
   date,
 }: AddScheduleSheetProps) {
-  const { searchPlaces, results, isLoading, clearResults } =
+  const { searchPlaces, results, isLoading, clearResults, getPlaceDetails } =
     usePlacesAutocomplete();
 
   const handleSearchChange = useCallback(
@@ -38,12 +38,21 @@ export default function AddScheduleSheet({
   );
 
   const handleSelectPlace = useCallback(
-    (place: PlaceResult) => {
-      onSelectPlace(place);
-      clearResults();
-      onClose();
+    async (place: PlaceResult) => {
+      try {
+        const detailedPlace = await getPlaceDetails(place.placeId);
+
+        onSelectPlace(detailedPlace);
+        clearResults();
+        onClose();
+      } catch (error) {
+        console.error("❌ 장소 상세 정보 가져오기 실패:", error);
+        onSelectPlace(place);
+        clearResults();
+        onClose();
+      }
     },
-    [onSelectPlace, clearResults, onClose]
+    [getPlaceDetails, onSelectPlace, clearResults, onClose]
   );
 
   useEffect(() => {
