@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Container, VStack, Text, HStack, Badge, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
@@ -9,8 +9,14 @@ import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { colors, textColors } from "@/shared/constants/colors";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { GoogleMapView, DayScheduleList, AddScheduleSheet } from "./components";
-import { useGeocoding, useCreateSchedule } from "./hooks";
+import { useGeocoding, useCreateSchedule, useTripSchedules } from "./hooks";
 import type { PlaceResult } from "./hooks";
+import type { Schedule } from "./types";
+import {
+  DEFAULT_MAP_CENTER,
+  DEFAULT_MAP_ZOOM,
+  FOCUSED_MAP_ZOOM,
+} from "./constants";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
@@ -21,25 +27,26 @@ function SchedulePageContent() {
     dayNumber: number;
     date: string;
   } | null>(null);
+  const [focusedLocation, setFocusedLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
     tripInfo?.regionId
   );
 
-  const mapCenter = regionCoordinates || { lat: 37.5665, lng: 126.978 };
+  const { data: allSchedules } = useTripSchedules(tripId);
 
-  const createScheduleMutation = useCreateSchedule(tripId || "", {
-    onSuccess: () => {
-      console.log("✅ 일정이 성공적으로 추가되었습니다");
-    },
-  });
+  const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
 
   const handleAddSchedule = (dayNumber: number, date: string) => {
     setSelectedDay({ dayNumber, date });
     setIsSheetOpen(true);
   };
 
+  const createScheduleMutation = useCreateSchedule(tripId || "");
   const handleSelectPlace = (place: PlaceResult) => {
     if (!tripId || !selectedDay) {
       return;
@@ -57,13 +64,33 @@ function SchedulePageContent() {
     });
   };
 
-  // TODO: 실제 일정 데이터로 교체 예정
-  const scheduleMarkers: Array<{
-    id: string;
-    position: { lat: number; lng: number };
-    title: string;
-    label: number;
-  }> = [];
+  const handleScheduleClick = (schedule: Schedule) => {
+    if (schedule.latitude && schedule.longitude) {
+      setFocusedLocation({
+        lat: schedule.latitude,
+        lng: schedule.longitude,
+      });
+    }
+  };
+
+  const scheduleMarkers = useMemo(() => {
+    if (!allSchedules || allSchedules.length === 0) return [];
+
+    const markers = allSchedules
+      .filter((schedule) => schedule.latitude && schedule.longitude)
+      .sort((a, b) => a.visit_order - b.visit_order)
+      .map((schedule, index) => ({
+        id: schedule.id,
+        position: {
+          lat: schedule.latitude!,
+          lng: schedule.longitude!,
+        },
+        title: schedule.place_name,
+        label: index + 1,
+      }));
+
+    return markers;
+  }, [allSchedules]);
 
   if (isLoading) {
     return (
@@ -111,12 +138,12 @@ function SchedulePageContent() {
   return (
     <PageLayout>
       <Container maxW="6xl" py={5} px={0}>
-        <VStack gap={4} align="stretch">
-          <VStack align="stretch" gap={3}>
+        <VStack gap={4} align="">
+          <VStack gap={3}>
             {tripInfo && (
-              <VStack align="stretch" gap={2}>
+              <HStack gap={2}>
                 <Text
-                  fontSize="3xl"
+                  fontSize="xl"
                   fontWeight="bold"
                   color={textColors.primary}
                 >
@@ -166,14 +193,15 @@ function SchedulePageContent() {
                     </>
                   )}
                 </HStack>
-              </VStack>
+              </HStack>
             )}
           </VStack>
 
+          {/* 지도 */}
           <Box h="400px" w="full">
             <GoogleMapView
-              center={mapCenter}
-              zoom={13}
+              center={focusedLocation || mapCenter}
+              zoom={focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM}
               height="400px"
               markers={scheduleMarkers}
             />
@@ -189,6 +217,7 @@ function SchedulePageContent() {
               onAddMemo={(dayNumber, date) =>
                 console.log(`${dayNumber}일차 메모 추가 (${date})`)
               }
+              onScheduleClick={handleScheduleClick}
             />
           )}
         </VStack>

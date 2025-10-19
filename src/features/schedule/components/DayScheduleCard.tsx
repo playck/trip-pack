@@ -17,6 +17,7 @@ interface DayScheduleCardProps {
   formattedDate: string;
   onAddSchedule?: () => void;
   onAddMemo?: () => void;
+  onScheduleClick?: (schedule: Schedule) => void;
 }
 
 export default function DayScheduleCard({
@@ -25,6 +26,7 @@ export default function DayScheduleCard({
   formattedDate,
   onAddSchedule,
   onAddMemo,
+  onScheduleClick,
 }: DayScheduleCardProps) {
   const { schedules, isLoading } = useSchedulesByDay(tripId, dayNumber);
 
@@ -32,7 +34,13 @@ export default function DayScheduleCard({
     if (isLoading) return <TimelineLoading />;
     if (schedules.length === 0)
       return <TimelineEmpty onAddSchedule={onAddSchedule} />;
-    return <TimelineContent schedules={schedules} tripId={tripId} />;
+    return (
+      <TimelineContent
+        schedules={schedules}
+        tripId={tripId}
+        onScheduleClick={onScheduleClick}
+      />
+    );
   };
 
   return (
@@ -95,7 +103,7 @@ export default function DayScheduleCard({
 const TimelineLoading = () => (
   <Box p={6} textAlign="center">
     <Text fontSize="sm" color={textColors.subtle}>
-      불러오는 중...
+      일정을 불러오고 있어요...
     </Text>
   </Box>
 );
@@ -120,17 +128,24 @@ const TimelineEmpty = ({ onAddSchedule }: { onAddSchedule?: () => void }) => (
 const TimelineContent = ({
   schedules,
   tripId,
+  onScheduleClick,
 }: {
   schedules: Schedule[];
   tripId: string;
-}) => (
-  <Timeline.Root size="sm" variant="subtle">
-    {schedules.map((schedule) => (
-      <SwipeableScheduleItem
-        key={schedule.id}
-        schedule={schedule}
-        tripId={tripId}
-      />
-    ))}
-  </Timeline.Root>
-);
+  onScheduleClick?: (schedule: Schedule) => void;
+}) => {
+  return (
+    <Timeline.Root size="sm" variant="subtle">
+      {schedules.map((schedule) => (
+        <SwipeableScheduleItem
+          key={schedule.id}
+          schedule={schedule}
+          tripId={tripId}
+          onScheduleClick={(s) => {
+            onScheduleClick?.(s);
+          }}
+        />
+      ))}
+    </Timeline.Root>
+  );
+};

@@ -63,13 +63,6 @@ export const useGeocoding = (
       try {
         const geocoder = new geocodingLib.Geocoder();
 
-        console.log("🗺️ Geocoding 검색:", {
-          searchQuery,
-          regionName,
-          regionId,
-          parsed: parseRegionId(regionId),
-        });
-
         const result = await geocoder.geocode({ address: searchQuery });
 
         if (result.results && result.results.length > 0) {
@@ -78,12 +71,6 @@ export const useGeocoding = (
             lat: location.lat(),
             lng: location.lng(),
           };
-
-          console.log("✅ Geocoding 성공:", {
-            query: searchQuery,
-            result: coords,
-            foundAddress: result.results[0].formatted_address,
-          });
 
           setCoordinates(coords);
         } else {

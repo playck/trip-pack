@@ -10,6 +10,7 @@ import type { Schedule } from "../types";
 interface SwipeableScheduleItemProps {
   schedule: Schedule;
   tripId: string;
+  onScheduleClick?: (schedule: Schedule) => void;
 }
 
 const ACTION_BUTTON_WIDTH = 60; // 삭제 버튼 너비
@@ -18,6 +19,7 @@ const SWIPE_THRESHOLD = 50; // 스와이프 감지 임계값
 export default function SwipeableScheduleItem({
   schedule,
   tripId,
+  onScheduleClick,
 }: SwipeableScheduleItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dragConstraintsRef = useRef(null);
@@ -94,7 +96,7 @@ export default function SwipeableScheduleItem({
                 <MapPin size={14} />
               </Timeline.Indicator>
             </Timeline.Connector>
-            <Timeline.Content>
+            <Timeline.Content onClick={() => onScheduleClick?.(schedule)}>
               <Timeline.Title fontSize="md" fontWeight="semibold">
                 {schedule.place_name}
               </Timeline.Title>
