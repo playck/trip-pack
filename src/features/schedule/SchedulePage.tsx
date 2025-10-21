@@ -1,14 +1,17 @@
 import { useState, useMemo } from "react";
-import { Container, VStack, Text, HStack, Badge, Box } from "@chakra-ui/react";
+import { Container, VStack, Text, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { colors, textColors } from "@/shared/constants/colors";
-import { formatTripDateRange } from "@/shared/utiles/date";
-import { GoogleMapView, DayScheduleList, AddScheduleSheet } from "./components";
+import {
+  GoogleMapView,
+  DayScheduleList,
+  AddScheduleSheet,
+  TripHeader,
+} from "./components";
 import { useGeocoding, useCreateSchedule, useTripSchedules } from "./hooks";
 import type { PlaceResult } from "./hooks";
 import type { Schedule } from "./types";
@@ -121,10 +124,10 @@ function SchedulePageContent() {
     );
   }
 
-  if (!tripId) {
+  if (!tripId || !tripInfo) {
     return (
       <PageLayout>
-        <Container maxW="6xl" py={5} px={0}>
+        <Container maxW="6xl" pb={5} px={0}>
           <VStack gap={4} py={8}>
             <Text fontSize="lg" color="gray.600" textAlign="center">
               여행을 선택해주세요
@@ -138,88 +141,28 @@ function SchedulePageContent() {
   return (
     <PageLayout>
       <Container maxW="6xl" py={5} px={0}>
-        <VStack gap={4} align="">
-          <VStack gap={3}>
-            {tripInfo && (
-              <HStack gap={2}>
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  color={textColors.primary}
-                >
-                  {tripInfo.title || `${tripInfo.regionName} 여행지`}
-                </Text>
-                <HStack gap={2} flexWrap="wrap" align="center">
-                  <Text fontSize="sm" color={textColors.tertiary}>
-                    {formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
-                  </Text>
-                  {tripInfo.companionTypes &&
-                    tripInfo.companionTypes.length > 0 && (
-                      <>
-                        <Text fontSize="sm" color={textColors.subtle}>
-                          •
-                        </Text>
-                        <HStack gap={1}>
-                          {tripInfo.companionTypes.map((companion) => (
-                            <Badge
-                              key={companion}
-                              size="sm"
-                              variant="subtle"
-                              colorPalette={colors.secondary.palette}
-                            >
-                              {companion}
-                            </Badge>
-                          ))}
-                        </HStack>
-                      </>
-                    )}
-                  {tripInfo.tripTypes && tripInfo.tripTypes.length > 0 && (
-                    <>
-                      <Text fontSize="sm" color={textColors.subtle}>
-                        •
-                      </Text>
-                      <HStack gap={1}>
-                        {tripInfo.tripTypes.map((type) => (
-                          <Badge
-                            key={type}
-                            size="sm"
-                            variant="outline"
-                            colorPalette={colors.accent.palette}
-                          >
-                            {type}
-                          </Badge>
-                        ))}
-                      </HStack>
-                    </>
-                  )}
-                </HStack>
-              </HStack>
-            )}
-          </VStack>
+        <VStack align="">
+          <TripHeader tripInfo={tripInfo} />
 
           {/* 지도 */}
-          <Box h="400px" w="full">
-            <GoogleMapView
-              center={focusedLocation || mapCenter}
-              zoom={focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM}
-              height="400px"
-              markers={scheduleMarkers}
-            />
-          </Box>
+          <GoogleMapView
+            center={focusedLocation || mapCenter}
+            zoom={focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM}
+            height="350px"
+            markers={scheduleMarkers}
+          />
 
           {/* 일정표 */}
-          {tripInfo && tripId && (
-            <DayScheduleList
-              tripId={tripId}
-              startDate={tripInfo.startDate}
-              endDate={tripInfo.endDate}
-              onAddSchedule={handleAddSchedule}
-              onAddMemo={(dayNumber, date) =>
-                console.log(`${dayNumber}일차 메모 추가 (${date})`)
-              }
-              onScheduleClick={handleScheduleClick}
-            />
-          )}
+          <DayScheduleList
+            tripId={tripId}
+            startDate={tripInfo.startDate}
+            endDate={tripInfo.endDate}
+            onAddSchedule={handleAddSchedule}
+            onAddMemo={(dayNumber, date) =>
+              console.log(`${dayNumber}일차 메모 추가 (${date})`)
+            }
+            onScheduleClick={handleScheduleClick}
+          />
         </VStack>
 
         {/* 일정 추가 바텀시트 */}
