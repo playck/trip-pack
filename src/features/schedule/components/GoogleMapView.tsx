@@ -26,7 +26,7 @@ export default function GoogleMapView({
   center = { lat: 37.5665, lng: 126.978 },
   zoom = 12,
   markers = [],
-  height = "400px",
+  height = "300px",
   onMarkerClick,
   showRoute = true,
 }: GoogleMapViewProps) {

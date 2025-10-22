@@ -140,19 +140,20 @@ function SchedulePageContent() {
 
   return (
     <PageLayout>
-      <Container maxW="6xl" py={5} px={0}>
-        <VStack align="">
+      <VStack gap={0} align="stretch">
+        <Box position="sticky" top="56px" zIndex={10} bg="white" pb={2}>
           <TripHeader tripInfo={tripInfo} />
 
-          {/* 지도 */}
           <GoogleMapView
             center={focusedLocation || mapCenter}
             zoom={focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM}
-            height="350px"
+            height="300px"
             markers={scheduleMarkers}
           />
+        </Box>
 
-          {/* 일정표 */}
+        {/* 일정표 */}
+        <Box pt={4}>
           <DayScheduleList
             tripId={tripId}
             startDate={tripInfo.startDate}
@@ -163,19 +164,19 @@ function SchedulePageContent() {
             }
             onScheduleClick={handleScheduleClick}
           />
-        </VStack>
+        </Box>
+      </VStack>
 
-        {/* 일정 추가 바텀시트 */}
-        {selectedDay && (
-          <AddScheduleSheet
-            isOpen={isSheetOpen}
-            onClose={() => setIsSheetOpen(false)}
-            onSelectPlace={handleSelectPlace}
-            dayNumber={selectedDay.dayNumber}
-            date={selectedDay.date}
-          />
-        )}
-      </Container>
+      {/* 일정 추가 바텀시트 */}
+      {selectedDay && (
+        <AddScheduleSheet
+          isOpen={isSheetOpen}
+          onClose={() => setIsSheetOpen(false)}
+          onSelectPlace={handleSelectPlace}
+          dayNumber={selectedDay.dayNumber}
+          date={selectedDay.date}
+        />
+      )}
     </PageLayout>
   );
 }
