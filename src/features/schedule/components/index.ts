@@ -7,5 +7,6 @@ export { default as AddScheduleSheet } from "./AddScheduleSheet";
 export { default as AddMemoSheet } from "./AddMemoSheet";
 export { default as ScheduleItem } from "./ScheduleItem";
 export { default as SwipeableScheduleItem } from "./SwipeableScheduleItem";
+export { default as DeleteScheduleModal } from "./DeleteScheduleModal";
 export { default as MapDayTabs } from "./MapDayTabs";
 export { default as TripHeader } from "./TripHeader";
