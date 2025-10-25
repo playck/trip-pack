@@ -31,6 +31,7 @@ export default function GoogleMapView({
   showRoute = true,
 }: GoogleMapViewProps) {
   const routePath = markers.map((marker) => marker.position);
+  const isHasRoutePath = showRoute && routePath.length > 1;
 
   return (
     <Box h={height} w="full" borderRadius="lg" overflow="hidden">
@@ -39,9 +40,10 @@ export default function GoogleMapView({
         zoom={zoom}
         gestureHandling="greedy"
         disableDefaultUI={false}
+        mapTypeControl={false}
         mapId="schedule-map"
       >
-        {showRoute && routePath.length > 1 && <RouteLine path={routePath} />}
+        {isHasRoutePath && <RouteLine path={routePath} />}
 
         {markers.map((marker) =>
           marker.label ? (
