@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
-import { Container, VStack, Text, Box } from "@chakra-ui/react";
+import { VStack, Box } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import {
   GoogleMapView,
@@ -13,6 +12,12 @@ import {
   AddMemoSheet,
   TripHeader,
 } from "./components";
+import {
+  ScheduleLoadingState,
+  ScheduleErrorState,
+  ScheduleEmptyState,
+  ApiKeyMissingState,
+} from "./components/SchedulePageStates";
 import {
   useGeocoding,
   useScheduleAdd,
@@ -25,6 +30,7 @@ import {
   DEFAULT_MAP_ZOOM,
   FOCUSED_MAP_ZOOM,
 } from "./constants";
+import { isMemo } from "./utils/scheduleHelpers";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
@@ -61,77 +67,47 @@ function SchedulePageContent() {
   const { data: allSchedules } = useTripSchedules(tripId);
 
   const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
-
-  const handleScheduleClick = (schedule: Schedule) => {
-    if (schedule.latitude && schedule.longitude) {
-      setFocusedLocation({
-        lat: schedule.latitude,
-        lng: schedule.longitude,
-      });
-    }
-  };
+  const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
 
   const scheduleMarkers = useMemo(() => {
     if (!allSchedules || allSchedules.length === 0) return [];
 
-    const markers = allSchedules
-      .filter((schedule) => schedule.latitude && schedule.longitude)
-      .sort((a, b) => a.visit_order - b.visit_order)
-      .map((schedule, index) => ({
-        id: schedule.id,
-        position: {
-          lat: schedule.latitude!,
-          lng: schedule.longitude!,
-        },
-        title: schedule.place_name,
-        label: index + 1,
-      }));
+    const isNotMemo = (schedule: Schedule) => !isMemo(schedule);
+    const hasLocation = (schedule: Schedule) =>
+      schedule.latitude != null && schedule.longitude != null;
+    const sortByVisitOrder = (a: Schedule, b: Schedule) =>
+      a.visit_order - b.visit_order;
+    const createMarker = (schedule: Schedule, index: number) => ({
+      id: schedule.id,
+      position: {
+        lat: schedule.latitude!,
+        lng: schedule.longitude!,
+      },
+      title: schedule.place_name,
+      label: index + 1,
+    });
 
-    return markers;
+    return allSchedules
+      .filter(isNotMemo)
+      .filter(hasLocation)
+      .sort(sortByVisitOrder)
+      .map(createMarker);
   }, [allSchedules]);
 
-  if (isLoading) {
-    return (
-      <PageLayout>
-        <LoadingSpinner
-          message="여행 일정을 불러오고 있어요..."
-          centered
-          fullScreen
-        />
-      </PageLayout>
-    );
-  }
+  const handleScheduleClick = (schedule: Schedule) => {
+    if (!schedule.latitude || !schedule.longitude) return;
 
-  if (error) {
-    return (
-      <PageLayout>
-        <ErrorMessage
-          message={
-            error instanceof Error
-              ? error.message
-              : "알 수 없는 오류가 발생했습니다"
-          }
-          title="여행 일정 불러오기 실패"
-          centered
-          fullScreen
-        />
-      </PageLayout>
-    );
-  }
+    setFocusedLocation({
+      lat: schedule.latitude!,
+      lng: schedule.longitude!,
+    });
+  };
 
-  if (!tripId || !tripInfo) {
-    return (
-      <PageLayout>
-        <Container maxW="6xl" pb={5} px={0}>
-          <VStack gap={4} py={8}>
-            <Text fontSize="lg" color="gray.600" textAlign="center">
-              여행을 선택해주세요
-            </Text>
-          </VStack>
-        </Container>
-      </PageLayout>
-    );
-  }
+  if (isLoading) return <ScheduleLoadingState />;
+
+  if (error) return <ScheduleErrorState error={error} />;
+
+  if (!tripId || !tripInfo) return <ScheduleEmptyState />;
 
   return (
     <PageLayout>
@@ -141,7 +117,7 @@ function SchedulePageContent() {
 
           <GoogleMapView
             center={focusedLocation || mapCenter}
-            zoom={focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM}
+            zoom={mapZoom}
             height="300px"
             markers={scheduleMarkers}
           />
@@ -188,25 +164,7 @@ function SchedulePageContent() {
 export default function SchedulePage() {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  if (!apiKey) {
-    return (
-      <PageLayout>
-        <Container maxW="6xl" py={5} px={0}>
-          <Box
-            p={8}
-            borderRadius="lg"
-            bg="red.50"
-            borderWidth="1px"
-            borderColor="red.200"
-          >
-            <Text color="red.700">
-              Google Maps API 키가 설정되지 않았습니다.
-            </Text>
-          </Box>
-        </Container>
-      </PageLayout>
-    );
-  }
+  if (!apiKey) return <ApiKeyMissingState />;
 
   return (
     <APIProvider apiKey={apiKey}>
