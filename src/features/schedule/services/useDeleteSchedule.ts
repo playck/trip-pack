@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { deleteSchedule } from "../services/api";
+import { deleteSchedule } from "./api";
 
 interface UseDeleteScheduleOptions {
   onSuccess?: () => void;

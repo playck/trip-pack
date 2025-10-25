@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTripSchedules } from "../services/api";
+import { getTripSchedules } from "./api";
 
 /**
  * 여행의 전체 일정 조회

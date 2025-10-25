@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTripSchedules } from "./useTripSchedules";
+import { useTripSchedules } from "../services/useTripSchedules";
 import type { Schedule } from "../types";
 
 /**

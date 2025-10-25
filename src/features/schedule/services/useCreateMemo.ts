@@ -1,28 +1,39 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { createSchedule, getLastVisitOrder } from "../services/api";
-import type { CreateScheduleParams } from "../types";
+import { createSchedule, getLastVisitOrder } from "./api";
+import { createMemoId } from "../utils/scheduleHelpers";
 
-interface UseCreateScheduleOptions {
+interface CreateMemoParams {
+  tripId: string;
+  dayNumber: number;
+  scheduleDate: string;
+  memoText: string;
+}
+
+interface UseCreateMemoOptions {
   onSuccess?: (data: { id: string }) => void;
   onError?: (error: Error) => void;
 }
 
-export const useCreateSchedule = (
+export const useCreateMemo = (
   tripId: string,
-  options?: UseCreateScheduleOptions
+  options?: UseCreateMemoOptions
 ) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: Omit<CreateScheduleParams, "visitOrder">) => {
+    mutationFn: async (params: CreateMemoParams) => {
       const lastOrder = await getLastVisitOrder(
         params.tripId,
         params.dayNumber
       );
 
       return createSchedule({
-        ...params,
+        tripId: params.tripId,
+        dayNumber: params.dayNumber,
+        scheduleDate: params.scheduleDate,
+        placeId: createMemoId(),
+        placeName: params.memoText,
         visitOrder: lastOrder + 1,
       });
     },
@@ -32,7 +43,7 @@ export const useCreateSchedule = (
       });
 
       toaster.create({
-        title: "일정이 추가되었습니다",
+        title: "메모가 추가되었습니다",
         type: "success",
         duration: 2000,
       });
@@ -40,10 +51,10 @@ export const useCreateSchedule = (
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      console.error("일정 생성 실패:", error);
+      console.error("메모 생성 실패:", error);
 
       toaster.create({
-        title: "일정 추가 실패",
+        title: "메모 추가 실패",
         description: error.message || "다시 시도해주세요.",
         type: "error",
         duration: 3000,

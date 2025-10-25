@@ -1,39 +1,28 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { createSchedule, getLastVisitOrder } from "../services/api";
-import { createMemoId } from "../utils/scheduleHelpers";
+import { createSchedule, getLastVisitOrder } from "./api";
+import type { CreateScheduleParams } from "../types";
 
-interface CreateMemoParams {
-  tripId: string;
-  dayNumber: number;
-  scheduleDate: string;
-  memoText: string;
-}
-
-interface UseCreateMemoOptions {
+interface UseCreateScheduleOptions {
   onSuccess?: (data: { id: string }) => void;
   onError?: (error: Error) => void;
 }
 
-export const useCreateMemo = (
+export const useCreateSchedule = (
   tripId: string,
-  options?: UseCreateMemoOptions
+  options?: UseCreateScheduleOptions
 ) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: CreateMemoParams) => {
+    mutationFn: async (params: Omit<CreateScheduleParams, "visitOrder">) => {
       const lastOrder = await getLastVisitOrder(
         params.tripId,
         params.dayNumber
       );
 
       return createSchedule({
-        tripId: params.tripId,
-        dayNumber: params.dayNumber,
-        scheduleDate: params.scheduleDate,
-        placeId: createMemoId(),
-        placeName: params.memoText,
+        ...params,
         visitOrder: lastOrder + 1,
       });
     },
@@ -43,7 +32,7 @@ export const useCreateMemo = (
       });
 
       toaster.create({
-        title: "메모가 추가되었습니다",
+        title: "일정이 추가되었습니다",
         type: "success",
         duration: 2000,
       });
@@ -51,10 +40,10 @@ export const useCreateMemo = (
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      console.error("메모 생성 실패:", error);
+      console.error("일정 생성 실패:", error);
 
       toaster.create({
-        title: "메모 추가 실패",
+        title: "일정 추가 실패",
         description: error.message || "다시 시도해주세요.",
         type: "error",
         duration: 3000,
