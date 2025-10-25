@@ -9,6 +9,7 @@ import {
 import { useSchedulesByDay } from "../hooks/useSchedulesByDay";
 import { SwipeableScheduleItem } from "./";
 import type { Schedule } from "../types";
+import { DAY_CARD_STICKY_TOP } from "../constants";
 
 interface DayScheduleCardProps {
   tripId: string;
@@ -49,7 +50,6 @@ export default function DayScheduleCard({
       borderWidth="1px"
       borderColor={borderColors.default}
       bg={componentColors.card.background}
-      overflow="hidden"
     >
       {/* 헤더 */}
       <HStack
@@ -60,6 +60,10 @@ export default function DayScheduleCard({
         borderColor={borderColors.default}
         justify="space-between"
         align="center"
+        position="sticky"
+        top={`${DAY_CARD_STICKY_TOP}px`}
+        zIndex={5}
+        borderTopRadius="lg"
       >
         <HStack gap={2}>
           <Text fontSize="lg" fontWeight="bold" color={colors.primary.fg}>
@@ -93,7 +97,7 @@ export default function DayScheduleCard({
         </HStack>
       </HStack>
 
-      <Box p={3} minH="100px">
+      <Box p={3} minH="100px" borderBottomRadius="lg">
         {renderTimelineContent()}
       </Box>
     </Box>
