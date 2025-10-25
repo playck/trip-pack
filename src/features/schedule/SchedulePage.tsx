@@ -10,10 +10,15 @@ import {
   GoogleMapView,
   DayScheduleList,
   AddScheduleSheet,
+  AddMemoSheet,
   TripHeader,
 } from "./components";
-import { useGeocoding, useCreateSchedule, useTripSchedules } from "./hooks";
-import type { PlaceResult } from "./hooks";
+import {
+  useGeocoding,
+  useScheduleAdd,
+  useScheduleMemo,
+  useTripSchedules,
+} from "./hooks";
 import type { Schedule } from "./types";
 import {
   DEFAULT_MAP_CENTER,
@@ -25,15 +30,28 @@ function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
 
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<{
-    dayNumber: number;
-    date: string;
-  } | null>(null);
   const [focusedLocation, setFocusedLocation] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+
+  // 일정 추가 관련 로직
+  const {
+    isSheetOpen,
+    selectedDay,
+    handleAddSchedule,
+    handleCloseSheet,
+    handleSelectPlace,
+  } = useScheduleAdd(tripId || "");
+
+  // 메모 관련 로직
+  const {
+    isMemoSheetOpen,
+    selectedDay: memoSelectedDay,
+    handleAddMemo,
+    handleCloseMemoSheet,
+    handleSaveMemo,
+  } = useScheduleMemo(tripId || "");
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
@@ -43,29 +61,6 @@ function SchedulePageContent() {
   const { data: allSchedules } = useTripSchedules(tripId);
 
   const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
-
-  const handleAddSchedule = (dayNumber: number, date: string) => {
-    setSelectedDay({ dayNumber, date });
-    setIsSheetOpen(true);
-  };
-
-  const createScheduleMutation = useCreateSchedule(tripId || "");
-  const handleSelectPlace = (place: PlaceResult) => {
-    if (!tripId || !selectedDay) {
-      return;
-    }
-
-    createScheduleMutation.mutate({
-      tripId,
-      dayNumber: selectedDay.dayNumber,
-      scheduleDate: selectedDay.date,
-      placeId: place.placeId,
-      placeName: place.name,
-      placeAddress: place.address,
-      latitude: place.location?.lat,
-      longitude: place.location?.lng,
-    });
-  };
 
   const handleScheduleClick = (schedule: Schedule) => {
     if (schedule.latitude && schedule.longitude) {
@@ -159,9 +154,7 @@ function SchedulePageContent() {
             startDate={tripInfo.startDate}
             endDate={tripInfo.endDate}
             onAddSchedule={handleAddSchedule}
-            onAddMemo={(dayNumber, date) =>
-              console.log(`${dayNumber}일차 메모 추가 (${date})`)
-            }
+            onAddMemo={handleAddMemo}
             onScheduleClick={handleScheduleClick}
           />
         </Box>
@@ -171,10 +164,21 @@ function SchedulePageContent() {
       {selectedDay && (
         <AddScheduleSheet
           isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
+          onClose={handleCloseSheet}
           onSelectPlace={handleSelectPlace}
           dayNumber={selectedDay.dayNumber}
           date={selectedDay.date}
+        />
+      )}
+
+      {/* 메모 추가 바텀시트 */}
+      {memoSelectedDay && (
+        <AddMemoSheet
+          isOpen={isMemoSheetOpen}
+          onClose={handleCloseMemoSheet}
+          onSaveMemo={handleSaveMemo}
+          dayNumber={memoSelectedDay.dayNumber}
+          date={memoSelectedDay.date}
         />
       )}
     </PageLayout>
