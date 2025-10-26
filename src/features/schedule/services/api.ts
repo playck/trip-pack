@@ -1,5 +1,10 @@
 import { supabase } from "@/shared/service/supabase/cilent";
-import type { CreateScheduleParams, Schedule, ScheduleInsert } from "../types";
+import type {
+  CreateScheduleParams,
+  Schedule,
+  ScheduleInsert,
+  UpdateScheduleParams,
+} from "../types";
 
 /**
  * 일정 생성
@@ -95,5 +100,67 @@ export const deleteSchedule = async (scheduleId: string): Promise<void> => {
   if (error) {
     console.error("일정 삭제 실패:", error);
     throw new Error(`일정 삭제에 실패했습니다: ${error.message}`);
+  }
+};
+
+/**
+ * 단일 일정 조회
+ */
+export const getScheduleById = async (
+  scheduleId: string
+): Promise<Schedule> => {
+  const { data, error } = await supabase
+    .from("trip_schedules")
+    .select("*")
+    .eq("id", scheduleId)
+    .single();
+
+  if (error) {
+    throw new Error(`일정을 불러올 수 없습니다: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("일정을 찾을 수 없습니다");
+  }
+
+  return data;
+};
+
+/**
+ * 일정 수정
+ */
+export const updateSchedule = async (
+  params: Omit<UpdateScheduleParams, "scheduleId"> & {
+    scheduleId: string;
+  }
+): Promise<void> => {
+  const { scheduleId, ...updateData } = params;
+
+  const fieldMapping: Record<string, string> = {
+    placeName: "place_name",
+    placeAddress: "place_address",
+    latitude: "latitude",
+    longitude: "longitude",
+    startTime: "start_time",
+    durationMinutes: "duration_minutes",
+    notes: "notes",
+    category: "category",
+  };
+
+  const updatesFields: Record<string, unknown> = {};
+
+  Object.entries(updateData).forEach(([key, value]) => {
+    if (value !== undefined && key in fieldMapping) {
+      updatesFields[fieldMapping[key]] = value;
+    }
+  });
+
+  const { error } = await supabase
+    .from("trip_schedules")
+    .update(updatesFields)
+    .eq("id", scheduleId);
+
+  if (error) {
+    throw new Error(`일정 수정에 실패했습니다: ${error.message}`);
   }
 };
