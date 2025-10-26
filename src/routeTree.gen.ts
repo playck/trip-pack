@@ -17,6 +17,7 @@ import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tripId'
 import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
+import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,12 @@ const PackingCategoryTripIdRoute = PackingCategoryTripIdRouteImport.update({
   path: '/packing/category/$tripId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScheduleEditTripIdDayNumberRoute =
+  ScheduleEditTripIdDayNumberRouteImport.update({
+    id: '/schedule/edit/$tripId/$dayNumber',
+    path: '/schedule/edit/$tripId/$dayNumber',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +86,7 @@ export interface FileRoutesByTo {
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +98,7 @@ export interface FileRoutesById {
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
     | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/schedule/edit/$tripId/$dayNumber'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/schedule/edit/$tripId/$dayNumber'
   id:
     | '__root__'
     | '/'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
     | '/schedule/$tripId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/schedule/edit/$tripId/$dayNumber'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +145,7 @@ export interface RootRouteChildren {
   ScheduleTripIdRoute: typeof ScheduleTripIdRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
+  ScheduleEditTripIdDayNumberRoute: typeof ScheduleEditTripIdDayNumberRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackingCategoryTripIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schedule/edit/$tripId/$dayNumber': {
+      id: '/schedule/edit/$tripId/$dayNumber'
+      path: '/schedule/edit/$tripId/$dayNumber'
+      fullPath: '/schedule/edit/$tripId/$dayNumber'
+      preLoaderRoute: typeof ScheduleEditTripIdDayNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScheduleTripIdRoute: ScheduleTripIdRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
+  ScheduleEditTripIdDayNumberRoute: ScheduleEditTripIdDayNumberRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
