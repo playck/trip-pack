@@ -164,3 +164,27 @@ export const updateSchedule = async (
     throw new Error(`일정 수정에 실패했습니다: ${error.message}`);
   }
 };
+
+/**
+ * 일정 순서 일괄 업데이트
+ */
+export const updateScheduleOrder = async (
+  updates: Array<{ id: string; visitOrder: number }>
+): Promise<void> => {
+  const updatePromises = updates.map(({ id, visitOrder }) =>
+    supabase
+      .from("trip_schedules")
+      .update({ visit_order: visitOrder })
+      .eq("id", id)
+  );
+
+  const results = await Promise.all(updatePromises);
+
+  const errors = results.filter((result) => result.error);
+
+  if (errors.length > 0) {
+    throw new Error(
+      `일정 순서 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`
+    );
+  }
+};
