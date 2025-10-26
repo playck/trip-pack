@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { VStack, HStack, Text, Box, Textarea, Button } from "@chakra-ui/react";
+import { VStack, HStack, Textarea, Button } from "@chakra-ui/react";
 
-import { textColors, borderColors } from "@/shared/constants/colors";
 import BottomSheet from "@/shared/components/BottomSheet";
 
 interface AddMemoSheetProps {
@@ -17,7 +16,6 @@ export default function AddMemoSheet({
   onClose,
   onSaveMemo,
   dayNumber,
-  date,
 }: AddMemoSheetProps) {
   const [memoText, setMemoText] = useState("");
 
@@ -39,20 +37,9 @@ export default function AddMemoSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={`${dayNumber}일차 메모 추가`}
-      minHeight="40vh"
+      minHeight="30vh"
     >
       <VStack gap={4} w="full" p={4}>
-        <Box
-          w="full"
-          pb={3}
-          borderBottomWidth="1px"
-          borderColor={borderColors.subtle}
-        >
-          <Text fontSize="sm" color={textColors.tertiary}>
-            {date}
-          </Text>
-        </Box>
-
         <Textarea
           placeholder="메모를 입력하세요..."
           value={memoText}
