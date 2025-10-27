@@ -104,6 +104,26 @@ export const deleteSchedule = async (scheduleId: string): Promise<void> => {
 };
 
 /**
+ * 일정 일괄 삭제
+ */
+export const deleteBulkSchedules = async (
+  scheduleIds: string[]
+): Promise<void> => {
+  if (scheduleIds.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("trip_schedules")
+    .delete()
+    .in("id", scheduleIds);
+
+  if (error) {
+    throw new Error(`일정 삭제에 실패했습니다: ${error.message}`);
+  }
+};
+
+/**
  * 단일 일정 조회
  */
 export const getScheduleById = async (
