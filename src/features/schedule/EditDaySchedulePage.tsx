@@ -6,8 +6,10 @@ import { ChevronLeft } from "lucide-react";
 import { borderColors, componentColors } from "@/shared/constants/colors";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
+import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useSchedulesByDay } from "./hooks/useSchedulesByDay";
 import { useUpdateScheduleOrder } from "./services/useUpdateScheduleOrder";
+import { useBulkDeleteSchedules } from "./services/useBulkDeleteSchedules";
 import { EditableScheduleList, ScheduleActionButtons } from "./components";
 import type { Schedule } from "./types";
 
@@ -26,12 +28,21 @@ export default function ManageDaySchedulePage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBackConfirmOpen, setIsBackConfirmOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const updateOrderMutation = useUpdateScheduleOrder(tripId, {
     onSuccess: () => {
       setHasChanges(false);
       setSelectedIds(new Set());
       navigate({ to: "/schedule/$tripId", params: { tripId } });
+    },
+  });
+
+  const deleteMutation = useBulkDeleteSchedules(tripId, {
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      setHasChanges(false);
     },
   });
 
@@ -62,14 +73,13 @@ export default function ManageDaySchedulePage() {
 
   const handleDeleteSelectedItem = () => {
     if (selectedIds.size === 0) return;
+    setIsDeleteConfirmOpen(true);
+  };
 
-    if (confirm(`선택한 ${selectedIds.size}개의 일정을 삭제하시겠습니까?`)) {
-      // TODO: 일괄 삭제 API 호출
-      const newSchedules = schedules.filter((s) => !selectedIds.has(s.id));
-      setSchedules(newSchedules);
-      setSelectedIds(new Set());
-      setHasChanges(true);
-    }
+  const handleConfirmDelete = () => {
+    const deleteIds = Array.from(selectedIds);
+    deleteMutation.mutate(deleteIds);
+    setIsDeleteConfirmOpen(false);
   };
 
   const handleMoveDate = () => {
@@ -81,12 +91,15 @@ export default function ManageDaySchedulePage() {
 
   const handleBack = () => {
     if (hasChanges) {
-      if (confirm("변경사항이 저장되지 않습니다. 나가시겠습니까?")) {
-        navigate({ to: "/schedule/$tripId", params: { tripId } });
-      }
+      setIsBackConfirmOpen(true);
     } else {
       navigate({ to: "/schedule/$tripId", params: { tripId } });
     }
+  };
+
+  const handleConfirmBack = () => {
+    setIsBackConfirmOpen(false);
+    navigate({ to: "/schedule/$tripId", params: { tripId } });
   };
 
   const handleScheduleSave = () => {
@@ -154,12 +167,46 @@ export default function ManageDaySchedulePage() {
           selectedCount={selectedIds.size}
           hasChanges={hasChanges}
           isPending={updateOrderMutation.isPending}
+          isDeleting={deleteMutation.isPending}
           onBack={handleBack}
           onSave={handleScheduleSave}
           onMoveDate={handleMoveDate}
           onDelete={handleDeleteSelectedItem}
         />
       </VStack>
+
+      {/* 뒤로가기 확인 Alert */}
+      <ConfirmDialog
+        isOpen={isBackConfirmOpen}
+        onClose={() => setIsBackConfirmOpen(false)}
+        title="변경사항 저장 안 됨"
+        message="변경사항이 저장되지 않습니다. 나가시겠습니까?"
+        confirmLabel="나가기"
+        cancelLabel="취소"
+        onConfirm={handleConfirmBack}
+        isDangerous={false}
+      />
+
+      {/* 삭제 확인 Alert */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        title="일정 삭제"
+        message={
+          <Text>
+            선택한 {selectedIds.size}개의 일정을 삭제하시겠습니까?
+            <br />
+            <Text as="span" color="red.600" fontWeight="medium">
+              삭제된 일정은 복구할 수 없습니다.
+            </Text>
+          </Text>
+        }
+        confirmLabel="삭제하기"
+        cancelLabel="취소"
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteMutation.isPending}
+        isDangerous={true}
+      />
     </PageLayout>
   );
 }

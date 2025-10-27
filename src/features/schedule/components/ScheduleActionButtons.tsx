@@ -6,6 +6,7 @@ interface ScheduleActionButtonsProps {
   selectedCount: number;
   hasChanges: boolean;
   isPending: boolean;
+  isDeleting?: boolean;
   onBack: () => void;
   onSave: () => void;
   onMoveDate: () => void;
@@ -16,6 +17,7 @@ export default function ScheduleActionButtons({
   selectedCount,
   hasChanges,
   isPending,
+  isDeleting = false,
   onBack,
   onSave,
   onMoveDate,
@@ -35,7 +37,13 @@ export default function ScheduleActionButtons({
         {selectedCount > 0 ? (
           // 선택 모드
           <>
-            <Button variant="outline" size="lg" flex={1} onClick={onMoveDate}>
+            <Button
+              variant="outline"
+              size="lg"
+              flex={1}
+              onClick={onMoveDate}
+              disabled={isDeleting}
+            >
               <HStack gap={2}>
                 <Calendar size={18} />
                 <span>날짜 이동</span>
@@ -47,6 +55,8 @@ export default function ScheduleActionButtons({
               flex={1}
               colorPalette={statusColors.error.palette}
               onClick={onDelete}
+              disabled={isDeleting}
+              loading={isDeleting}
             >
               <HStack gap={2}>
                 <Trash2 size={18} />
