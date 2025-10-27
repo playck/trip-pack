@@ -7,12 +7,16 @@ import { EditableScheduleItem, EditableMemoItem } from "./schedule-items";
 
 interface EditableScheduleListProps {
   schedules: Schedule[];
+  selectedIds?: Set<string>;
   onReorder: (schedules: Schedule[]) => void;
+  onToggleSelect: (scheduleId: string) => void;
 }
 
 export default function EditableScheduleList({
   schedules,
+  selectedIds = new Set(),
   onReorder,
+  onToggleSelect,
 }: EditableScheduleListProps) {
   if (schedules.length === 0) {
     return (
@@ -41,6 +45,8 @@ export default function EditableScheduleList({
       >
         {schedules.map((schedule) => {
           const isScheduleMemo = isMemo(schedule);
+          const isSelected = selectedIds.has(schedule.id);
+
           return (
             <Reorder.Item
               key={schedule.id}
@@ -48,9 +54,17 @@ export default function EditableScheduleList({
               style={{ position: "relative" }}
             >
               {isScheduleMemo ? (
-                <EditableMemoItem memo={schedule} />
+                <EditableMemoItem
+                  memo={schedule}
+                  isSelected={isSelected}
+                  onToggleSelect={() => onToggleSelect(schedule.id)}
+                />
               ) : (
-                <EditableScheduleItem schedule={schedule} />
+                <EditableScheduleItem
+                  schedule={schedule}
+                  isSelected={isSelected}
+                  onToggleSelect={() => onToggleSelect(schedule.id)}
+                />
               )}
             </Reorder.Item>
           );
