@@ -1,18 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "@tanstack/react-router";
-import { VStack, HStack, Text, Box, Button } from "@chakra-ui/react";
+import { VStack, HStack, Text, Box } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
 
-import {
-  colors,
-  borderColors,
-  componentColors,
-} from "@/shared/constants/colors";
+import { borderColors, componentColors } from "@/shared/constants/colors";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { useSchedulesByDay } from "./hooks/useSchedulesByDay";
 import { useUpdateScheduleOrder } from "./services/useUpdateScheduleOrder";
-import EditableScheduleList from "./components/EditableScheduleList";
+import { EditableScheduleList, ScheduleActionButtons } from "./components";
 import type { Schedule } from "./types";
 
 export default function ManageDaySchedulePage() {
@@ -29,10 +25,12 @@ export default function ManageDaySchedulePage() {
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const updateOrderMutation = useUpdateScheduleOrder(tripId, {
     onSuccess: () => {
       setHasChanges(false);
+      setSelectedIds(new Set());
       navigate({ to: "/schedule/$tripId", params: { tripId } });
     },
   });
@@ -46,6 +44,39 @@ export default function ManageDaySchedulePage() {
   const handleScheduleReorder = (newOrder: Schedule[]) => {
     setSchedules(newOrder);
     setHasChanges(true);
+    setSelectedIds(new Set());
+  };
+
+  const handleToggleSelect = (scheduleId: string) => {
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(scheduleId)) {
+        newSet.delete(scheduleId);
+      } else {
+        newSet.add(scheduleId);
+      }
+
+      return newSet;
+    });
+  };
+
+  const handleDeleteSelectedItem = () => {
+    if (selectedIds.size === 0) return;
+
+    if (confirm(`선택한 ${selectedIds.size}개의 일정을 삭제하시겠습니까?`)) {
+      // TODO: 일괄 삭제 API 호출
+      const newSchedules = schedules.filter((s) => !selectedIds.has(s.id));
+      setSchedules(newSchedules);
+      setSelectedIds(new Set());
+      setHasChanges(true);
+    }
+  };
+
+  const handleMoveDate = () => {
+    if (selectedIds.size === 0) return;
+    // TODO: 날짜 이동 기능 구현
+    alert("날짜 이동 기능은 곧 구현됩니다!");
+    setSelectedIds(new Set());
   };
 
   const handleBack = () => {
@@ -113,43 +144,21 @@ export default function ManageDaySchedulePage() {
         >
           <EditableScheduleList
             schedules={schedules}
+            selectedIds={selectedIds}
             onReorder={handleScheduleReorder}
+            onToggleSelect={handleToggleSelect}
           />
         </Box>
 
-        {/* 하단 버튼 영역 */}
-        <Box
-          py={4}
-          borderTopWidth="1px"
-          borderColor={borderColors.default}
-          bg="white"
-          position="sticky"
-          bottom={0}
-          zIndex={10}
-        >
-          <HStack gap={3}>
-            <Button
-              variant="outline"
-              size="lg"
-              flex={1}
-              onClick={handleBack}
-              disabled={updateOrderMutation.isPending}
-            >
-              취소
-            </Button>
-            <Button
-              variant="solid"
-              size="lg"
-              flex={1}
-              colorPalette={colors.primary.palette}
-              onClick={handleScheduleSave}
-              disabled={!hasChanges || updateOrderMutation.isPending}
-              loading={updateOrderMutation.isPending}
-            >
-              저장
-            </Button>
-          </HStack>
-        </Box>
+        <ScheduleActionButtons
+          selectedCount={selectedIds.size}
+          hasChanges={hasChanges}
+          isPending={updateOrderMutation.isPending}
+          onBack={handleBack}
+          onSave={handleScheduleSave}
+          onMoveDate={handleMoveDate}
+          onDelete={handleDeleteSelectedItem}
+        />
       </VStack>
     </PageLayout>
   );
