@@ -34,7 +34,6 @@ export const createSchedule = async (
     .single();
 
   if (error) {
-    console.error("일정 생성 실패:", error);
     throw new Error(`일정 추가에 실패했습니다: ${error.message}`);
   }
 
@@ -57,7 +56,6 @@ export const getTripSchedules = async (tripId: string): Promise<Schedule[]> => {
     .order("visit_order", { ascending: true });
 
   if (error) {
-    console.error("일정 조회 실패:", error);
     throw new Error(`일정을 불러올 수 없습니다: ${error.message}`);
   }
 
@@ -81,7 +79,6 @@ export const getLastVisitOrder = async (
     .maybeSingle();
 
   if (error) {
-    console.error("마지막 순서 조회 실패:", error);
     return 0;
   }
 
@@ -98,7 +95,6 @@ export const deleteSchedule = async (scheduleId: string): Promise<void> => {
     .eq("id", scheduleId);
 
   if (error) {
-    console.error("일정 삭제 실패:", error);
     throw new Error(`일정 삭제에 실패했습니다: ${error.message}`);
   }
 };

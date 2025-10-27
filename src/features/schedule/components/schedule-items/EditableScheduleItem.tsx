@@ -24,7 +24,7 @@ export default function EditableScheduleItem({
         </Timeline.Indicator>
       </Timeline.Connector>
 
-      <Timeline.Content>
+      <Timeline.Content ml={-2}>
         <HStack justify="space-between" align="center" gap={2}>
           <Box flex={1}>
             <Timeline.Title fontSize="md" fontWeight="semibold">
@@ -38,7 +38,7 @@ export default function EditableScheduleItem({
             )}
           </Box>
 
-          <HStack gap={2}>
+          <HStack gap={2.5}>
             <Box
               cursor="pointer"
               onClick={onToggleSelect}

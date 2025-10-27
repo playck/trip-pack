@@ -24,7 +24,7 @@ export default function EditableMemoItem({
         </Timeline.Indicator>
       </Timeline.Connector>
 
-      <Timeline.Content>
+      <Timeline.Content ml={-2}>
         <HStack justify="space-between" align="center" gap={2}>
           <Box flex={1}>
             <Timeline.Title fontSize="md" fontWeight="semibold">
@@ -32,7 +32,7 @@ export default function EditableMemoItem({
             </Timeline.Title>
           </Box>
 
-          <HStack gap={2}>
+          <HStack gap={2.5}>
             <Box
               display="flex"
               alignItems="center"
