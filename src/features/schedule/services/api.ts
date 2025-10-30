@@ -204,3 +204,40 @@ export const updateScheduleOrder = async (
     );
   }
 };
+
+/**
+ * 일정을 다른 일차 일정으로 업데이트
+ */
+export const moveSchedulesToDay = async (params: {
+  scheduleIds: string[];
+  targetDayNumber: number;
+  tripId: string;
+}): Promise<void> => {
+  const { scheduleIds, targetDayNumber, tripId } = params;
+
+  if (scheduleIds.length === 0) {
+    return;
+  }
+
+  const lastOrder = await getLastVisitOrder(tripId, targetDayNumber);
+
+  const updatePromises = scheduleIds.map((id, index) =>
+    supabase
+      .from("trip_schedules")
+      .update({
+        day_number: targetDayNumber,
+        visit_order: lastOrder + index + 1,
+      })
+      .eq("id", id)
+  );
+
+  const results = await Promise.all(updatePromises);
+
+  const errors = results.filter((result) => result.error);
+
+  if (errors.length > 0) {
+    throw new Error(
+      `일정 이동 실패: ${errors.map((e) => e.error?.message).join(", ")}`
+    );
+  }
+};
