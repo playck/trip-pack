@@ -7,10 +7,16 @@ import { borderColors, componentColors } from "@/shared/constants/colors";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
+import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { useSchedulesByDay } from "./hooks/useSchedulesByDay";
 import { useUpdateScheduleOrder } from "./services/useUpdateScheduleOrder";
 import { useBulkDeleteSchedules } from "./services/useBulkDeleteSchedules";
-import { EditableScheduleList, ScheduleActionButtons } from "./components";
+import { useMoveSchedules } from "./services/useMoveSchedules";
+import {
+  EditableScheduleList,
+  ScheduleActionButtons,
+  MoveDateBottomSheet,
+} from "./components";
 import type { Schedule } from "./types";
 
 export default function ManageDaySchedulePage() {
@@ -19,7 +25,7 @@ export default function ManageDaySchedulePage() {
   });
   const navigate = useNavigate();
 
-  //   const { data: tripInfo } = useTripInfo(tripId);
+  const { data: tripInfo } = useTripInfo(tripId);
   const { schedules: originalSchedules, isLoading } = useSchedulesByDay(
     tripId,
     parseInt(dayNumber)
@@ -30,6 +36,7 @@ export default function ManageDaySchedulePage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBackConfirmOpen, setIsBackConfirmOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isMoveDateSheetOpen, setIsMoveDateSheetOpen] = useState(false);
 
   const updateOrderMutation = useUpdateScheduleOrder(tripId, {
     onSuccess: () => {
@@ -39,10 +46,17 @@ export default function ManageDaySchedulePage() {
     },
   });
 
-  const deleteMutation = useBulkDeleteSchedules(tripId, {
+  const scheduleItemsDeleteMutation = useBulkDeleteSchedules(tripId, {
     onSuccess: () => {
       setSelectedIds(new Set());
       setHasChanges(false);
+    },
+  });
+
+  const scheduleItemsMoveMutation = useMoveSchedules(tripId, {
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      setIsMoveDateSheetOpen(false);
     },
   });
 
@@ -78,15 +92,21 @@ export default function ManageDaySchedulePage() {
 
   const handleConfirmDelete = () => {
     const deleteIds = Array.from(selectedIds);
-    deleteMutation.mutate(deleteIds);
+    scheduleItemsDeleteMutation.mutate(deleteIds);
     setIsDeleteConfirmOpen(false);
   };
 
   const handleMoveDate = () => {
     if (selectedIds.size === 0) return;
-    // TODO: 날짜 이동 기능 구현
-    alert("날짜 이동 기능은 곧 구현됩니다!");
-    setSelectedIds(new Set());
+    setIsMoveDateSheetOpen(true);
+  };
+
+  const handleConfirmMoveDate = (targetDayNumber: number) => {
+    const scheduleIds = Array.from(selectedIds);
+    scheduleItemsMoveMutation.mutate({
+      scheduleIds,
+      targetDayNumber,
+    });
   };
 
   const handleBack = () => {
@@ -167,7 +187,7 @@ export default function ManageDaySchedulePage() {
           selectedCount={selectedIds.size}
           hasChanges={hasChanges}
           isPending={updateOrderMutation.isPending}
-          isDeleting={deleteMutation.isPending}
+          isDeleting={scheduleItemsDeleteMutation.isPending}
           onBack={handleBack}
           onSave={handleScheduleSave}
           onMoveDate={handleMoveDate}
@@ -204,9 +224,22 @@ export default function ManageDaySchedulePage() {
         confirmLabel="삭제하기"
         cancelLabel="취소"
         onConfirm={handleConfirmDelete}
-        isLoading={deleteMutation.isPending}
+        isLoading={scheduleItemsDeleteMutation.isPending}
         isDangerous={true}
       />
+
+      {/* 날짜 이동 BottomSheet */}
+      {tripInfo && (
+        <MoveDateBottomSheet
+          isOpen={isMoveDateSheetOpen}
+          onClose={() => setIsMoveDateSheetOpen(false)}
+          currentDayNumber={parseInt(dayNumber)}
+          tripStartDate={tripInfo.startDate}
+          tripEndDate={tripInfo.endDate || tripInfo.startDate}
+          onSelectDay={handleConfirmMoveDate}
+          isLoading={scheduleItemsMoveMutation.isPending}
+        />
+      )}
     </PageLayout>
   );
 }
