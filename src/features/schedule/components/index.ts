@@ -12,5 +12,6 @@ export { default as MapDayTabs } from "./MapDayTabs";
 export { default as TripHeader } from "./TripHeader";
 export { default as EditableScheduleList } from "./EditableScheduleList";
 export { default as ScheduleActionButtons } from "./ScheduleActionButtons";
+export { default as MoveDateBottomSheet } from "./MoveDateBottomSheet";
 
 export * from "./schedule-items";
