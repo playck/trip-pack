@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, useNavigate } from "@tanstack/react-router";
 import { VStack, HStack, Text, Box } from "@chakra-ui/react";
 import { ChevronLeft } from "lucide-react";
@@ -53,6 +54,11 @@ export default function ManageDaySchedulePage() {
     openMoveDateSheet,
     closeDialog,
   } = useDialogState();
+
+  // 페이지 마운트 시 스크롤 최상단으로 리셋
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleDeleteClick = () => {
     if (selectionCount === 0) return;
