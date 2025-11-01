@@ -118,13 +118,13 @@ function SchedulePageContent() {
           <GoogleMapView
             center={focusedLocation || mapCenter}
             zoom={mapZoom}
-            height="300px"
+            height="250px"
             markers={scheduleMarkers}
           />
         </Box>
 
         {/* 일정표 */}
-        <Box pt={4}>
+        <Box pt={4} pb="200px">
           <DayScheduleList
             tripId={tripId}
             startDate={tripInfo.startDate}

@@ -26,7 +26,7 @@ export default function GoogleMapView({
   center = { lat: 37.5665, lng: 126.978 },
   zoom = 12,
   markers = [],
-  height = "300px",
+  height = "250px",
   onMarkerClick,
   showRoute = true,
 }: GoogleMapViewProps) {
@@ -39,8 +39,8 @@ export default function GoogleMapView({
         center={center}
         zoom={zoom}
         gestureHandling="greedy"
-        disableDefaultUI={false}
-        mapTypeControl={false}
+        disableDefaultUI={true}
+        clickableIcons={false}
         mapId="schedule-map"
       >
         {isHasRoutePath && <RouteLine path={routePath} />}
