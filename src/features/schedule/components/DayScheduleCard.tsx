@@ -1,5 +1,6 @@
 import { HStack, Text, Box, IconButton, Timeline } from "@chakra-ui/react";
-import { Plus, StickyNote } from "lucide-react";
+import { Plus, StickyNote, Edit } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   colors,
   componentColors,
@@ -29,7 +30,15 @@ export default function DayScheduleCard({
   onAddMemo,
   onScheduleClick,
 }: DayScheduleCardProps) {
+  const navigate = useNavigate();
   const { schedules, isLoading } = useSchedulesByDay(tripId, dayNumber);
+
+  const goToEditDayPage = () => {
+    navigate({
+      to: "/schedule/edit/$tripId/$dayNumber",
+      params: { tripId, dayNumber: dayNumber.toString() },
+    });
+  };
 
   const renderTimelineContent = () => {
     if (isLoading) return <TimelineLoading />;
@@ -57,13 +66,13 @@ export default function DayScheduleCard({
         py={2}
         bg={colors.primary.subtle}
         borderBottomWidth="1px"
+        borderTopRadius="lg"
         borderColor={borderColors.default}
         justify="space-between"
         align="center"
         position="sticky"
         top={`${DAY_CARD_STICKY_TOP}px`}
         zIndex={5}
-        borderTopRadius="lg"
       >
         <HStack gap={2}>
           <Text fontSize="lg" fontWeight="bold" color={colors.primary.fg}>
@@ -93,6 +102,16 @@ export default function DayScheduleCard({
             borderColor={borderColors.emphasized}
           >
             <StickyNote size={18} />
+          </IconButton>
+          <IconButton
+            size="sm"
+            variant="outline"
+            aria-label="일정 관리"
+            onClick={goToEditDayPage}
+            colorPalette={colors.neutral.palette}
+            borderColor={borderColors.emphasized}
+          >
+            <Edit size={18} />
           </IconButton>
         </HStack>
       </HStack>
