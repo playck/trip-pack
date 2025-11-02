@@ -15,7 +15,7 @@ import {
   exportChecklistToText,
   exportChecklistToDetailedText,
   copyToClipboard,
-} from "../utils/textExporter";
+} from "../../list/utils/checkListExport";
 
 interface TextExportSheetProps {
   categories: CategoryWithItems[];
