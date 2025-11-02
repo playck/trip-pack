@@ -28,7 +28,7 @@ export default function EditableScheduleList({
         borderColor={borderColors.emphasized}
         textAlign="center"
       >
-        <Text fontSize="sm" color={colors.neutral.subtle}>
+        <Text fontSize="sm" color={colors.neutral.solid}>
           일정이 없습니다
         </Text>
       </Box>

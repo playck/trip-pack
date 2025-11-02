@@ -19,13 +19,6 @@ interface DayScheduleCardProps {
   formattedDate: string;
   onAddSchedule?: () => void;
   onAddMemo?: () => void;
-  onScheduleClick?: (schedule: Schedule) => void;
-  onEditMemo?: (
-    scheduleId: string,
-    memoText: string,
-    dayNumber: number,
-    date: string
-  ) => void;
 }
 
 export default function DayScheduleCard({
@@ -34,8 +27,6 @@ export default function DayScheduleCard({
   formattedDate,
   onAddSchedule,
   onAddMemo,
-  onScheduleClick,
-  onEditMemo,
 }: DayScheduleCardProps) {
   const navigate = useNavigate();
   const { schedules, isLoading } = useSchedulesByDay(tripId, dayNumber);
@@ -51,14 +42,7 @@ export default function DayScheduleCard({
     if (isLoading) return <TimelineLoading />;
     if (schedules.length === 0)
       return <TimelineEmpty onAddSchedule={onAddSchedule} />;
-    return (
-      <TimelineContent
-        schedules={schedules}
-        tripId={tripId}
-        onScheduleClick={onScheduleClick}
-        onEditMemo={onEditMemo}
-      />
-    );
+    return <TimelineContent schedules={schedules} tripId={tripId} />;
   };
 
   return (
@@ -159,18 +143,9 @@ const TimelineEmpty = ({ onAddSchedule }: { onAddSchedule?: () => void }) => (
 const TimelineContent = ({
   schedules,
   tripId,
-  onScheduleClick,
-  onEditMemo,
 }: {
   schedules: Schedule[];
   tripId: string;
-  onScheduleClick?: (schedule: Schedule) => void;
-  onEditMemo?: (
-    scheduleId: string,
-    memoText: string,
-    dayNumber: number,
-    date: string
-  ) => void;
 }) => {
   return (
     <Timeline.Root size="sm" variant="subtle">
@@ -179,10 +154,6 @@ const TimelineContent = ({
           key={schedule.id}
           schedule={schedule}
           tripId={tripId}
-          onScheduleClick={(s) => {
-            onScheduleClick?.(s);
-          }}
-          onEditMemo={onEditMemo}
         />
       ))}
     </Timeline.Root>

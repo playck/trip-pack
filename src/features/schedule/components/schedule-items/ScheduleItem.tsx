@@ -2,13 +2,19 @@ import { Text, Timeline } from "@chakra-ui/react";
 import { MapPin } from "lucide-react";
 import { textColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
+import { useScheduleContext } from "../../context";
 
 interface ScheduleItemProps {
   schedule: Schedule;
-  onClick?: () => void;
 }
 
-export default function ScheduleItem({ schedule, onClick }: ScheduleItemProps) {
+export default function ScheduleItem({ schedule }: ScheduleItemProps) {
+  const { onScheduleClick } = useScheduleContext();
+
+  const handleClick = () => {
+    onScheduleClick?.(schedule);
+  };
+
   return (
     <Timeline.Item>
       <Timeline.Connector>
@@ -19,8 +25,8 @@ export default function ScheduleItem({ schedule, onClick }: ScheduleItemProps) {
       </Timeline.Connector>
 
       <Timeline.Content
-        onClick={onClick}
-        cursor={onClick ? "pointer" : "default"}
+        onClick={handleClick}
+        cursor={onScheduleClick ? "pointer" : "default"}
       >
         <Timeline.Title fontSize="md" fontWeight="semibold">
           {schedule.place_name}

@@ -32,6 +32,7 @@ import {
   FOCUSED_MAP_ZOOM,
 } from "./constants";
 import { isMemo } from "./utils/scheduleHelpers";
+import { ScheduleProvider } from "./context";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
@@ -120,31 +121,39 @@ function SchedulePageContent() {
 
   return (
     <PageLayout>
-      <VStack gap={0} align="stretch">
-        <Box position="sticky" top="56px" zIndex={10} bg="white" pb={2}>
-          <TripHeader tripInfo={tripInfo} onShareClick={handleShareSchedule} />
+      <ScheduleProvider
+        value={{
+          onEditMemo: handleEditMemo,
+          onScheduleClick: handleScheduleClick,
+        }}
+      >
+        <VStack gap={0} align="stretch">
+          <Box position="sticky" top="56px" zIndex={10} bg="white" pb={2}>
+            <TripHeader
+              tripInfo={tripInfo}
+              onShareClick={handleShareSchedule}
+            />
 
-          <GoogleMapView
-            center={focusedLocation || mapCenter}
-            zoom={mapZoom}
-            height="250px"
-            markers={scheduleMarkers}
-          />
-        </Box>
+            <GoogleMapView
+              center={focusedLocation || mapCenter}
+              zoom={mapZoom}
+              height="250px"
+              markers={scheduleMarkers}
+            />
+          </Box>
 
-        {/* 일정표 */}
-        <Box pt={4} pb="200px">
-          <DayScheduleList
-            tripId={tripId}
-            startDate={tripInfo.startDate}
-            endDate={tripInfo.endDate}
-            onAddSchedule={handleAddSchedule}
-            onAddMemo={handleAddMemo}
-            onScheduleClick={handleScheduleClick}
-            onEditMemo={handleEditMemo}
-          />
-        </Box>
-      </VStack>
+          {/* 일정표 */}
+          <Box pt={4} pb="200px">
+            <DayScheduleList
+              tripId={tripId}
+              startDate={tripInfo.startDate}
+              endDate={tripInfo.endDate}
+              onAddSchedule={handleAddSchedule}
+              onAddMemo={handleAddMemo}
+            />
+          </Box>
+        </VStack>
+      </ScheduleProvider>
 
       {/* 일정 추가 바텀시트 */}
       {selectedDay && (
