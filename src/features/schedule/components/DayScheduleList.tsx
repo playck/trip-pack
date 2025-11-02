@@ -13,6 +13,12 @@ interface DayScheduleListProps {
   onAddSchedule?: (dayNumber: number, date: string) => void;
   onAddMemo?: (dayNumber: number, date: string) => void;
   onScheduleClick?: (schedule: Schedule) => void;
+  onEditMemo?: (
+    scheduleId: string,
+    memoText: string,
+    dayNumber: number,
+    date: string
+  ) => void;
 }
 
 export default function DayScheduleList({
@@ -22,6 +28,7 @@ export default function DayScheduleList({
   onAddSchedule,
   onAddMemo,
   onScheduleClick,
+  onEditMemo,
 }: DayScheduleListProps) {
   const tripDays = getTripDays(startDate, endDate);
 
@@ -46,6 +53,7 @@ export default function DayScheduleList({
             formattedDate={formattedDate}
             onAddSchedule={() => onAddSchedule?.(dayNumber, date)}
             onAddMemo={() => onAddMemo?.(dayNumber, date)}
+            onEditMemo={onEditMemo}
             onScheduleClick={(schedule) => {
               onScheduleClick?.(schedule);
             }}

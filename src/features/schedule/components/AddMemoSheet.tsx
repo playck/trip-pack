@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VStack, HStack, Textarea, Button } from "@chakra-ui/react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
@@ -9,6 +9,8 @@ interface AddMemoSheetProps {
   onSaveMemo: (memoText: string) => void;
   dayNumber: number;
   date: string;
+  initialMemoText?: string;
+  isEditMode?: boolean;
 }
 
 export default function AddMemoSheet({
@@ -16,8 +18,16 @@ export default function AddMemoSheet({
   onClose,
   onSaveMemo,
   dayNumber,
+  initialMemoText = "",
+  isEditMode = false,
 }: AddMemoSheetProps) {
-  const [memoText, setMemoText] = useState("");
+  const [memoText, setMemoText] = useState(initialMemoText);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMemoText(initialMemoText);
+    }
+  }, [isOpen, initialMemoText]);
 
   const handleMemoSave = () => {
     if (memoText.trim()) {
@@ -36,7 +46,7 @@ export default function AddMemoSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={handleClose}
-      title={`${dayNumber}일차 메모 추가`}
+      title={`${dayNumber}일차 메모 ${isEditMode ? "수정" : "추가"}`}
       minHeight="30vh"
     >
       <VStack gap={4} w="full" p={4}>

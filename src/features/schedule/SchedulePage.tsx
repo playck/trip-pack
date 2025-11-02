@@ -55,7 +55,9 @@ function SchedulePageContent() {
   const {
     isMemoSheetOpen,
     selectedDay: memoSelectedDay,
+    editingMemo,
     handleAddMemo,
+    handleEditMemo,
     handleCloseMemoSheet,
     handleSaveMemo,
   } = useScheduleMemo(tripId || "");
@@ -139,6 +141,7 @@ function SchedulePageContent() {
             onAddSchedule={handleAddSchedule}
             onAddMemo={handleAddMemo}
             onScheduleClick={handleScheduleClick}
+            onEditMemo={handleEditMemo}
           />
         </Box>
       </VStack>
@@ -154,7 +157,7 @@ function SchedulePageContent() {
         />
       )}
 
-      {/* 메모 추가 바텀시트 */}
+      {/* 메모 바텀시트 */}
       {memoSelectedDay && (
         <AddMemoSheet
           isOpen={isMemoSheetOpen}
@@ -162,6 +165,8 @@ function SchedulePageContent() {
           onSaveMemo={handleSaveMemo}
           dayNumber={memoSelectedDay.dayNumber}
           date={memoSelectedDay.date}
+          initialMemoText={editingMemo?.memoText}
+          isEditMode={!!editingMemo}
         />
       )}
     </PageLayout>

@@ -20,6 +20,12 @@ interface DayScheduleCardProps {
   onAddSchedule?: () => void;
   onAddMemo?: () => void;
   onScheduleClick?: (schedule: Schedule) => void;
+  onEditMemo?: (
+    scheduleId: string,
+    memoText: string,
+    dayNumber: number,
+    date: string
+  ) => void;
 }
 
 export default function DayScheduleCard({
@@ -29,6 +35,7 @@ export default function DayScheduleCard({
   onAddSchedule,
   onAddMemo,
   onScheduleClick,
+  onEditMemo,
 }: DayScheduleCardProps) {
   const navigate = useNavigate();
   const { schedules, isLoading } = useSchedulesByDay(tripId, dayNumber);
@@ -49,6 +56,7 @@ export default function DayScheduleCard({
         schedules={schedules}
         tripId={tripId}
         onScheduleClick={onScheduleClick}
+        onEditMemo={onEditMemo}
       />
     );
   };
@@ -152,10 +160,17 @@ const TimelineContent = ({
   schedules,
   tripId,
   onScheduleClick,
+  onEditMemo,
 }: {
   schedules: Schedule[];
   tripId: string;
   onScheduleClick?: (schedule: Schedule) => void;
+  onEditMemo?: (
+    scheduleId: string,
+    memoText: string,
+    dayNumber: number,
+    date: string
+  ) => void;
 }) => {
   return (
     <Timeline.Root size="sm" variant="subtle">
@@ -167,6 +182,7 @@ const TimelineContent = ({
           onScheduleClick={(s) => {
             onScheduleClick?.(s);
           }}
+          onEditMemo={onEditMemo}
         />
       ))}
     </Timeline.Root>
