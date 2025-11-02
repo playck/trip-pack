@@ -13,3 +13,4 @@ export { useScheduleReorder } from "./useScheduleReorder";
 export { useScheduleActions } from "./useScheduleActions";
 export { useDialogState } from "./useDialogState";
 export type { DialogType } from "./useDialogState";
+export { useShareSchedule } from "./useShareSchedule";

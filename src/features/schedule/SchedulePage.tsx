@@ -23,6 +23,7 @@ import {
   useScheduleAdd,
   useScheduleMemo,
   useTripSchedules,
+  useShareSchedule,
 } from "./hooks";
 import type { Schedule } from "./types";
 import {
@@ -66,6 +67,8 @@ function SchedulePageContent() {
 
   const { data: allSchedules } = useTripSchedules(tripId);
 
+  const { handleScheduleShare } = useShareSchedule();
+
   const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
   const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
 
@@ -103,6 +106,10 @@ function SchedulePageContent() {
     });
   };
 
+  const handleShareSchedule = () => {
+    handleScheduleShare(allSchedules || [], tripInfo?.title);
+  };
+
   if (isLoading) return <ScheduleLoadingState />;
 
   if (error) return <ScheduleErrorState error={error} />;
@@ -113,7 +120,7 @@ function SchedulePageContent() {
     <PageLayout>
       <VStack gap={0} align="stretch">
         <Box position="sticky" top="56px" zIndex={10} bg="white" pb={2}>
-          <TripHeader tripInfo={tripInfo} />
+          <TripHeader tripInfo={tripInfo} onShareClick={handleShareSchedule} />
 
           <GoogleMapView
             center={focusedLocation || mapCenter}
