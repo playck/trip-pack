@@ -6,6 +6,7 @@ export interface TripInfo {
   startDate: string;
   endDate: string;
   regionName: string | null;
+  regionId: string | null;
   countryCode: string | null;
   companionType: string | null;
   companionTypes: string[] | null;
@@ -24,6 +25,7 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
         start_date,
         end_date,
         region_name,
+        region_id,
         country_code,
         companion_type,
         companion_types,
@@ -48,6 +50,7 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
       startDate: data.start_date,
       endDate: data.end_date || "",
       regionName: data.region_name,
+      regionId: data.region_id,
       countryCode: data.country_code,
       companionType: data.companion_type,
       companionTypes: data.companion_types as string[] | null,

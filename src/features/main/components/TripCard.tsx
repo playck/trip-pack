@@ -1,5 +1,7 @@
-import { Box, Text, VStack, Flex, Badge } from "@chakra-ui/react";
+import { Box, Text, VStack, Flex, Badge, IconButton } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { CalendarDays } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 import type { Trip } from "../types";
 import { colorCombinations, colors } from "../../../shared/constants/colors";
@@ -11,6 +13,8 @@ interface TripCardProps {
 }
 
 export default function TripCard({ trip, onClick }: TripCardProps) {
+  const navigate = useNavigate();
+
   // D-Day 계산 함수
   const getTripStatus = (
     startDate: string,
@@ -38,6 +42,11 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
 
   const tripStatus = getTripStatus(trip.start_date, trip.end_date);
 
+  const handleScheduleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: "/schedule/$tripId", params: { tripId: trip.id } });
+  };
+
   return (
     <Box
       position="relative"
@@ -62,6 +71,23 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
         bg="linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)"
         borderRadius="xl"
       />
+
+      {/* 일정 버튼 */}
+      <IconButton
+        position="absolute"
+        top={3}
+        right={3}
+        zIndex={2}
+        size="sm"
+        variant="subtle"
+        aria-label="여행 일정"
+        onClick={handleScheduleClick}
+        bg="whiteAlpha.900"
+        _hover={{ bg: "whiteAlpha.800" }}
+        color="gray.700"
+      >
+        <CalendarDays size={16} />
+      </IconButton>
 
       <VStack
         h="full"

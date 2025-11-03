@@ -68,3 +68,17 @@ export const getTripDuration = (startDate: string, endDate: string): number => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 };
+
+// 여행 일수 계산 (당일 포함)
+export const getTripDays = (startDate: string, endDate: string): number => {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  return end.diff(start, "day") + 1; // 당일 포함
+};
+
+// 특정 일차의 날짜 구하기
+export const getDayDate = (startDate: string, dayNumber: number): string => {
+  return dayjs(startDate)
+    .add(dayNumber - 1, "day")
+    .format("YYYY-MM-DD");
+};
