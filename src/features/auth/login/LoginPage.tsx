@@ -39,7 +39,7 @@ export default function LoginPage() {
       await supabase.auth.signInWithOAuth({
         provider: "kakao" as Provider,
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/main`,
           queryParams: { prompt: "login" },
         },
       });
@@ -49,9 +49,12 @@ export default function LoginPage() {
   };
 
   const validateForm = (): boolean => {
-    const newErrors = validateLoginForm(formData.email, formData.password);
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const loginFormErrors = validateLoginForm(
+      formData.email,
+      formData.password
+    );
+    setErrors(loginFormErrors);
+    return Object.keys(loginFormErrors).length === 0;
   };
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
@@ -85,7 +88,7 @@ export default function LoginPage() {
       }
 
       if (authData.user) {
-        navigate({ to: "/" });
+        navigate({ to: "/main" });
       }
     } catch {
       setErrors({
