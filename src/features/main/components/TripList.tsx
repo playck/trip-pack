@@ -37,26 +37,7 @@ export default function TripList() {
   }
 
   if (noTripList) {
-    return (
-      <VStack gap={4} py={8}>
-        <Text
-          fontSize="lg"
-          color={colorCombinations.defaultCard.text}
-          opacity={0.7}
-          textAlign="center"
-        >
-          아직 만든 여행 계획이 없어요
-        </Text>
-        <Text
-          fontSize="sm"
-          color={colorCombinations.defaultCard.text}
-          opacity={0.5}
-          textAlign="center"
-        >
-          새 여행 계획을 시작해보세요!
-        </Text>
-      </VStack>
-    );
+    return null;
   }
 
   return (
@@ -158,7 +139,7 @@ export default function TripList() {
                   >
                     ✈️ 추억이 된 여행
                   </Text>
-                  <Text fontSize="sm" color="gray.500" fontStyle="italic">
+                  <Text fontSize="sm" color="gray.500">
                     소중한 기억들이 담긴 여행들이에요
                   </Text>
                 </VStack>
