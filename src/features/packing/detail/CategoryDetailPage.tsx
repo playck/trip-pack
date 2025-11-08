@@ -23,6 +23,7 @@ import { ItemForm, DeleteCategoryModal, SearchBar } from "./components";
 import { useTripChecklist } from "../list/hooks/useTripChecklist";
 import { useDeleteCategory } from "../list/hooks/useDeleteCategory";
 import type { CategoryWithItems } from "../type";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 
 export default function CategoryDetailPage() {
   const navigate = useNavigate();
@@ -112,7 +113,7 @@ export default function CategoryDetailPage() {
             px={4}
             py={2}
             position="sticky"
-            top="56px"
+            top={`${HEADER_HEIGHT}px`}
             boxShadow="0 1px 2px rgba(0, 0, 0, 0.1)"
             zIndex={100}
           >

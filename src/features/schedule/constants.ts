@@ -1,3 +1,5 @@
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
+
 /**
  * 기본 지도 중심 좌표 (서울)
  */
@@ -20,7 +22,7 @@ export const FOCUSED_MAP_ZOOM = 16;
  * 레이아웃 높이 상수
  */
 export const LAYOUT_HEIGHTS = {
-  PAGE_HEADER: 56, // 페이지 기본 헤더
+  PAGE_HEADER: HEADER_HEIGHT, // 페이지 기본 헤더
   TRIP_HEADER: 59, // 여행 정보 헤더
   MAP: 290, // 지도 높이
 } as const;

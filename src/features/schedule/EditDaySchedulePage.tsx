@@ -8,6 +8,7 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import {
   useSchedulesByDay,
   useScheduleSelection,
@@ -113,7 +114,7 @@ export default function ManageDaySchedulePage() {
           borderColor={borderColors.default}
           bg="white"
           position="sticky"
-          top="56px"
+          top={`${HEADER_HEIGHT}px`}
           zIndex={10}
         >
           <HStack py={3} gap={2} align="center">

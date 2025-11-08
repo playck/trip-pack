@@ -5,6 +5,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import {
   GoogleMapView,
   DayScheduleList,
@@ -128,7 +129,13 @@ function SchedulePageContent() {
         }}
       >
         <VStack gap={0} align="stretch">
-          <Box position="sticky" top="56px" zIndex={10} bg="white" pb={2}>
+          <Box
+            position="sticky"
+            top={`${HEADER_HEIGHT}px`}
+            zIndex={10}
+            bg="white"
+            pb={2}
+          >
             <TripHeader
               tripInfo={tripInfo}
               onShareClick={handleShareSchedule}

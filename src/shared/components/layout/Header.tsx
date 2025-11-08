@@ -2,6 +2,8 @@ import { Box, Flex, Text, IconButton } from "@chakra-ui/react";
 import { ChevronLeft, Menu } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
+
 interface HeaderProps {
   showBackButton?: boolean;
   showMenuButton?: boolean;
@@ -17,10 +19,10 @@ export default function Header({
     <Box
       as="header"
       w="full"
-      h="56px"
+      h={`${HEADER_HEIGHT}px`}
       bg="bg.panel"
       borderBottomWidth="1px"
-      borderColor="border.subtle"
+      borderColor="border.muted"
       position="sticky"
       top="0"
       zIndex="sticky"
