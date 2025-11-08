@@ -23,7 +23,7 @@ export default function PlaceSearchInput({
   };
 
   return (
-    <Box py={4} position="relative">
+    <Box py={2} position="relative">
       <Input
         placeholder="장소를 검색하세요"
         value={inputValue}

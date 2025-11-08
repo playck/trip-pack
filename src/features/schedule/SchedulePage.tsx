@@ -134,7 +134,6 @@ function SchedulePageContent() {
             top={`${HEADER_HEIGHT}px`}
             zIndex={10}
             bg="white"
-            pb={2}
           >
             <TripHeader
               tripInfo={tripInfo}
@@ -144,13 +143,13 @@ function SchedulePageContent() {
             <GoogleMapView
               center={focusedLocation || mapCenter}
               zoom={mapZoom}
-              height="250px"
+              height="200px"
               markers={scheduleMarkers}
             />
           </Box>
 
           {/* 일정표 */}
-          <Box pt={4} pb="200px">
+          <Box pt={3} pb="300px">
             <DayScheduleList
               tripId={tripId}
               startDate={tripInfo.startDate}

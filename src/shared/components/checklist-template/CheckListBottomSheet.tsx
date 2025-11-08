@@ -47,7 +47,7 @@ export default function CheckListBottomSheet({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={handleClose} title={title}>
-      <Flex flexDirection="column" h="100%" minHeight="65vh">
+      <Flex flexDirection="column" h="100%" minHeight="70vh">
         <Box px={4} py={4} flex={1} overflowY="auto">
           <CheckList
             categories={categories}

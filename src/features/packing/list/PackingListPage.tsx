@@ -117,7 +117,7 @@ export default function PackingListPage() {
 
   return (
     <PageLayout>
-      <Container maxW="6xl" py={5} px={0}>
+      <Container maxW="6xl" pt={3} pb={6} px={0}>
         <VStack gap={4} align="stretch">
           <VStack align="stretch" gap={3}>
             <TripTitle tripId={tripId} initialTitle={initialTripTitle} />

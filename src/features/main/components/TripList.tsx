@@ -51,7 +51,7 @@ export default function TripList() {
       </Text>
 
       <Box w="full" overflowX="auto">
-        <VStack gap={4} pb={2} align="stretch">
+        <VStack gap={4} pl={0} pb={2} align="stretch">
           {/* 다가오는 여행 알림 */}
           {upcomingTripInfo && (
             <Box
@@ -89,30 +89,18 @@ export default function TripList() {
 
           {/* 여행중인 여행 섹션 */}
           {currentTrips && currentTrips?.length > 0 && (
-            <VStack gap={3} align="stretch" w="full" pl={2}>
+            <VStack gap={3} align="stretch" w="full">
               {currentTrips.map((trip) => (
-                <Box
-                  key={trip.id}
-                  _hover={{ transform: "translateY(-2px)" }}
-                  transition="transform 0.2s"
-                >
-                  <TripCard trip={trip} onClick={goToTripPage} />
-                </Box>
+                <TripCard key={trip.id} trip={trip} onClick={goToTripPage} />
               ))}
             </VStack>
           )}
 
           {/* 미래 여행 섹션 */}
           {futureTrips.length > 0 && (
-            <VStack gap={3} align="stretch" w="full" pl={2}>
+            <VStack gap={3} align="stretch" w="full">
               {futureTrips.map((trip) => (
-                <Box
-                  key={trip.id}
-                  _hover={{ transform: "translateY(-2px)" }}
-                  transition="transform 0.2s"
-                >
-                  <TripCard trip={trip} onClick={goToTripPage} />
-                </Box>
+                <TripCard key={trip.id} trip={trip} onClick={goToTripPage} />
               ))}
             </VStack>
           )}
@@ -144,7 +132,7 @@ export default function TripList() {
                   </Text>
                 </VStack>
               </Box>
-              <VStack gap={3} align="stretch" w="full" pl={2}>
+              <VStack gap={3} align="stretch" w="full">
                 {pastTrips.map((trip) => (
                   <Box key={trip.id} opacity={0.8}>
                     <TripCard trip={trip} onClick={goToTripPage} />

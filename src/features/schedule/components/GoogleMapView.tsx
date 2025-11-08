@@ -26,11 +26,11 @@ export default function GoogleMapView({
   center = { lat: 37.5665, lng: 126.978 },
   zoom = 12,
   markers = [],
-  height = "250px",
+  height = "200px",
   onMarkerClick,
   showRoute = true,
 }: GoogleMapViewProps) {
-  const routePath = markers.map((marker) => marker.position);
+  const routePath = markers?.map((marker) => marker.position);
   const isHasRoutePath = showRoute && routePath.length > 1;
 
   return (

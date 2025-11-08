@@ -47,14 +47,14 @@ export default function AddMemoSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={`${dayNumber}일차 메모 ${isEditMode ? "수정" : "추가"}`}
-      minHeight="30vh"
+      minHeight="35vh"
     >
-      <VStack gap={4} w="full" p={4}>
+      <VStack gap={3} w="full" p={3}>
         <Textarea
-          placeholder="메모를 입력하세요..."
+          placeholder="메모를 입력 해 주세요."
           value={memoText}
           onChange={(e) => setMemoText(e.target.value)}
-          rows={6}
+          rows={7}
           autoFocus
           w="full"
         />

@@ -7,7 +7,7 @@ interface PageLayoutProps {
 
 export default function PageLayout({ children }: PageLayoutProps) {
   return (
-    <Box px={4} w="full">
+    <Box px={3} w="full">
       {children}
     </Box>
   );

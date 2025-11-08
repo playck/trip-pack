@@ -17,7 +17,7 @@ export default function TripHeader({
     tripInfo.title || `${tripInfo.regionName || "여행"} 여행지`;
 
   return (
-    <VStack pt={4} pb={2} gap={3} align="start">
+    <VStack pt={3} pb={2} gap={1} align="start">
       <HStack gap={2} flexWrap="wrap" justify="space-between" w="full">
         <HStack gap={2} flexWrap="wrap" flex={1}>
           <Text fontSize="xl" fontWeight="bold" color={textColors.primary}>

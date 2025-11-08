@@ -83,7 +83,6 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
         aria-label="여행 일정"
         onClick={handleScheduleClick}
         bg="whiteAlpha.900"
-        _hover={{ bg: "whiteAlpha.800" }}
         color="gray.700"
       >
         <CalendarDays size={16} />

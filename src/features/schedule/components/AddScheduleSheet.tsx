@@ -66,11 +66,11 @@ export default function AddScheduleSheet({
       isOpen={isOpen}
       onClose={onClose}
       title={`${dayNumber}일차 일정 추가`}
-      minHeight="80vh"
+      minHeight="85vh"
     >
       <VStack align="stretch" gap={0} px={4} pb={4}>
-        <Box py={3} borderBottomWidth="1px" borderColor={borderColors.subtle}>
-          <Text fontSize="sm" color={textColors.tertiary}>
+        <Box py={1.5} borderBottomWidth="1px" borderColor={borderColors.subtle}>
+          <Text fontSize="sm" color={textColors.primary} textAlign="center">
             {date}
           </Text>
         </Box>
