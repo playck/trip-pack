@@ -1,15 +1,6 @@
 import { useState } from "react";
-import {
-  Container,
-  Text,
-  VStack,
-  HStack,
-  SegmentGroup,
-  useDisclosure,
-  Box,
-} from "@chakra-ui/react";
-import { Grid3X3, List } from "lucide-react";
-import { useParams, useSearch } from "@tanstack/react-router";
+import { Container, Text, VStack, useDisclosure, Box } from "@chakra-ui/react";
+import { useParams, useSearch, useNavigate } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import {
@@ -20,9 +11,9 @@ import {
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
+import { TemplateListSheet } from "@/shared/components/checklist-template";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { TemplateListSheet } from "@/shared/components/checklist-template";
 
 import {
   ProgressBar,
@@ -30,12 +21,14 @@ import {
   GridView,
   ListView,
   TripTitle,
+  ViewModeToggle,
 } from "./components";
 import { useTripChecklist } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
 import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 
 export default function PackingListPage() {
+  const navigate = useNavigate();
   const { open: isOpen, onOpen, onClose } = useDisclosure();
   const {
     open: isCheckListOpen,
@@ -118,17 +111,8 @@ export default function PackingListPage() {
   }
 
   if (!tripId) {
-    return (
-      <PageLayout>
-        <Container maxW="6xl" py={5} px={0}>
-          <VStack gap={4} py={8}>
-            <Text fontSize="lg" color="gray.600" textAlign="center">
-              여행을 선택해주세요
-            </Text>
-          </VStack>
-        </Container>
-      </PageLayout>
-    );
+    navigate({ to: "/main" });
+    return null;
   }
 
   return (
@@ -138,67 +122,10 @@ export default function PackingListPage() {
           <VStack align="stretch" gap={3}>
             <TripTitle tripId={tripId} initialTitle={initialTripTitle} />
 
-            <HStack justify="flex-end" align="center">
-              <HStack gap={2}>
-                {/* <IconButton
-                aria-label="체크리스트 텍스트로 추출"
-                size="sm"
-                variant="outline"
-                onClick={onCheckListCopyOpen}
-              >
-                <Download size={16} />
-              </IconButton> */}
-                <SegmentGroup.Root
-                  size="sm"
-                  value={viewMode}
-                  onValueChange={(details) => {
-                    if (details.value) {
-                      setViewMode(details.value);
-                      localStorage.setItem(
-                        STORAGE_KEYS.TRIP_PACK_VIEW_MODE,
-                        details.value
-                      );
-                    }
-                  }}
-                >
-                  <SegmentGroup.Indicator />
-                  <SegmentGroup.Items
-                    items={[
-                      {
-                        value: "그리드",
-                        label: (
-                          <HStack gap={2}>
-                            <Grid3X3
-                              size={18}
-                              color={
-                                viewMode === "그리드"
-                                  ? "#3182CE"
-                                  : "currentColor"
-                              }
-                            />
-                          </HStack>
-                        ),
-                      },
-                      {
-                        value: "일렬형식",
-                        label: (
-                          <HStack gap={2}>
-                            <List
-                              size={18}
-                              color={
-                                viewMode === "일렬형식"
-                                  ? "#3182CE"
-                                  : "currentColor"
-                              }
-                            />
-                          </HStack>
-                        ),
-                      },
-                    ]}
-                  />
-                </SegmentGroup.Root>
-              </HStack>
-            </HStack>
+            <ViewModeToggle
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+            />
           </VStack>
 
           <ProgressBar progress={progress} />

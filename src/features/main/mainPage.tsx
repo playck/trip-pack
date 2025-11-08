@@ -66,7 +66,8 @@ export default function MainPage() {
       <Box w="full" py={4}>
         <VStack gap={6} align="stretch">
           <Box
-            p={6}
+            py={5}
+            px={4.5}
             bg={colorCombinations.defaultCard.background}
             borderRadius="xl"
             borderWidth="1px"
