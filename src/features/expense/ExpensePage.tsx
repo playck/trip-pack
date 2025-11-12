@@ -1,16 +1,18 @@
+import { useMemo, useState } from "react";
+import dayjs from "dayjs";
+import { useParams } from "@tanstack/react-router";
 import { Container, Heading, Box, Text } from "@chakra-ui/react";
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { useParams } from "@tanstack/react-router";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
-import dayjs from "dayjs";
-import { useMemo, useState } from "react";
-import { DateTabList } from "./components";
+import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { DateTabList, ExpenseList, ExpenseAllContent } from "./components";
+
+const ALL_TAB_VALUE = "all";
 
 export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
 
   // 여행 기간의 날짜 목록 생성
   const dateList = useMemo(() => {
@@ -21,7 +23,7 @@ export default function ExpensePage() {
     const endDate = dayjs(tripInfo.endDate);
     const daysDiff = endDate.diff(startDate, "day");
 
-    for (let i = 0; i <= daysDiff * 5; i++) {
+    for (let i = 0; i <= daysDiff; i++) {
       const currentDate = startDate.add(i, "day");
       dates.push({
         date: currentDate.format("YYYY-MM-DD"),
@@ -33,12 +35,27 @@ export default function ExpensePage() {
     return dates;
   }, [tripInfo]);
 
-  // 첫 번째 날짜를 기본값으로 설정
-  useMemo(() => {
-    if (dateList.length > 0 && !selectedDate) {
-      setSelectedDate(dateList[0].date);
-    }
-  }, [dateList, selectedDate]);
+  // 날짜별 샘플 경비 데이터 생성 (임시)
+  const dayExpenses = useMemo(() => {
+    return dateList.map((dateItem, index) => {
+      // 각 날짜마다 랜덤하게 3-5개의 경비 항목 생성
+      const itemCount = 3 + (index % 3);
+      const expenseItems = [
+        { id: `${index}-1`, name: "아침 식사", amount: 12000 + index * 1000 },
+        { id: `${index}-2`, name: "점심 식사", amount: 20000 + index * 2000 },
+        { id: `${index}-3`, name: "카페", amount: 7000 + index * 500 },
+        { id: `${index}-4`, name: "저녁 식사", amount: 35000 + index * 3000 },
+        { id: `${index}-5`, name: "교통비", amount: 10000 + index * 1000 },
+      ].slice(0, itemCount);
+
+      return {
+        date: dateItem.date,
+        label: dateItem.label,
+        dayNumber: dateItem.dayNumber,
+        expenses: expenseItems,
+      };
+    });
+  }, [dateList]);
 
   if (isLoading) {
     return (
@@ -60,9 +77,9 @@ export default function ExpensePage() {
 
   return (
     <PageLayout>
-      <Container maxW="6xl" py={3} px={4}>
+      {/* <Container maxW="6xl" py={3} px={4}>
         <Heading size="lg">{tripInfo.title}</Heading>
-      </Container>
+      </Container> */}
 
       {dateList.length > 0 ? (
         <>
@@ -74,18 +91,19 @@ export default function ExpensePage() {
           />
 
           {/* 선택된 날짜의 컨텐츠 */}
-          <Container maxW="6xl" pt={4} pb={6} px={4}>
-            {dateList.map((dateItem) =>
-              selectedDate === dateItem.date ? (
-                <Box key={dateItem.date}>
-                  <Box p={4} bg="gray.50" borderRadius="md">
-                    <Text color="gray.600" textAlign="center">
-                      {dateItem.label} 경비 내역
-                    </Text>
-                    {/* 여기에 경비 목록이 들어갈 예정 */}
+          <Container maxW="6xl" pt={4} pb={6} px={1}>
+            {selectedDate === ALL_TAB_VALUE ? (
+              // 전체 탭 - 타임라인 스크롤 방식
+              <ExpenseAllContent dayExpenses={dayExpenses} />
+            ) : (
+              // 특정 날짜 탭 - 해당 날짜의 경비만 표시
+              dayExpenses
+                .filter((day) => day.date === selectedDate)
+                .map((day) => (
+                  <Box key={day.date}>
+                    <ExpenseList expenses={day.expenses} />
                   </Box>
-                </Box>
-              ) : null
+                ))
             )}
           </Container>
         </>
