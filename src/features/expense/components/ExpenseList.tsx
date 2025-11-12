@@ -1,4 +1,4 @@
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 
 interface ExpenseItem {
@@ -35,28 +35,42 @@ export default function ExpenseList({ expenses }: ExpenseListProps) {
               }
               borderColor="gray.100"
             >
-              <Text fontSize="md" color="gray.700">
+              <Text fontSize="15px" color="gray.700">
                 {expense.name}
               </Text>
-              <Text fontSize="md" fontWeight="semibold" color="gray.900">
-                {expense.amount.toLocaleString()}원
-              </Text>
+              <HStack gap={0.5} align="baseline">
+                <Text fontSize="md" fontWeight="semibold" color="gray.900">
+                  {expense.amount.toLocaleString()}
+                </Text>
+                <Text fontSize="sm" fontWeight="semibold" color="gray.900">
+                  원
+                </Text>
+              </HStack>
             </Flex>
           ))}
 
           <Box borderBottom="1px dashed" borderColor="gray.200" mt={2} />
 
-          <Flex justify="space-between" align="center" py={2} mt={2}>
+          <Flex justify="space-between" align="center" py={2}>
             <Text fontSize="lg" fontWeight="bold" color="gray.800">
               총 비용
             </Text>
-            <Text
-              fontSize="lg"
-              fontWeight="bold"
-              color={colors.primary.palette}
-            >
-              {total.toLocaleString()}원
-            </Text>
+            <HStack gap={0.5} align="baseline">
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                color={colors.primary.palette}
+              >
+                {total.toLocaleString()}
+              </Text>
+              <Text
+                fontSize="md"
+                fontWeight="bold"
+                color={colors.primary.palette}
+              >
+                원
+              </Text>
+            </HStack>
           </Flex>
         </>
       )}
