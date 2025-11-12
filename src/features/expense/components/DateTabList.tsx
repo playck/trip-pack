@@ -13,6 +13,8 @@ interface DateTabListProps {
   onSelectDate: (date: string) => void;
 }
 
+const ALL_DATE_TAB_VALUE = "all";
+
 export default function DateTabList({
   dateList,
   selectedDate,
@@ -34,6 +36,31 @@ export default function DateTabList({
       }}
     >
       <Flex gap={0} minW="max-content" px={0}>
+        {/* 전체 탭 */}
+        <Box
+          py={3}
+          px={4}
+          borderBottom="2px solid"
+          borderColor={
+            selectedDate === ALL_DATE_TAB_VALUE
+              ? colors.primary.palette
+              : "transparent"
+          }
+          color={
+            selectedDate === ALL_DATE_TAB_VALUE
+              ? colors.primary.palette
+              : "gray.600"
+          }
+          fontWeight={selectedDate === ALL_DATE_TAB_VALUE ? "bold" : "normal"}
+          fontSize="sm"
+          whiteSpace="nowrap"
+          cursor="pointer"
+          onClick={() => onSelectDate(ALL_DATE_TAB_VALUE)}
+        >
+          전체
+        </Box>
+
+        {/* 날짜별 탭 */}
         {dateList.map((dateItem) => (
           <Box
             key={dateItem.date}
