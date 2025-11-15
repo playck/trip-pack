@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { useParams } from "@tanstack/react-router";
-import { Container, Heading, Box, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { DateTabList, ExpenseList, ExpenseAllContent } from "./components";
+import { DateTabList, ExpenseContent } from "./components";
 
 const ALL_TAB_VALUE = "all";
 
@@ -83,29 +83,17 @@ export default function ExpensePage() {
 
       {dateList.length > 0 ? (
         <>
-          {/* 스크롤 가능한 가로 탭 */}
           <DateTabList
             dateList={dateList}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
           />
 
-          {/* 선택된 날짜의 컨텐츠 */}
-          <Container maxW="6xl" pt={4} pb={6} px={1}>
-            {selectedDate === ALL_TAB_VALUE ? (
-              // 전체 탭 - 타임라인 스크롤 방식
-              <ExpenseAllContent dayExpenses={dayExpenses} />
-            ) : (
-              // 특정 날짜 탭 - 해당 날짜의 경비만 표시
-              dayExpenses
-                .filter((day) => day.date === selectedDate)
-                .map((day) => (
-                  <Box key={day.date}>
-                    <ExpenseList expenses={day.expenses} />
-                  </Box>
-                ))
-            )}
-          </Container>
+          <ExpenseContent
+            selectedDate={selectedDate}
+            dayExpenses={dayExpenses}
+            isAllTab={selectedDate === ALL_TAB_VALUE}
+          />
         </>
       ) : (
         <Box
