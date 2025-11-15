@@ -21,11 +21,6 @@ interface ExpenseContentProps {
   isAllTab: boolean;
 }
 
-/**
- * 경비 컨텐츠 영역
- * - 전체 탭: 타임라인 스크롤 방식
- * - 특정 날짜 탭: 해당 날짜의 경비만 표시
- */
 export default function ExpenseContent({
   selectedDate,
   dayExpenses,
@@ -34,10 +29,8 @@ export default function ExpenseContent({
   return (
     <Container maxW="6xl" pt={4} pb={6} px={1}>
       {isAllTab ? (
-        // 전체 탭 - 타임라인 스크롤 방식
         <ExpenseAllContent dayExpenses={dayExpenses} />
       ) : (
-        // 특정 날짜 탭 - 해당 날짜의 경비만 표시
         dayExpenses
           .filter((day) => day.date === selectedDate)
           .map((day) => (
@@ -49,4 +42,3 @@ export default function ExpenseContent({
     </Container>
   );
 }
-

@@ -32,9 +32,10 @@ export default function ExpenseSummaryCard({
         align="center"
         px={4}
         py={2}
+        pr={2}
+        bg={`${colors.primary.palette}.50`}
         cursor="pointer"
         onClick={() => setIsExpanded(!isExpanded)}
-        bg={`${colors.primary.palette}.50`}
         transition="all 0.2s"
       >
         <HStack gap={2}>
@@ -43,7 +44,7 @@ export default function ExpenseSummaryCard({
             전체 통계
           </Text>
         </HStack>
-        <HStack gap={2}>
+        <HStack gap={1}>
           <HStack gap={0.5} align="baseline">
             <Text
               fontSize="lg"
