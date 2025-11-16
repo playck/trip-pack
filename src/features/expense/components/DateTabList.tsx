@@ -31,8 +31,8 @@ export default function DateTabList({
         "&::-webkit-scrollbar": {
           display: "none",
         },
-        "-ms-overflow-style": "none",
-        "scrollbar-width": "none",
+        msOverflowStyle: "none",
+        scrollbarWidth: "none",
       }}
     >
       <Flex gap={0} minW="max-content" px={0}>

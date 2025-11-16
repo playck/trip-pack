@@ -4,17 +4,26 @@ import { useParams } from "@tanstack/react-router";
 import { Box, Text } from "@chakra-ui/react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
+import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { DateTabList, ExpenseContent } from "./components";
+import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
+import { useTripExpenses } from "./hooks/useTripExpenses";
+import { useCreateExpense } from "./hooks/useCreateExpense";
 
 const ALL_TAB_VALUE = "all";
 
 export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
   const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
+  const { data: expenses, isLoading: isLoadingExpenses } =
+    useTripExpenses(tripId);
+  const createExpenseMutation = useCreateExpense(tripId || "", {
+    onSuccess: () => setIsSheetOpen(false),
+  });
   const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // 여행 기간의 날짜 목록 생성
+  // 여행 기간의 날짜 생성
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
 
@@ -35,29 +44,48 @@ export default function ExpensePage() {
     return dates;
   }, [tripInfo]);
 
-  // 날짜별 샘플 경비 데이터 생성 (임시)
+  // 날짜별 경비 데이터 생성
   const dayExpenses = useMemo(() => {
-    return dateList.map((dateItem, index) => {
-      // 각 날짜마다 랜덤하게 3-5개의 경비 항목 생성
-      const itemCount = 3 + (index % 3);
-      const expenseItems = [
-        { id: `${index}-1`, name: "아침 식사", amount: 12000 + index * 1000 },
-        { id: `${index}-2`, name: "점심 식사", amount: 20000 + index * 2000 },
-        { id: `${index}-3`, name: "카페", amount: 7000 + index * 500 },
-        { id: `${index}-4`, name: "저녁 식사", amount: 35000 + index * 3000 },
-        { id: `${index}-5`, name: "교통비", amount: 10000 + index * 1000 },
-      ].slice(0, itemCount);
+    return dateList.map((dateItem) => {
+      // 해당 날짜의 경비만 필터링
+      const dayExpenseItems = (expenses || [])
+        .filter((expense) => expense.expense_date === dateItem.date)
+        .map((expense) => ({
+          id: expense.id,
+          name: expense.expense_category,
+          amount: expense.amount,
+        }));
 
       return {
         date: dateItem.date,
         label: dateItem.label,
         dayNumber: dateItem.dayNumber,
-        expenses: expenseItems,
+        expenses: dayExpenseItems,
       };
     });
-  }, [dateList]);
+  }, [dateList, expenses]);
 
-  if (isLoading) {
+  const handleAddExpense = () => {
+    setIsSheetOpen(true);
+  };
+
+  const handleSaveExpense = (name: string, amount: number) => {
+    if (!tripId) return;
+
+    // 선택된 날짜에 해당하는 dayNumber 찾기
+    const selectedDateItem = dateList.find((d) => d.date === selectedDate);
+    if (!selectedDateItem) return;
+
+    createExpenseMutation.mutate({
+      tripId,
+      expenseDate: selectedDate,
+      dayNumber: selectedDateItem.dayNumber,
+      category: name,
+      amount,
+    });
+  };
+
+  if (isLoading || isLoadingExpenses) {
     return (
       <PageLayout>
         <LoadingSpinner />
@@ -108,6 +136,17 @@ export default function ExpensePage() {
           <Text>여행 날짜 정보가 없습니다.</Text>
         </Box>
       )}
+
+      {selectedDate !== ALL_TAB_VALUE && (
+        <FloatingAddButton onClick={handleAddExpense} ariaLabel="경비 추가" />
+      )}
+
+      {/* 경비 추가 바텀시트 */}
+      <AddExpenseSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        onSaveExpense={handleSaveExpense}
+      />
     </PageLayout>
   );
 }
