@@ -5,3 +5,4 @@ export { default as ExpenseDaySection } from "./ExpenseDaySection";
 export { default as ExpenseAllContent } from "./ExpenseAllContent";
 export { default as AddExpenseSheet } from "./AddExpenseSheet";
 export { default as ExpenseContent } from "./ExpenseContent";
+export { default as SwipeableExpenseItem } from "./SwipeableExpenseItem";
