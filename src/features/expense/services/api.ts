@@ -13,6 +13,7 @@ export interface CreateExpenseParams {
   scheduleId?: string;
 }
 
+// 경비 추가
 export async function createExpense(
   params: CreateExpenseParams
 ): Promise<ExpenseRow> {
@@ -43,6 +44,7 @@ export async function createExpense(
   return data;
 }
 
+// 여행별 경비 조회
 export async function getExpensesByTrip(tripId: string): Promise<ExpenseRow[]> {
   const { data, error } = await supabase
     .from("trip_expenses")
@@ -56,4 +58,16 @@ export async function getExpensesByTrip(tripId: string): Promise<ExpenseRow[]> {
   }
 
   return data || [];
+}
+
+// 경비 삭제
+export async function deleteExpense(expenseId: string): Promise<void> {
+  const { error } = await supabase
+    .from("trip_expenses")
+    .delete()
+    .eq("id", expenseId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }
