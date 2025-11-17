@@ -10,6 +10,7 @@ export interface CreateExpenseParams {
   dayNumber: number;
   category: string;
   amount: number;
+  scheduleId?: string;
 }
 
 export async function createExpense(
@@ -22,6 +23,7 @@ export async function createExpense(
     expense_category: params.category,
     amount: params.amount,
     currency: "KRW",
+    schedule_id: params.scheduleId || null,
   };
 
   const { data, error } = await supabase

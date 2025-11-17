@@ -69,7 +69,11 @@ export default function ExpensePage() {
     setIsSheetOpen(true);
   };
 
-  const handleSaveExpense = (name: string, amount: number) => {
+  const handleSaveExpense = (
+    name: string,
+    amount: number,
+    scheduleId?: string
+  ) => {
     if (!tripId) return;
 
     // 선택된 날짜에 해당하는 dayNumber 찾기
@@ -82,6 +86,7 @@ export default function ExpensePage() {
       dayNumber: selectedDateItem.dayNumber,
       category: name,
       amount,
+      scheduleId,
     });
   };
 
@@ -141,11 +146,11 @@ export default function ExpensePage() {
         <FloatingAddButton onClick={handleAddExpense} ariaLabel="경비 추가" />
       )}
 
-      {/* 경비 추가 바텀시트 */}
       <AddExpenseSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         onSaveExpense={handleSaveExpense}
+        date={dateList.find((d) => d.date === selectedDate)?.label}
       />
     </PageLayout>
   );

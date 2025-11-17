@@ -1,17 +1,24 @@
 import { useState, useEffect } from "react";
-import { VStack, HStack, Input, Button, Text } from "@chakra-ui/react";
+import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
+import { colors } from "@/shared/constants/colors";
 
 interface AddExpenseSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveExpense: (name: string, amount: number) => void;
+  onSaveExpense: (name: string, amount: number, scheduleId?: string) => void;
+  scheduleName?: string;
+  scheduleId?: string;
+  date?: string;
 }
 
 export default function AddExpenseSheet({
   isOpen,
   onClose,
   onSaveExpense,
+  scheduleName,
+  scheduleId,
+  date,
 }: AddExpenseSheetProps) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
@@ -28,7 +35,7 @@ export default function AddExpenseSheet({
     const parsedAmount = parseInt(amount.replace(/,/g, ""), 10);
 
     if (trimmedName && parsedAmount > 0) {
-      onSaveExpense(trimmedName, parsedAmount);
+      onSaveExpense(trimmedName, parsedAmount, scheduleId);
       setName("");
       setAmount("");
       onClose();
@@ -62,6 +69,32 @@ export default function AddExpenseSheet({
       minHeight="40vh"
     >
       <VStack gap={4} w="full" p={4}>
+        {/* 일정 정보 표시 (일정 페이지에서 온 경우) */}
+        {scheduleName && (
+          <Box
+            w="full"
+            p={3}
+            bg={`${colors.primary.palette}.50`}
+            borderRadius="lg"
+            borderLeft="4px solid"
+            borderColor={colors.primary.palette}
+          >
+            <VStack align="start" gap={1}>
+              <Text fontSize="xs" color="gray.600">
+                연결된 일정
+              </Text>
+              <Text fontSize="md" fontWeight="medium" color="gray.800">
+                {scheduleName}
+              </Text>
+              {date && (
+                <Text fontSize="xs" color="gray.500">
+                  {date}
+                </Text>
+              )}
+            </VStack>
+          </Box>
+        )}
+
         {/* 내용 입력 */}
         <VStack gap={2} w="full">
           <Text fontSize="md" fontWeight="medium" alignSelf="start">
