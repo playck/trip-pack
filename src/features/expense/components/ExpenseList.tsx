@@ -1,5 +1,6 @@
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
+import SwipeableExpenseItem from "./SwipeableExpenseItem";
 
 interface ExpenseItem {
   id: string;
@@ -9,9 +10,10 @@ interface ExpenseItem {
 
 interface ExpenseListProps {
   expenses: ExpenseItem[];
+  tripId: string;
 }
 
-export default function ExpenseList({ expenses }: ExpenseListProps) {
+export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   return (
@@ -25,28 +27,12 @@ export default function ExpenseList({ expenses }: ExpenseListProps) {
       ) : (
         <>
           {expenses.map((expense, index) => (
-            <Flex
+            <SwipeableExpenseItem
               key={expense.id}
-              justify="space-between"
-              align="center"
-              py={2}
-              borderBottom={
-                index < expenses.length - 1 ? "1px solid" : undefined
-              }
-              borderColor="gray.100"
-            >
-              <Text fontSize="15px" color="gray.700">
-                {expense.name}
-              </Text>
-              <HStack gap={0.5} align="baseline">
-                <Text fontSize="md" fontWeight="semibold" color="gray.900">
-                  {expense.amount.toLocaleString()}
-                </Text>
-                <Text fontSize="sm" fontWeight="semibold" color="gray.900">
-                  원
-                </Text>
-              </HStack>
-            </Flex>
+              expense={expense}
+              tripId={tripId}
+              showBorder={index < expenses.length - 1}
+            />
           ))}
 
           <Box borderBottom="1px dashed" borderColor="gray.200" mt={2} />

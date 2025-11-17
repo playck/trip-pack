@@ -19,23 +19,25 @@ interface ExpenseContentProps {
   selectedDate: string;
   dayExpenses: DayExpense[];
   isAllTab: boolean;
+  tripId: string;
 }
 
 export default function ExpenseContent({
   selectedDate,
   dayExpenses,
   isAllTab,
+  tripId,
 }: ExpenseContentProps) {
   return (
     <Container maxW="6xl" pt={4} pb={6} px={1}>
       {isAllTab ? (
-        <ExpenseAllContent dayExpenses={dayExpenses} />
+        <ExpenseAllContent dayExpenses={dayExpenses} tripId={tripId} />
       ) : (
         dayExpenses
           .filter((day) => day.date === selectedDate)
           .map((day) => (
             <Box key={day.date}>
-              <ExpenseList expenses={day.expenses} />
+              <ExpenseList expenses={day.expenses} tripId={tripId} />
             </Box>
           ))
       )}

@@ -1,5 +1,6 @@
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
+import SwipeableExpenseItem from "./SwipeableExpenseItem";
 
 interface ExpenseItem {
   id: string;
@@ -11,12 +12,14 @@ interface ExpenseDaySectionProps {
   dayNumber: number;
   date: string;
   expenses: ExpenseItem[];
+  tripId: string;
 }
 
 export default function ExpenseDaySection({
   dayNumber,
   date,
   expenses,
+  tripId,
 }: ExpenseDaySectionProps) {
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
 
@@ -61,28 +64,12 @@ export default function ExpenseDaySection({
       ) : (
         <VStack align="stretch" gap={0} px={2}>
           {expenses.map((expense, index) => (
-            <Flex
+            <SwipeableExpenseItem
               key={expense.id}
-              justify="space-between"
-              align="center"
-              py={1.5}
-              borderBottom={
-                index < expenses.length - 1 ? "1px solid" : undefined
-              }
-              borderColor="gray.100"
-            >
-              <Text fontSize="15px" color="gray.700">
-                {expense.name}
-              </Text>
-              <HStack gap={0.5} align="baseline">
-                <Text fontSize="md" fontWeight="semibold" color="gray.900">
-                  {expense.amount.toLocaleString()}
-                </Text>
-                <Text fontSize="sm" fontWeight="semibold" color="gray.900">
-                  원
-                </Text>
-              </HStack>
-            </Flex>
+              expense={expense}
+              tripId={tripId}
+              showBorder={index < expenses.length - 1}
+            />
           ))}
         </VStack>
       )}

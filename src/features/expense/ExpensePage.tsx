@@ -126,6 +126,7 @@ export default function ExpensePage() {
             selectedDate={selectedDate}
             dayExpenses={dayExpenses}
             isAllTab={selectedDate === ALL_TAB_VALUE}
+            tripId={tripId}
           />
         </>
       ) : (

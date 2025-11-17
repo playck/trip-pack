@@ -17,10 +17,12 @@ interface DayExpense {
 
 interface ExpenseAllContentProps {
   dayExpenses: DayExpense[];
+  tripId: string;
 }
 
 export default function ExpenseAllContent({
   dayExpenses,
+  tripId,
 }: ExpenseAllContentProps) {
   const totalAmount = dayExpenses.reduce(
     (sum, day) =>
@@ -57,6 +59,7 @@ export default function ExpenseAllContent({
           dayNumber={day.dayNumber}
           date={day.label}
           expenses={day.expenses}
+          tripId={tripId}
         />
       ))}
     </VStack>
