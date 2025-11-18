@@ -4,6 +4,8 @@ import { motion, type PanInfo } from "framer-motion";
 import { Trash2, Edit3 } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense } from "../hooks/useDeleteExpense";
+import { useUpdateExpense } from "../hooks/useUpdateExpense";
+import EditExpenseSheet from "./EditExpenseSheet";
 
 interface ExpenseItem {
   id: string;
@@ -26,8 +28,17 @@ export default function SwipeableExpenseItem({
   showBorder = false,
 }: SwipeableExpenseItemProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const dragConstraintsRef = useRef(null);
+
+  const updateExpenseMutation = useUpdateExpense({
+    tripId,
+    onSuccess: () => {
+      setIsEditSheetOpen(false);
+      setIsOpen(false);
+    },
+  });
 
   const deleteExpenseMutation = useDeleteExpense({
     tripId,
@@ -49,12 +60,18 @@ export default function SwipeableExpenseItem({
     else if (info.offset.x > SWIPE_THRESHOLD) {
       setIsOpen(false);
     }
-    // threshold 미만 스와이프 → 원래 상태로 되돌림
   };
 
   const handleEditClick = () => {
-    // Phase 2에서 실제 수정 Sheet 연결 예정
-    console.log("수정 클릭:", expense);
+    setIsEditSheetOpen(true);
+  };
+
+  const handleEditSave = (name: string, amount: number) => {
+    updateExpenseMutation.mutate({
+      expenseId: expense.id,
+      category: name,
+      amount,
+    });
   };
 
   const handleDeleteClick = () => {
@@ -136,6 +153,15 @@ export default function SwipeableExpenseItem({
         </motion.div>
       </Box>
 
+      <EditExpenseSheet
+        isOpen={isEditSheetOpen}
+        onClose={() => setIsEditSheetOpen(false)}
+        onSaveExpense={handleEditSave}
+        initialName={expense.name}
+        initialAmount={expense.amount}
+      />
+
+      {/* 삭제 확인 다이얼로그 */}
       <ConfirmDialog
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
