@@ -13,6 +13,12 @@ export interface CreateExpenseParams {
   scheduleId?: string;
 }
 
+export interface UpdateExpenseParams {
+  expenseId: string;
+  category: string;
+  amount: number;
+}
+
 // 경비 추가
 export async function createExpense(
   params: CreateExpenseParams
@@ -58,6 +64,33 @@ export async function getExpensesByTrip(tripId: string): Promise<ExpenseRow[]> {
   }
 
   return data || [];
+}
+
+// 경비 수정
+export async function updateExpense(
+  params: UpdateExpenseParams
+): Promise<ExpenseRow> {
+  const { expenseId, category, amount } = params;
+
+  const { data, error } = await supabase
+    .from("trip_expenses")
+    .update({
+      expense_category: category,
+      amount: amount,
+    })
+    .eq("id", expenseId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    throw new Error("경비 수정에 실패했습니다.");
+  }
+
+  return data;
 }
 
 // 경비 삭제
