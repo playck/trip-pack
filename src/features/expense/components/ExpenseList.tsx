@@ -17,27 +17,44 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   return (
-    <VStack align="stretch" gap={0}>
-      {expenses.length === 0 ? (
-        <Box py={8} textAlign="center">
-          <Text color="gray.400" fontSize="sm">
-            경비 내역이 없습니다
-          </Text>
-        </Box>
-      ) : (
-        <>
-          {expenses.map((expense, index) => (
-            <SwipeableExpenseItem
-              key={expense.id}
-              expense={expense}
-              tripId={tripId}
-              showBorder={index < expenses.length - 1}
-            />
-          ))}
+    <>
+      <VStack align="stretch" gap={0} pb={expenses.length > 0 ? "70px" : 0}>
+        {expenses.length === 0 ? (
+          <Box py={8} textAlign="center">
+            <Text color="gray.400" fontSize="sm">
+              경비 내역이 없습니다
+            </Text>
+          </Box>
+        ) : (
+          <>
+            {expenses.map((expense, index) => (
+              <SwipeableExpenseItem
+                key={expense.id}
+                expense={expense}
+                tripId={tripId}
+                showBorder={index < expenses.length - 1}
+              />
+            ))}
+          </>
+        )}
+      </VStack>
 
-          <Box borderBottom="1px dashed" borderColor="gray.200" mt={2} />
-
-          <Flex justify="space-between" align="center" py={2}>
+      {/* 총 비용 */}
+      {expenses.length > 0 && (
+        <Box
+          position="fixed"
+          bottom="0"
+          left="0"
+          right="0"
+          bg="white"
+          borderTop="2px solid"
+          borderColor="gray.200"
+          px={4}
+          py={3}
+          boxShadow="0 -2px 8px rgba(0,0,0,0.05)"
+          zIndex={10}
+        >
+          <Flex justify="space-between" align="center" maxW="6xl" mx="auto">
             <Text fontSize="lg" fontWeight="bold" color="gray.800">
               총 비용
             </Text>
@@ -58,8 +75,8 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
               </Text>
             </HStack>
           </Flex>
-        </>
+        </Box>
       )}
-    </VStack>
+    </>
   );
 }
