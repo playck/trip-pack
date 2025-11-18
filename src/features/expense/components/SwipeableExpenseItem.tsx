@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Box, Flex, Text, HStack } from "@chakra-ui/react";
 import { motion, type PanInfo } from "framer-motion";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit3 } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense } from "../hooks/useDeleteExpense";
 
@@ -17,8 +17,8 @@ interface SwipeableExpenseItemProps {
   showBorder?: boolean;
 }
 
-const ACTION_BUTTON_WIDTH = 42;
-const SWIPE_THRESHOLD = 35;
+const ACTION_BUTTON_WIDTH = 70;
+const SWIPE_THRESHOLD = 50;
 
 export default function SwipeableExpenseItem({
   expense,
@@ -52,6 +52,11 @@ export default function SwipeableExpenseItem({
     // threshold 미만 스와이프 → 원래 상태로 되돌림
   };
 
+  const handleEditClick = () => {
+    // Phase 2에서 실제 수정 Sheet 연결 예정
+    console.log("수정 클릭:", expense);
+  };
+
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);
   };
@@ -63,21 +68,36 @@ export default function SwipeableExpenseItem({
   return (
     <>
       <Box position="relative" overflow="hidden" ref={dragConstraintsRef}>
-        <Box
+        {/* 액션 버튼(수정, 삭제) */}
+        <HStack
           position="absolute"
           right="4px"
           top="50%"
           transform="translateY(-50%)"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          cursor="pointer"
+          gap={4}
           zIndex={0}
-          onClick={handleDeleteClick}
-          color="red.500"
         >
-          <Trash2 size={18} />
-        </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            onClick={handleEditClick}
+            color="blue.500"
+          >
+            <Edit3 size={18} />
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            onClick={handleDeleteClick}
+            color="red.500"
+          >
+            <Trash2 size={18} />
+          </Box>
+        </HStack>
 
         <motion.div
           drag="x"
