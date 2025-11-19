@@ -29,7 +29,7 @@ export default function ExpenseContent({
   tripId,
 }: ExpenseContentProps) {
   return (
-    <Container maxW="6xl" pt={4} pb={6} px={1}>
+    <Container maxW="6xl" pt={3} pb={6} px={1}>
       {isAllTab ? (
         <ExpenseAllContent dayExpenses={dayExpenses} tripId={tripId} />
       ) : (
