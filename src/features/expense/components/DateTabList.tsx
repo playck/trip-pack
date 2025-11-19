@@ -1,5 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 
 interface DateItem {
   date: string;
@@ -22,6 +23,9 @@ export default function DateTabList({
 }: DateTabListProps) {
   return (
     <Box
+      position="sticky"
+      top={`${HEADER_HEIGHT}px`}
+      zIndex={10}
       overflowX="auto"
       overflowY="hidden"
       bg="white"
