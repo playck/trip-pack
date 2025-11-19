@@ -45,7 +45,7 @@ export default function ExpenseAllContent({
   );
 
   return (
-    <VStack align="stretch" gap={4}>
+    <VStack align="stretch" gap={4} pb="70px">
       <ExpenseSummaryCard
         totalAmount={totalAmount}
         averagePerDay={averagePerDay}

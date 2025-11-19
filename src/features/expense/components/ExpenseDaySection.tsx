@@ -1,6 +1,7 @@
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 import SwipeableExpenseItem from "./SwipeableExpenseItem";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 
 interface ExpenseItem {
   id: string;
@@ -15,6 +16,8 @@ interface ExpenseDaySectionProps {
   tripId: string;
 }
 
+const DATE_TAB_HEIGHT = 55;
+
 export default function ExpenseDaySection({
   dayNumber,
   date,
@@ -25,8 +28,11 @@ export default function ExpenseDaySection({
 
   return (
     <VStack align="stretch" gap={3}>
-      {/* 날짜 헤더 */}
+      {/* 날짜 헤더 - Header + DateTabList 바로 아래 */}
       <Flex
+        position="sticky"
+        top={`${HEADER_HEIGHT + DATE_TAB_HEIGHT}px`}
+        zIndex={8}
         justify="space-between"
         align="center"
         py={1.5}
