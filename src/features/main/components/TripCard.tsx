@@ -1,6 +1,6 @@
 import { Box, Text, VStack, Flex, Badge, IconButton } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, DollarSign } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 import type { Trip } from "../types";
@@ -47,6 +47,11 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
     navigate({ to: "/schedule/$tripId", params: { tripId: trip.id } });
   };
 
+  const handleExpenseClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: "/expense/$tripId", params: { tripId: trip.id } });
+  };
+
   return (
     <Box
       position="relative"
@@ -73,20 +78,28 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
       />
 
       {/* 일정 버튼 */}
-      <IconButton
-        position="absolute"
-        top={3}
-        right={3}
-        zIndex={2}
-        size="sm"
-        variant="subtle"
-        aria-label="여행 일정"
-        onClick={handleScheduleClick}
-        bg="whiteAlpha.900"
-        color="gray.700"
-      >
-        <CalendarDays size={16} />
-      </IconButton>
+      <Flex position="absolute" top={3} right={3} zIndex={2} gap={2}>
+        <IconButton
+          size="sm"
+          variant="subtle"
+          aria-label="경비 관리"
+          onClick={handleExpenseClick}
+          bg="whiteAlpha.900"
+          color="gray.700"
+        >
+          <DollarSign size={16} />
+        </IconButton>
+        <IconButton
+          size="sm"
+          variant="subtle"
+          aria-label="여행 일정"
+          onClick={handleScheduleClick}
+          bg="whiteAlpha.900"
+          color="gray.700"
+        >
+          <CalendarDays size={16} />
+        </IconButton>
+      </Flex>
 
       <VStack
         h="full"

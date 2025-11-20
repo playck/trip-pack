@@ -9,12 +9,14 @@ interface FloatingAddButtonProps {
   onClick?: () => void;
   ariaLabel?: string;
   menuItems?: FloatingMenuItem[];
+  bottomOffset?: number | string;
 }
 
 export default function FloatingAddButton({
   onClick,
   ariaLabel = "새 항목 추가",
   menuItems,
+  bottomOffset = 22,
 }: FloatingAddButtonProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -43,7 +45,7 @@ export default function FloatingAddButton({
       <IconButton
         aria-label={ariaLabel}
         position="fixed"
-        bottom={6}
+        bottom={bottomOffset}
         right={6}
         size="lg"
         borderRadius="full"
