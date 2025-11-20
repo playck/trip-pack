@@ -15,7 +15,9 @@ interface TripCardProps {
 export default function TripCard({ trip, onClick }: TripCardProps) {
   const navigate = useNavigate();
 
-  // D-Day 계산 함수
+  const backgroundImage =
+    BACKGROUND_IMAGES[parseInt(trip.id, 10) % BACKGROUND_IMAGES.length];
+
   const getTripStatus = (
     startDate: string,
     endDate: string | null
@@ -66,14 +68,26 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
       overflow="hidden"
       onClick={() => onClick?.(trip)}
     >
-      {/* 나중에 배경 이미지가 들어갈 자리 */}
+      {/* 배경 이미지 */}
       <Box
         position="absolute"
         top={0}
         left={0}
         right={0}
         bottom={0}
-        bg="linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)"
+        bgImage={`url(${backgroundImage})`}
+        bgSize="cover"
+        backgroundPosition="center"
+        borderRadius="xl"
+      />
+      {/* 오버레이 */}
+      <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        bg="linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)"
         borderRadius="xl"
       />
 
@@ -129,11 +143,11 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
           </Badge>
         )}
 
-        <VStack justify="end" align="start" gap={1} flex={1}>
+        <VStack justify="end" align="start" gap="2px" flex={1}>
           <Text
             fontSize="lg"
             fontWeight="bold"
-            color={colorCombinations.defaultCard.text}
+            color="white"
             lineClamp={2}
             lineHeight="1.3"
           >
@@ -145,20 +159,18 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
                 <Text
                   as="span"
                   fontSize="sm"
-                  color={colorCombinations.defaultCard.text}
-                  opacity={0.7}
+                  color="white"
+                  opacity={0.9}
                   lineClamp={1}
                 >
                   {trip.region_name}
                 </Text>
               )}
-              <Text> · </Text>
-              <Text
-                as="span"
-                fontSize="sm"
-                color={colorCombinations.defaultCard.text}
-                opacity={0.7}
-              >
+              <Text color="white" opacity={0.9}>
+                {" "}
+                ·{" "}
+              </Text>
+              <Text as="span" fontSize="sm" color="white" opacity={0.9}>
                 {formatTripDateRange(trip.start_date, trip.end_date)}
               </Text>
             </Flex>
@@ -168,3 +180,12 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
     </Box>
   );
 }
+
+// 임시 배경 이미지
+const BACKGROUND_IMAGES = [
+  "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80", // 여행 가방
+  "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80", // 비행기
+  "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80", // 산과 호수
+  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80", // 바다와 호수
+  "https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=800&q=80", // 도시 야경
+];

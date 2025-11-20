@@ -41,9 +41,9 @@ export default function TripList() {
   }
 
   return (
-    <VStack align="start" gap={3} w="full">
+    <VStack align="start" gap={2} w="full">
       <Text
-        fontSize="xl"
+        fontSize="lg"
         fontWeight="bold"
         color={colorCombinations.defaultCard.text}
       >
