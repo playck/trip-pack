@@ -36,7 +36,7 @@ export default function ExpensePage() {
       const currentDate = startDate.add(i, "day");
       dates.push({
         date: currentDate.format("YYYY-MM-DD"),
-        label: currentDate.format("M-D"),
+        label: currentDate.format("MM-DD"),
         dayNumber: i + 1,
       });
     }
@@ -109,7 +109,7 @@ export default function ExpensePage() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout style={{ paddingBottom: "60px" }}>
       {/* <Container maxW="6xl" py={3} px={4}>
         <Heading size="lg">{tripInfo.title}</Heading>
       </Container> */}
