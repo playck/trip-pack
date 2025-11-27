@@ -1,9 +1,10 @@
 import { VStack, Text, Box } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
-import { colorCombinations, colors } from "@/shared/constants/colors";
+import { colorCombinations } from "@/shared/constants/colors";
 import { ErrorMessage, LoadingSpinner } from "@/shared/components";
 
 import TripCard from "./TripCard";
+import NoticeCard from "./NoticeCard";
 import { useTripList } from "../hooks/useTripList";
 import { useUpcomingTrip } from "../hooks/useUpcomingTrip";
 import type { Trip } from "../types";
@@ -54,37 +55,13 @@ export default function TripList() {
         <VStack gap={4} pl={0} pb={2} align="stretch">
           {/* 다가오는 여행 알림 */}
           {upcomingTripInfo && (
-            <Box
-              w="full"
-              p={3}
-              bg={colors.primary.subtle}
-              borderRadius="xl"
-              borderLeft="4px solid"
-              borderLeftColor={colors.primary.solid}
-              cursor="pointer"
+            <NoticeCard
+              icon="🎒"
+              variant="primary"
+              title={upcomingTripInfo.trip.title}
+              subText={upcomingTripInfo.message}
               onClick={() => goToTripPage(upcomingTripInfo.trip)}
-            >
-              <VStack align="start" gap={2}>
-                <Text
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color={colors.primary.fg}
-                  display="flex"
-                  alignItems="center"
-                  gap={1}
-                >
-                  🎒 {upcomingTripInfo.trip.title}
-                </Text>
-                <Text
-                  ml="24px"
-                  fontSize="md"
-                  color={colors.primary.fg}
-                  opacity={0.8}
-                >
-                  {upcomingTripInfo.message}
-                </Text>
-              </VStack>
-            </Box>
+            />
           )}
 
           {/* 여행중인 여행 섹션 */}
@@ -108,30 +85,7 @@ export default function TripList() {
           {/* 과거 여행 섹션 */}
           {pastTrips.length > 0 && (
             <VStack align="start" gap={4} w="full">
-              <Box
-                w="full"
-                p={3}
-                bg="gray.50"
-                borderRadius="xl"
-                borderLeft="4px solid"
-                borderLeftColor="gray.300"
-              >
-                <VStack align="start" gap={1}>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color="gray.600"
-                    display="flex"
-                    alignItems="center"
-                    gap={2}
-                  >
-                    ✈️ 추억이 된 여행
-                  </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    소중한 기억들이 담긴 여행들이에요
-                  </Text>
-                </VStack>
-              </Box>
+              <NoticeCard icon="✈️" title="추억이 된 여행" variant="gray" />
               <VStack gap={3} align="stretch" w="full">
                 {pastTrips.map((trip) => (
                   <Box key={trip.id} opacity={0.8}>
