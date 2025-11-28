@@ -7,3 +7,4 @@ export { default as AddExpenseSheet } from "./AddExpenseSheet";
 export { default as EditExpenseSheet } from "./EditExpenseSheet";
 export { default as ExpenseContent } from "./ExpenseContent";
 export { default as SwipeableExpenseItem } from "./SwipeableExpenseItem";
+export { default as SetBudgetModal } from "./SetBudgetModal";
