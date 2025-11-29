@@ -22,13 +22,8 @@ export const formatAmount = (
   amount: number,
   options: FormatAmountOptions
 ): FormattedAmount => {
-  const {
-    showLocalCurrency,
-    isForeignCurrency,
-    exchangeRate,
-    targetCurrency,
-    currencySymbol,
-  } = options;
+  const { showLocalCurrency, isForeignCurrency, exchangeRate, currencySymbol } =
+    options;
 
   if (
     showLocalCurrency &&
@@ -37,15 +32,8 @@ export const formatAmount = (
     exchangeRate > 0
   ) {
     const localAmount = amount / exchangeRate;
-    const decimals =
-      targetCurrency.toLowerCase() === "jpy" ||
-      targetCurrency.toLowerCase() === "vnd"
-        ? 0
-        : 2;
+    const value = Math.round(localAmount).toLocaleString();
 
-    const value = localAmount.toLocaleString(undefined, {
-      maximumFractionDigits: decimals,
-    });
     return {
       value,
       unit: currencySymbol,
