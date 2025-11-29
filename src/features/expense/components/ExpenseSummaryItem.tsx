@@ -7,7 +7,7 @@ interface ExpenseSummaryItemProps {
   isLast?: boolean;
 }
 
-export const ExpenseSummaryItem = ({
+const ExpenseSummaryItem = ({
   label,
   value,
   subValue,
@@ -37,3 +37,5 @@ export const ExpenseSummaryItem = ({
     </HStack>
   </Flex>
 );
+
+export default ExpenseSummaryItem;

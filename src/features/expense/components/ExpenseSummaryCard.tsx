@@ -1,15 +1,25 @@
 import { useState } from "react";
+import { useAtom } from "jotai";
 import { Box, Flex, Text, VStack, HStack, Button } from "@chakra-ui/react";
+import {
+  TrendingUp,
+  ChevronUp,
+  ChevronDown,
+  Wallet,
+  ArrowLeftRight,
+} from "lucide-react";
 import { colors, statusColors } from "@/shared/constants/colors";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { TrendingUp, ChevronUp, ChevronDown, Wallet } from "lucide-react";
-import SetBudgetModal from "./SetBudgetModal";
-import { useUpdateTripBudget } from "../hooks/useUpdateTripBudget";
 import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
 import {
   getCurrencyByCountryCode,
   getCurrencySymbol,
 } from "@/shared/utiles/currency";
+import { showLocalCurrencyAtom } from "../store/currencyStore";
+import { formatAmount } from "../utils/helper";
+import { useUpdateTripBudget } from "../hooks/useUpdateTripBudget";
+import ExpenseSummaryItem from "./ExpenseSummaryItem";
+import SetBudgetModal from "./SetBudgetModal";
 
 interface ExpenseSummaryCardProps {
   totalAmount: number;
@@ -32,6 +42,10 @@ export default function ExpenseSummaryCard({
   const updateBudgetMutation = useUpdateTripBudget(tripId);
   const budget = tripInfo?.budget || null;
 
+  const [showLocalCurrency, setShowLocalCurrency] = useAtom(
+    showLocalCurrencyAtom
+  );
+
   // 여행 국가에 따른 통화 코드 설정
   const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
   const currencySymbol = getCurrencySymbol(targetCurrency);
@@ -43,6 +57,20 @@ export default function ExpenseSummaryCard({
     { enabled: isForeignCurrency }
   );
 
+  const handleSaveBudget = (newBudget: number | null) => {
+    updateBudgetMutation.mutate(newBudget);
+  };
+
+  const formatAmountValue = (amount: number) => {
+    return formatAmount(amount, {
+      showLocalCurrency,
+      isForeignCurrency,
+      exchangeRate: exchangeRate || 0,
+      targetCurrency,
+      currencySymbol,
+    });
+  };
+
   const hasBudget = budget !== null && budget > 0;
   const remainingAmount = hasBudget ? budget - totalAmount : 0;
   const usagePercent = hasBudget
@@ -50,10 +78,6 @@ export default function ExpenseSummaryCard({
     : 0;
   const isOverBudget = remainingAmount < 0;
   const errorColor = `${statusColors.error.palette}.500`;
-
-  const handleSaveBudget = (newBudget: number | null) => {
-    updateBudgetMutation.mutate(newBudget);
-  };
 
   return (
     <>
@@ -89,39 +113,63 @@ export default function ExpenseSummaryCard({
             </Box>
 
             <VStack align="flex-start" gap={0} flex={1}>
-              <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                {hasBudget ? "남은 예산" : "총 지출"}
-              </Text>
+              <HStack gap={2} align="center">
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  {hasBudget ? "남은 예산" : "총 지출"}
+                </Text>
+
+                {/* 환율 정보 (심플하게 표시) */}
+                {isForeignCurrency && !isRateLoading && exchangeRate && (
+                  <Text fontSize="10px" color="gray.400" lineHeight="shorter">
+                    {currencySymbol}1 ≈{" "}
+                    {Math.round(exchangeRate).toLocaleString()}원
+                  </Text>
+                )}
+              </HStack>
               <HStack gap={1} align="baseline">
                 <Text
                   fontSize="xl"
                   fontWeight="bold"
                   color={isOverBudget ? errorColor : "gray.800"}
                 >
-                  {hasBudget
-                    ? remainingAmount.toLocaleString()
-                    : totalAmount.toLocaleString()}
+                  {formatAmountValue(
+                    hasBudget ? remainingAmount : totalAmount
+                  ).replace(/[^0-9.,-]/g, "")}
                 </Text>
                 <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                  원
+                  {formatAmountValue(0).replace(/[0-9.,-]/g, "")}
                 </Text>
+
+                {/* 토글 버튼 (금액 단위 옆에 배치) */}
+                {isForeignCurrency && (
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    color="gray.400"
+                    h="18px"
+                    px={1}
+                    minW="auto"
+                    ml={1}
+                    transform="translateY(2px)"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowLocalCurrency(!showLocalCurrency);
+                    }}
+                  >
+                    <HStack gap={1}>
+                      <ArrowLeftRight size={10} />
+                      <Text fontSize="xs" fontWeight="medium">
+                        {showLocalCurrency ? "원화" : "현지화"}
+                      </Text>
+                    </HStack>
+                  </Button>
+                )}
               </HStack>
             </VStack>
           </HStack>
 
           <VStack align="flex-end" gap={1}>
-            {/* 환율 정보  */}
-            {isForeignCurrency && (
-              <HStack gap={1}>
-                {!isRateLoading && exchangeRate && (
-                  <Text fontSize="xs" color="gray.400" fontWeight="medium">
-                    {currencySymbol}1 ={" "}
-                    {Math.round(exchangeRate).toLocaleString()}원
-                  </Text>
-                )}
-              </HStack>
-            )}
-
+            {/* 우측 상단 버튼 영역 */}
             <HStack gap={2}>
               <Button
                 size="xs"
@@ -170,7 +218,7 @@ export default function ExpenseSummaryCard({
                 {usagePercent.toFixed(0)}% 사용
               </Text>
               <Text fontSize="xs" color="gray.500">
-                총 {budget.toLocaleString()}원
+                총 {formatAmountValue(budget)}
               </Text>
             </Flex>
           </Box>
@@ -178,63 +226,27 @@ export default function ExpenseSummaryCard({
 
         {/* 상세 정보 */}
         {isExpanded && (
-          <VStack
-            align="stretch"
-            gap={0}
-            borderTop="1px solid"
-            borderColor="gray.100"
-          >
+          <VStack align="stretch" borderTop="1px solid" borderColor="gray.100">
             {/* 통계 리스트 */}
-            <Box px={4} py={2} bg="gray.50">
+            <Box px={4} py={1} bg="gray.50">
               {hasBudget && (
-                <Flex
-                  justify="space-between"
-                  align="center"
-                  py={1}
-                  borderBottom="1px dashed"
-                  borderColor="gray.200"
-                >
-                  <Text fontSize="sm" color="gray.600">
-                    총 지출
-                  </Text>
-                  <Text fontSize="sm" fontWeight="semibold" color="gray.800">
-                    {totalAmount.toLocaleString()}원
-                  </Text>
-                </Flex>
+                <ExpenseSummaryItem
+                  label="총 지출"
+                  value={formatAmountValue(totalAmount)}
+                />
               )}
 
-              <Flex
-                justify="space-between"
-                align="center"
-                py={1}
-                borderBottom="1px dashed"
-                borderColor="gray.200"
-              >
-                <HStack gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    일 평균 지출
-                  </Text>
-                </HStack>
-                <Text fontSize="sm" fontWeight="semibold" color="gray.800">
-                  {averagePerDay.toLocaleString()}원
-                </Text>
-              </Flex>
+              <ExpenseSummaryItem
+                label="일 평균 지출"
+                value={formatAmountValue(averagePerDay)}
+              />
 
-              <Flex justify="space-between" align="center" py={1}>
-                <HStack gap={2}>
-                  <Text fontSize="sm" color="gray.600">
-                    최대 지출일
-                  </Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Text fontSize="xs" color="gray.400">
-                    {maxDayDate}
-                  </Text>
-                  <Text fontSize="sm" fontWeight="semibold" color="gray.800">
-                    {maxDayAmount.toLocaleString()}원
-                  </Text>
-                </HStack>
-              </Flex>
+              <ExpenseSummaryItem
+                label="최대 지출일"
+                value={formatAmountValue(maxDayAmount)}
+                subValue={maxDayDate}
+                isLast
+              />
             </Box>
           </VStack>
         )}
