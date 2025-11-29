@@ -20,10 +20,10 @@ export default function ExpensePage() {
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });
+
   const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // 여행 기간의 날짜 생성
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
 
@@ -76,7 +76,6 @@ export default function ExpensePage() {
   ) => {
     if (!tripId) return;
 
-    // 선택된 날짜에 해당하는 dayNumber 찾기
     const selectedDateItem = dateList.find((d) => d.date === selectedDate);
     if (!selectedDateItem) return;
 

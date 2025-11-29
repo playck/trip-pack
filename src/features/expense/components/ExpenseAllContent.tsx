@@ -51,6 +51,7 @@ export default function ExpenseAllContent({
         averagePerDay={averagePerDay}
         maxDayAmount={maxDay.amount}
         maxDayDate={maxDay.date}
+        tripId={tripId}
       />
 
       {dayExpenses.map((day) => (
