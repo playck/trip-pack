@@ -37,7 +37,7 @@ export default function SetBudgetModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="예산 설정"
+      title="총 예산 설정"
       actions={[
         {
           label: "취소",

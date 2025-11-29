@@ -5,6 +5,11 @@ import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { TrendingUp, ChevronUp, ChevronDown, Wallet } from "lucide-react";
 import SetBudgetModal from "./SetBudgetModal";
 import { useUpdateTripBudget } from "../hooks/useUpdateTripBudget";
+import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import {
+  getCurrencyByCountryCode,
+  getCurrencySymbol,
+} from "@/shared/utiles/currency";
 
 interface ExpenseSummaryCardProps {
   totalAmount: number;
@@ -27,9 +32,16 @@ export default function ExpenseSummaryCard({
   const updateBudgetMutation = useUpdateTripBudget(tripId);
   const budget = tripInfo?.budget || null;
 
-  const handleSaveBudget = (newBudget: number | null) => {
-    updateBudgetMutation.mutate(newBudget);
-  };
+  // 여행 국가에 따른 통화 코드 설정
+  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
+  const currencySymbol = getCurrencySymbol(targetCurrency);
+  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
+
+  const { rate: exchangeRate, isLoading: isRateLoading } = useExchangeRate(
+    targetCurrency,
+    "krw",
+    { enabled: isForeignCurrency }
+  );
 
   const hasBudget = budget !== null && budget > 0;
   const remainingAmount = hasBudget ? budget - totalAmount : 0;
@@ -38,6 +50,10 @@ export default function ExpenseSummaryCard({
     : 0;
   const isOverBudget = remainingAmount < 0;
   const errorColor = `${statusColors.error.palette}.500`;
+
+  const handleSaveBudget = (newBudget: number | null) => {
+    updateBudgetMutation.mutate(newBudget);
+  };
 
   return (
     <>
@@ -93,25 +109,43 @@ export default function ExpenseSummaryCard({
             </VStack>
           </HStack>
 
-          <HStack gap={4}>
-            <Button
-              size="xs"
-              variant="surface"
-              colorPalette="teal"
-              h="24px"
-              px={2}
-              fontSize="xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsBudgetModalOpen(true);
-              }}
-            >
-              {hasBudget ? "예산 수정" : "예산 설정"}
-            </Button>
-            <Box color="gray.400">
-              {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </Box>
-          </HStack>
+          <VStack align="flex-end" gap={1}>
+            {/* 환율 정보  */}
+            {isForeignCurrency && (
+              <HStack gap={1}>
+                {!isRateLoading && exchangeRate && (
+                  <Text fontSize="xs" color="gray.400" fontWeight="medium">
+                    {currencySymbol}1 ={" "}
+                    {Math.round(exchangeRate).toLocaleString()}원
+                  </Text>
+                )}
+              </HStack>
+            )}
+
+            <HStack gap={2}>
+              <Button
+                size="xs"
+                variant="surface"
+                colorPalette="teal"
+                h="24px"
+                px={2}
+                fontSize="xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsBudgetModalOpen(true);
+                }}
+              >
+                {hasBudget ? "예산 수정" : "예산 설정"}
+              </Button>
+              <Box color="gray.400">
+                {isExpanded ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
+              </Box>
+            </HStack>
+          </VStack>
         </Flex>
 
         {/* 예산 진행률 바 (예산 있을 때만) */}
