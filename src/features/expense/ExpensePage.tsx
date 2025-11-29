@@ -151,6 +151,7 @@ export default function ExpensePage() {
         onClose={() => setIsSheetOpen(false)}
         onSaveExpense={handleSaveExpense}
         date={dateList.find((d) => d.date === selectedDate)?.label}
+        tripId={tripId}
       />
     </PageLayout>
   );
