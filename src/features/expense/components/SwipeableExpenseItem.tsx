@@ -6,6 +6,7 @@ import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense } from "../hooks/useDeleteExpense";
 import { useUpdateExpense } from "../hooks/useUpdateExpense";
 import EditExpenseSheet from "./EditExpenseSheet";
+import { formatAmount } from "../utils/helper";
 
 interface ExpenseItem {
   id: string;
@@ -13,10 +14,18 @@ interface ExpenseItem {
   amount: number;
 }
 
+interface ExchangeInfo {
+  showLocalCurrency: boolean;
+  exchangeRate: number;
+  currencySymbol: string;
+  isForeignCurrency: boolean;
+}
+
 interface SwipeableExpenseItemProps {
   expense: ExpenseItem;
   tripId: string;
   showBorder?: boolean;
+  exchangeInfo?: ExchangeInfo;
 }
 
 const ACTION_BUTTON_WIDTH = 70;
@@ -26,6 +35,7 @@ export default function SwipeableExpenseItem({
   expense,
   tripId,
   showBorder = false,
+  exchangeInfo,
 }: SwipeableExpenseItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -52,12 +62,9 @@ export default function SwipeableExpenseItem({
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo
   ) => {
-    // 왼쪽으로 threshold 이상 스와이프 → 열기
     if (info.offset.x < -SWIPE_THRESHOLD) {
       setIsOpen(true);
-    }
-    // 오른쪽으로 threshold 이상 스와이프 → 닫기
-    else if (info.offset.x > SWIPE_THRESHOLD) {
+    } else if (info.offset.x > SWIPE_THRESHOLD) {
       setIsOpen(false);
     }
   };
@@ -81,6 +88,19 @@ export default function SwipeableExpenseItem({
   const handleDeleteConfirm = () => {
     deleteExpenseMutation.mutate(expense.id);
   };
+
+  const { value: amountValue, unit: amountUnit } = exchangeInfo
+    ? formatAmount(expense.amount, {
+        showLocalCurrency: exchangeInfo.showLocalCurrency,
+        isForeignCurrency: exchangeInfo.isForeignCurrency,
+        exchangeRate: exchangeInfo.exchangeRate,
+        targetCurrency: "",
+        currencySymbol: exchangeInfo.currencySymbol,
+      })
+    : {
+        value: expense.amount.toLocaleString(),
+        unit: "원",
+      };
 
   return (
     <>
@@ -143,10 +163,11 @@ export default function SwipeableExpenseItem({
             </Text>
             <HStack gap={0.5} align="baseline">
               <Text fontSize="md" fontWeight="semibold" color="gray.900">
-                {expense.amount.toLocaleString()}
+                {amountUnit !== "원" && amountUnit}
+                {amountValue}
               </Text>
               <Text fontSize="sm" fontWeight="semibold" color="gray.900">
-                원
+                {amountUnit === "원" ? "원" : ""}
               </Text>
             </HStack>
           </Flex>
@@ -161,7 +182,6 @@ export default function SwipeableExpenseItem({
         initialAmount={expense.amount}
       />
 
-      {/* 삭제 확인 다이얼로그 */}
       <ConfirmDialog
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

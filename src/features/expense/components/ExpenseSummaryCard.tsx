@@ -68,7 +68,7 @@ export default function ExpenseSummaryCard({
       exchangeRate: exchangeRate || 0,
       targetCurrency,
       currencySymbol,
-    });
+    }).full;
   };
 
   const hasBudget = budget !== null && budget > 0;

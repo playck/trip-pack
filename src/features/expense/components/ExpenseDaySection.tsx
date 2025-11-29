@@ -1,7 +1,16 @@
+import { useAtom } from "jotai";
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
-import SwipeableExpenseItem from "./SwipeableExpenseItem";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import {
+  getCurrencyByCountryCode,
+  getCurrencySymbol,
+} from "@/shared/utiles/currency";
+import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { showLocalCurrencyAtom } from "../store/currencyStore";
+import { formatAmount } from "../utils/helper";
+import SwipeableExpenseItem from "./SwipeableExpenseItem";
 
 interface ExpenseItem {
   id: string;
@@ -25,6 +34,23 @@ export default function ExpenseDaySection({
   tripId,
 }: ExpenseDaySectionProps) {
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const { data: tripInfo } = useTripInfo(tripId);
+  const [showLocalCurrency] = useAtom(showLocalCurrencyAtom);
+  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
+  const currencySymbol = getCurrencySymbol(targetCurrency);
+  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
+
+  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
+    enabled: isForeignCurrency,
+  });
+
+  const { value: totalValue, unit: totalUnit } = formatAmount(totalAmount, {
+    showLocalCurrency,
+    isForeignCurrency,
+    exchangeRate: exchangeRate || 0,
+    targetCurrency,
+    currencySymbol,
+  });
 
   return (
     <VStack align="stretch" gap={3}>
@@ -52,10 +78,11 @@ export default function ExpenseDaySection({
         </Flex>
         <HStack gap={0.5} align="baseline">
           <Text fontSize="lg" fontWeight="bold" color={colors.primary.palette}>
-            {totalAmount.toLocaleString()}
+            {totalUnit !== "원" && totalUnit}
+            {totalValue}
           </Text>
           <Text fontSize="md" fontWeight="bold" color={colors.primary.palette}>
-            원
+            {totalUnit === "원" ? "원" : ""}
           </Text>
         </HStack>
       </Flex>
@@ -75,6 +102,12 @@ export default function ExpenseDaySection({
               expense={expense}
               tripId={tripId}
               showBorder={index < expenses.length - 1}
+              exchangeInfo={{
+                showLocalCurrency,
+                exchangeRate: exchangeRate || 0,
+                currencySymbol,
+                isForeignCurrency,
+              }}
             />
           ))}
         </VStack>
