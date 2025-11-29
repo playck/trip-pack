@@ -17,14 +17,20 @@ interface UseExchangeRateResult {
   isError: boolean;
 }
 
+interface UseExchangeRateOptions {
+  enabled?: boolean;
+}
+
 /**
  * 환율 조회 Hook
  * @param baseCurrency 기준 통화 (내가 가진 돈, 예: 'krw')
  * @param targetCurrency 대상 통화 (환전할 돈, 예: 'usd')
+ * @param options
  */
 export const useExchangeRate = (
   baseCurrency: CurrencyCode,
-  targetCurrency: CurrencyCode
+  targetCurrency: CurrencyCode,
+  options: UseExchangeRateOptions = {}
 ): UseExchangeRateResult => {
   const lowerBase = baseCurrency.toLowerCase();
   const lowerTarget = targetCurrency.toLowerCase();
@@ -33,7 +39,7 @@ export const useExchangeRate = (
     queryKey: ["exchangeRate", lowerBase],
     queryFn: () => fetchExchangeRates(lowerBase),
     staleTime: 1000 * 60 * 60 * 24, // 24시간
-    enabled: !!baseCurrency,
+    enabled: !!baseCurrency && (options.enabled ?? true),
   });
 
   const rate = data && data[lowerBase] ? data[lowerBase][lowerTarget] : 0;
