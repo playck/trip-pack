@@ -257,6 +257,7 @@ export default function ExpenseSummaryCard({
         onClose={() => setIsBudgetModalOpen(false)}
         currentBudget={budget}
         onSave={handleSaveBudget}
+        tripId={tripId}
       />
     </>
   );
