@@ -6,6 +6,11 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Trip } from "../types";
 import { colorCombinations, colors } from "../../../shared/constants/colors";
 import { formatTripDateRange } from "../../../shared/utiles/date";
+import {
+  countryImages,
+  DEFAULT_BACKGROUND_IMAGES,
+} from "../../../shared/data/countryImages";
+import { regionsList } from "../../../shared/data/regions";
 
 interface TripCardProps {
   trip: Trip;
@@ -15,8 +20,32 @@ interface TripCardProps {
 export default function TripCard({ trip, onClick }: TripCardProps) {
   const navigate = useNavigate();
 
-  const backgroundImage =
-    BACKGROUND_IMAGES[parseInt(trip.id, 10) % BACKGROUND_IMAGES.length];
+  const getBackgroundImage = (trip: Trip) => {
+    const getIndexFromId = (id: string, length: number) => {
+      const seed = id
+        .split("")
+        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return seed % length;
+    };
+
+    const region = regionsList.find((r) => r.name === trip.region_name);
+    if (!region) {
+      return DEFAULT_BACKGROUND_IMAGES[
+        getIndexFromId(trip.id, DEFAULT_BACKGROUND_IMAGES.length)
+      ];
+    }
+
+    const images = countryImages[region.countryCode];
+    if (!images || images.length === 0) {
+      return DEFAULT_BACKGROUND_IMAGES[
+        getIndexFromId(trip.id, DEFAULT_BACKGROUND_IMAGES.length)
+      ];
+    }
+
+    return images[getIndexFromId(trip.id, images.length)];
+  };
+
+  const backgroundImage = getBackgroundImage(trip);
 
   const getTripStatus = (
     startDate: string,
@@ -180,12 +209,3 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
     </Box>
   );
 }
-
-// 임시 배경 이미지
-const BACKGROUND_IMAGES = [
-  "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80", // 여행 가방
-  "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80", // 비행기
-  "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80", // 산과 호수
-  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80", // 바다와 호수
-  "https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=800&q=80", // 도시 야경
-];
