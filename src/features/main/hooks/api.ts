@@ -26,7 +26,7 @@ export const getTripList = async (): Promise<TripListData> => {
 
   const { data: currentTrips, error: currentError } = await supabase
     .from("trips")
-    .select("id, title, start_date, end_date, region_name")
+    .select("id, title, start_date, end_date, region_name, budget")
     .eq("user_id", user.id)
     .lte("start_date", today)
     .or(`end_date.gte.${today},end_date.is.null`)
@@ -41,7 +41,7 @@ export const getTripList = async (): Promise<TripListData> => {
   // 미래 여행 (시작일 > 오늘)
   const { data: futureTrips, error: futureError } = await supabase
     .from("trips")
-    .select("id, title, start_date, end_date, region_name")
+    .select("id, title, start_date, end_date, region_name, budget")
     .eq("user_id", user.id)
     .gt("start_date", today)
     .order("start_date", { ascending: true });
@@ -55,7 +55,7 @@ export const getTripList = async (): Promise<TripListData> => {
   // 과거 여행 (종료일 < 오늘 또는 시작일 < 오늘 && 종료일이 null)
   const { data: pastTrips, error: pastError } = await supabase
     .from("trips")
-    .select("id, title, start_date, end_date, region_name")
+    .select("id, title, start_date, end_date, region_name, budget")
     .eq("user_id", user.id)
     .or(`end_date.lt.${today},and(start_date.lt.${today},end_date.is.null)`)
     .not("start_date", "gte", today)
@@ -73,6 +73,7 @@ export const getTripList = async (): Promise<TripListData> => {
     start_date: trip.start_date,
     end_date: trip.end_date,
     region_name: trip.region_name,
+    budget: trip.budget,
   });
 
   const mappedCurrentTrips = (currentTrips || []).map(allTrip);
