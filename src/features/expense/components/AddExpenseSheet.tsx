@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
+import { ArrowLeftRight } from "lucide-react";
+import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
+import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import {
+  getCurrencyByCountryCode,
+  getCurrencySymbol,
+} from "@/shared/utiles/currency";
+import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { showLocalCurrencyAtom } from "../store/currencyStore";
 
 interface AddExpenseSheetProps {
   isOpen: boolean;
@@ -10,7 +19,9 @@ interface AddExpenseSheetProps {
   scheduleName?: string;
   scheduleId?: string;
   date?: string;
+  tripId: string;
 }
+type CurrencyType = "KRW" | "LOCAL";
 
 export default function AddExpenseSheet({
   isOpen,
@@ -19,23 +30,48 @@ export default function AddExpenseSheet({
   scheduleName,
   scheduleId,
   date,
+  tripId,
 }: AddExpenseSheetProps) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
+  const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
+  const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
+
+  const { data: tripInfo } = useTripInfo(tripId);
+  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
+  const currencySymbol = getCurrencySymbol(targetCurrency);
+  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
+
+  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
+    enabled: isForeignCurrency,
+  });
 
   useEffect(() => {
     if (isOpen) {
       setName("");
       setAmount("");
+
+      if (isForeignCurrency && showLocalCurrency) {
+        setCurrencyType("LOCAL");
+      } else {
+        setCurrencyType("KRW");
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, showLocalCurrency, isForeignCurrency]);
 
   const handleSave = () => {
-    const trimmedName = name.trim();
-    const parsedAmount = parseInt(amount.replace(/,/g, ""), 10);
+    const parsedName = name.trim();
+    const inputAmount = parseInt(amount.replace(/,/g, ""), 10);
 
-    if (trimmedName && parsedAmount > 0) {
-      onSaveExpense(trimmedName, parsedAmount, scheduleId);
+    if (parsedName && inputAmount > 0) {
+      let finalAmount = inputAmount;
+
+      // 현지통화 입력 시 원화로 환산
+      if (currencyType === "LOCAL" && exchangeRate && exchangeRate > 0) {
+        finalAmount = Math.round(inputAmount * exchangeRate);
+      }
+
+      onSaveExpense(parsedName, finalAmount, scheduleId);
       setName("");
       setAmount("");
       onClose();
@@ -58,18 +94,29 @@ export default function AddExpenseSheet({
     }
   };
 
+  const toggleCurrencyType = () => {
+    setCurrencyType((prev) => (prev === "KRW" ? "LOCAL" : "KRW"));
+  };
+
   const isCanSaveExpense =
     name.trim() && amount && parseInt(amount.replace(/,/g, ""), 10) > 0;
+
+  const estimatedKrw =
+    currencyType === "LOCAL" && amount && exchangeRate
+      ? Math.round(
+          parseInt(amount.replace(/,/g, ""), 10) * exchangeRate
+        ).toLocaleString()
+      : null;
 
   return (
     <BottomSheet
       isOpen={isOpen}
       onClose={handleClose}
       title="경비 추가"
-      minHeight="40vh"
+      minHeight="45vh"
     >
       <VStack gap={4} w="full" p={4}>
-        {/* 일정 정보 표시 (일정 페이지에서 온 경우) */}
+        {/* 일정 정보 표시 */}
         {scheduleName && (
           <Box
             w="full"
@@ -112,17 +159,75 @@ export default function AddExpenseSheet({
 
         {/* 금액 입력 */}
         <VStack gap={2} w="full">
-          <Text fontSize="md" fontWeight="medium" alignSelf="start">
-            금액
-          </Text>
-          <Input
-            placeholder="0"
-            value={amount}
-            onChange={handleAmountChange}
-            inputMode="numeric"
-            size="lg"
-            borderRadius="xl"
-          />
+          <HStack w="full" justify="space-between" align="center">
+            <HStack gap={2} align="center">
+              <Text fontSize="md" fontWeight="medium">
+                금액
+              </Text>
+              {/* 환산 금액 표시 */}
+              {estimatedKrw && (
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  ≈ {estimatedKrw}원
+                </Text>
+              )}
+            </HStack>
+            {/* 통화 변경 버튼 */}
+            {isForeignCurrency && (
+              <Button
+                size="xs"
+                variant="ghost"
+                colorPalette="teal"
+                h="24px"
+                px={2}
+                onClick={toggleCurrencyType}
+              >
+                <HStack gap={1}>
+                  <ArrowLeftRight size={12} />
+                  <Text fontSize="xs">
+                    {currencyType === "KRW"
+                      ? "현지화로 입력하기"
+                      : "원화로 입력하기"}
+                  </Text>
+                </HStack>
+              </Button>
+            )}
+          </HStack>
+
+          <Box w="full" position="relative">
+            <Input
+              placeholder="0"
+              value={amount}
+              onChange={handleAmountChange}
+              inputMode="numeric"
+              size="lg"
+              borderRadius="xl"
+              pl={currencyType === "LOCAL" ? "2rem" : "1rem"}
+              pr="2.5rem"
+            />
+
+            {currencyType === "LOCAL" && (
+              <Text
+                position="absolute"
+                left="1rem"
+                top="50%"
+                transform="translateY(-50%)"
+                color="gray.500"
+                fontWeight="medium"
+              >
+                {currencySymbol}
+              </Text>
+            )}
+            <Text
+              position="absolute"
+              right="1rem"
+              top="50%"
+              transform="translateY(-50%)"
+              color="gray.500"
+              fontWeight="medium"
+            >
+              {currencyType === "KRW" ? "원" : ""}
+            </Text>
+          </Box>
         </VStack>
 
         <HStack gap={2} w="full" h="12" mt={2}>

@@ -45,12 +45,13 @@ export default function ExpenseAllContent({
   );
 
   return (
-    <VStack align="stretch" gap={4} pb="70px">
+    <VStack align="stretch" gap={3} pb="70px">
       <ExpenseSummaryCard
         totalAmount={totalAmount}
         averagePerDay={averagePerDay}
         maxDayAmount={maxDay.amount}
         maxDayDate={maxDay.date}
+        tripId={tripId}
       />
 
       {dayExpenses.map((day) => (

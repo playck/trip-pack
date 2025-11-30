@@ -4,6 +4,7 @@ export interface Trip {
   start_date: string;
   end_date: string | null;
   region_name: string | null;
+  budget: number | null;
 }
 
 export interface TripListData {

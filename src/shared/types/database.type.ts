@@ -315,6 +315,7 @@ export type Database = {
           title: string;
           trip_types: Json | null;
           user_id: string | null;
+          budget: number | null;
         };
         Insert: {
           companion_type?: string | null;
@@ -329,6 +330,7 @@ export type Database = {
           title: string;
           trip_types?: Json | null;
           user_id?: string | null;
+          budget?: number | null;
         };
         Update: {
           companion_type?: string | null;
@@ -343,6 +345,7 @@ export type Database = {
           title?: string;
           trip_types?: Json | null;
           user_id?: string | null;
+          budget?: number | null;
         };
         Relationships: [
           {
