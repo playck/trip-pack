@@ -137,7 +137,7 @@ export default function SetBudgetModal({
               variant="ghost"
               colorPalette="teal"
               h="24px"
-              px={2}
+              p={0}
               onClick={toggleCurrencyType}
             >
               <HStack gap={1}>

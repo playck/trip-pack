@@ -154,7 +154,7 @@ export default function SwipeableExpenseItem({
           <Flex
             justify="space-between"
             align="center"
-            py={2}
+            py={1.5}
             borderBottom={showBorder ? "1px solid" : undefined}
             borderColor="gray.100"
           >
