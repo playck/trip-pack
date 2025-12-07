@@ -74,7 +74,8 @@ export default function Modal({
             {(title || !hideCloseButton) && (
               <Dialog.Header
                 px={6}
-                py={4}
+                pt={4}
+                pb={3}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -114,7 +115,7 @@ export default function Modal({
 
             {/* Footer */}
             {actions && actions.length > 0 && (
-              <Dialog.Footer px={6} py={4}>
+              <Dialog.Footer px={6} pb={4} pt={2}>
                 <HStack gap={3} w="full">
                   {actions.map((action, index) => (
                     <Button
