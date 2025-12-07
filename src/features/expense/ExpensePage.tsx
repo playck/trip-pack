@@ -1,8 +1,14 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { useParams } from "@tanstack/react-router";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, HStack, IconButton } from "@chakra-ui/react";
+import { Share2 } from "lucide-react";
+
 import PageLayout from "@/shared/components/layout/PageLayout";
+import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
+import { formatTripDateRange } from "@/shared/utiles/date";
+import { TripActionMenu } from "@/shared/components";
+
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
@@ -109,9 +115,29 @@ export default function ExpensePage() {
 
   return (
     <PageLayout style={{ paddingBottom: "60px" }}>
-      {/* <Container maxW="6xl" py={3} px={4}>
-        <Heading size="lg">{tripInfo.title}</Heading>
-      </Container> */}
+      <TripInfoHeader
+        title={tripInfo.title || "가계부"}
+        subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
+        rightAction={
+          <HStack gap={0}>
+            <IconButton
+              aria-label="공유하기"
+              variant="ghost"
+              size="sm"
+              color="gray.600"
+              onClick={() => {
+                alert("가계부 공유 기능 준비 중!");
+              }}
+            >
+              <Share2 size={20} />
+            </IconButton>
+            <TripActionMenu
+              tripId={tripId}
+              tripTitle={tripInfo.title || "여행"}
+            />
+          </HStack>
+        }
+      />
 
       {dateList.length > 0 ? (
         <>
