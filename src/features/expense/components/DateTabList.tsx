@@ -42,8 +42,8 @@ export default function DateTabList({
       <Flex gap={0} minW="max-content" px={0}>
         {/* 전체 탭 */}
         <Box
-          py={3}
-          px={4}
+          py={2}
+          px={3}
           borderBottom="2px solid"
           borderColor={
             selectedDate === ALL_DATE_TAB_VALUE
@@ -68,8 +68,8 @@ export default function DateTabList({
         {dateList.map((dateItem) => (
           <Box
             key={dateItem.date}
-            py={3}
-            px={4}
+            py={2}
+            px={3}
             borderBottom="2px solid"
             borderColor={
               selectedDate === dateItem.date
