@@ -6,10 +6,10 @@ import {
   Textarea,
   HStack,
   SegmentGroup,
-  Box,
 } from "@chakra-ui/react";
 import { Copy, Check } from "lucide-react";
 
+import { colors, statusColors } from "@/shared/constants/colors";
 import type { CategoryWithItems } from "../../type";
 import {
   exportChecklistToText,
@@ -46,60 +46,54 @@ export default function CheckListCopySheet({
   };
 
   return (
-    <VStack gap={4} align="stretch" p={4}>
-      <Text fontSize="lg" fontWeight="semibold" color="gray.800">
-        체크리스트 텍스트 추출
-      </Text>
-
-      <Box>
-        <SegmentGroup.Root
-          size="sm"
-          value={format}
-          onValueChange={(details) => {
-            if (details.value) {
-              setFormat(details.value as ExportFormat);
-            }
-          }}
-        >
-          <SegmentGroup.Indicator />
-          <SegmentGroup.Items
-            items={[
-              {
-                value: "simple",
-                label: "간단 형식",
-              },
-              {
-                value: "detailed",
-                label: "상세 형식",
-              },
-            ]}
-          />
-        </SegmentGroup.Root>
-      </Box>
-
-      <Box>
-        <Text fontSize="sm" color="gray.600" mb={2}>
-          미리보기
+    <VStack gap={3} align="stretch" pt={4.5} pb={3} px={3}>
+      <HStack justify="space-between" align="center">
+        <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+          체크리스트 공유
         </Text>
-        <Textarea
-          value={textContent}
-          readOnly
-          minH="200px"
-          maxH="300px"
-          fontSize="sm"
-          bg="gray.50"
-          borderColor="gray.200"
-          _focus={{
-            borderColor: "blue.400",
-            boxShadow: "0 0 0 1px var(--chakra-colors-blue-400)",
-          }}
-        />
-      </Box>
+
+        <>
+          <SegmentGroup.Root
+            size="sm"
+            value={format}
+            onValueChange={(details) => {
+              if (details.value) {
+                setFormat(details.value as ExportFormat);
+              }
+            }}
+          >
+            <SegmentGroup.Indicator />
+            <SegmentGroup.Items
+              items={[
+                {
+                  value: "simple",
+                  label: "간단",
+                },
+                {
+                  value: "detailed",
+                  label: "상세",
+                },
+              ]}
+            />
+          </SegmentGroup.Root>
+        </>
+      </HStack>
+
+      <Textarea
+        value={textContent}
+        readOnly
+        minH="300px"
+        fontSize="sm"
+        bg="gray.50"
+        borderColor="gray.200"
+      />
 
       <HStack gap={3}>
         <Button
           flex={1}
-          colorScheme={isCopied ? "green" : "blue"}
+          colorPalette={
+            isCopied ? statusColors.success.palette : colors.primary.palette
+          }
           onClick={handleCopy}
           disabled={isCopied}
         >

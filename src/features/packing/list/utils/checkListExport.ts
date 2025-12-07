@@ -87,15 +87,13 @@ export async function copyToClipboard(text: string): Promise<boolean> {
       try {
         document.execCommand("copy");
         return true;
-      } catch (error) {
-        console.error("Failed to copy text:", error);
+      } catch {
         return false;
       } finally {
         textArea.remove();
       }
     }
-  } catch (error) {
-    console.error("Failed to copy to clipboard:", error);
+  } catch {
     return false;
   }
 }
