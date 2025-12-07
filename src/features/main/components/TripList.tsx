@@ -19,7 +19,6 @@ export default function TripList() {
     navigate({
       to: "/packing/list/$tripId",
       params: { tripId: trip.id },
-      search: { tripTitle: trip.title },
     });
   };
 
