@@ -1,5 +1,8 @@
 import { Box, Flex, Text, HStack } from "@chakra-ui/react";
-import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import {
+  HEADER_HEIGHT,
+  TRIP_INFO_HEADER_HEIGHT,
+} from "@/shared/constants/layout";
 
 interface TripInfoHeaderProps {
   title: string;
@@ -16,7 +19,7 @@ export default function TripInfoHeader({
     <Box
       as="header"
       w="full"
-      h="40px"
+      h={`${TRIP_INFO_HEADER_HEIGHT}px`}
       bg="white"
       position="sticky"
       top={`${HEADER_HEIGHT}px`}
