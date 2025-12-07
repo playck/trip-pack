@@ -1,17 +1,23 @@
 import { useState, useMemo } from "react";
-import { VStack, Box } from "@chakra-ui/react";
+import { VStack, Box, HStack, IconButton } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { Share2 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
+import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import {
+  HEADER_HEIGHT,
+  TRIP_INFO_HEADER_HEIGHT,
+} from "@/shared/constants/layout";
+import { formatTripDateRange } from "@/shared/utiles/date";
+import { TripActionMenu } from "@/shared/components";
 import {
   GoogleMapView,
   DayScheduleList,
   AddScheduleSheet,
   AddMemoSheet,
-  TripHeader,
 } from "./components";
 import {
   ScheduleLoadingState,
@@ -129,17 +135,33 @@ function SchedulePageContent() {
         }}
       >
         <VStack gap={0} align="stretch">
+          <TripInfoHeader
+            title={tripInfo.title || `${tripInfo.regionName || "여행"} 여행지`}
+            subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
+            rightAction={
+              <HStack gap={0}>
+                <IconButton
+                  aria-label="일정 공유하기"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleShareSchedule}
+                  color="gray.600"
+                >
+                  <Share2 size={20} />
+                </IconButton>
+                <TripActionMenu
+                  tripId={tripId}
+                  tripTitle={tripInfo.title || "여행"}
+                />
+              </HStack>
+            }
+          />
           <Box
             position="sticky"
-            top={`${HEADER_HEIGHT}px`}
+            top={`${HEADER_HEIGHT + TRIP_INFO_HEADER_HEIGHT}px`}
             zIndex={10}
             bg="white"
           >
-            <TripHeader
-              tripInfo={tripInfo}
-              onShareClick={handleShareSchedule}
-            />
-
             <GoogleMapView
               center={focusedLocation || mapCenter}
               zoom={mapZoom}
