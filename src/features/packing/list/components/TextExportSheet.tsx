@@ -14,8 +14,8 @@ import type { CategoryWithItems } from "../../type";
 import {
   exportChecklistToText,
   exportChecklistToDetailedText,
-  copyToClipboard,
 } from "../../list/utils/checkListExport";
+import { copyToClipboard } from "@/shared/utiles/clipboard";
 
 interface TextExportSheetProps {
   categories: CategoryWithItems[];
