@@ -13,8 +13,7 @@ import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
-import { useTripExpenses } from "./hooks/useTripExpenses";
-import { useCreateExpense } from "./hooks/useCreateExpense";
+import { useTripExpenses, useCreateExpense, useShareExpense } from "./hooks";
 
 const ALL_TAB_VALUE = "all";
 
@@ -71,6 +70,8 @@ export default function ExpensePage() {
     });
   }, [dateList, expenses]);
 
+  const { handleShareExpense } = useShareExpense({ tripInfo, dayExpenses });
+
   const handleAddExpense = () => {
     setIsSheetOpen(true);
   };
@@ -125,9 +126,7 @@ export default function ExpensePage() {
               variant="ghost"
               size="sm"
               color="gray.600"
-              onClick={() => {
-                alert("가계부 공유 기능 준비 중!");
-              }}
+              onClick={handleShareExpense}
             >
               <Share2 size={20} />
             </IconButton>
