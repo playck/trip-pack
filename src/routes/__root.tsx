@@ -1,9 +1,11 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
 import Header from "../shared/components/layout/Header";
+import LoadingSpinner from "../shared/components/LoadingSpinner";
 
 export const Route = createRootRoute({
   component: RootComponent,
+  pendingComponent: () => <LoadingSpinner fullScreen centered />,
 });
 
 function RootComponent() {
