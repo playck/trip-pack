@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getTripList } from "./api";
 import type { Trip, TripListData } from "../types";
 
@@ -13,23 +13,23 @@ export interface UseTripListReturn {
 }
 
 export function useTripList(): UseTripListReturn {
-  const { data, isLoading, error } = useQuery<TripListData>({
+  const { data, error } = useSuspenseQuery<TripListData>({
     queryKey: ["tripList"],
     queryFn: getTripList,
     retry: false,
   });
 
   const noTripList =
-    data?.currentTrips?.length === 0 &&
-    data?.futureTrips.length === 0 &&
-    data?.pastTrips.length === 0;
+    data.currentTrips?.length === 0 &&
+    data.futureTrips.length === 0 &&
+    data.pastTrips.length === 0;
 
   return {
-    currentTrips: data?.currentTrips || [],
-    futureTrips: data?.futureTrips || [],
-    pastTrips: data?.pastTrips || [],
-    trips: data?.allTrips || [],
-    isLoading,
+    currentTrips: data.currentTrips || [],
+    futureTrips: data.futureTrips || [],
+    pastTrips: data.pastTrips || [],
+    trips: data.allTrips || [],
+    isLoading: false,
     noTripList,
     error: error?.message || null,
   };

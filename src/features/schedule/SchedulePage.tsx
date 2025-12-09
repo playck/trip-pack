@@ -19,12 +19,7 @@ import {
   AddScheduleSheet,
   AddMemoSheet,
 } from "./components";
-import {
-  ScheduleLoadingState,
-  ScheduleErrorState,
-  ScheduleEmptyState,
-  ApiKeyMissingState,
-} from "./components/SchedulePageStates";
+import { ApiKeyMissingState } from "./components/SchedulePageStates";
 import {
   useGeocoding,
   useScheduleAdd,
@@ -43,7 +38,7 @@ import { ScheduleProvider } from "./context";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
-  const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
+  const { data: tripInfo } = useTripInfo(tripId);
 
   const [focusedLocation, setFocusedLocation] = useState<{
     lat: number;
@@ -120,11 +115,7 @@ function SchedulePageContent() {
     handleScheduleShare(allSchedules || [], tripInfo?.title);
   };
 
-  if (isLoading) return <ScheduleLoadingState />;
-
-  if (error) return <ScheduleErrorState error={error} />;
-
-  if (!tripId || !tripInfo) return <ScheduleEmptyState />;
+  if (!tripInfo) return null;
 
   return (
     <PageLayout>

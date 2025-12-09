@@ -1,4 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { getTripChecklist, updateItemCheckedStatus } from "../services/api";
 import { calculateChecklistProgress } from "../utils/progressCalculator";
 import type {
@@ -19,11 +23,10 @@ export function useTripChecklist(
   tripId: string | undefined
 ): UseTripChecklistReturn {
   const {
-    data: categories = [],
-    isLoading,
+    data: categories,
     error,
     refetch,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: tripId ? queryKeys.tripChecklist(tripId) : [],
     queryFn: () => {
       if (!tripId) {
@@ -31,14 +34,13 @@ export function useTripChecklist(
       }
       return getTripChecklist(tripId);
     },
-    enabled: !!tripId,
   });
 
   const progress = calculateChecklistProgress(categories);
 
   return {
     categories,
-    isLoading,
+    isLoading: false, // Suspense 모드에서는 컴포넌트 레벨에서 로딩 상태를 신경 쓸 필요가 없음
     progress,
     error: error?.message || null,
     refetch,

@@ -17,7 +17,6 @@ import {
   BottomSheet,
   ErrorMessage,
   FloatingAddButton,
-  LoadingSpinner,
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
@@ -57,7 +56,7 @@ export default function PackingListPage() {
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
-  const { categories, isLoading, error, progress } = useTripChecklist(tripId);
+  const { categories, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
@@ -98,18 +97,6 @@ export default function PackingListPage() {
   const handleCancelCategoryCreate = () => {
     onClose();
   };
-
-  if (isLoading) {
-    return (
-      <PageLayout>
-        <LoadingSpinner
-          message="체크리스트를 불러오고 있어요..."
-          centered
-          fullScreen
-        />
-      </PageLayout>
-    );
-  }
 
   if (error) {
     return (

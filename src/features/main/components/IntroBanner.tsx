@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { colors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
 
-export default function MainBanner() {
+export default function IntroBanner() {
   const navigate = useNavigate();
   const { user } = useAuth();
 

@@ -8,8 +8,6 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
-
-import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
@@ -19,9 +17,8 @@ const ALL_TAB_VALUE = "all";
 
 export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
-  const { data: tripInfo, isLoading, error } = useTripInfo(tripId);
-  const { data: expenses, isLoading: isLoadingExpenses } =
-    useTripExpenses(tripId);
+  const { data: tripInfo } = useTripInfo(tripId);
+  const { data: expenses } = useTripExpenses(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });
@@ -96,23 +93,7 @@ export default function ExpensePage() {
     });
   };
 
-  if (isLoading || isLoadingExpenses) {
-    return (
-      <PageLayout>
-        <LoadingSpinner />
-      </PageLayout>
-    );
-  }
-
-  if (error || !tripInfo) {
-    return (
-      <PageLayout>
-        <Box p={4}>
-          <Text color="red.500">여행 정보를 불러올 수 없습니다.</Text>
-        </Box>
-      </PageLayout>
-    );
-  }
+  if (!tripInfo) return null;
 
   return (
     <PageLayout style={{ paddingBottom: "60px" }}>
