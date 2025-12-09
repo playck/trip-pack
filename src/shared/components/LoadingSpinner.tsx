@@ -1,9 +1,10 @@
-import { VStack, Text, Spinner, Flex, Container } from "@chakra-ui/react";
+import { VStack, Text, Flex, Container, Box } from "@chakra-ui/react";
+import Lottie from "lottie-react";
+import loadingAnimation from "@/assets/lotties/loading.json";
 import { colorCombinations } from "@/shared/constants/colors";
 
 interface LoadingSpinnerProps {
   message?: string;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
   color?: string;
   py?: number;
   gap?: number;
@@ -12,20 +13,25 @@ interface LoadingSpinnerProps {
 }
 
 export default function LoadingSpinner({
-  message = "불러오는 중...",
-  size = "lg",
+  message = "",
   color = colorCombinations.defaultCard.text,
   py = 8,
   gap = 4,
   centered = false,
   fullScreen = false,
 }: LoadingSpinnerProps) {
+  const size = 200;
+
   const content = (
     <VStack gap={gap} py={py}>
-      <Spinner size={size} color={color} />
-      <Text color={color} opacity={0.7}>
-        {message}
-      </Text>
+      <Box w={`${size}px`} h={`${size}px`}>
+        <Lottie animationData={loadingAnimation} loop={true} />
+      </Box>
+      {message && (
+        <Text color={color} opacity={0.7} mt={-2}>
+          {message}
+        </Text>
+      )}
     </VStack>
   );
 
