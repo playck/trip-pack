@@ -1,6 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { Box, Spinner } from "@chakra-ui/react";
 import { useAuth } from "@/shared/hooks/useAuth";
+import LoadingSpinner from "@/shared/components/LoadingSpinner";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -10,17 +10,7 @@ function RouteComponent() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    // 스플래시로 변경 예정
-    return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        minH="100vh"
-      >
-        <Spinner size="xl" />
-      </Box>
-    );
+    return <LoadingSpinner fullScreen centered />;
   }
 
   if (user) {
