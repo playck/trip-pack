@@ -109,13 +109,8 @@ export default function AddExpenseSheet({
       : null;
 
   return (
-    <BottomSheet
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="경비 추가"
-      minHeight="45vh"
-    >
-      <VStack gap={4} w="full" p={4}>
+    <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 추가">
+      <VStack gap={3} w="full" p={4} pt={0}>
         {/* 일정 정보 표시 */}
         {scheduleName && (
           <Box
@@ -230,7 +225,7 @@ export default function AddExpenseSheet({
           </Box>
         </VStack>
 
-        <HStack gap={2} w="full" h="12" mt={2}>
+        <HStack gap={2} w="full" h="12">
           <Button
             variant="outline"
             size="lg"
