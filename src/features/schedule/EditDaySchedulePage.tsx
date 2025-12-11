@@ -175,21 +175,20 @@ export default function ManageDaySchedulePage() {
         isOpen={openDialog === "delete"}
         onClose={closeDialog}
         title="일정 삭제"
-        message={
-          <Text>
-            선택한 {selectionCount}개의 일정을 삭제하시겠습니까?
-            <br />
-            <Text as="span" color="red.600" fontWeight="medium">
-              삭제된 일정은 복구할 수 없습니다.
-            </Text>
-          </Text>
-        }
         confirmLabel="삭제하기"
         cancelLabel="취소"
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
         isDangerous={true}
-      />
+      >
+        <Text>
+          선택한 {selectionCount}개의 일정을 삭제하시겠습니까?
+          <br />
+          <Text as="span" color="red.500" fontWeight="medium">
+            삭제된 일정은 복구할 수 없습니다.
+          </Text>
+        </Text>
+      </ConfirmDialog>
 
       {/* 날짜 이동 BottomSheet */}
       {tripInfo && (

@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react";
-import { Modal } from "@/shared/components";
+import { ConfirmDialog } from "@/shared/components";
 
 interface DeleteTripModalProps {
   isOpen: boolean;
@@ -17,33 +17,25 @@ export function DeleteTripModal({
   isLoading = false,
 }: DeleteTripModalProps) {
   return (
-    <Modal
+    <ConfirmDialog
       isOpen={isOpen}
       onClose={onClose}
       title="여행 삭제"
-      actions={[
-        {
-          label: "취소",
-          onClick: onClose,
-          variant: "outline",
-          colorPalette: "gray",
-        },
-        {
-          label: "삭제하기",
-          onClick: onDeleteTrip,
-          variant: "solid",
-          colorPalette: "red",
-          isLoading,
-        },
-      ]}
+      confirmLabel="삭제하기"
+      onConfirm={onDeleteTrip}
+      isDangerous={true}
+      isLoading={isLoading}
     >
       <Text>
-        '{tripTitle}' 여행을 삭제하시겠습니까?
+        <Text as="span" fontWeight="bold" color="gray.800">
+          '{tripTitle}'{" "}
+        </Text>
+        여행을 삭제하시겠습니까?
         <br />
-        <Text as="span" color="red.600" fontWeight="medium">
+        <Text as="span" color="red.500" fontWeight="medium">
           삭제된 여행과 체크리스트는 복구할 수 없습니다.
         </Text>
       </Text>
-    </Modal>
+    </ConfirmDialog>
   );
 }

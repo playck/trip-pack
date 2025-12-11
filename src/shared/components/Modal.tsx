@@ -75,7 +75,7 @@ export default function Modal({
               <Dialog.Header
                 px={6}
                 pt={4}
-                pb={3}
+                pb={2}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"

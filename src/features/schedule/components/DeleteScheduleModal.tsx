@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react";
-import { Modal } from "@/shared/components";
+import { ConfirmDialog } from "@/shared/components";
 import { useDeleteSchedule } from "../services/useDeleteSchedule";
 import type { Schedule } from "../types";
 
@@ -30,27 +30,15 @@ export default function DeleteScheduleModal({
   };
 
   return (
-    <Modal
+    <ConfirmDialog
       isOpen={isOpen}
       onClose={onClose}
       title="일정 삭제"
-      actions={[
-        {
-          label: "취소",
-          onClick: onClose,
-          variant: "outline",
-          colorPalette: "neutral",
-          disabled: deleteScheduleMutation.isPending,
-        },
-        {
-          label: "삭제",
-          onClick: handleDeleteConfirm,
-          variant: "solid",
-          colorPalette: "red",
-          isLoading: deleteScheduleMutation.isPending,
-          disabled: deleteScheduleMutation.isPending,
-        },
-      ]}
+      confirmLabel="삭제"
+      onConfirm={handleDeleteConfirm}
+      isDangerous={true}
+      isLoading={deleteScheduleMutation.isPending}
+      confirmDisabled={deleteScheduleMutation.isPending}
     >
       <Text>
         <Text as="span" fontWeight="bold">
@@ -58,8 +46,10 @@ export default function DeleteScheduleModal({
         </Text>{" "}
         일정을 삭제하시겠습니까?
         <br />
-        삭제된 일정은 복구할 수 없습니다.
+        <Text as="span" color="red.500" fontWeight="medium">
+          삭제된 일정은 복구할 수 없습니다.
+        </Text>
       </Text>
-    </Modal>
+    </ConfirmDialog>
   );
 }

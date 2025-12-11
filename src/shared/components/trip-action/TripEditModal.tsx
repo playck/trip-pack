@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Input, VStack } from "@chakra-ui/react";
-import { Modal } from "@/shared/components";
+import { ConfirmDialog } from "@/shared/components";
 import { useUpdateTripTitle } from "@/shared/hooks/useUpdateTripTitle";
 
 interface TripEditModalProps {
@@ -42,27 +42,15 @@ export function TripEditModal({
   };
 
   return (
-    <Modal
+    <ConfirmDialog
       isOpen={isOpen}
       onClose={onClose}
       title="여행 제목 수정"
+      confirmLabel="저장"
+      onConfirm={handleSave}
+      isLoading={updateTripTitleMutation.isPending}
+      confirmDisabled={!title.trim()}
       size="sm"
-      actions={[
-        {
-          label: "취소",
-          onClick: onClose,
-          variant: "outline",
-          colorPalette: "gray",
-        },
-        {
-          label: "저장",
-          onClick: handleSave,
-          variant: "solid",
-          colorPalette: "teal",
-          isLoading: updateTripTitleMutation.isPending,
-          disabled: !title.trim(),
-        },
-      ]}
     >
       <VStack align="stretch" gap={1}>
         <Input
@@ -73,6 +61,6 @@ export function TripEditModal({
           autoFocus
         />
       </VStack>
-    </Modal>
+    </ConfirmDialog>
   );
 }

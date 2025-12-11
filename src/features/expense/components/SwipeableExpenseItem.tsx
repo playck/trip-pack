@@ -186,7 +186,7 @@ export default function SwipeableExpenseItem({
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="경비 삭제"
-        message={
+        children={
           <Text>
             <Text as="span" fontWeight="bold">
               "{expense.name}"

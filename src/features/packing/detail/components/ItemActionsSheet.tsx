@@ -1,7 +1,7 @@
 import { VStack, Button, Text, HStack, useDisclosure } from "@chakra-ui/react";
 import { Edit3, Trash2 } from "lucide-react";
 
-import { BottomSheet, Modal } from "@/shared/components";
+import { BottomSheet, ConfirmDialog } from "@/shared/components";
 import { useDeleteItem } from "../../list/hooks/useDeleteItem";
 
 interface ItemActionsSheetProps {
@@ -87,27 +87,15 @@ export default function ItemActionsSheet({
       </VStack>
 
       {/* 삭제 확인 모달 */}
-      <Modal
+      <ConfirmDialog
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
         title="아이템 삭제"
-        actions={[
-          {
-            label: "취소",
-            onClick: onDeleteModalClose,
-            variant: "outline",
-            colorPalette: "neutral",
-            disabled: deleteItemMutation.isPending,
-          },
-          {
-            label: "삭제",
-            onClick: handleDeleteConfirm,
-            variant: "solid",
-            colorPalette: "red",
-            isLoading: deleteItemMutation.isPending,
-            disabled: deleteItemMutation.isPending,
-          },
-        ]}
+        confirmLabel="삭제"
+        onConfirm={handleDeleteConfirm}
+        isDangerous={true}
+        isLoading={deleteItemMutation.isPending}
+        confirmDisabled={deleteItemMutation.isPending}
       >
         <Text>
           <Text as="span" fontWeight="bold">
@@ -115,9 +103,11 @@ export default function ItemActionsSheet({
           </Text>{" "}
           아이템을 삭제하시겠습니까?
           <br />
-          삭제된 아이템은 복구할 수 없습니다.
+          <Text as="span" color="red.500" fontWeight="medium">
+            삭제된 아이템은 복구할 수 없습니다.
+          </Text>
         </Text>
-      </Modal>
+      </ConfirmDialog>
     </BottomSheet>
   );
 }

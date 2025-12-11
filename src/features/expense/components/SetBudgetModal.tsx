@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { VStack, Input, Button, HStack, Text, Box } from "@chakra-ui/react";
 import { ArrowLeftRight } from "lucide-react";
-import Modal from "@/shared/components/Modal";
+import { ConfirmDialog } from "@/shared/components";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
 import {
@@ -99,24 +99,13 @@ export default function SetBudgetModal({
       : null;
 
   return (
-    <Modal
+    <ConfirmDialog
       isOpen={isOpen}
       onClose={onClose}
       title="총 예산 설정"
-      actions={[
-        {
-          label: "취소",
-          onClick: onClose,
-          variant: "surface",
-          colorPalette: "gray",
-        },
-        {
-          label: "저장",
-          onClick: handleSave,
-          variant: "solid",
-          colorPalette: "teal",
-        },
-      ]}
+      confirmLabel="저장"
+      onConfirm={handleSave}
+      size="md"
     >
       <VStack align="stretch" gap={2}>
         <HStack justify="space-between" align="center">
@@ -188,6 +177,6 @@ export default function SetBudgetModal({
           </Text>
         </Box>
       </VStack>
-    </Modal>
+    </ConfirmDialog>
   );
 }
