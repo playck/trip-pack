@@ -54,14 +54,8 @@ export default function EditExpenseSheet({
     name.trim() && amount && parseInt(amount.replace(/,/g, ""), 10) > 0;
 
   return (
-    <BottomSheet
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="경비 수정"
-      minHeight="40vh"
-    >
+    <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 수정">
       <VStack gap={4} w="full" p={4}>
-        {/* 내용 입력 */}
         <VStack gap={2} w="full">
           <Text fontSize="md" fontWeight="medium" alignSelf="start">
             내용
@@ -76,7 +70,6 @@ export default function EditExpenseSheet({
           />
         </VStack>
 
-        {/* 금액 입력 */}
         <VStack gap={2} w="full">
           <Text fontSize="md" fontWeight="medium" alignSelf="start">
             금액

@@ -1,7 +1,6 @@
 import { useAtom } from "jotai";
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
-import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
 import {
   getCurrencyByCountryCode,
@@ -22,8 +21,6 @@ interface ExpenseListProps {
   expenses: ExpenseItem[];
   tripId: string;
 }
-
-const DATE_TAB_HEIGHT = 50;
 
 export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
@@ -51,13 +48,14 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
       {expenses.length > 0 && (
         <Box
           position="sticky"
-          top={`${HEADER_HEIGHT + DATE_TAB_HEIGHT}px`}
-          p={3}
-          zIndex={9}
-          bg="white"
-          borderBottom="2px solid"
-          borderColor="gray.200"
-          boxShadow="0 2px 8px rgba(0,0,0,0.05)"
+          top="105px"
+          zIndex={8}
+          py={1}
+          px={3}
+          bg={`${colors.primary.palette}.50`}
+          borderRadius="lg"
+          borderLeft="4px solid"
+          borderColor={colors.primary.solid}
         >
           <Flex justify="space-between" align="center" maxW="6xl" mx="auto">
             <Text fontSize="lg" fontWeight="bold" color="gray.800">
@@ -93,7 +91,7 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
             </Text>
           </Box>
         ) : (
-          <>
+          <Box px={2}>
             {expenses.map((expense, index) => (
               <SwipeableExpenseItem
                 key={expense.id}
@@ -108,7 +106,7 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
                 }}
               />
             ))}
-          </>
+          </Box>
         )}
       </VStack>
     </>

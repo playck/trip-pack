@@ -53,7 +53,7 @@ export default function ExpenseDaySection({
   });
 
   return (
-    <VStack align="stretch" gap={3}>
+    <VStack align="stretch" gap={2}>
       {/* 날짜 헤더 - Header + DateTabList 바로 아래 */}
       <Flex
         position="sticky"
@@ -61,7 +61,7 @@ export default function ExpenseDaySection({
         zIndex={8}
         justify="space-between"
         align="center"
-        py={1.5}
+        py={1}
         px={3}
         bg={`${colors.primary.palette}.50`}
         borderRadius="lg"
