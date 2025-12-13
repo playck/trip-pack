@@ -1,6 +1,7 @@
 import React from "react";
-import { Drawer, Portal, IconButton, Text } from "@chakra-ui/react";
 import { X } from "lucide-react";
+import { Drawer, Portal, IconButton, Text } from "@chakra-ui/react";
+import { useKeyboardOffset } from "@/shared/hooks";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ export default function BottomSheet({
   children,
   minHeight,
 }: BottomSheetProps) {
+  const keyboardOffset = useKeyboardOffset(isOpen);
+
   return (
     <Drawer.Root
       open={isOpen}
@@ -31,6 +34,13 @@ export default function BottomSheet({
             borderBottomRadius="none"
             pb="env(safe-area-inset-bottom)"
             minHeight={minHeight}
+            style={{
+              transform:
+                keyboardOffset > 0
+                  ? `translateY(-${keyboardOffset}px)`
+                  : undefined,
+              transition: "transform 0.1s ease-out",
+            }}
           >
             <Drawer.Header
               px={4}
