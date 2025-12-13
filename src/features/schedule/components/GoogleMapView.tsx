@@ -36,10 +36,11 @@ export default function GoogleMapView({
   return (
     <Box h={height} w="full" borderRadius="lg" overflow="hidden">
       <Map
-        center={center}
-        zoom={zoom}
+        defaultCenter={center}
+        defaultZoom={zoom}
         gestureHandling="greedy"
         disableDefaultUI={true}
+        fullscreenControl={true}
         clickableIcons={false}
         mapId="schedule-map"
       >
