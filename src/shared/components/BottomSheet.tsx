@@ -9,6 +9,7 @@ interface BottomSheetProps {
   title?: string;
   children: React.ReactNode;
   minHeight?: string;
+  adjustForKeyboard?: boolean;
 }
 
 export default function BottomSheet({
@@ -17,8 +18,9 @@ export default function BottomSheet({
   title,
   children,
   minHeight,
+  adjustForKeyboard = true,
 }: BottomSheetProps) {
-  const keyboardOffset = useKeyboardOffset(isOpen);
+  const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
 
   return (
     <Drawer.Root
