@@ -18,7 +18,7 @@ export type PackingCreateState = {
   generatedCheckList?: GeneratedCheckList[];
 };
 
-export const packingCreateAtom = atom<PackingCreateState>({
+export const INITIAL_PACKING_CREATE_STATE: PackingCreateState = {
   region: null,
   dates: {
     startDate: null,
@@ -28,7 +28,11 @@ export const packingCreateAtom = atom<PackingCreateState>({
   companionTypes: [],
   tripTypes: [],
   generatedCheckList: undefined,
-});
+};
+
+export const packingCreateAtom = atom<PackingCreateState>(
+  INITIAL_PACKING_CREATE_STATE
+);
 
 export const packingCreateValidationAtom = atom((get) => {
   const state = get(packingCreateAtom);

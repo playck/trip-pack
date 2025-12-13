@@ -1,9 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Container } from "@chakra-ui/react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
-import { packingCreateValidationAtom } from "./store/packingCreateAtom";
+import {
+  packingCreateValidationAtom,
+  packingCreateAtom,
+  INITIAL_PACKING_CREATE_STATE,
+} from "./store/packingCreateAtom";
 import {
   StepIndicator,
   SearchRegionComboBox,
@@ -28,6 +32,11 @@ const STEP_TITLES = {
 export default function PackingCreatePage() {
   const [step, setStep] = useState<StepValue>(Step.REGION);
   const validation = useAtomValue(packingCreateValidationAtom);
+  const setPackingState = useSetAtom(packingCreateAtom);
+
+  useEffect(() => {
+    setPackingState(INITIAL_PACKING_CREATE_STATE);
+  }, [setPackingState]);
 
   const getIsNextBtnDisabled = useCallback(() => {
     switch (step) {

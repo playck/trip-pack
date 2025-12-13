@@ -8,13 +8,17 @@ import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
 
 import useGenerateCheckList from "../hooks/useGenerateCheckList";
-import { packingCreateAtom } from "../store/packingCreateAtom";
+import {
+  packingCreateAtom,
+  INITIAL_PACKING_CREATE_STATE,
+} from "../store/packingCreateAtom";
 import { useCreateTrip } from "../services/useCreateTrip";
 
 export default function LastStep() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [packingCreateState] = useAtom(packingCreateAtom);
+  const [packingCreateState, setPackingCreateState] =
+    useAtom(packingCreateAtom);
   const [message, setMessage] = useState("체크리스트를 생성 중입니다");
   const { handleSetUpCheckList } = useGenerateCheckList(packingCreateState);
 
@@ -35,6 +39,7 @@ export default function LastStep() {
     onSuccess: (_, tripId) => {
       setMessage("완료되었습니다!");
       setTimeout(() => {
+        setPackingCreateState(INITIAL_PACKING_CREATE_STATE);
         navigate({
           to: "/packing/list/$tripId",
           params: { tripId },
