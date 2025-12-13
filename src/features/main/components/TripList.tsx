@@ -39,7 +39,7 @@ export default function TripList() {
   return (
     <VStack align="start" gap={2} w="full">
       <Text
-        fontSize="lg"
+        fontSize="md"
         fontWeight="bold"
         color={colorCombinations.defaultCard.text}
       >
@@ -47,7 +47,7 @@ export default function TripList() {
       </Text>
 
       <Box w="full" overflowX="auto">
-        <VStack gap={4} pl={0} pb={2} align="stretch">
+        <VStack gap={3} pl={0} pb={2} align="stretch">
           {/* 다가오는 여행 알림 */}
           {upcomingTripInfo && (
             <NoticeCard
@@ -79,7 +79,7 @@ export default function TripList() {
 
           {/* 과거 여행 섹션 */}
           {pastTrips.length > 0 && (
-            <VStack align="start" gap={4} w="full">
+            <VStack align="start" gap={3} w="full">
               <NoticeCard icon="✈️" title="추억이 된 여행" variant="gray" />
               <VStack gap={3} align="stretch" w="full">
                 {pastTrips.map((trip) => (

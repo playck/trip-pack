@@ -25,7 +25,7 @@ export default function NoticeCard({
   return (
     <Box
       w="full"
-      p={3}
+      p={1}
       bg={bgColor}
       borderRadius="xl"
       borderLeft="4px solid"
@@ -34,9 +34,9 @@ export default function NoticeCard({
       onClick={onClick}
     >
       <HStack justify="space-between" align="center" w="full">
-        <HStack gap={2} overflow="hidden" flex={1}>
+        <HStack gap={1} overflow="hidden" flex={1}>
           <Text fontSize="lg">{icon}</Text>
-          <Text fontSize="md" fontWeight="bold" color={titleColor} truncate>
+          <Text fontSize="sm" fontWeight="bold" color={titleColor} truncate>
             {title}
           </Text>
           {subText && (

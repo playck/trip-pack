@@ -64,8 +64,8 @@ export default function MainPage() {
 
   return (
     <PageLayout>
-      <Box w="full" py={3.5}>
-        <VStack gap={3} align="stretch">
+      <Box w="full" py={3}>
+        <VStack gap={2.5} align="stretch">
           <IntroBanner />
           <TripList />
         </VStack>
