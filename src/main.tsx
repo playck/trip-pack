@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { Provider as ChakraProvider } from "./shared/components/ui/provider";
 import LoadingSpinner from "./shared/components/LoadingSpinner";
+import GlobalErrorFallback from "./shared/components/GlobalErrorFallback";
 
 import { routeTree } from "./routeTree.gen";
 
@@ -14,6 +15,7 @@ declare module "@tanstack/react-router" {
 const router = createRouter({
   routeTree,
   defaultPendingComponent: () => <LoadingSpinner fullScreen centered />,
+  defaultErrorComponent: (props) => <GlobalErrorFallback {...props} />,
 });
 
 const rootElement = document.getElementById("root")!;
