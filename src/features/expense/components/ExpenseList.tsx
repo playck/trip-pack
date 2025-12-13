@@ -85,7 +85,7 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
       {/* 경비 목록 */}
       <VStack align="stretch" gap={0} mt={2}>
         {expenses.length === 0 ? (
-          <Box py={8} textAlign="center">
+          <Box py={1} textAlign="center">
             <Text color="gray.400" fontSize="sm">
               경비 내역이 없습니다
             </Text>

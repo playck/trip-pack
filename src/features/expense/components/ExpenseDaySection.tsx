@@ -89,7 +89,7 @@ export default function ExpenseDaySection({
 
       {/* 경비 목록 */}
       {expenses.length === 0 ? (
-        <Box py={4} textAlign="center">
+        <Box py={1} textAlign="center">
           <Text color="gray.400" fontSize="sm">
             경비 내역이 없습니다
           </Text>
