@@ -25,8 +25,8 @@ export default function DayScheduleList({
   if (tripDays <= 0) return null;
 
   return (
-    <VStack align="stretch" gap={4}>
-      <Text fontSize="lg" fontWeight="bold">
+    <VStack align="stretch" gap={3}>
+      <Text fontSize="md" fontWeight="bold">
         여행 일정
       </Text>
       {Array.from({ length: tripDays }, (_, index) => {

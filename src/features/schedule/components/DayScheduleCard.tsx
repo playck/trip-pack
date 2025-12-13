@@ -55,7 +55,7 @@ export default function DayScheduleCard({
       {/* 헤더 */}
       <HStack
         px={3}
-        py={2}
+        py={1}
         bg={colors.primary.subtle}
         borderBottomWidth="1px"
         borderTopRadius="lg"
@@ -66,44 +66,45 @@ export default function DayScheduleCard({
         top={`${DAY_CARD_STICKY_TOP}px`}
         zIndex={5}
       >
-        <HStack gap={2}>
-          <Text fontSize="lg" fontWeight="bold" color={colors.primary.fg}>
+        <HStack gap={1.5} align="baseline">
+          <Text fontSize="md" fontWeight="bold" color={colors.primary.fg}>
             {dayNumber}일차
           </Text>
-          <Text fontSize="sm" color={textColors.tertiary}>
+          <Text fontSize="xs" fontWeight="medium" color={textColors.tertiary}>
             {formattedDate}
           </Text>
         </HStack>
 
-        <HStack gap={2}>
+        <HStack gap={1}>
           <IconButton
-            size="sm"
-            variant="solid"
+            size="xs"
+            variant="ghost"
             aria-label="일정 추가"
             onClick={onAddSchedule}
             colorPalette={colors.primary.palette}
+            _hover={{ bg: "whiteAlpha.500" }}
           >
-            <Plus size={18} />
+            <Plus size={14} />
           </IconButton>
           <IconButton
-            size="sm"
-            variant="outline"
+            size="xs"
+            variant="ghost"
             aria-label="메모 추가"
             onClick={onAddMemo}
             colorPalette={colors.neutral.palette}
-            borderColor={borderColors.emphasized}
+            _hover={{ bg: "whiteAlpha.500" }}
           >
-            <StickyNote size={18} />
+            <StickyNote size={14} />
           </IconButton>
           <IconButton
-            size="sm"
-            variant="outline"
+            size="xs"
+            variant="ghost"
             aria-label="일정 관리"
             onClick={goToEditDayPage}
             colorPalette={colors.neutral.palette}
-            borderColor={borderColors.emphasized}
+            _hover={{ bg: "whiteAlpha.500" }}
           >
-            <Edit size={18} />
+            <Edit size={14} />
           </IconButton>
         </HStack>
       </HStack>
