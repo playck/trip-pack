@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { VStack, Text, Button, Box } from "@chakra-ui/react";
+import { VStack, Text, Button, Box, Skeleton } from "@chakra-ui/react";
 import { useChecklistTemplate } from "@/features/packing/template/hooks";
-import { LoadingSpinner, ErrorMessage } from "@/shared/components";
+import { ErrorMessage } from "@/shared/components";
 import { CheckListBottomSheet } from "@/shared/components/checklist-template";
 import type { CategoryWithItems } from "@/features/packing/type";
 
@@ -34,8 +34,23 @@ export default function TemplateListSheet({
 
   if (isLoading) {
     return (
-      <VStack gap={4} align="stretch" p={4} minH="300px" justify="center">
-        <LoadingSpinner message="템플릿을 불러오는 중..." />
+      <VStack gap={4} align="stretch" p={4} maxH="600px">
+        <Box flex="1" overflowY="auto" pr={2}>
+          <Box
+            w="full"
+            bg="gray.50"
+            borderRadius="lg"
+            p={4}
+            borderWidth="3px"
+            borderColor="gray.200"
+          >
+            <VStack align="start" gap={1}>
+              <Skeleton height="20px" width="50%" />
+              <Skeleton height="16px" width="80%" />
+            </VStack>
+          </Box>
+        </Box>
+        <Skeleton height="40px" width="100%" borderRadius="md" />
       </VStack>
     );
   }
