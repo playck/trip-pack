@@ -149,7 +149,7 @@ const TimelineContent = ({
   tripId: string;
 }) => {
   return (
-    <Timeline.Root size="sm" variant="subtle">
+    <Timeline.Root size="sm" variant="subtle" gap={3}>
       {schedules.map((schedule) => (
         <SwipeableScheduleItem
           key={schedule.id}

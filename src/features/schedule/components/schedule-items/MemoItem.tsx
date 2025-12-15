@@ -23,7 +23,7 @@ export default function MemoItem({ memo }: MemoItemProps) {
         </Timeline.Indicator>
       </Timeline.Connector>
 
-      <Timeline.Content minH="40px" display="flex" flexDirection="column">
+      <Timeline.Content ml={-2} minH="20px">
         <Box onClick={handleClick} cursor="pointer">
           <Timeline.Title fontSize="md" fontWeight="semibold">
             {memo.place_name}

@@ -27,6 +27,7 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
       <Timeline.Content
         onClick={handleClick}
         cursor={onScheduleClick ? "pointer" : "default"}
+        ml={-2}
       >
         <Timeline.Title fontSize="md" fontWeight="semibold">
           {schedule.place_name}

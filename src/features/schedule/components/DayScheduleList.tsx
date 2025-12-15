@@ -1,4 +1,4 @@
-import { VStack, Text } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 
@@ -26,9 +26,6 @@ export default function DayScheduleList({
 
   return (
     <VStack align="stretch" gap={3}>
-      <Text fontSize="md" fontWeight="bold">
-        여행 일정
-      </Text>
       {Array.from({ length: tripDays }, (_, index) => {
         const dayNumber = index + 1;
         const date = getDayDate(startDate, dayNumber);
