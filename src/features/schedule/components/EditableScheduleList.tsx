@@ -41,7 +41,14 @@ export default function EditableScheduleList({
         axis="y"
         values={schedules}
         onReorder={onReorder}
-        style={{ listStyle: "none", padding: 0, margin: 0 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+        }}
       >
         {schedules.map((schedule) => {
           const isScheduleMemo = isMemo(schedule);
