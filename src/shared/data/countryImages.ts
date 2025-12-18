@@ -209,4 +209,19 @@ export const countryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1628318135704-1983a8193247?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxBdXN0cmFsaWElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1659398377031-a542c1948f97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxBdXN0cmFsaWElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
   ],
+  US: [
+    "https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?q=80&w=2342&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1080&q=80",
+  ],
+  CA: [
+    "https://images.unsplash.com/photo-1503614472-8c93d56e92ce?q=80&w=2222&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1497373637916-e47a55e22d0a?q=80&w=2346&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1508693926297-1d61ee3df82a?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ],
+  NZ: [
+    "https://plus.unsplash.com/premium_photo-1661962302792-4b05d3e08513?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://plus.unsplash.com/premium_photo-1661887713388-6f093435b59a?q=80&w=2885&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?q=80&w=2342&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ],
 };
