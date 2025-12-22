@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MypageRouteImport } from './routes/mypage'
 import { Route as MainRouteImport } from './routes/main'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
@@ -21,6 +22,11 @@ import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tr
 import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
 import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
+const MypageRoute = MypageRouteImport.update({
+  id: '/mypage',
+  path: '/mypage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MainRoute = MainRouteImport.update({
   id: '/main',
   path: '/main',
@@ -81,6 +87,7 @@ const ScheduleEditTripIdDayNumberRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/main'
+    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/main'
+    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/main'
+    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainRoute: typeof MainRoute
+  MypageRoute: typeof MypageRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
@@ -176,6 +189,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/mypage': {
+      id: '/mypage'
+      path: '/mypage'
+      fullPath: '/mypage'
+      preLoaderRoute: typeof MypageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/main': {
       id: '/main'
       path: '/main'
@@ -259,6 +279,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRoute: MainRoute,
+  MypageRoute: MypageRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
