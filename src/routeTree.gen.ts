@@ -9,12 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MypageRouteImport } from './routes/mypage'
 import { Route as MainRouteImport } from './routes/main'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MypageIndexRouteImport } from './routes/mypage/index'
 import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
+import { Route as MypagePastTripsRouteImport } from './routes/mypage/past-trips'
 import { Route as ExpenseTripIdRouteImport } from './routes/expense.$tripId'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
@@ -22,11 +23,6 @@ import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tr
 import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
 import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
-const MypageRoute = MypageRouteImport.update({
-  id: '/mypage',
-  path: '/mypage',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MainRoute = MainRouteImport.update({
   id: '/main',
   path: '/main',
@@ -35,6 +31,11 @@ const MainRoute = MainRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MypageIndexRoute = MypageIndexRouteImport.update({
+  id: '/mypage/',
+  path: '/mypage/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScheduleTripIdRoute = ScheduleTripIdRouteImport.update({
@@ -50,6 +51,11 @@ const PackingTemplateRoute = PackingTemplateRouteImport.update({
 const PackingCreateRoute = PackingCreateRouteImport.update({
   id: '/packing/create',
   path: '/packing/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MypagePastTripsRoute = MypagePastTripsRouteImport.update({
+  id: '/mypage/past-trips',
+  path: '/mypage/past-trips',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpenseTripIdRoute = ExpenseTripIdRouteImport.update({
@@ -87,13 +93,14 @@ const ScheduleEditTripIdDayNumberRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
-  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -101,13 +108,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
-  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -116,13 +124,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/main': typeof MainRoute
-  '/mypage': typeof MypageRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage/': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -132,13 +141,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/main'
-    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -146,13 +156,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/main'
-    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -160,13 +171,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/main'
-    | '/mypage'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage/'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -175,13 +187,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainRoute: typeof MainRoute
-  MypageRoute: typeof MypageRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
+  MypagePastTripsRoute: typeof MypagePastTripsRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
   ScheduleTripIdRoute: typeof ScheduleTripIdRoute
+  MypageIndexRoute: typeof MypageIndexRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
   ScheduleEditTripIdDayNumberRoute: typeof ScheduleEditTripIdDayNumberRoute
@@ -189,13 +202,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/mypage': {
-      id: '/mypage'
-      path: '/mypage'
-      fullPath: '/mypage'
-      preLoaderRoute: typeof MypageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/main': {
       id: '/main'
       path: '/main'
@@ -208,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mypage/': {
+      id: '/mypage/'
+      path: '/mypage'
+      fullPath: '/mypage'
+      preLoaderRoute: typeof MypageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/schedule/$tripId': {
@@ -229,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/packing/create'
       fullPath: '/packing/create'
       preLoaderRoute: typeof PackingCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mypage/past-trips': {
+      id: '/mypage/past-trips'
+      path: '/mypage/past-trips'
+      fullPath: '/mypage/past-trips'
+      preLoaderRoute: typeof MypagePastTripsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expense/$tripId': {
@@ -279,13 +299,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRoute: MainRoute,
-  MypageRoute: MypageRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
+  MypagePastTripsRoute: MypagePastTripsRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
   ScheduleTripIdRoute: ScheduleTripIdRoute,
+  MypageIndexRoute: MypageIndexRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
   ScheduleEditTripIdDayNumberRoute: ScheduleEditTripIdDayNumberRoute,
