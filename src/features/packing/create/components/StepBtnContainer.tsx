@@ -28,7 +28,8 @@ export default function StepBtnContainer({
       width="100%"
       maxWidth="600px"
       px={4}
-      py={3}
+      pt={3}
+      pb={8}
       gap={3}
       position="fixed"
       bottom={0}

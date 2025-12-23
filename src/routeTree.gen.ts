@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MainRouteImport } from './routes/main'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MypageIndexRouteImport } from './routes/mypage/index'
 import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
+import { Route as MypagePastTripsRouteImport } from './routes/mypage/past-trips'
 import { Route as ExpenseTripIdRouteImport } from './routes/expense.$tripId'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
@@ -31,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MypageIndexRoute = MypageIndexRouteImport.update({
+  id: '/mypage/',
+  path: '/mypage/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScheduleTripIdRoute = ScheduleTripIdRouteImport.update({
   id: '/schedule/$tripId',
   path: '/schedule/$tripId',
@@ -44,6 +51,11 @@ const PackingTemplateRoute = PackingTemplateRouteImport.update({
 const PackingCreateRoute = PackingCreateRouteImport.update({
   id: '/packing/create',
   path: '/packing/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MypagePastTripsRoute = MypagePastTripsRouteImport.update({
+  id: '/mypage/past-trips',
+  path: '/mypage/past-trips',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpenseTripIdRoute = ExpenseTripIdRouteImport.update({
@@ -84,9 +96,11 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -97,9 +111,11 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -111,9 +127,11 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
+  '/mypage/': typeof MypageIndexRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
@@ -126,9 +144,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -139,9 +159,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -152,9 +174,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
+    | '/mypage/'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
     | '/schedule/edit/$tripId/$dayNumber'
@@ -166,9 +190,11 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
+  MypagePastTripsRoute: typeof MypagePastTripsRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
   ScheduleTripIdRoute: typeof ScheduleTripIdRoute
+  MypageIndexRoute: typeof MypageIndexRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
   ScheduleEditTripIdDayNumberRoute: typeof ScheduleEditTripIdDayNumberRoute
@@ -190,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mypage/': {
+      id: '/mypage/'
+      path: '/mypage'
+      fullPath: '/mypage'
+      preLoaderRoute: typeof MypageIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schedule/$tripId': {
       id: '/schedule/$tripId'
       path: '/schedule/$tripId'
@@ -209,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/packing/create'
       fullPath: '/packing/create'
       preLoaderRoute: typeof PackingCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mypage/past-trips': {
+      id: '/mypage/past-trips'
+      path: '/mypage/past-trips'
+      fullPath: '/mypage/past-trips'
+      preLoaderRoute: typeof MypagePastTripsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expense/$tripId': {
@@ -262,9 +302,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
+  MypagePastTripsRoute: MypagePastTripsRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
   ScheduleTripIdRoute: ScheduleTripIdRoute,
+  MypageIndexRoute: MypageIndexRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
   ScheduleEditTripIdDayNumberRoute: ScheduleEditTripIdDayNumberRoute,

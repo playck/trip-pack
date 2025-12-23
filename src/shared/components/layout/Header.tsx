@@ -1,14 +1,12 @@
 import { Box, Flex, Text, IconButton } from "@chakra-ui/react";
-import { ChevronLeft, Menu } from "lucide-react";
+import { ChevronLeft, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 
 interface HeaderProps {
   showBackButton?: boolean;
-  showMenuButton?: boolean;
   onBackClick?: () => void;
-  onMenuClick?: () => void;
 }
 
 export default function Header({
@@ -62,7 +60,11 @@ export default function Header({
         </Link>
 
         <Flex align="center" minW="40px" justify="flex-end">
-          <Menu size="20" />
+          <Link to="/mypage">
+            <IconButton variant="ghost" size="sm" aria-label="마이페이지">
+              <User size="20" />
+            </IconButton>
+          </Link>
         </Flex>
       </Flex>
     </Box>

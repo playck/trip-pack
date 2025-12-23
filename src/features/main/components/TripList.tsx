@@ -11,8 +11,7 @@ import type { Trip } from "../types";
 
 export default function TripList() {
   const navigate = useNavigate();
-  const { currentTrips, futureTrips, pastTrips, error, noTripList } =
-    useTripList();
+  const { currentTrips, futureTrips, error, noTripList } = useTripList();
   const upcomingTripInfo = useUpcomingTrip(futureTrips);
 
   const goToTripPage = (trip: Trip) => {
@@ -74,20 +73,6 @@ export default function TripList() {
               {futureTrips.map((trip) => (
                 <TripCard key={trip.id} trip={trip} onClick={goToTripPage} />
               ))}
-            </VStack>
-          )}
-
-          {/* 과거 여행 섹션 */}
-          {pastTrips.length > 0 && (
-            <VStack align="start" gap={3} w="full">
-              <NoticeCard icon="✈️" title="추억이 된 여행" variant="gray" />
-              <VStack gap={3} align="stretch" w="full">
-                {pastTrips.map((trip) => (
-                  <Box key={trip.id} opacity={0.8}>
-                    <TripCard trip={trip} onClick={goToTripPage} />
-                  </Box>
-                ))}
-              </VStack>
             </VStack>
           )}
         </VStack>
