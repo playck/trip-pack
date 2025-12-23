@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { VStack, Text, HStack, Box, Icon } from "@chakra-ui/react";
-import { ChevronRight, LogOut, UserX, Bell, ShieldCheck } from "lucide-react";
+import {
+  ChevronRight,
+  LogOut,
+  UserX,
+  Bell,
+  ShieldCheck,
+  Map,
+} from "lucide-react";
 import { statusColors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
@@ -81,7 +88,27 @@ export default function SettingMenu() {
       <VStack gap={4} align="stretch">
         <Box>
           <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
-            계정 설정
+            내 활동
+          </Text>
+          <VStack
+            gap={0}
+            bg="white"
+            borderRadius="xl"
+            px={4}
+            borderWidth="1px"
+            borderColor="gray.100"
+          >
+            <MenuItem
+              icon={Map}
+              label="지난 여행 보기"
+              onClick={() => console.log("Past trips")}
+            />
+          </VStack>
+        </Box>
+
+        <Box>
+          <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
+            설정
           </Text>
           <VStack
             gap={0}
