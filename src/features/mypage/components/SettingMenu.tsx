@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Map,
 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { statusColors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
@@ -60,6 +61,7 @@ function MenuItem({
 }
 
 export default function SettingMenu() {
+  const navigate = useNavigate();
   const { logout, deleteAccount } = useAuth();
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({
     isOpen: false,
@@ -83,6 +85,10 @@ export default function SettingMenu() {
     closeDialog();
   };
 
+  const goToPastTripsPage = () => {
+    navigate({ to: "/mypage/past-trips" });
+  };
+
   return (
     <>
       <VStack gap={4} align="stretch">
@@ -101,7 +107,7 @@ export default function SettingMenu() {
             <MenuItem
               icon={Map}
               label="지난 여행 보기"
-              onClick={() => console.log("Past trips")}
+              onClick={goToPastTripsPage}
             />
           </VStack>
         </Box>
