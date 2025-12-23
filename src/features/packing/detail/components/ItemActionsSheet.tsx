@@ -59,7 +59,6 @@ export default function ItemActionsSheet({
           justifyContent="flex-start"
           color="gray.800"
           fontWeight="medium"
-          _active={{ bg: "gray.100" }}
           onClick={handleEdit}
         >
           <HStack gap={3} w="full" p={0}>
@@ -76,7 +75,6 @@ export default function ItemActionsSheet({
           justifyContent="flex-start"
           color="red.500"
           fontWeight="medium"
-          _active={{ bg: "red.100" }}
           onClick={handleDeleteBtnClick}
         >
           <HStack gap={3} w="full">
