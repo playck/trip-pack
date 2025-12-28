@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getExpensesByTrip } from "../services/api";
+import { getExpensesByTrip } from "./api";
 
 export function useTripExpenses(tripId: string | undefined) {
   return useSuspenseQuery({

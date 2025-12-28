@@ -3,8 +3,7 @@ import { Box, Flex, Text, HStack } from "@chakra-ui/react";
 import { motion, type PanInfo } from "framer-motion";
 import { Trash2, Edit3 } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
-import { useDeleteExpense } from "../hooks/useDeleteExpense";
-import { useUpdateExpense } from "../hooks/useUpdateExpense";
+import { useDeleteExpense, useUpdateExpense } from "../services";
 import EditExpenseSheet from "./EditExpenseSheet";
 import { formatAmount } from "../utils/helper";
 

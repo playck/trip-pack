@@ -11,7 +11,8 @@ import { TripActionMenu } from "@/shared/components";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/hooks/useTripQuery";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
-import { useTripExpenses, useCreateExpense, useShareExpense } from "./hooks";
+import { useTripExpenses, useCreateExpense } from "./services";
+import { useShareExpense } from "./hooks";
 
 const ALL_TAB_VALUE = "all";
 

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { updateExpense, type UpdateExpenseParams } from "../services/api";
+import { updateExpense, type UpdateExpenseParams } from "./api";
 
 interface UseUpdateExpenseOptions {
   tripId: string;
