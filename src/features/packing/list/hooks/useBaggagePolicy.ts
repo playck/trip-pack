@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
+import type { CabinPolicy } from "@/shared/data/checkList";
 import { checkBaggageRule } from "@/shared/utils/baggageChecker";
-import { useTripList } from "@/features/main/hooks/useTripList";
 import type { CountryRestriction } from "@/shared/data/baggagePolicyData";
 import type { ChecklistItem } from "../../type";
 
@@ -15,17 +14,13 @@ interface UseBaggagePolicyResult {
 }
 
 /**
- * 아이템 정보(이름, 기존 DB 정책)를 기반으로 최종적으로 표시할 기내/위탁 수하물 정책을 결정
+ * 아이템 정보(이름, 데이터)를 기반으로 최종적으로 표시할 기내/위탁 수하물 정책을 결정
  * 또한 여행 국가(country_code)에 따른 특별 규정도 함께 검사
  */
 export const useBaggagePolicy = (
   item: ChecklistItem,
-  tripId?: string
+  targetCountryCode?: string | null
 ): UseBaggagePolicyResult => {
-  const { trips } = useTripList();
-  const currentTrip = trips.find((t) => t.id === tripId);
-  const targetCountryCode = currentTrip?.country_code;
-
   return useMemo(() => {
     // 1. 실시간 규정 검색
     const baggageRule = checkBaggageRule(item.name);

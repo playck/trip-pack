@@ -1,7 +1,6 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
-import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
-
+import { useBaggagePolicy } from "../../list/hooks/useBaggagePolicy";
 import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 import type { ChecklistItem } from "../../type";
 
@@ -11,9 +10,10 @@ import EditItemSheet from "./EditItemSheet";
 
 interface PackingItemProps {
   item: ChecklistItem;
+  countryCode?: string | null;
 }
 
-export default function PackingItem({ item }: PackingItemProps) {
+export default function PackingItem({ item, countryCode }: PackingItemProps) {
   const {
     open: isActionsOpen,
     onOpen: onActionsOpen,
@@ -29,6 +29,14 @@ export default function PackingItem({ item }: PackingItemProps) {
     from: "/packing/category/$tripId",
   });
   const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
+
+  const {
+    cabinPolicy,
+    cabinNotes,
+    checkedPolicy,
+    checkedNotes,
+    countryWarning,
+  } = useBaggagePolicy(item, countryCode);
 
   const isItemChecked = !!item.is_checked;
 
@@ -59,8 +67,11 @@ export default function PackingItem({ item }: PackingItemProps) {
         <PackingItemContent
           itemName={item.name}
           isChecked={isItemChecked}
-          cabinPolicy={item.cabin_policy as CabinPolicy}
-          cabinNotes={item.cabin_notes}
+          cabinPolicy={cabinPolicy}
+          cabinNotes={cabinNotes}
+          checkedPolicy={checkedPolicy}
+          checkedNotes={checkedNotes}
+          countryWarning={countryWarning}
           onToggleCheck={handleItemCheck}
           onOpenActions={onActionsOpen}
         />

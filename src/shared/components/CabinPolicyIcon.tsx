@@ -1,7 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import { AlertTriangle, Ban } from "lucide-react";
-
-export type CabinPolicy = "allowed" | "restricted" | "prohibited";
+import type { CabinPolicy } from "@/shared/data/checkList";
 
 interface CabinPolicyIconProps {
   policy: CabinPolicy | null | undefined;
