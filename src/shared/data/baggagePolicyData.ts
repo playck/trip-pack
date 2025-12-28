@@ -4,7 +4,7 @@ export interface CountryRestriction {
   countryCode: string; // ISO 2자리 코드
   countryName: string; // 국가명
   status: TransportStatus; // 해당 국가에서의 반입 상태
-  message: string; // 사용자에게 보여줄 상세 경고 메시지
+  message: string; // 안내 메시지
 }
 
 export interface CabinCheckItem {
@@ -28,7 +28,7 @@ export interface CabinCheckItem {
   countryRestrictions?: CountryRestriction[]; // 국가별 특수 규정
 }
 
-export const CABIN_CHECK_LIST_DATA: CabinCheckItem[] = [
+export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
   // --- 0. 음식물/식품 ---
   {
     name: "고형 식품",
@@ -155,6 +155,17 @@ export const CABIN_CHECK_LIST_DATA: CabinCheckItem[] = [
           "세계에서 가장 엄격한 검역을 시행합니다. 생과일은 절대 불가하며 적발 시 고액의 벌금이 부과됩니다.",
       },
     ],
+  },
+  {
+    name: "즉석밥 및 액상 식품",
+    description: "햇반, 컵반, 죽, 푸딩 등 수분이 포함된 식품",
+    category: "food",
+    cabin: {
+      status: "prohibited",
+      reason: "액체/젤류 규정으로 인해 100ml 초과 시 기내 반입이 불가합니다.",
+    },
+    checked: { status: "allowed", reason: "위탁 수하물로 반입 가능합니다." },
+    keywords: ["햇반", "즉석밥", "오뚜기밥", "컵반", "죽", "푸딩"],
   },
   {
     name: "김치 및 액체류 반찬",
@@ -450,6 +461,8 @@ export const CABIN_CHECK_LIST_DATA: CabinCheckItem[] = [
       "헤어스프레이",
       "미스트",
       "선크림",
+      "데오드란트",
+      "데오드란트스프레이",
     ],
   },
   {
