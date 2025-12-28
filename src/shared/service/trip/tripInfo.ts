@@ -1,4 +1,4 @@
-import { supabase } from "./supabase/cilent";
+import { supabase } from "../supabase/cilent";
 
 export interface TripInfo {
   id: string;

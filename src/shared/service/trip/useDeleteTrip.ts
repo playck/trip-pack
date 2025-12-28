@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toaster } from "@/shared/components/ui/toaster";
-import { deleteTrip } from "../service/api";
+import { deleteTrip } from "./api";
 
 interface UseDeleteTripParams {
   onSuccess?: (tripId: string) => void;

@@ -1,6 +1,6 @@
 import { useCreateChecklistTemplate } from "@/features/packing/template/services/useChecklistTemplate";
 import { useAuth } from "@/shared/hooks/useAuth";
-import type { TripInfo } from "@/shared/service/tripInfo";
+import type { TripInfo } from "@/shared/service/trip/tripInfo";
 import type { CategoryWithItems } from "../../type";
 
 export const useSaveAsTemplate = () => {

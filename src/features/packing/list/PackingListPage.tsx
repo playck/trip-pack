@@ -22,7 +22,7 @@ import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
 import { TemplateListSheet } from "@/shared/components/checklist-template";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 

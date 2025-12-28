@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchExchangeRates } from "../service/exchange-rate/exchangeRate";
+import { fetchExchangeRates } from "../exchange-rate/exchangeRate";
 
 export type CurrencyCode =
   | "usd"

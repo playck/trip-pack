@@ -1,4 +1,4 @@
-import { supabase } from "./supabase/cilent";
+import { supabase } from "../supabase/cilent";
 
 // 여행명을 수정하는 API
 export const updateTripTitle = async (

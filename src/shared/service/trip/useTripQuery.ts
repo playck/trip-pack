@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getTripInfo } from "../service/tripInfo";
+import { getTripInfo } from "./tripInfo";
 
 export const useTripInfo = (tripId: string | undefined) => {
   return useSuspenseQuery({

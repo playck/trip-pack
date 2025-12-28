@@ -9,15 +9,15 @@ import {
   ArrowLeftRight,
 } from "lucide-react";
 import { colors, statusColors } from "@/shared/constants/colors";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
 import {
   getCurrencyByCountryCode,
   getCurrencySymbol,
 } from "@/shared/utiles/currency";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
-import { useUpdateTripBudget } from "../hooks/useUpdateTripBudget";
+import { useUpdateTripBudget } from "../services";
 import ExpenseSummaryItem from "./ExpenseSummaryItem";
 import SetBudgetModal from "./SetBudgetModal";
 

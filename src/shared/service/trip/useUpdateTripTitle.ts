@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { updateTripTitle } from "../service/api";
+import { updateTripTitle } from "./api";
 
 interface UseUpdateTripTitleParams {
   onSuccess?: (newTitle: string) => void;

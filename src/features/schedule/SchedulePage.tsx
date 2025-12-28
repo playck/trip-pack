@@ -6,7 +6,7 @@ import { Share2 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import {
   HEADER_HEIGHT,
   TRIP_INFO_HEADER_HEIGHT,

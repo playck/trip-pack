@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { VStack, Input, Button, HStack, Text, Box } from "@chakra-ui/react";
 import { ArrowLeftRight } from "lucide-react";
 import { ConfirmDialog } from "@/shared/components";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
-import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
 import {
   getCurrencyByCountryCode,
   getCurrencySymbol,

@@ -10,7 +10,7 @@ import {
 import { Settings, Edit3, Trash2 } from "lucide-react";
 import { useOnClickOutside } from "usehooks-ts";
 
-import { useDeleteTrip } from "@/shared/hooks/useDeleteTrip";
+import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
 import { DeleteTripModal } from "./DeleteTripModal";
 import { TripEditModal } from "./TripEditModal";
 

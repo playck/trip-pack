@@ -9,7 +9,7 @@ import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
 import { useShareExpense } from "./hooks";

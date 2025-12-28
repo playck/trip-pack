@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Input, VStack } from "@chakra-ui/react";
 import { ConfirmDialog } from "@/shared/components";
-import { useUpdateTripTitle } from "@/shared/hooks/useUpdateTripTitle";
+import { useUpdateTripTitle } from "@/shared/service/trip/useUpdateTripTitle";
 
 interface TripEditModalProps {
   isOpen: boolean;

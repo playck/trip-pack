@@ -7,7 +7,7 @@ import { borderColors, componentColors } from "@/shared/constants/colors";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import LoadingSpinner from "@/shared/components/LoadingSpinner";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import {
   useSchedulesByDay,

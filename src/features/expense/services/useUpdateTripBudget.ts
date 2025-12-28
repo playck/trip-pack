@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateTripBudget } from "@/shared/service/tripInfo";
+import { updateTripBudget } from "@/shared/service/trip/tripInfo";
 
 export const useUpdateTripBudget = (tripId: string) => {
   const queryClient = useQueryClient();

@@ -4,12 +4,12 @@ import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
-import { useExchangeRate } from "@/shared/hooks/useExchangeRate";
+import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
 import {
   getCurrencyByCountryCode,
   getCurrencySymbol,
 } from "@/shared/utiles/currency";
-import { useTripInfo } from "@/shared/hooks/useTripQuery";
+import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 
 interface AddExpenseSheetProps {

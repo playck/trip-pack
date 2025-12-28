@@ -2,7 +2,7 @@ import { VStack, HStack, Text, Badge, IconButton } from "@chakra-ui/react";
 import { LuShare2 } from "react-icons/lu";
 import { colors, textColors } from "@/shared/constants/colors";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import type { TripInfo } from "@/shared/service/tripInfo";
+import type { TripInfo } from "@/shared/service/trip/tripInfo";
 
 interface TripHeaderProps {
   tripInfo: TripInfo;
