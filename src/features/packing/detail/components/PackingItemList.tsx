@@ -7,11 +7,13 @@ import type { CategoryWithItems } from "../../type";
 interface PackingItemListProps {
   category: CategoryWithItems;
   searchQuery?: string;
+  countryCode?: string | null;
 }
 
 export default function PackingItemList({
   category,
   searchQuery = "",
+  countryCode,
 }: PackingItemListProps) {
   const filteredItems = useMemo(() => {
     let items = [...category.items];
@@ -43,7 +45,7 @@ export default function PackingItemList({
         <PackingItem
           key={item.id || `${item.name}-${idx}`}
           item={item}
-          // categoryName={category.name}
+          countryCode={countryCode}
         />
       ))}
     </VStack>

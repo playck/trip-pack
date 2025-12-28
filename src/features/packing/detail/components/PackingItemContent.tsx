@@ -7,13 +7,17 @@ import {
   CabinPolicyModal,
 } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
-import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
+import type { CabinPolicy } from "@/shared/data/checkList";
+import type { CountryRestriction } from "@/shared/data/baggagePolicyData";
 
 interface PackingItemContentProps {
   itemName: string;
   isChecked: boolean;
   cabinPolicy?: CabinPolicy | null;
   cabinNotes?: string | null;
+  checkedPolicy?: CabinPolicy | null;
+  checkedNotes?: string | null;
+  countryWarning?: CountryRestriction | null;
   onToggleCheck: () => void;
   onOpenActions: () => void;
 }
@@ -23,6 +27,9 @@ export default function PackingItemContent({
   isChecked,
   cabinPolicy,
   cabinNotes,
+  checkedPolicy,
+  checkedNotes,
+  countryWarning,
   onToggleCheck,
   onOpenActions,
 }: PackingItemContentProps) {
@@ -54,17 +61,14 @@ export default function PackingItemContent({
         <Box
           as="button"
           aria-label="옵션 더보기"
-          w="8"
-          h="8"
+          w="32px"
+          h="32px"
           display="flex"
           alignItems="center"
           justifyContent="center"
           color="gray.400"
           borderRadius="md"
           cursor="pointer"
-          _active={{
-            bg: "gray.200",
-          }}
           onClick={onOpenActions}
         >
           <MoreVertical size={16} />
@@ -77,6 +81,9 @@ export default function PackingItemContent({
         itemName={itemName}
         policy={cabinPolicy}
         cabinNotes={cabinNotes}
+        checkedPolicy={checkedPolicy}
+        checkedNotes={checkedNotes}
+        countryWarning={countryWarning}
       />
     </>
   );

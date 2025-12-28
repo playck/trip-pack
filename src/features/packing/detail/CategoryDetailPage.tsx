@@ -17,13 +17,14 @@ import {
   FloatingAddButton,
   LoadingSpinner,
 } from "@/shared/components";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import { useTripDetail } from "@/features/main/hooks/useTripDetail";
 
 import PackingItemList from "./components/PackingItemList";
 import { ItemForm, DeleteCategoryModal, SearchBar } from "./components";
 import { useTripChecklist } from "../list/hooks/useTripChecklist";
 import { useDeleteCategory } from "../list/hooks/useDeleteCategory";
 import type { CategoryWithItems } from "../type";
-import { HEADER_HEIGHT } from "@/shared/constants/layout";
 
 export default function CategoryDetailPage() {
   const navigate = useNavigate();
@@ -42,12 +43,15 @@ export default function CategoryDetailPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const categoryParam = (search as { category?: string }).category || "";
   const { categories, isLoading, error } = useTripChecklist(tripId || "");
+  const { trip } = useTripDetail(tripId || "");
+  const deleteCategoryMutation = useDeleteCategory(tripId);
+
+  const countryCode = trip?.country_code;
   const categoryName = decodeURIComponent(categoryParam);
   const category = categories?.find(
     (cat: CategoryWithItems) => cat.name === categoryName
   );
   const isEssentialCategory = category?.name === "필수 준비물";
-  const deleteCategoryMutation = useDeleteCategory(tripId);
 
   if (isLoading) {
     return (
@@ -147,7 +151,11 @@ export default function CategoryDetailPage() {
           </Box>
 
           <Box px={5} py={3}>
-            <PackingItemList category={category} searchQuery={searchQuery} />
+            <PackingItemList
+              category={category}
+              searchQuery={searchQuery}
+              countryCode={countryCode}
+            />
           </Box>
         </VStack>
       </Container>
