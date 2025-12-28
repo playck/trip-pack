@@ -94,3 +94,28 @@ export const getTripList = async (): Promise<TripListData> => {
     allTrips: [...mappedCurrentTrips, ...mappedFutureTrips, ...mappedPastTrips],
   };
 };
+
+// 여행 상세 정보 가져오기
+export const getTripDetail = async (tripId: string): Promise<Trip> => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select(
+      "id, title, start_date, end_date, region_name, budget, country_code"
+    )
+    .eq("id", tripId)
+    .single();
+
+  if (error) {
+    throw new Error(`여행 정보를 불러올 수 없습니다: ${error.message}`);
+  }
+
+  return {
+    id: data.id,
+    title: data.title,
+    start_date: data.start_date,
+    end_date: data.end_date,
+    region_name: data.region_name,
+    budget: data.budget,
+    country_code: data.country_code,
+  };
+};
