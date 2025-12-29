@@ -1,11 +1,15 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
 
 import { textColors, borderColors } from "@/shared/constants/colors";
 import BottomSheet from "@/shared/components/BottomSheet";
+import {
+  PlaceSearchInput,
+  PlaceSearchResults,
+  PlaceCategoryFilterList,
+} from "../search-spot";
 import { usePlacesAutocomplete } from "../../hooks";
 import type { PlaceResult } from "../../hooks";
-import { PlaceSearchInput, PlaceSearchResults } from "../search-spot";
 
 interface AddScheduleSheetProps {
   isOpen: boolean;
@@ -27,17 +31,29 @@ export default function AddScheduleSheet({
   const { searchPlaces, results, isLoading, clearResults, getPlaceDetails } =
     usePlacesAutocomplete(countryCode);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const handleSearchChange = useCallback(
     (query: string) => {
+      setSearchQuery(query);
       const shouldSearch = query.trim().length > 0;
+
       if (shouldSearch) {
-        searchPlaces(query);
+        searchPlaces(query, selectedCategory || undefined);
       } else {
         clearResults();
       }
     },
-    [searchPlaces, clearResults]
+    [searchPlaces, clearResults, selectedCategory]
   );
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    if (searchQuery.trim().length > 0) {
+      searchPlaces(searchQuery, category || undefined);
+    }
+  };
 
   const handleSelectPlace = useCallback(
     async (place: PlaceResult) => {
@@ -60,6 +76,8 @@ export default function AddScheduleSheet({
   useEffect(() => {
     if (!isOpen) {
       clearResults();
+      setSearchQuery("");
+      setSelectedCategory("");
     }
   }, [isOpen, clearResults]);
 
@@ -79,6 +97,11 @@ export default function AddScheduleSheet({
         </Box>
 
         <PlaceSearchInput onSearchChange={handleSearchChange} />
+
+        <PlaceCategoryFilterList
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleCategorySelect}
+        />
 
         <PlaceSearchResults
           results={results}

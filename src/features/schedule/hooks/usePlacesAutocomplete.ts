@@ -73,7 +73,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
    * 장소 검색 함수
    */
   const searchPlaces = useCallback(
-    async (query: string) => {
+    async (query: string, type?: string) => {
       if (!placesLib || !query.trim()) {
         setResults([]);
         return;
@@ -87,7 +87,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
 
         const request: google.maps.places.AutocompletionRequest = {
           input: query,
-          types: ["establishment", "geocode"],
+          types: type ? [type] : ["establishment", "geocode"],
           componentRestrictions: countryCode
             ? { country: countryCode }
             : undefined,
@@ -121,7 +121,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
         setIsLoading(false);
       }
     },
-    [placesLib]
+    [placesLib, countryCode]
   );
 
   /**
