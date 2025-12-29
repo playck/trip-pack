@@ -17,7 +17,7 @@ export interface PlaceResult {
 /**
  * 사용자가 입력한 텍스트로 장소를 검색
  */
-export const usePlacesAutocomplete = () => {
+export const usePlacesAutocomplete = (countryCode?: string) => {
   const [results, setResults] = useState<PlaceResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,9 +88,10 @@ export const usePlacesAutocomplete = () => {
         const request: google.maps.places.AutocompletionRequest = {
           input: query,
           types: ["establishment", "geocode"],
+          componentRestrictions: countryCode
+            ? { country: countryCode }
+            : undefined,
         };
-
-        console.log("🔍 Places 검색:", query);
 
         // 검색 실행
         service.getPlacePredictions(request, (predictions, status) => {

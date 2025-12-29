@@ -13,6 +13,7 @@ interface AddScheduleSheetProps {
   onSelectPlace: (place: PlaceResult) => void;
   dayNumber: number;
   date: string;
+  countryCode?: string;
 }
 
 export default function AddScheduleSheet({
@@ -21,9 +22,10 @@ export default function AddScheduleSheet({
   onSelectPlace,
   dayNumber,
   date,
+  countryCode,
 }: AddScheduleSheetProps) {
   const { searchPlaces, results, isLoading, clearResults, getPlaceDetails } =
-    usePlacesAutocomplete();
+    usePlacesAutocomplete(countryCode);
 
   const handleSearchChange = useCallback(
     (query: string) => {

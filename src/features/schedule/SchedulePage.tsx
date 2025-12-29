@@ -19,6 +19,7 @@ import {
 } from "./components";
 import {
   useGeocoding,
+  parseRegionId,
   useScheduleAdd,
   useScheduleMemo,
   useTripSchedules,
@@ -36,6 +37,9 @@ import type { Schedule } from "./types";
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  const countryCode = useMemo(() => {
+    return parseRegionId(tripInfo?.regionId)?.countryCode;
+  }, [tripInfo?.regionId]);
 
   const [focusedLocation, setFocusedLocation] = useState<{
     lat: number;
@@ -184,6 +188,7 @@ function SchedulePageContent() {
           onSelectPlace={handleSelectPlace}
           dayNumber={selectedDay.dayNumber}
           date={selectedDay.date}
+          countryCode={countryCode}
         />
       )}
 

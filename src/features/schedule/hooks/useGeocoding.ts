@@ -10,7 +10,7 @@ interface Coordinates {
  * regionId 파싱
  * 예: "cn-jiuzhaigou" → { countryCode: "CN", regionName: "jiuzhaigou" }
  */
-const parseRegionId = (
+export const parseRegionId = (
   regionId: string | null | undefined
 ): { countryCode: string; regionName: string } | null => {
   if (!regionId) return null;
