@@ -14,9 +14,9 @@ import {
   DayScheduleList,
   AddScheduleSheet,
   AddMemoSheet,
+  ApiKeyMissingState,
   MapWrapper,
 } from "./components";
-import { ApiKeyMissingState } from "./components/SchedulePageStates";
 import {
   useGeocoding,
   useScheduleAdd,

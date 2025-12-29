@@ -1,9 +1,9 @@
 import { Box, Text, Timeline } from "@chakra-ui/react";
 import { Reorder } from "framer-motion";
 import { colors, borderColors } from "@/shared/constants/colors";
-import type { Schedule } from "../types";
-import { isMemo } from "../utils/scheduleHelpers";
-import { EditableScheduleItem, EditableMemoItem } from "./schedule-items";
+import type { Schedule } from "../../types";
+import { isMemo } from "../../utils/scheduleHelpers";
+import { EditableScheduleItem, EditableMemoItem } from "../schedule-items";
 
 interface EditableScheduleListProps {
   schedules: Schedule[];

@@ -1,7 +1,7 @@
 import { Text } from "@chakra-ui/react";
 import { ConfirmDialog } from "@/shared/components";
-import { useDeleteSchedule } from "../services/useDeleteSchedule";
-import type { Schedule } from "../types";
+import { useDeleteSchedule } from "../../services/useDeleteSchedule";
+import type { Schedule } from "../../types";
 
 interface DeleteScheduleModalProps {
   isOpen: boolean;

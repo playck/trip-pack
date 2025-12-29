@@ -3,9 +3,9 @@ import { VStack, Text, Box } from "@chakra-ui/react";
 
 import { textColors, borderColors } from "@/shared/constants/colors";
 import BottomSheet from "@/shared/components/BottomSheet";
-import { usePlacesAutocomplete } from "../hooks";
-import type { PlaceResult } from "../hooks";
-import { PlaceSearchInput, PlaceSearchResults } from "./search-spot";
+import { usePlacesAutocomplete } from "../../hooks";
+import type { PlaceResult } from "../../hooks";
+import { PlaceSearchInput, PlaceSearchResults } from "../search-spot";
 
 interface AddScheduleSheetProps {
   isOpen: boolean;
