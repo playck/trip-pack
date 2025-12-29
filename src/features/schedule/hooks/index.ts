@@ -1,4 +1,4 @@
-export { useGeocoding } from "./useGeocoding";
+export { useGeocoding, parseRegionId } from "./useGeocoding";
 export { usePlacesAutocomplete } from "./usePlacesAutocomplete";
 export type { PlaceResult } from "./usePlacesAutocomplete";
 export { useCreateSchedule } from "../services/useCreateSchedule";

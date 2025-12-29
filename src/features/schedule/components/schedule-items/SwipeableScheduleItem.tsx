@@ -1,6 +1,6 @@
-import { isMemo } from "../utils/scheduleHelpers";
-import type { Schedule } from "../types";
-import { SwipeableWrapper, ScheduleItem, MemoItem } from "./schedule-items";
+import { isMemo } from "../../utils/scheduleHelpers";
+import type { Schedule } from "../../types";
+import { SwipeableWrapper, ScheduleItem, MemoItem } from "./";
 
 interface SwipeableScheduleItemProps {
   schedule: Schedule;

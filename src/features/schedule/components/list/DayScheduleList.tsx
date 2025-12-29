@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/ko";
 
 import { getTripDays, getDayDate } from "@/shared/utiles/date";
-import { DayScheduleCard } from "./";
+import DayScheduleCard from "./DayScheduleCard";
 
 interface DayScheduleListProps {
   tripId: string;

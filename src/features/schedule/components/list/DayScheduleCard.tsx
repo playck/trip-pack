@@ -7,10 +7,10 @@ import {
   borderColors,
   textColors,
 } from "@/shared/constants/colors";
-import { useSchedulesByDay } from "../hooks/useSchedulesByDay";
-import { SwipeableScheduleItem } from "./";
-import type { Schedule } from "../types";
-import { DAY_CARD_STICKY_TOP } from "../constants";
+import { useSchedulesByDay } from "../../hooks/useSchedulesByDay";
+import { SwipeableScheduleItem } from "../index";
+import { DAY_CARD_STICKY_TOP } from "../../constants";
+import type { Schedule } from "../../types";
 
 interface DayScheduleCardProps {
   tripId: string;

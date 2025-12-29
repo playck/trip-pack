@@ -7,10 +7,6 @@ import { Share2 } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
-import {
-  HEADER_HEIGHT,
-  TRIP_INFO_HEADER_HEIGHT,
-} from "@/shared/constants/layout";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 import {
@@ -18,16 +14,17 @@ import {
   DayScheduleList,
   AddScheduleSheet,
   AddMemoSheet,
+  ApiKeyMissingState,
+  MapWrapper,
 } from "./components";
-import { ApiKeyMissingState } from "./components/SchedulePageStates";
 import {
   useGeocoding,
+  parseRegionId,
   useScheduleAdd,
   useScheduleMemo,
   useTripSchedules,
   useShareSchedule,
 } from "./hooks";
-import type { Schedule } from "./types";
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
@@ -35,10 +32,14 @@ import {
 } from "./constants";
 import { isMemo } from "./utils/scheduleHelpers";
 import { ScheduleProvider } from "./context";
+import type { Schedule } from "./types";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  const countryCode = useMemo(() => {
+    return parseRegionId(tripInfo?.regionId)?.countryCode;
+  }, [tripInfo?.regionId]);
 
   const [focusedLocation, setFocusedLocation] = useState<{
     lat: number;
@@ -73,6 +74,8 @@ function SchedulePageContent() {
   const { data: allSchedules } = useTripSchedules(tripId);
 
   const { handleScheduleShare } = useShareSchedule();
+
+  const [isMapFullScreen, setIsMapFullScreen] = useState(false);
 
   const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
   const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
@@ -117,6 +120,21 @@ function SchedulePageContent() {
 
   if (!tripInfo) return null;
 
+  const headerRightAction = (
+    <HStack gap={0}>
+      <IconButton
+        aria-label="일정 공유하기"
+        variant="ghost"
+        size="sm"
+        onClick={handleShareSchedule}
+        color="gray.600"
+      >
+        <Share2 size={20} />
+      </IconButton>
+      <TripActionMenu tripId={tripId} tripTitle={tripInfo.title || "여행"} />
+    </HStack>
+  );
+
   return (
     <PageLayout>
       <ScheduleProvider
@@ -126,43 +144,31 @@ function SchedulePageContent() {
         }}
       >
         <VStack gap={0} align="stretch">
-          <TripInfoHeader
-            title={tripInfo.title || `${tripInfo.regionName || "여행"} 여행지`}
-            subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
-            rightAction={
-              <HStack gap={0}>
-                <IconButton
-                  aria-label="일정 공유하기"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleShareSchedule}
-                  color="gray.600"
-                >
-                  <Share2 size={20} />
-                </IconButton>
-                <TripActionMenu
-                  tripId={tripId}
-                  tripTitle={tripInfo.title || "여행"}
-                />
-              </HStack>
-            }
-          />
-          <Box
-            position="sticky"
-            top={`${HEADER_HEIGHT + TRIP_INFO_HEADER_HEIGHT}px`}
-            zIndex={10}
-            bg="white"
-          >
+          {!isMapFullScreen && (
+            <TripInfoHeader
+              title={
+                tripInfo.title || `${tripInfo.regionName || "여행"} 여행지`
+              }
+              subTitle={formatTripDateRange(
+                tripInfo.startDate,
+                tripInfo.endDate
+              )}
+              rightAction={headerRightAction}
+            />
+          )}
+
+          <MapWrapper isFullScreen={isMapFullScreen}>
             <GoogleMapView
               center={focusedLocation || mapCenter}
               zoom={mapZoom}
               height="200px"
               markers={scheduleMarkers}
+              onFullScreenChange={setIsMapFullScreen}
             />
-          </Box>
+          </MapWrapper>
 
           {/* 일정표 */}
-          <Box pt={3} pb="300px">
+          <Box pt={3} pb="300px" display={isMapFullScreen ? "none" : "block"}>
             <DayScheduleList
               tripId={tripId}
               startDate={tripInfo.startDate}
@@ -182,6 +188,7 @@ function SchedulePageContent() {
           onSelectPlace={handleSelectPlace}
           dayNumber={selectedDay.dayNumber}
           date={selectedDay.date}
+          countryCode={countryCode}
         />
       )}
 

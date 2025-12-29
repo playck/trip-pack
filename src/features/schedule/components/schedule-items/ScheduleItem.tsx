@@ -1,7 +1,8 @@
 import { Text, Timeline } from "@chakra-ui/react";
-import { MapPin } from "lucide-react";
+import { MapPin, StickyNote } from "lucide-react";
 import { textColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
+import { isMemo } from "../../utils/scheduleHelpers";
 import { useScheduleContext } from "../../context";
 
 interface ScheduleItemProps {
@@ -9,6 +10,8 @@ interface ScheduleItemProps {
 }
 
 export default function ScheduleItem({ schedule }: ScheduleItemProps) {
+  const isScheduleMemo = isMemo(schedule);
+
   const { onScheduleClick } = useScheduleContext();
 
   const handleClick = () => {
@@ -20,10 +23,9 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
       <Timeline.Connector>
         <Timeline.Separator />
         <Timeline.Indicator>
-          <MapPin size={14} />
+          {isScheduleMemo ? <StickyNote size={14} /> : <MapPin size={14} />}
         </Timeline.Indicator>
       </Timeline.Connector>
-
       <Timeline.Content
         onClick={handleClick}
         cursor={onScheduleClick ? "pointer" : "default"}
@@ -32,19 +34,20 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
         <Timeline.Title fontSize="md" fontWeight="semibold">
           {schedule.place_name}
         </Timeline.Title>
+        {!isScheduleMemo && (
+          <Timeline.Description fontSize="sm" color={textColors.tertiary}>
+            {schedule.start_time && (
+              <Text as="span" mr={2}>
+                {schedule.start_time.slice(0, 5)}
+              </Text>
+            )}
+            {schedule.place_address && (
+              <Text as="span">{schedule.place_address}</Text>
+            )}
+          </Timeline.Description>
+        )}
 
-        <Timeline.Description fontSize="sm" color={textColors.tertiary}>
-          {schedule.start_time && (
-            <Text as="span" mr={2}>
-              {schedule.start_time.slice(0, 5)}
-            </Text>
-          )}
-          {schedule.place_address && (
-            <Text as="span">{schedule.place_address}</Text>
-          )}
-        </Timeline.Description>
-
-        {schedule.notes && (
+        {!isScheduleMemo && schedule.notes && (
           <Text fontSize="sm" color={textColors.subtle} mt={1}>
             {schedule.notes}
           </Text>

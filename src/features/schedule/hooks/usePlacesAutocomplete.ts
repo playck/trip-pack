@@ -17,13 +17,13 @@ export interface PlaceResult {
 /**
  * 사용자가 입력한 텍스트로 장소를 검색
  */
-export const usePlacesAutocomplete = () => {
+export const usePlacesAutocomplete = (countryCode?: string) => {
   const [results, setResults] = useState<PlaceResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const placesLib = useMapsLibrary("places");
-  const map = useMap();
+  const map = useMap("schedule-map");
 
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(
     null
@@ -73,7 +73,7 @@ export const usePlacesAutocomplete = () => {
    * 장소 검색 함수
    */
   const searchPlaces = useCallback(
-    async (query: string) => {
+    async (query: string, type?: string) => {
       if (!placesLib || !query.trim()) {
         setResults([]);
         return;
@@ -87,10 +87,11 @@ export const usePlacesAutocomplete = () => {
 
         const request: google.maps.places.AutocompletionRequest = {
           input: query,
-          types: ["establishment", "geocode"],
+          types: type ? [type] : ["establishment", "geocode"],
+          componentRestrictions: countryCode
+            ? { country: countryCode }
+            : undefined,
         };
-
-        console.log("🔍 Places 검색:", query);
 
         // 검색 실행
         service.getPlacePredictions(request, (predictions, status) => {
@@ -120,7 +121,7 @@ export const usePlacesAutocomplete = () => {
         setIsLoading(false);
       }
     },
-    [placesLib]
+    [placesLib, countryCode]
   );
 
   /**
