@@ -48,7 +48,13 @@ export default function GoogleMapView({
   }, [map, zoom]);
 
   return (
-    <Box h={height} w="full" borderRadius="lg" overflow="hidden">
+    <Box
+      h={height}
+      w="full"
+      borderRadius="lg"
+      overflow="hidden"
+      style={{ touchAction: "none" }}
+    >
       <Map
         id="schedule-map"
         defaultCenter={center}
