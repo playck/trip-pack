@@ -11,7 +11,6 @@ export { default as DeleteScheduleModal } from "./modals/DeleteScheduleModal";
 export { default as MoveDateBottomSheet } from "./modals/MoveDateBottomSheet";
 export { default as AddMemoSheet } from "./modals/AddMemoSheet";
 
-export { default as TripHeader } from "./ui/TripHeader";
 export { default as ScheduleActionButtons } from "./ui/ScheduleActionButtons";
 export * from "./ui/SchedulePageStates";
 
