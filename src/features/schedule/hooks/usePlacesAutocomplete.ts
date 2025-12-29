@@ -23,7 +23,7 @@ export const usePlacesAutocomplete = () => {
   const [error, setError] = useState<string | null>(null);
 
   const placesLib = useMapsLibrary("places");
-  const map = useMap();
+  const map = useMap("schedule-map");
 
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(
     null

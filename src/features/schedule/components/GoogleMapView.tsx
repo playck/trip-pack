@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { Box } from "@chakra-ui/react";
-import { Map } from "@vis.gl/react-google-maps";
+import { Map, useMap } from "@vis.gl/react-google-maps";
 import Marker from "./Marker";
 import RouteLine from "./RouteLine";
 
@@ -30,12 +31,26 @@ export default function GoogleMapView({
   onMarkerClick,
   showRoute = true,
 }: GoogleMapViewProps) {
+  const map = useMap("schedule-map");
   const routePath = markers?.map((marker) => marker.position);
   const isHasRoutePath = showRoute && routePath.length > 1;
+
+  useEffect(() => {
+    if (map && center) {
+      map.panTo(center);
+    }
+  }, [map, center]);
+
+  useEffect(() => {
+    if (map && zoom) {
+      map.setZoom(zoom);
+    }
+  }, [map, zoom]);
 
   return (
     <Box h={height} w="full" borderRadius="lg" overflow="hidden">
       <Map
+        id="schedule-map"
         defaultCenter={center}
         defaultZoom={zoom}
         gestureHandling="greedy"
