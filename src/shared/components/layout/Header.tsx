@@ -3,6 +3,7 @@ import { ChevronLeft, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import { useAuth } from "@/shared/hooks/useAuth";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -13,6 +14,8 @@ export default function Header({
   showBackButton = false,
   onBackClick,
 }: HeaderProps) {
+  const { user } = useAuth();
+
   return (
     <Box
       as="header"
@@ -46,7 +49,20 @@ export default function Header({
           )}
         </Flex>
 
-        <Link to="/">
+        {user ? (
+          <Link to="/">
+            <Text
+              fontSize="lg"
+              fontWeight="semibold"
+              color="fg.emphasized"
+              textAlign="center"
+              lineHeight="1"
+              truncate
+            >
+              Trip Pack
+            </Text>
+          </Link>
+        ) : (
           <Text
             fontSize="lg"
             fontWeight="semibold"
@@ -57,14 +73,16 @@ export default function Header({
           >
             Trip Pack
           </Text>
-        </Link>
+        )}
 
         <Flex align="center" minW="40px" justify="flex-end">
-          <Link to="/mypage">
-            <IconButton variant="ghost" size="sm" aria-label="마이페이지">
-              <User size="20" />
-            </IconButton>
-          </Link>
+          {user && (
+            <Link to="/mypage">
+              <IconButton variant="ghost" size="sm" aria-label="마이페이지">
+                <User size="20" />
+              </IconButton>
+            </Link>
+          )}
         </Flex>
       </Flex>
     </Box>
