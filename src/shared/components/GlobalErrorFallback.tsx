@@ -1,13 +1,14 @@
-import { AlertTriangle, Home, RotateCw, LogIn } from "lucide-react";
-import React from "react";
+import { AlertTriangle, Home, RotateCw } from "lucide-react";
+import React, { useEffect } from "react";
 import { Box, Button, VStack, Text, Container } from "@chakra-ui/react";
 import { useRouter } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface ErrorLayoutProps {
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function GlobalErrorFallback({
@@ -31,6 +32,12 @@ export default function GlobalErrorFallback({
   const goToLogin = () => {
     router.navigate({ to: "/auth/login" });
   };
+
+  useEffect(() => {
+    if (isAuthError) {
+      goToLogin();
+    }
+  }, [isAuthError]);
 
   const handleRetry = () => {
     reset();
@@ -80,16 +87,9 @@ export default function GlobalErrorFallback({
     </Container>
   );
 
-  // 인증 에러 처리
+  // 인증 에러 처리 (로딩 표시 후 자동 이동)
   if (isAuthError) {
-    return (
-      <ErrorLayout title="로그인이 필요합니다">
-        <Button colorPalette="teal" size="lg" w="full" onClick={goToLogin}>
-          <LogIn size={20} />
-          로그인 페이지로 이동
-        </Button>
-      </ErrorLayout>
-    );
+    return <LoadingSpinner fullScreen centered />;
   }
 
   // 기본 에러 처리
