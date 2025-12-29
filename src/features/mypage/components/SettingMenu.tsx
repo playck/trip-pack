@@ -4,8 +4,8 @@ import {
   ChevronRight,
   LogOut,
   UserX,
-  Bell,
-  ShieldCheck,
+  // Bell,
+  // ShieldCheck,
   Map,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -112,7 +112,7 @@ export default function SettingMenu() {
           </VStack>
         </Box>
 
-        <Box>
+        {/* <Box>
           <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
             설정
           </Text>
@@ -127,7 +127,7 @@ export default function SettingMenu() {
             <MenuItem icon={Bell} label="알림 설정" />
             <MenuItem icon={ShieldCheck} label="개인정보 처리방침" />
           </VStack>
-        </Box>
+        </Box> */}
 
         <Box>
           <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
