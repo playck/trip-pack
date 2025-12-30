@@ -15,6 +15,7 @@ import { Mail, Lock, User } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
+import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import {
   validateSignupForm,
   handleSignupError,
@@ -99,11 +100,13 @@ export default function SignupPage() {
     <PageLayout>
       <Container
         maxW="md"
-        h="100dvh"
+        h={`calc(100dvh - ${HEADER_HEIGHT}px)`}
         px={6}
         display="flex"
         flexDirection="column"
         justifyContent="center"
+        overflow="hidden"
+        style={{ minHeight: `calc(100dvh - ${HEADER_HEIGHT}px)` }}
       >
         <VStack gap={5} align="stretch" w="full">
           <Box textAlign="center">
