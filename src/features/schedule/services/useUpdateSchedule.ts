@@ -3,27 +3,14 @@ import { toaster } from "@/shared/components/ui/toaster";
 import { updateSchedule } from "./api";
 import type { UpdateScheduleParams } from "../types";
 
-interface UseUpdateScheduleOptions {
-  onSuccess?: () => void;
-}
-
-export function useUpdateSchedule(
-  tripId: string,
-  options?: UseUpdateScheduleOptions
-) {
+export function useUpdateSchedule(tripId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (params: UpdateScheduleParams) => {
-      return updateSchedule(params);
-    },
-    onSuccess: (_data, variables) => {
+    mutationFn: (params: UpdateScheduleParams) => updateSchedule(params),
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tripSchedules", tripId],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["schedule", variables.scheduleId],
       });
 
       toaster.create({
@@ -31,8 +18,6 @@ export function useUpdateSchedule(
         type: "success",
         duration: 2000,
       });
-
-      options?.onSuccess?.();
     },
     onError: (error: Error) => {
       toaster.create({
