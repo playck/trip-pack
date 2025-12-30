@@ -9,6 +9,7 @@ export interface ScheduleContextValue {
     date: string
   ) => void;
   onScheduleClick?: (schedule: Schedule) => void;
+  onOpenActionSheet?: (schedule: Schedule) => void;
 }
 
 export const ScheduleContext = createContext<ScheduleContextValue | null>(null);
