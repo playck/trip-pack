@@ -9,6 +9,9 @@ import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
+import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
+import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
+import { useDeleteSchedule } from "./services/useDeleteSchedule";
 import {
   GoogleMapView,
   DayScheduleList,
@@ -17,6 +20,7 @@ import {
   ApiKeyMissingState,
   MapWrapper,
 } from "./components";
+import ScheduleActionSheet from "./components/modals/ScheduleActionSheet";
 import {
   useGeocoding,
   parseRegionId,
@@ -65,6 +69,72 @@ function SchedulePageContent() {
     handleCloseMemoSheet,
     handleSaveMemo,
   } = useScheduleMemo(tripId || "");
+
+  // 경비 추가 관련 로직
+  const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
+  const [selectedScheduleForExpense, setSelectedScheduleForExpense] =
+    useState<Schedule | null>(null);
+
+  const createExpenseMutation = useCreateExpense(tripId || "");
+
+  // 일정 액션 시트 관련 로직
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
+  const [selectedScheduleForAction, setSelectedScheduleForAction] =
+    useState<Schedule | null>(null);
+
+  const deleteScheduleMutation = useDeleteSchedule(tripId || "");
+
+  const handleOpenActionSheet = (schedule: Schedule) => {
+    setSelectedScheduleForAction(schedule);
+    setIsActionSheetOpen(true);
+  };
+
+  const handleCloseActionSheet = () => {
+    setIsActionSheetOpen(false);
+    setSelectedScheduleForAction(null);
+  };
+
+  const handleEditSchedule = () => {
+    // TODO: 일정 수정 기능 구현
+    console.log("일정 수정:", selectedScheduleForAction);
+  };
+
+  const handleDeleteSchedule = () => {
+    if (selectedScheduleForAction) {
+      if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
+        deleteScheduleMutation.mutate(selectedScheduleForAction.id);
+      }
+    }
+  };
+
+  const handleOpenExpenseSheet = () => {
+    if (selectedScheduleForAction) {
+      setSelectedScheduleForExpense(selectedScheduleForAction);
+      setIsExpenseSheetOpen(true);
+    }
+  };
+
+  const handleCloseExpenseSheet = () => {
+    setIsExpenseSheetOpen(false);
+    setSelectedScheduleForExpense(null);
+  };
+
+  const handleSaveExpense = (
+    name: string,
+    amount: number,
+    scheduleId?: string
+  ) => {
+    if (!tripId || !selectedScheduleForExpense) return;
+
+    createExpenseMutation.mutate({
+      tripId,
+      expenseDate: selectedScheduleForExpense.schedule_date,
+      dayNumber: selectedScheduleForExpense.day_number,
+      category: name, // 현재는 category 필드를 항목명으로 사용
+      amount,
+      scheduleId,
+    });
+  };
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
@@ -141,6 +211,7 @@ function SchedulePageContent() {
         value={{
           onEditMemo: handleEditMemo,
           onScheduleClick: handleScheduleClick,
+          onOpenActionSheet: handleOpenActionSheet,
         }}
       >
         <VStack gap={0} align="stretch">
@@ -202,6 +273,31 @@ function SchedulePageContent() {
           date={memoSelectedDay.date}
           initialMemoText={editingMemo?.memoText}
           isEditMode={!!editingMemo}
+        />
+      )}
+
+      {/* 일정 액션 시트 */}
+      {selectedScheduleForAction && (
+        <ScheduleActionSheet
+          isOpen={isActionSheetOpen}
+          onClose={handleCloseActionSheet}
+          scheduleName={selectedScheduleForAction.place_name}
+          onEdit={handleEditSchedule}
+          onAddExpense={handleOpenExpenseSheet}
+          onDelete={handleDeleteSchedule}
+        />
+      )}
+
+      {/* 경비 추가 바텀시트 */}
+      {selectedScheduleForExpense && (
+        <AddExpenseSheet
+          isOpen={isExpenseSheetOpen}
+          onClose={handleCloseExpenseSheet}
+          onSaveExpense={handleSaveExpense}
+          scheduleName={selectedScheduleForExpense.place_name}
+          scheduleId={selectedScheduleForExpense.id}
+          date={selectedScheduleForExpense.schedule_date}
+          tripId={tripId || ""}
         />
       )}
     </PageLayout>
