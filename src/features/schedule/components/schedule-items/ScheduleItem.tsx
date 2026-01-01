@@ -39,7 +39,7 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
             paddingRight: !isScheduleMemo && onOpenActionSheet ? "32px" : "0",
           }}
         >
-          <Timeline.Title fontSize="md" fontWeight="semibold" mb="2.5px">
+          <Timeline.Title fontSize="md" fontWeight="semibold" mb="4px">
             {schedule.place_name}
           </Timeline.Title>
           {!isScheduleMemo && (

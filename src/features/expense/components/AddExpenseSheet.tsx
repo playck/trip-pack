@@ -115,25 +115,33 @@ export default function AddExpenseSheet({
         {scheduleName && (
           <Box
             w="full"
-            p={3}
+            p={2}
             bg={`${colors.primary.palette}.50`}
             borderRadius="lg"
             borderLeft="4px solid"
             borderColor={colors.primary.palette}
           >
-            <VStack align="start" gap={1}>
-              <Text fontSize="xs" color="gray.600">
-                연결된 일정
-              </Text>
-              <Text fontSize="md" fontWeight="medium" color="gray.800">
-                {scheduleName}
-              </Text>
-              {date && (
-                <Text fontSize="xs" color="gray.500">
-                  {date}
+            <HStack justify="space-between" align="center">
+              <HStack gap={1}>
+                <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
+                  연결된 일정 -
                 </Text>
-              )}
-            </VStack>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color="gray.800"
+                  lineClamp={1}
+                >
+                  {scheduleName}
+                </Text>
+                <Text as="span">•</Text>
+                {date && (
+                  <Text fontSize="xs" color="gray.500" whiteSpace="nowrap">
+                    {date}
+                  </Text>
+                )}
+              </HStack>
+            </HStack>
           </Box>
         )}
 
