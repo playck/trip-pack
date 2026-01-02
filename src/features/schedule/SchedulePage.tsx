@@ -1,5 +1,12 @@
 import { useState, useMemo } from "react";
-import { VStack, Box, HStack, IconButton } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  HStack,
+  IconButton,
+  useDisclosure,
+  Text,
+} from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2 } from "lucide-react";
@@ -8,7 +15,7 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu } from "@/shared/components";
+import { TripActionMenu, ConfirmDialog } from "@/shared/components";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
 import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
 import { useDeleteSchedule } from "./services/useDeleteSchedule";
@@ -85,7 +92,18 @@ function SchedulePageContent() {
   const [selectedScheduleForAction, setSelectedScheduleForAction] =
     useState<Schedule | null>(null);
 
-  const deleteScheduleMutation = useDeleteSchedule(tripId || "");
+  const {
+    open: isDeleteConfirmOpen,
+    onOpen: openDeleteConfirm,
+    onClose: closeDeleteConfirm,
+  } = useDisclosure();
+
+  const deleteScheduleMutation = useDeleteSchedule(tripId || "", {
+    onSuccess: () => {
+      closeDeleteConfirm();
+      setSelectedScheduleForAction(null);
+    },
+  });
   const updateScheduleMutation = useUpdateSchedule(tripId || "");
 
   const handleOpenActionSheet = (schedule: Schedule) => {
@@ -122,10 +140,13 @@ function SchedulePageContent() {
 
   const handleDeleteSchedule = () => {
     if (selectedScheduleForAction) {
-      if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
-        deleteScheduleMutation.mutate(selectedScheduleForAction.id);
-        setSelectedScheduleForAction(null);
-      }
+      openDeleteConfirm();
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedScheduleForAction) {
+      deleteScheduleMutation.mutate(selectedScheduleForAction.id);
     }
   };
 
@@ -318,6 +339,25 @@ function SchedulePageContent() {
           />
         </>
       )}
+
+      {/* 일정 삭제 확인 다이얼로그 */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={closeDeleteConfirm}
+        title="일정 삭제"
+        confirmLabel="삭제"
+        isDangerous
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteScheduleMutation.isPending}
+      >
+        <Text>
+          <Text as="span" fontWeight="bold">
+            "{selectedScheduleForAction?.place_name}"
+          </Text>
+          <br />
+          일정을 정말로 삭제하시겠습니까?
+        </Text>
+      </ConfirmDialog>
 
       {/* 경비 추가 바텀시트 */}
       {selectedScheduleForExpense && (
