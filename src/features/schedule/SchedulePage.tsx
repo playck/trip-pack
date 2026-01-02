@@ -12,6 +12,7 @@ import { TripActionMenu } from "@/shared/components";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
 import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
 import { useDeleteSchedule } from "./services/useDeleteSchedule";
+import { useUpdateSchedule } from "./services/useUpdateSchedule";
 import {
   GoogleMapView,
   DayScheduleList,
@@ -21,6 +22,7 @@ import {
   MapWrapper,
 } from "./components";
 import ScheduleActionSheet from "./components/modals/ScheduleActionSheet";
+import EditScheduleSheet from "./components/modals/EditScheduleSheet";
 import {
   useGeocoding,
   parseRegionId,
@@ -77,12 +79,14 @@ function SchedulePageContent() {
 
   const createExpenseMutation = useCreateExpense(tripId || "");
 
-  // 일정 액션 시트 관련 로직
+  // 일정 액션 시트 및 수정 관련 로직
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [selectedScheduleForAction, setSelectedScheduleForAction] =
     useState<Schedule | null>(null);
 
   const deleteScheduleMutation = useDeleteSchedule(tripId || "");
+  const updateScheduleMutation = useUpdateSchedule(tripId || "");
 
   const handleOpenActionSheet = (schedule: Schedule) => {
     setSelectedScheduleForAction(schedule);
@@ -91,18 +95,36 @@ function SchedulePageContent() {
 
   const handleCloseActionSheet = () => {
     setIsActionSheetOpen(false);
-    setSelectedScheduleForAction(null);
+    // 액션 시트가 닫힐 때 선택된 일정을 바로 초기화하지 않음 (수정/경비추가 등으로 이어질 수 있음)
+    // 각 후속 액션에서 필요 없으면 초기화하거나, 후속 액션 종료 시 초기화
   };
 
   const handleEditSchedule = () => {
-    // TODO: 일정 수정 기능 구현
-    console.log("일정 수정:", selectedScheduleForAction);
+    // 액션 시트는 닫고 수정 시트는 염
+    // selectedScheduleForAction 상태는 유지
+    setIsEditSheetOpen(true);
+  };
+
+  const handleCloseEditSheet = () => {
+    setIsEditSheetOpen(false);
+    setSelectedScheduleForAction(null);
+  };
+
+  const handleSaveEditSchedule = (
+    scheduleId: string,
+    updates: { placeName: string; notes?: string }
+  ) => {
+    updateScheduleMutation.mutate({
+      scheduleId,
+      ...updates,
+    });
   };
 
   const handleDeleteSchedule = () => {
     if (selectedScheduleForAction) {
       if (confirm("정말로 이 일정을 삭제하시겠습니까?")) {
         deleteScheduleMutation.mutate(selectedScheduleForAction.id);
+        setSelectedScheduleForAction(null);
       }
     }
   };
@@ -278,14 +300,23 @@ function SchedulePageContent() {
 
       {/* 일정 액션 시트 */}
       {selectedScheduleForAction && (
-        <ScheduleActionSheet
-          isOpen={isActionSheetOpen}
-          onClose={handleCloseActionSheet}
-          scheduleName={selectedScheduleForAction.place_name}
-          onEdit={handleEditSchedule}
-          onAddExpense={handleOpenExpenseSheet}
-          onDelete={handleDeleteSchedule}
-        />
+        <>
+          <ScheduleActionSheet
+            isOpen={isActionSheetOpen}
+            onClose={handleCloseActionSheet}
+            scheduleName={selectedScheduleForAction.place_name}
+            onEdit={handleEditSchedule}
+            onAddExpense={handleOpenExpenseSheet}
+            onDelete={handleDeleteSchedule}
+          />
+
+          <EditScheduleSheet
+            isOpen={isEditSheetOpen}
+            onClose={handleCloseEditSheet}
+            schedule={selectedScheduleForAction}
+            onSave={handleSaveEditSchedule}
+          />
+        </>
       )}
 
       {/* 경비 추가 바텀시트 */}
