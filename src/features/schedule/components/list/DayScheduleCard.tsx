@@ -8,7 +8,9 @@ import {
   textColors,
 } from "@/shared/constants/colors";
 import { useSchedulesByDay } from "../../hooks/useSchedulesByDay";
-import { SwipeableScheduleItem } from "../index";
+import ScheduleItem from "../schedule-items/ScheduleItem";
+import MemoItem from "../schedule-items/MemoItem";
+import { isMemo } from "../../utils/scheduleHelpers";
 import { DAY_CARD_STICKY_TOP } from "../../constants";
 import type { Schedule } from "../../types";
 
@@ -143,20 +145,19 @@ const TimelineEmpty = ({ onAddSchedule }: { onAddSchedule?: () => void }) => (
 
 const TimelineContent = ({
   schedules,
-  tripId,
 }: {
   schedules: Schedule[];
   tripId: string;
 }) => {
   return (
     <Timeline.Root size="sm" variant="subtle" gap={3}>
-      {schedules.map((schedule) => (
-        <SwipeableScheduleItem
-          key={schedule.id}
-          schedule={schedule}
-          tripId={tripId}
-        />
-      ))}
+      {schedules.map((schedule) =>
+        isMemo(schedule) ? (
+          <MemoItem key={schedule.id} memo={schedule} />
+        ) : (
+          <ScheduleItem key={schedule.id} schedule={schedule} />
+        )
+      )}
     </Timeline.Root>
   );
 };
