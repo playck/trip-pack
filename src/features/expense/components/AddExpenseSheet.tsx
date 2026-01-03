@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
@@ -10,7 +10,9 @@ import {
   getCurrencySymbol,
 } from "@/shared/utiles/currency";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import type { Schedule } from "@/features/schedule/types";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
+import SelectScheduleSheet from "./SelectScheduleSheet";
 
 interface AddExpenseSheetProps {
   isOpen: boolean;
@@ -21,7 +23,13 @@ interface AddExpenseSheetProps {
   date?: string;
   tripId: string;
 }
+
 type CurrencyType = "KRW" | "LOCAL";
+
+interface SelectedScheduleInfo {
+  id: string;
+  name: string;
+}
 
 export default function AddExpenseSheet({
   isOpen,
@@ -35,13 +43,16 @@ export default function AddExpenseSheet({
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
-  const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
+  const [selectedSchedule, setSelectedSchedule] =
+    useState<SelectedScheduleInfo | null>(null);
+  const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
 
   const { data: tripInfo } = useTripInfo(tripId);
   const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
   const currencySymbol = getCurrencySymbol(targetCurrency);
   const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
 
+  const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
   const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
     enabled: isForeignCurrency,
   });
@@ -56,8 +67,21 @@ export default function AddExpenseSheet({
       } else {
         setCurrencyType("KRW");
       }
+
+      if (scheduleId && scheduleName) {
+        setSelectedSchedule({ id: scheduleId, name: scheduleName });
+      } else {
+        setSelectedSchedule(null);
+      }
     }
-  }, [isOpen, showLocalCurrency, isForeignCurrency]);
+  }, [
+    isOpen,
+    showLocalCurrency,
+    isForeignCurrency,
+    scheduleId,
+    scheduleName,
+    date,
+  ]);
 
   const handleSave = () => {
     const parsedName = name.trim();
@@ -71,7 +95,7 @@ export default function AddExpenseSheet({
         finalAmount = Math.round(inputAmount * exchangeRate);
       }
 
-      onSaveExpense(parsedName, finalAmount, scheduleId);
+      onSaveExpense(parsedName, finalAmount, selectedSchedule?.id);
       setName("");
       setAmount("");
       onClose();
@@ -98,6 +122,14 @@ export default function AddExpenseSheet({
     setCurrencyType((prev) => (prev === "KRW" ? "LOCAL" : "KRW"));
   };
 
+  const handleSelectSchedule = (schedule: Schedule) => {
+    setSelectedSchedule({
+      id: schedule.id,
+      name: schedule.place_name,
+    });
+    setIsSelectScheduleOpen(false);
+  };
+
   const isCanSaveExpense =
     name.trim() && amount && parseInt(amount.replace(/,/g, ""), 10) > 0;
 
@@ -109,154 +141,178 @@ export default function AddExpenseSheet({
       : null;
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 추가">
-      <VStack gap={3} w="full" p={4} pt={0}>
-        {/* 일정 정보 표시 */}
-        {scheduleName && (
-          <Box
-            w="full"
-            p={2}
-            bg={`${colors.primary.palette}.50`}
-            borderRadius="lg"
-            borderLeft="4px solid"
-            borderColor={colors.primary.palette}
-          >
-            <HStack justify="space-between" align="center">
-              <HStack gap={1}>
-                <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
-                  연결된 일정 -
+    <>
+      <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 추가">
+        <VStack gap={3} w="full" p={4} pt={0}>
+          {/* 일정 정보 표시 */}
+          {selectedSchedule && (
+            <Box
+              w="full"
+              p={2}
+              bg={`${colors.primary.palette}.50`}
+              borderRadius="lg"
+              borderLeft="4px solid"
+              borderColor={colors.primary.palette}
+              transition="background-color 0.2s"
+              cursor="pointer"
+              onClick={() => setIsSelectScheduleOpen(true)}
+            >
+              <HStack justify="space-between" align="center">
+                <HStack gap={2}>
+                  <>
+                    <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
+                      연결된 일정 -
+                    </Text>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="medium"
+                      color="gray.800"
+                      lineClamp={1}
+                    >
+                      {selectedSchedule.name}
+                    </Text>
+                  </>
+                </HStack>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  변경
                 </Text>
-                <Text
-                  fontSize="sm"
+              </HStack>
+            </Box>
+          )}
+
+          <VStack gap={2} w="full">
+            <HStack justify="flex-end" align="center" w="full">
+              {!selectedSchedule && (
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  color="gray.500"
                   fontWeight="medium"
-                  color="gray.800"
-                  lineClamp={1}
+                  h="24px"
+                  px={2}
+                  onClick={() => setIsSelectScheduleOpen(true)}
                 >
-                  {scheduleName}
+                  <HStack gap={1}>
+                    <Link2 size={12} />
+                    <Text fontSize="xs">일정 연동</Text>
+                  </HStack>
+                </Button>
+              )}
+            </HStack>
+
+            <Input
+              placeholder="예) 조식"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              size="lg"
+              borderRadius="xl"
+              autoFocus
+            />
+          </VStack>
+
+          <VStack gap={2} w="full">
+            <HStack w="full" justify="space-between" align="center">
+              <HStack gap={2} align="center">
+                <Text fontSize="md" fontWeight="medium">
+                  금액
                 </Text>
-                <Text as="span">•</Text>
-                {date && (
-                  <Text fontSize="xs" color="gray.500" whiteSpace="nowrap">
-                    {date}
+                {estimatedKrw && (
+                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                    ≈ {estimatedKrw}원
                   </Text>
                 )}
               </HStack>
-            </HStack>
-          </Box>
-        )}
-
-        {/* 내용 입력 */}
-        <VStack gap={2} w="full">
-          <Text fontSize="md" fontWeight="medium" alignSelf="start">
-            내용
-          </Text>
-          <Input
-            placeholder="예) 조식"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            size="lg"
-            borderRadius="xl"
-            autoFocus
-          />
-        </VStack>
-
-        {/* 금액 입력 */}
-        <VStack gap={2} w="full">
-          <HStack w="full" justify="space-between" align="center">
-            <HStack gap={2} align="center">
-              <Text fontSize="md" fontWeight="medium">
-                금액
-              </Text>
-              {/* 환산 금액 표시 */}
-              {estimatedKrw && (
-                <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                  ≈ {estimatedKrw}원
-                </Text>
+              {isForeignCurrency && (
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  colorPalette="teal"
+                  h="24px"
+                  px={2}
+                  onClick={toggleCurrencyType}
+                >
+                  <HStack gap={1}>
+                    <ArrowLeftRight size={12} />
+                    <Text fontSize="xs">
+                      {currencyType === "KRW"
+                        ? "현지화로 입력하기"
+                        : "원화로 입력하기"}
+                    </Text>
+                  </HStack>
+                </Button>
               )}
             </HStack>
-            {/* 통화 변경 버튼 */}
-            {isForeignCurrency && (
-              <Button
-                size="xs"
-                variant="ghost"
-                colorPalette="teal"
-                h="24px"
-                px={2}
-                onClick={toggleCurrencyType}
-              >
-                <HStack gap={1}>
-                  <ArrowLeftRight size={12} />
-                  <Text fontSize="xs">
-                    {currencyType === "KRW"
-                      ? "현지화로 입력하기"
-                      : "원화로 입력하기"}
-                  </Text>
-                </HStack>
-              </Button>
-            )}
-          </HStack>
 
-          <Box w="full" position="relative">
-            <Input
-              placeholder="0"
-              value={amount}
-              onChange={handleAmountChange}
-              inputMode="numeric"
-              size="lg"
-              borderRadius="xl"
-              pl={currencyType === "LOCAL" ? "2rem" : "1rem"}
-              pr="2.5rem"
-            />
+            <Box w="full" position="relative">
+              <Input
+                placeholder="0"
+                value={amount}
+                onChange={handleAmountChange}
+                inputMode="numeric"
+                size="lg"
+                borderRadius="xl"
+                pl={currencyType === "LOCAL" ? "2rem" : "1rem"}
+                pr="2.5rem"
+              />
 
-            {currencyType === "LOCAL" && (
+              {currencyType === "LOCAL" && (
+                <Text
+                  position="absolute"
+                  left="1rem"
+                  top="50%"
+                  transform="translateY(-50%)"
+                  color="gray.500"
+                  fontWeight="medium"
+                >
+                  {currencySymbol}
+                </Text>
+              )}
               <Text
                 position="absolute"
-                left="1rem"
+                right="1rem"
                 top="50%"
                 transform="translateY(-50%)"
                 color="gray.500"
                 fontWeight="medium"
               >
-                {currencySymbol}
+                {currencyType === "KRW" ? "원" : ""}
               </Text>
-            )}
-            <Text
-              position="absolute"
-              right="1rem"
-              top="50%"
-              transform="translateY(-50%)"
-              color="gray.500"
+            </Box>
+          </VStack>
+
+          <HStack gap={2} w="full" h="12">
+            <Button
+              variant="outline"
+              size="lg"
+              flex={1}
               fontWeight="medium"
+              onClick={handleClose}
             >
-              {currencyType === "KRW" ? "원" : ""}
-            </Text>
-          </Box>
+              취소
+            </Button>
+
+            <Button
+              variant="solid"
+              size="lg"
+              flex={1}
+              colorPalette="teal"
+              fontWeight="medium"
+              onClick={handleSave}
+              disabled={!isCanSaveExpense}
+            >
+              저장
+            </Button>
+          </HStack>
         </VStack>
+      </BottomSheet>
 
-        <HStack gap={2} w="full" h="12">
-          <Button
-            variant="outline"
-            size="lg"
-            flex={1}
-            fontWeight="medium"
-            onClick={handleClose}
-          >
-            취소
-          </Button>
-
-          <Button
-            variant="solid"
-            size="lg"
-            flex={1}
-            colorPalette="teal"
-            fontWeight="medium"
-            onClick={handleSave}
-            disabled={!isCanSaveExpense}
-          >
-            저장
-          </Button>
-        </HStack>
-      </VStack>
-    </BottomSheet>
+      <SelectScheduleSheet
+        isOpen={isSelectScheduleOpen}
+        onClose={() => setIsSelectScheduleOpen(false)}
+        tripId={tripId}
+        onSelect={handleSelectSchedule}
+        selectedScheduleId={selectedSchedule?.id}
+      />
+    </>
   );
 }
