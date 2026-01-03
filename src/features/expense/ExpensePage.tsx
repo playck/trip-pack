@@ -157,7 +157,7 @@ export default function ExpensePage() {
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         onSaveExpense={handleSaveExpense}
-        date={dateList.find((d) => d.date === selectedDate)?.label}
+        date={selectedDate}
         tripId={tripId}
       />
     </PageLayout>

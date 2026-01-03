@@ -12,6 +12,7 @@ interface SelectScheduleSheetProps {
   tripId: string;
   onSelect: (schedule: Schedule) => void;
   selectedScheduleId?: string;
+  selectedDate?: string;
 }
 
 export default function SelectScheduleSheet({
@@ -20,6 +21,7 @@ export default function SelectScheduleSheet({
   tripId,
   onSelect,
   selectedScheduleId,
+  selectedDate,
 }: SelectScheduleSheetProps) {
   const { data: schedules } = useTripSchedules(tripId);
 
@@ -27,9 +29,13 @@ export default function SelectScheduleSheet({
   const schedulesByDay = useMemo(() => {
     if (!schedules) return [];
 
+    const filteredSchedules = selectedDate
+      ? schedules.filter((s) => s.schedule_date === selectedDate)
+      : schedules;
+
     const grouped: Record<number, Schedule[]> = {};
 
-    schedules.forEach((schedule) => {
+    filteredSchedules.forEach((schedule) => {
       const day = schedule.day_number;
       if (!grouped[day]) {
         grouped[day] = [];
@@ -44,7 +50,7 @@ export default function SelectScheduleSheet({
         day,
         items: grouped[day],
       }));
-  }, [schedules]);
+  }, [schedules, selectedDate]);
 
   return (
     <BottomSheet
@@ -53,10 +59,10 @@ export default function SelectScheduleSheet({
       title="일정 선택"
       minHeight="60vh"
     >
-      <VStack align="stretch" gap={6} p={4} pt={2} pb={8}>
+      <VStack align="stretch" gap={6} px={4} pt={2} pb={8}>
         {schedulesByDay.length === 0 ? (
           <Box textAlign="center" py={8} color="gray.500">
-            등록된 일정이 없습니다.
+            해당 날짜에 등록된 일정이 없습니다.
           </Box>
         ) : (
           schedulesByDay.map(({ day, items }) => (

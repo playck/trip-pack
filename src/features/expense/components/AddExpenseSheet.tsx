@@ -312,6 +312,7 @@ export default function AddExpenseSheet({
         tripId={tripId}
         onSelect={handleSelectSchedule}
         selectedScheduleId={selectedSchedule?.id}
+        selectedDate={date}
       />
     </>
   );
