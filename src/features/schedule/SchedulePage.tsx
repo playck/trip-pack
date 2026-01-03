@@ -47,9 +47,27 @@ import { isMemo } from "./utils/scheduleHelpers";
 import { ScheduleProvider } from "./context";
 import type { Schedule } from "./types";
 
+import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
+
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  const { data: expenses } = useTripExpenses(tripId);
+
+  const scheduleExpenseMap = useMemo(() => {
+    if (!expenses) return {};
+    return expenses.reduce(
+      (acc, expense) => {
+        if (expense.schedule_id) {
+          acc[expense.schedule_id] =
+            (acc[expense.schedule_id] || 0) + expense.amount;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+  }, [expenses]);
+
   const countryCode = useMemo(() => {
     return parseRegionId(tripInfo?.regionId)?.countryCode;
   }, [tripInfo?.regionId]);
@@ -255,6 +273,7 @@ function SchedulePageContent() {
           onEditMemo: handleEditMemo,
           onScheduleClick: handleScheduleClick,
           onOpenActionSheet: handleOpenActionSheet,
+          scheduleExpenses: scheduleExpenseMap,
         }}
       >
         <VStack gap={0} align="stretch">

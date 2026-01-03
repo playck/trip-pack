@@ -1,4 +1,4 @@
-import { Text, Timeline, IconButton } from "@chakra-ui/react";
+import { Text, Timeline, IconButton, Badge } from "@chakra-ui/react";
 import { MapPin, StickyNote, MoreVertical } from "lucide-react";
 import { textColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
@@ -10,9 +10,11 @@ interface ScheduleItemProps {
 }
 
 export default function ScheduleItem({ schedule }: ScheduleItemProps) {
+  const { onScheduleClick, onOpenActionSheet, scheduleExpenses } =
+    useScheduleContext();
+  const expenseAmount = scheduleExpenses?.[schedule.id];
+  const isExpenseContent = expenseAmount !== undefined && expenseAmount > 0;
   const isScheduleMemo = isMemo(schedule);
-
-  const { onScheduleClick, onOpenActionSheet } = useScheduleContext();
 
   const handleClick = () => {
     onScheduleClick?.(schedule);
@@ -41,6 +43,16 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
         >
           <Timeline.Title fontSize="md" fontWeight="semibold" mb="4px">
             {schedule.place_name}
+            {isExpenseContent && (
+              <Badge
+                colorPalette="gray"
+                variant="surface"
+                fontSize="xs"
+                fontWeight="medium"
+              >
+                ₩{expenseAmount.toLocaleString()}
+              </Badge>
+            )}
           </Timeline.Title>
           {!isScheduleMemo && (
             <Timeline.Description fontSize="sm" color={textColors.tertiary}>
