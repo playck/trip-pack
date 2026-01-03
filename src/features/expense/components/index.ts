@@ -6,6 +6,6 @@ export { default as ExpenseAllContent } from "./ExpenseAllContent";
 export { default as AddExpenseSheet } from "./AddExpenseSheet";
 export { default as EditExpenseSheet } from "./EditExpenseSheet";
 export { default as ExpenseContent } from "./ExpenseContent";
-export { default as SwipeableExpenseItem } from "./SwipeableExpenseItem";
+export { default as ExpenseItem } from "./ExpenseItem";
 export { default as SetBudgetModal } from "./SetBudgetModal";
 export { default as ExpenseSummaryItem } from "./ExpenseSummaryItem";

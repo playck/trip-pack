@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
-import { Box, Flex, Text, HStack } from "@chakra-ui/react";
-import { motion, type PanInfo } from "framer-motion";
-import { Trash2, Edit3 } from "lucide-react";
+import { useState } from "react";
+import { Box, Flex, Text, HStack, IconButton } from "@chakra-ui/react";
+import { MoreVertical } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense, useUpdateExpense } from "../services";
 import EditExpenseSheet from "./EditExpenseSheet";
+import ExpenseActionSheet from "./ExpenseActionSheet";
 import { formatAmount } from "../utils/helper";
 
 interface ExpenseItem {
@@ -20,32 +20,28 @@ interface ExchangeInfo {
   isForeignCurrency: boolean;
 }
 
-interface SwipeableExpenseItemProps {
+interface ExpenseItemProps {
   expense: ExpenseItem;
   tripId: string;
   showBorder?: boolean;
   exchangeInfo?: ExchangeInfo;
 }
 
-const ACTION_BUTTON_WIDTH = 70;
-const SWIPE_THRESHOLD = 50;
-
-export default function SwipeableExpenseItem({
+export default function ExpenseItem({
   expense,
   tripId,
   showBorder = false,
   exchangeInfo,
-}: SwipeableExpenseItemProps) {
-  const [isOpen, setIsOpen] = useState(false);
+}: ExpenseItemProps) {
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const dragConstraintsRef = useRef(null);
 
   const updateExpenseMutation = useUpdateExpense({
     tripId,
     onSuccess: () => {
       setIsEditSheetOpen(false);
-      setIsOpen(false);
+      setIsActionSheetOpen(false);
     },
   });
 
@@ -53,20 +49,9 @@ export default function SwipeableExpenseItem({
     tripId,
     onSuccess: () => {
       setIsDeleteModalOpen(false);
-      setIsOpen(false);
+      setIsActionSheetOpen(false);
     },
   });
-
-  const handleDragEnd = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
-  ) => {
-    if (info.offset.x < -SWIPE_THRESHOLD) {
-      setIsOpen(true);
-    } else if (info.offset.x > SWIPE_THRESHOLD) {
-      setIsOpen(false);
-    }
-  };
 
   const handleEditClick = () => {
     setIsEditSheetOpen(true);
@@ -103,75 +88,49 @@ export default function SwipeableExpenseItem({
 
   return (
     <>
-      <Box position="relative" overflow="hidden" ref={dragConstraintsRef}>
-        {/* 액션 버튼(수정, 삭제) */}
-        <HStack
+      <Box
+        position="relative"
+        py={2}
+        borderBottom={showBorder ? "1px solid" : undefined}
+        borderColor="gray.100"
+      >
+        <Flex justify="space-between" align="center" pr={8}>
+          <Text fontSize="15px" color="gray.700">
+            {expense.name}
+          </Text>
+          <HStack gap={0.5} align="baseline">
+            <Text fontSize="md" fontWeight="semibold" color="gray.900">
+              {amountUnit !== "원" && amountUnit}
+              {amountValue}
+            </Text>
+            <Text fontSize="sm" fontWeight="semibold" color="gray.900">
+              {amountUnit === "원" ? "원" : ""}
+            </Text>
+          </HStack>
+        </Flex>
+
+        <IconButton
+          aria-label="경비 관리"
+          variant="ghost"
+          size="xs"
+          color="gray.400"
           position="absolute"
-          right="4px"
+          right={0}
           top="50%"
           transform="translateY(-50%)"
-          gap={4}
-          zIndex={0}
+          onClick={() => setIsActionSheetOpen(true)}
         >
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            cursor="pointer"
-            onClick={handleEditClick}
-            color="blue.500"
-          >
-            <Edit3 size={18} />
-          </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            cursor="pointer"
-            onClick={handleDeleteClick}
-            color="red.500"
-          >
-            <Trash2 size={18} />
-          </Box>
-        </HStack>
-
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: -ACTION_BUTTON_WIDTH, right: 0 }}
-          dragElastic={0.1}
-          dragMomentum={false}
-          onDragEnd={handleDragEnd}
-          animate={{ x: isOpen ? -ACTION_BUTTON_WIDTH : 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          style={{
-            position: "relative",
-            backgroundColor: "white",
-            zIndex: 1,
-            cursor: "grab",
-          }}
-        >
-          <Flex
-            justify="space-between"
-            align="center"
-            py={1.5}
-            borderBottom={showBorder ? "1px solid" : undefined}
-            borderColor="gray.100"
-          >
-            <Text fontSize="15px" color="gray.700">
-              {expense.name}
-            </Text>
-            <HStack gap={0.5} align="baseline">
-              <Text fontSize="md" fontWeight="semibold" color="gray.900">
-                {amountUnit !== "원" && amountUnit}
-                {amountValue}
-              </Text>
-              <Text fontSize="sm" fontWeight="semibold" color="gray.900">
-                {amountUnit === "원" ? "원" : ""}
-              </Text>
-            </HStack>
-          </Flex>
-        </motion.div>
+          <MoreVertical size={16} />
+        </IconButton>
       </Box>
+
+      <ExpenseActionSheet
+        isOpen={isActionSheetOpen}
+        onClose={() => setIsActionSheetOpen(false)}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+        expenseName={expense.name}
+      />
 
       <EditExpenseSheet
         isOpen={isEditSheetOpen}

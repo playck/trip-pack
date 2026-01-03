@@ -10,7 +10,7 @@ import {
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
-import SwipeableExpenseItem from "./SwipeableExpenseItem";
+import ExpenseItem from "./ExpenseItem";
 
 interface ExpenseItem {
   id: string;
@@ -95,9 +95,9 @@ export default function ExpenseDaySection({
           </Text>
         </Box>
       ) : (
-        <VStack align="stretch" gap={0} px={2}>
+        <VStack align="stretch" gap={0} px={2} pr={0}>
           {expenses.map((expense, index) => (
-            <SwipeableExpenseItem
+            <ExpenseItem
               key={expense.id}
               expense={expense}
               tripId={tripId}
