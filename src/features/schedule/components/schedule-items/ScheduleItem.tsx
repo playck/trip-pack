@@ -29,11 +29,11 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
     <Timeline.Item>
       <Timeline.Connector>
         <Timeline.Separator />
-        <Timeline.Indicator>
+        <Timeline.Indicator bg="white">
           {isScheduleMemo ? <StickyNote size={14} /> : <MapPin size={14} />}
         </Timeline.Indicator>
       </Timeline.Connector>
-      <Timeline.Content width="full" ml={-2}>
+      <Timeline.Content width="full" ml={-2} pb="24px">
         <div
           onClick={handleClick}
           style={{

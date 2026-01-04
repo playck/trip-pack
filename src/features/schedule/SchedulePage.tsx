@@ -18,6 +18,7 @@ import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu, ConfirmDialog } from "@/shared/components";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
 import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
+import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
 import { useDeleteSchedule } from "./services/useDeleteSchedule";
 import { useUpdateSchedule } from "./services/useUpdateSchedule";
 import {
@@ -46,8 +47,6 @@ import {
 import { isMemo } from "./utils/scheduleHelpers";
 import { ScheduleProvider } from "./context";
 import type { Schedule } from "./types";
-
-import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
@@ -136,9 +135,19 @@ function SchedulePageContent() {
   };
 
   const handleEditSchedule = () => {
-    // 액션 시트는 닫고 수정 시트는 염
-    // selectedScheduleForAction 상태는 유지
-    setIsEditSheetOpen(true);
+    if (!selectedScheduleForAction) return;
+
+    if (isMemo(selectedScheduleForAction)) {
+      handleEditMemo(
+        selectedScheduleForAction.id,
+        selectedScheduleForAction.place_name,
+        selectedScheduleForAction.day_number,
+        selectedScheduleForAction.schedule_date
+      );
+      setSelectedScheduleForAction(null);
+    } else {
+      setIsEditSheetOpen(true);
+    }
   };
 
   const handleCloseEditSheet = () => {
@@ -191,7 +200,7 @@ function SchedulePageContent() {
       tripId,
       expenseDate: selectedScheduleForExpense.schedule_date,
       dayNumber: selectedScheduleForExpense.day_number,
-      category: name, // 현재는 category 필드를 항목명으로 사용
+      category: name,
       amount,
       scheduleId,
     });

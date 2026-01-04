@@ -111,7 +111,7 @@ export default function DayScheduleCard({
         </HStack>
       </HStack>
 
-      <Box p={3} minH="100px" borderBottomRadius="lg">
+      <Box p={3} pb={0} minH="100px" borderBottomRadius="lg">
         {renderTimelineContent()}
       </Box>
     </Box>
@@ -150,7 +150,7 @@ const TimelineContent = ({
   tripId: string;
 }) => {
   return (
-    <Timeline.Root size="sm" variant="subtle" gap={3}>
+    <Timeline.Root size="sm" variant="subtle" gap={1.5}>
       {schedules.map((schedule) =>
         isMemo(schedule) ? (
           <MemoItem key={schedule.id} memo={schedule} />
