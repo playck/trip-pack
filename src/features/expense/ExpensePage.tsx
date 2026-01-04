@@ -57,6 +57,7 @@ export default function ExpensePage() {
           id: expense.id,
           name: expense.expense_category,
           amount: expense.amount,
+          scheduleId: expense.schedule_id,
         }));
 
       return {

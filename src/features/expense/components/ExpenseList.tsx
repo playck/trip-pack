@@ -15,14 +15,20 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface ExpenseListProps {
   expenses: ExpenseItem[];
   tripId: string;
+  selectedDate?: string;
 }
 
-export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
+export default function ExpenseList({
+  expenses,
+  tripId,
+  selectedDate,
+}: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
   const { data: tripInfo } = useTripInfo(tripId);
   const [showLocalCurrency] = useAtom(showLocalCurrencyAtom);
@@ -104,6 +110,7 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
                   currencySymbol,
                   isForeignCurrency,
                 }}
+                selectedDate={selectedDate}
               />
             ))}
           </Box>

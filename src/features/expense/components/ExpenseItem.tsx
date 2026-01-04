@@ -11,6 +11,7 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface ExchangeInfo {
@@ -25,6 +26,7 @@ interface ExpenseItemProps {
   tripId: string;
   showBorder?: boolean;
   exchangeInfo?: ExchangeInfo;
+  selectedDate?: string;
 }
 
 export default function ExpenseItem({
@@ -32,6 +34,7 @@ export default function ExpenseItem({
   tripId,
   showBorder = false,
   exchangeInfo,
+  selectedDate,
 }: ExpenseItemProps) {
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -57,11 +60,16 @@ export default function ExpenseItem({
     setIsEditSheetOpen(true);
   };
 
-  const handleEditSave = (name: string, amount: number) => {
+  const handleEditSave = (
+    name: string,
+    amount: number,
+    scheduleId?: string | null
+  ) => {
     updateExpenseMutation.mutate({
       expenseId: expense.id,
       category: name,
       amount,
+      scheduleId,
     });
   };
 
@@ -138,6 +146,9 @@ export default function ExpenseItem({
         onSaveExpense={handleEditSave}
         initialName={expense.name}
         initialAmount={expense.amount}
+        initialScheduleId={expense.scheduleId}
+        tripId={tripId}
+        selectedDate={selectedDate}
       />
 
       <ConfirmDialog

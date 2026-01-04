@@ -127,7 +127,6 @@ export default function AddExpenseSheet({
       id: schedule.id,
       name: schedule.place_name,
     });
-    setIsSelectScheduleOpen(false);
   };
 
   const isCanSaveExpense =

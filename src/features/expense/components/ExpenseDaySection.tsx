@@ -16,6 +16,7 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface ExpenseDaySectionProps {
@@ -108,6 +109,7 @@ export default function ExpenseDaySection({
                 currencySymbol,
                 isForeignCurrency,
               }}
+              selectedDate={date}
             />
           ))}
         </VStack>
