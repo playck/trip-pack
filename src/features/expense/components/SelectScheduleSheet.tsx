@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { VStack, Text, Box, HStack, Badge } from "@chakra-ui/react";
-import { MapPin } from "lucide-react";
+import { MapPin, StickyNote } from "lucide-react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
+import { isMemo } from "@/features/schedule/utils/scheduleHelpers";
 import type { Schedule } from "@/features/schedule/types";
 import { colors } from "@/shared/constants/colors";
 
@@ -74,6 +75,7 @@ export default function SelectScheduleSheet({
               <VStack align="stretch" gap={2}>
                 {items.map((schedule) => {
                   const isSelected = selectedScheduleId === schedule.id;
+                  const isScheduleMemo = isMemo(schedule);
 
                   return (
                     <Box
@@ -98,7 +100,11 @@ export default function SelectScheduleSheet({
                         <Box
                           color={isSelected ? colors.primary.solid : "gray.400"}
                         >
-                          <MapPin size={18} />
+                          {isScheduleMemo ? (
+                            <StickyNote size={18} />
+                          ) : (
+                            <MapPin size={18} />
+                          )}
                         </Box>
                         <VStack align="start" gap={0} flex={1}>
                           <Text
