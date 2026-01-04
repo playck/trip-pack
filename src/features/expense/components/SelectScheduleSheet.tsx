@@ -91,6 +91,7 @@ export default function SelectScheduleSheet({
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect(schedule);
+                        onClose();
                       }}
                     >
                       <HStack gap={3}>
