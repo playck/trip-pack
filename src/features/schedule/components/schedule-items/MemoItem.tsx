@@ -1,5 +1,5 @@
-import { Timeline, Box } from "@chakra-ui/react";
-import { StickyNote } from "lucide-react";
+import { Timeline, Badge, IconButton } from "@chakra-ui/react";
+import { StickyNote, MoreVertical } from "lucide-react";
 import type { Schedule } from "../../types";
 import { useScheduleContext } from "../../context";
 
@@ -8,27 +8,55 @@ interface MemoItemProps {
 }
 
 export default function MemoItem({ memo }: MemoItemProps) {
-  const { onEditMemo } = useScheduleContext();
+  const { onOpenActionSheet, scheduleExpenses } = useScheduleContext();
+  const expenseAmount = scheduleExpenses?.[memo.id];
+  const hasExpense = expenseAmount !== undefined && expenseAmount > 0;
 
-  const handleClick = () => {
-    onEditMemo(memo.id, memo.place_name, memo.day_number, memo.schedule_date);
+  const handleOpenAction = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onOpenActionSheet?.(memo);
   };
 
   return (
     <Timeline.Item>
       <Timeline.Connector>
         <Timeline.Separator />
-        <Timeline.Indicator>
+        <Timeline.Indicator bg="white">
           <StickyNote size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>
 
-      <Timeline.Content ml={-2} minH="20px">
-        <Box onClick={handleClick} cursor="pointer">
-          <Timeline.Title fontSize="md" fontWeight="semibold">
+      <Timeline.Content width="full" ml={-2} minH="20px" pb="24px">
+        <div style={{ paddingRight: onOpenActionSheet ? "32px" : "0" }}>
+          <Timeline.Title fontSize="md" fontWeight="semibold" mb="0">
             {memo.place_name}
+            {hasExpense && (
+              <Badge
+                colorPalette="gray"
+                variant="surface"
+                fontSize="xs"
+                fontWeight="medium"
+              >
+                ₩{expenseAmount.toLocaleString()}
+              </Badge>
+            )}
           </Timeline.Title>
-        </Box>
+        </div>
+
+        {onOpenActionSheet && (
+          <IconButton
+            aria-label="메모 관리"
+            variant="ghost"
+            size="xs"
+            color="gray.400"
+            position="absolute"
+            right={0}
+            top={-2}
+            onClick={handleOpenAction}
+          >
+            <MoreVertical size={16} />
+          </IconButton>
+        )}
       </Timeline.Content>
     </Timeline.Item>
   );

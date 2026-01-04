@@ -7,7 +7,7 @@ import {
   getCurrencySymbol,
 } from "@/shared/utiles/currency";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
-import SwipeableExpenseItem from "./SwipeableExpenseItem";
+import ExpenseItem from "./ExpenseItem";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
 
@@ -15,14 +15,20 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface ExpenseListProps {
   expenses: ExpenseItem[];
   tripId: string;
+  selectedDate?: string;
 }
 
-export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
+export default function ExpenseList({
+  expenses,
+  tripId,
+  selectedDate,
+}: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
   const { data: tripInfo } = useTripInfo(tripId);
   const [showLocalCurrency] = useAtom(showLocalCurrencyAtom);
@@ -91,9 +97,9 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
             </Text>
           </Box>
         ) : (
-          <Box px={2}>
+          <Box px={2} pr={0}>
             {expenses.map((expense, index) => (
-              <SwipeableExpenseItem
+              <ExpenseItem
                 key={expense.id}
                 expense={expense}
                 tripId={tripId}
@@ -104,6 +110,7 @@ export default function ExpenseList({ expenses, tripId }: ExpenseListProps) {
                   currencySymbol,
                   isForeignCurrency,
                 }}
+                selectedDate={selectedDate}
               />
             ))}
           </Box>

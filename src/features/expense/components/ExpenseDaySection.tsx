@@ -10,12 +10,13 @@ import {
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
-import SwipeableExpenseItem from "./SwipeableExpenseItem";
+import ExpenseItem from "./ExpenseItem";
 
 interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface ExpenseDaySectionProps {
@@ -23,6 +24,7 @@ interface ExpenseDaySectionProps {
   date: string;
   expenses: ExpenseItem[];
   tripId: string;
+  readOnly?: boolean;
 }
 
 const DATE_TAB_HEIGHT = 55;
@@ -32,6 +34,7 @@ export default function ExpenseDaySection({
   date,
   expenses,
   tripId,
+  readOnly = false,
 }: ExpenseDaySectionProps) {
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
   const { data: tripInfo } = useTripInfo(tripId);
@@ -54,7 +57,7 @@ export default function ExpenseDaySection({
 
   return (
     <VStack align="stretch" gap={2}>
-      {/* 날짜 헤더 - Header + DateTabList 바로 아래 */}
+      {/* 날짜 헤더 */}
       <Flex
         position="sticky"
         top={`${HEADER_HEIGHT + DATE_TAB_HEIGHT}px`}
@@ -95,9 +98,9 @@ export default function ExpenseDaySection({
           </Text>
         </Box>
       ) : (
-        <VStack align="stretch" gap={0} px={2}>
+        <VStack align="stretch" gap={0} px={2} pr={0}>
           {expenses.map((expense, index) => (
-            <SwipeableExpenseItem
+            <ExpenseItem
               key={expense.id}
               expense={expense}
               tripId={tripId}
@@ -108,6 +111,8 @@ export default function ExpenseDaySection({
                 currencySymbol,
                 isForeignCurrency,
               }}
+              selectedDate={date}
+              readOnly={readOnly}
             />
           ))}
         </VStack>

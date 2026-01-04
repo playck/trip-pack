@@ -1,5 +1,12 @@
 import { useState, useMemo } from "react";
-import { VStack, Box, HStack, IconButton } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  HStack,
+  IconButton,
+  useDisclosure,
+  Text,
+} from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2 } from "lucide-react";
@@ -8,7 +15,12 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu } from "@/shared/components";
+import { TripActionMenu, ConfirmDialog } from "@/shared/components";
+import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
+import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
+import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
+import { useDeleteSchedule } from "./services/useDeleteSchedule";
+import { useUpdateSchedule } from "./services/useUpdateSchedule";
 import {
   GoogleMapView,
   DayScheduleList,
@@ -17,6 +29,8 @@ import {
   ApiKeyMissingState,
   MapWrapper,
 } from "./components";
+import ScheduleActionSheet from "./components/modals/ScheduleActionSheet";
+import EditScheduleSheet from "./components/modals/EditScheduleSheet";
 import {
   useGeocoding,
   parseRegionId,
@@ -37,6 +51,22 @@ import type { Schedule } from "./types";
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  const { data: expenses } = useTripExpenses(tripId);
+
+  const scheduleExpenseMap = useMemo(() => {
+    if (!expenses) return {};
+    return expenses.reduce(
+      (acc, expense) => {
+        if (expense.schedule_id) {
+          acc[expense.schedule_id] =
+            (acc[expense.schedule_id] || 0) + expense.amount;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+  }, [expenses]);
+
   const countryCode = useMemo(() => {
     return parseRegionId(tripInfo?.regionId)?.countryCode;
   }, [tripInfo?.regionId]);
@@ -65,6 +95,116 @@ function SchedulePageContent() {
     handleCloseMemoSheet,
     handleSaveMemo,
   } = useScheduleMemo(tripId || "");
+
+  // 경비 추가 관련 로직
+  const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
+  const [selectedScheduleForExpense, setSelectedScheduleForExpense] =
+    useState<Schedule | null>(null);
+
+  const createExpenseMutation = useCreateExpense(tripId || "");
+
+  // 일정 액션 시트 및 수정 관련 로직
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [selectedScheduleForAction, setSelectedScheduleForAction] =
+    useState<Schedule | null>(null);
+
+  const {
+    open: isDeleteConfirmOpen,
+    onOpen: openDeleteConfirm,
+    onClose: closeDeleteConfirm,
+  } = useDisclosure();
+
+  const deleteScheduleMutation = useDeleteSchedule(tripId || "", {
+    onSuccess: () => {
+      closeDeleteConfirm();
+      setSelectedScheduleForAction(null);
+    },
+  });
+  const updateScheduleMutation = useUpdateSchedule(tripId || "");
+
+  const handleOpenActionSheet = (schedule: Schedule) => {
+    setSelectedScheduleForAction(schedule);
+    setIsActionSheetOpen(true);
+  };
+
+  const handleCloseActionSheet = () => {
+    setIsActionSheetOpen(false);
+    // 액션 시트가 닫힐 때 선택된 일정을 바로 초기화하지 않음 (수정/경비추가 등으로 이어질 수 있음)
+    // 각 후속 액션에서 필요 없으면 초기화하거나, 후속 액션 종료 시 초기화
+  };
+
+  const handleEditSchedule = () => {
+    if (!selectedScheduleForAction) return;
+
+    if (isMemo(selectedScheduleForAction)) {
+      handleEditMemo(
+        selectedScheduleForAction.id,
+        selectedScheduleForAction.place_name,
+        selectedScheduleForAction.day_number,
+        selectedScheduleForAction.schedule_date
+      );
+      setSelectedScheduleForAction(null);
+    } else {
+      setIsEditSheetOpen(true);
+    }
+  };
+
+  const handleCloseEditSheet = () => {
+    setIsEditSheetOpen(false);
+    setSelectedScheduleForAction(null);
+  };
+
+  const handleSaveEditSchedule = (
+    scheduleId: string,
+    updates: { placeName: string; notes?: string }
+  ) => {
+    updateScheduleMutation.mutate({
+      scheduleId,
+      ...updates,
+    });
+  };
+
+  const handleDeleteSchedule = () => {
+    if (selectedScheduleForAction) {
+      openDeleteConfirm();
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedScheduleForAction) {
+      deleteScheduleMutation.mutate(selectedScheduleForAction.id);
+    }
+  };
+
+  const handleOpenExpenseSheet = () => {
+    if (selectedScheduleForAction) {
+      setSelectedScheduleForExpense(selectedScheduleForAction);
+      setIsExpenseSheetOpen(true);
+    }
+  };
+
+  const handleCloseExpenseSheet = () => {
+    setIsExpenseSheetOpen(false);
+    setSelectedScheduleForExpense(null);
+  };
+
+  const handleSaveExpense = (
+    name: string,
+    amount: number,
+    scheduleId?: string
+  ) => {
+    if (!tripId || !selectedScheduleForExpense) return;
+
+    createExpenseMutation.mutate({
+      tripId,
+      expenseDate: selectedScheduleForExpense.schedule_date,
+      dayNumber: selectedScheduleForExpense.day_number,
+      category: name,
+      amount,
+      scheduleId,
+    });
+  };
 
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
@@ -141,6 +281,8 @@ function SchedulePageContent() {
         value={{
           onEditMemo: handleEditMemo,
           onScheduleClick: handleScheduleClick,
+          onOpenActionSheet: handleOpenActionSheet,
+          scheduleExpenses: scheduleExpenseMap,
         }}
       >
         <VStack gap={0} align="stretch">
@@ -202,6 +344,59 @@ function SchedulePageContent() {
           date={memoSelectedDay.date}
           initialMemoText={editingMemo?.memoText}
           isEditMode={!!editingMemo}
+        />
+      )}
+
+      {/* 일정 액션 시트 */}
+      {selectedScheduleForAction && (
+        <>
+          <ScheduleActionSheet
+            isOpen={isActionSheetOpen}
+            onClose={handleCloseActionSheet}
+            scheduleName={selectedScheduleForAction.place_name}
+            onEdit={handleEditSchedule}
+            onAddExpense={handleOpenExpenseSheet}
+            onDelete={handleDeleteSchedule}
+          />
+
+          <EditScheduleSheet
+            isOpen={isEditSheetOpen}
+            onClose={handleCloseEditSheet}
+            schedule={selectedScheduleForAction}
+            onSave={handleSaveEditSchedule}
+          />
+        </>
+      )}
+
+      {/* 일정 삭제 확인 다이얼로그 */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={closeDeleteConfirm}
+        title="일정 삭제"
+        confirmLabel="삭제"
+        isDangerous
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteScheduleMutation.isPending}
+      >
+        <Text>
+          <Text as="span" fontWeight="bold">
+            "{selectedScheduleForAction?.place_name}"
+          </Text>
+          <br />
+          일정을 정말로 삭제하시겠습니까?
+        </Text>
+      </ConfirmDialog>
+
+      {/* 경비 추가 바텀시트 */}
+      {selectedScheduleForExpense && (
+        <AddExpenseSheet
+          isOpen={isExpenseSheetOpen}
+          onClose={handleCloseExpenseSheet}
+          onSaveExpense={handleSaveExpense}
+          scheduleName={selectedScheduleForExpense.place_name}
+          scheduleId={selectedScheduleForExpense.id}
+          date={selectedScheduleForExpense.schedule_date}
+          tripId={tripId || ""}
         />
       )}
     </PageLayout>

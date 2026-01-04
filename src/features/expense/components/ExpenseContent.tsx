@@ -6,6 +6,7 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface DayExpense {
@@ -37,7 +38,11 @@ export default function ExpenseContent({
           .filter((day) => day.date === selectedDate)
           .map((day) => (
             <Box key={day.date}>
-              <ExpenseList expenses={day.expenses} tripId={tripId} />
+              <ExpenseList
+                expenses={day.expenses}
+                tripId={tripId}
+                selectedDate={selectedDate}
+              />
             </Box>
           ))
       )}

@@ -17,6 +17,7 @@ export interface UpdateExpenseParams {
   expenseId: string;
   category: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 // 경비 추가
@@ -70,14 +71,24 @@ export async function getExpensesByTrip(tripId: string): Promise<ExpenseRow[]> {
 export async function updateExpense(
   params: UpdateExpenseParams
 ): Promise<ExpenseRow> {
-  const { expenseId, category, amount } = params;
+  const { expenseId, category, amount, scheduleId } = params;
+
+  const updateData: {
+    expense_category: string;
+    amount: number;
+    schedule_id?: string | null;
+  } = {
+    expense_category: category,
+    amount: amount,
+  };
+
+  if (scheduleId !== undefined) {
+    updateData.schedule_id = scheduleId;
+  }
 
   const { data, error } = await supabase
     .from("trip_expenses")
-    .update({
-      expense_category: category,
-      amount: amount,
-    })
+    .update(updateData)
     .eq("id", expenseId)
     .select()
     .single();

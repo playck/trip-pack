@@ -7,11 +7,8 @@ export { default as DayScheduleCard } from "./list/DayScheduleCard";
 export { default as EditableScheduleList } from "./list/EditableScheduleList";
 
 export { default as AddScheduleSheet } from "./modals/AddScheduleSheet";
-export { default as DeleteScheduleModal } from "./modals/DeleteScheduleModal";
 export { default as MoveDateBottomSheet } from "./modals/MoveDateBottomSheet";
 export { default as AddMemoSheet } from "./modals/AddMemoSheet";
 
 export { default as ScheduleActionButtons } from "./ui/ScheduleActionButtons";
 export * from "./ui/SchedulePageStates";
-
-export { default as SwipeableScheduleItem } from "./schedule-items/SwipeableScheduleItem";

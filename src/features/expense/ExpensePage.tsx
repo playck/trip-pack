@@ -57,6 +57,7 @@ export default function ExpensePage() {
           id: expense.id,
           name: expense.expense_category,
           amount: expense.amount,
+          scheduleId: expense.schedule_id,
         }));
 
       return {
@@ -157,7 +158,7 @@ export default function ExpensePage() {
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         onSaveExpense={handleSaveExpense}
-        date={dateList.find((d) => d.date === selectedDate)?.label}
+        date={selectedDate}
         tripId={tripId}
       />
     </PageLayout>

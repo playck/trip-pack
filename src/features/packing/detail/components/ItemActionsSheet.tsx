@@ -1,8 +1,16 @@
-import { VStack, Button, Text, HStack, useDisclosure } from "@chakra-ui/react";
+import {
+  VStack,
+  Button,
+  Text,
+  HStack,
+  useDisclosure,
+  StackSeparator,
+} from "@chakra-ui/react";
 import { Edit3, Trash2 } from "lucide-react";
 
 import { BottomSheet, ConfirmDialog } from "@/shared/components";
 import { useDeleteItem } from "../../list/hooks/useDeleteItem";
+import { borderColors } from "@/shared/constants/colors";
 
 interface ItemActionsSheetProps {
   isOpen: boolean;
@@ -50,7 +58,12 @@ export default function ItemActionsSheet({
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={itemName}>
-      <VStack gap={0} w="full">
+      <VStack
+        gap={0}
+        p={3}
+        w="full"
+        separator={<StackSeparator borderColor={borderColors.default} />}
+      >
         <Button
           variant="ghost"
           size="lg"

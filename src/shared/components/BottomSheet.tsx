@@ -8,8 +8,9 @@ interface BottomSheetProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  minHeight?: string;
+  minHeight?: string | number;
   adjustForKeyboard?: boolean;
+  closeOnInteractOutside?: boolean;
 }
 
 export default function BottomSheet({
@@ -19,6 +20,7 @@ export default function BottomSheet({
   children,
   minHeight,
   adjustForKeyboard = true,
+  closeOnInteractOutside = true,
 }: BottomSheetProps) {
   const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
 
@@ -27,6 +29,7 @@ export default function BottomSheet({
       open={isOpen}
       onOpenChange={(e) => !e.open && onClose()}
       placement="bottom"
+      closeOnInteractOutside={closeOnInteractOutside}
     >
       <Portal>
         <Drawer.Backdrop />
