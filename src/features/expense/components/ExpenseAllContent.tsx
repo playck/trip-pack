@@ -6,6 +6,7 @@ interface ExpenseItem {
   id: string;
   name: string;
   amount: number;
+  scheduleId?: string | null;
 }
 
 interface DayExpense {
@@ -61,6 +62,7 @@ export default function ExpenseAllContent({
           date={day.label}
           expenses={day.expenses}
           tripId={tripId}
+          readOnly
         />
       ))}
     </VStack>

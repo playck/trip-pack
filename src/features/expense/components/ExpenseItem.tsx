@@ -27,6 +27,7 @@ interface ExpenseItemProps {
   showBorder?: boolean;
   exchangeInfo?: ExchangeInfo;
   selectedDate?: string;
+  readOnly?: boolean;
 }
 
 export default function ExpenseItem({
@@ -35,6 +36,7 @@ export default function ExpenseItem({
   showBorder = false,
   exchangeInfo,
   selectedDate,
+  readOnly = false,
 }: ExpenseItemProps) {
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -102,7 +104,7 @@ export default function ExpenseItem({
         borderBottom={showBorder ? "1px solid" : undefined}
         borderColor="gray.100"
       >
-        <Flex justify="space-between" align="center" pr={8}>
+        <Flex justify="space-between" align="center" pr={readOnly ? 0 : 8}>
           <Text fontSize="15px" color="gray.700">
             {expense.name}
           </Text>
@@ -117,62 +119,68 @@ export default function ExpenseItem({
           </HStack>
         </Flex>
 
-        <IconButton
-          aria-label="경비 관리"
-          variant="ghost"
-          size="xs"
-          color="gray.400"
-          position="absolute"
-          right={0}
-          top="50%"
-          transform="translateY(-50%)"
-          onClick={() => setIsActionSheetOpen(true)}
-        >
-          <MoreVertical size={16} />
-        </IconButton>
+        {!readOnly && (
+          <IconButton
+            aria-label="경비 관리"
+            variant="ghost"
+            size="xs"
+            color="gray.400"
+            position="absolute"
+            right={0}
+            top="50%"
+            transform="translateY(-50%)"
+            onClick={() => setIsActionSheetOpen(true)}
+          >
+            <MoreVertical size={16} />
+          </IconButton>
+        )}
       </Box>
 
-      <ExpenseActionSheet
-        isOpen={isActionSheetOpen}
-        onClose={() => setIsActionSheetOpen(false)}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-        expenseName={expense.name}
-      />
+      {!readOnly && (
+        <>
+          <ExpenseActionSheet
+            isOpen={isActionSheetOpen}
+            onClose={() => setIsActionSheetOpen(false)}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteClick}
+            expenseName={expense.name}
+          />
 
-      <EditExpenseSheet
-        isOpen={isEditSheetOpen}
-        onClose={() => setIsEditSheetOpen(false)}
-        onSaveExpense={handleEditSave}
-        initialName={expense.name}
-        initialAmount={expense.amount}
-        initialScheduleId={expense.scheduleId}
-        tripId={tripId}
-        selectedDate={selectedDate}
-      />
+          <EditExpenseSheet
+            isOpen={isEditSheetOpen}
+            onClose={() => setIsEditSheetOpen(false)}
+            onSaveExpense={handleEditSave}
+            initialName={expense.name}
+            initialAmount={expense.amount}
+            initialScheduleId={expense.scheduleId}
+            tripId={tripId}
+            selectedDate={selectedDate}
+          />
 
-      <ConfirmDialog
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="경비 삭제"
-        children={
-          <Text>
-            <Text as="span" fontWeight="bold">
-              "{expense.name}"
-            </Text>{" "}
-            경비를 삭제하시겠습니까?
-            <br />
-            <Text as="span" color="red.600" fontWeight="medium">
-              삭제된 경비는 복구할 수 없습니다.
-            </Text>
-          </Text>
-        }
-        confirmLabel="삭제하기"
-        cancelLabel="취소"
-        onConfirm={handleDeleteConfirm}
-        isLoading={deleteExpenseMutation.isPending}
-        isDangerous
-      />
+          <ConfirmDialog
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            title="경비 삭제"
+            children={
+              <Text>
+                <Text as="span" fontWeight="bold">
+                  "{expense.name}"
+                </Text>{" "}
+                경비를 삭제하시겠습니까?
+                <br />
+                <Text as="span" color="red.600" fontWeight="medium">
+                  삭제된 경비는 복구할 수 없습니다.
+                </Text>
+              </Text>
+            }
+            confirmLabel="삭제하기"
+            cancelLabel="취소"
+            onConfirm={handleDeleteConfirm}
+            isLoading={deleteExpenseMutation.isPending}
+            isDangerous
+          />
+        </>
+      )}
     </>
   );
 }
