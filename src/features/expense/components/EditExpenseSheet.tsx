@@ -107,12 +107,11 @@ export default function EditExpenseSheet({
               borderRadius="lg"
               borderLeft="4px solid"
               borderColor={colors.primary.palette}
-              transition="background-color 0.2s"
               cursor="pointer"
               onClick={() => setIsSelectScheduleOpen(true)}
             >
               <HStack justify="space-between" align="center">
-                <HStack gap={2}>
+                <HStack gap={2} flex={1} minW={0}>
                   <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
                     연결된 일정 -
                   </Text>
@@ -208,6 +207,7 @@ export default function EditExpenseSheet({
         isOpen={isSelectScheduleOpen}
         onClose={() => setIsSelectScheduleOpen(false)}
         onSelect={handleSelectSchedule}
+        onUnlink={() => setSelectedSchedule(null)}
         tripId={tripId}
         selectedScheduleId={selectedSchedule?.id}
         selectedDate={selectedDate}

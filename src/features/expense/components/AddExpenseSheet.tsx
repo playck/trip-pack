@@ -152,25 +152,22 @@ export default function AddExpenseSheet({
               borderRadius="lg"
               borderLeft="4px solid"
               borderColor={colors.primary.palette}
-              transition="background-color 0.2s"
               cursor="pointer"
               onClick={() => setIsSelectScheduleOpen(true)}
             >
               <HStack justify="space-between" align="center">
-                <HStack gap={2}>
-                  <>
-                    <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
-                      연결된 일정 -
-                    </Text>
-                    <Text
-                      fontSize="sm"
-                      fontWeight="medium"
-                      color="gray.800"
-                      lineClamp={1}
-                    >
-                      {selectedSchedule.name}
-                    </Text>
-                  </>
+                <HStack gap={2} flex={1} minW={0}>
+                  <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
+                    연결된 일정 -
+                  </Text>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color="gray.800"
+                    lineClamp={1}
+                  >
+                    {selectedSchedule.name}
+                  </Text>
                 </HStack>
                 <Text fontSize="xs" color="gray.500" fontWeight="medium">
                   변경
@@ -310,6 +307,7 @@ export default function AddExpenseSheet({
         onClose={() => setIsSelectScheduleOpen(false)}
         tripId={tripId}
         onSelect={handleSelectSchedule}
+        onUnlink={() => setSelectedSchedule(null)}
         selectedScheduleId={selectedSchedule?.id}
         selectedDate={date}
       />

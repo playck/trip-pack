@@ -5,13 +5,14 @@ import BottomSheet from "@/shared/components/BottomSheet";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import { isMemo } from "@/features/schedule/utils/scheduleHelpers";
 import type { Schedule } from "@/features/schedule/types";
-import { colors } from "@/shared/constants/colors";
+import { colors, statusColors } from "@/shared/constants/colors";
 
 interface SelectScheduleSheetProps {
   isOpen: boolean;
   onClose: () => void;
   tripId: string;
   onSelect: (schedule: Schedule) => void;
+  onUnlink?: () => void;
   selectedScheduleId?: string;
   selectedDate?: string;
 }
@@ -21,6 +22,7 @@ export default function SelectScheduleSheet({
   onClose,
   tripId,
   onSelect,
+  onUnlink,
   selectedScheduleId,
   selectedDate,
 }: SelectScheduleSheetProps) {
@@ -120,13 +122,19 @@ export default function SelectScheduleSheet({
                             </Text>
                           )}
                         </VStack>
-                        {isSelected && (
+                        {isSelected && onUnlink && (
                           <Badge
-                            colorPalette={colors.primary.palette}
-                            variant="solid"
+                            colorPalette={statusColors.error.palette}
+                            variant="surface"
                             size="sm"
+                            cursor="pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onUnlink();
+                              onClose();
+                            }}
                           >
-                            선택됨
+                            해제
                           </Badge>
                         )}
                       </HStack>
