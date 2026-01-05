@@ -10,7 +10,6 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useTripWeather, getWeatherEmoji } from "./useTripWeahter";
-import { colorCombinations } from "../../constants/colors";
 
 dayjs.locale("ko");
 
@@ -36,32 +35,13 @@ export default function WeatherCard({
   });
 
   if (error) {
-    return (
-      <Box
-        p={3}
-        bg={colorCombinations.defaultCard.background}
-        borderRadius="lg"
-        borderWidth="1px"
-        borderColor={colorCombinations.defaultCard.border}
-      >
-        <Text color="gray.500" textAlign="center" fontSize="sm">
-          날씨 정보를 불러올 수 없습니다
-        </Text>
-      </Box>
-    );
+    return <></>;
   }
 
   if (isLoading) {
     return (
-      <Box
-        p={3}
-        bg={colorCombinations.defaultCard.background}
-        borderRadius="lg"
-        borderWidth="1px"
-        borderColor={colorCombinations.defaultCard.border}
-      >
+      <Box p={1}>
         <VStack gap={2} align="stretch">
-          <Skeleton height="20px" width="150px" />
           <Grid templateColumns="repeat(4, 1fr)" gap={2}>
             {[...Array(4)].map((_, index) => (
               <GridItem key={index}>
@@ -79,21 +59,8 @@ export default function WeatherCard({
   }
 
   return (
-    <Box
-      p={2}
-      bg={colorCombinations.defaultCard.background}
-      borderRadius="lg"
-      borderWidth="1px"
-      borderColor={colorCombinations.defaultCard.border}
-    >
+    <Box px={1}>
       <VStack gap={2} align="stretch">
-        {/* 헤더 */}
-        <Box>
-          <Text fontSize="sm" fontWeight="medium" color="gray.600">
-            {tripWeather.cityName} 날씨
-          </Text>
-        </Box>
-
         <Grid
           templateColumns={`repeat(${Math.min(tripWeather.forecast.length, 4)}, 1fr)`}
           gap={2}
