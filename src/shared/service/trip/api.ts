@@ -26,6 +26,28 @@ export const updateTripTitle = async (
   }
 };
 
+// 여행 기간을 수정하는 API
+export const updateTripDates = async (
+  tripId: string,
+  startDate: string,
+  endDate: string
+): Promise<void> => {
+  if (!startDate || !endDate) {
+    throw new Error("여행 시작일과 종료일을 모두 선택해주세요.");
+  }
+
+  const { error } = await supabase
+    .from("trips")
+    .update({
+      start_date: startDate,
+      end_date: endDate,
+    })
+    .eq("id", tripId);
+
+  if (error) {
+    throw new Error(`여행 기간 수정 실패: ${error.message}`);
+  }
+};
 // 여행을 삭제하는 API
 export const deleteTrip = async (tripId: string): Promise<void> => {
   const { error } = await supabase.from("trips").delete().eq("id", tripId);
