@@ -19,7 +19,7 @@ export function useUpdateTripTitle(
     mutationFn: (newTitle: string) => updateTripTitle(tripId, newTitle),
     onSuccess: (_, newTitle) => {
       queryClient.invalidateQueries({
-        queryKey: ["trips", tripId],
+        queryKey: ["tripInfo", tripId],
       });
 
       if (callback?.onSuccess) {

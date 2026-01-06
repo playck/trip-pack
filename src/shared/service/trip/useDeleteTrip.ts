@@ -20,7 +20,7 @@ export function useDeleteTrip(callback?: UseDeleteTripParams) {
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["trips", tripId],
+        queryKey: ["tripInfo", tripId],
       });
 
       queryClient.invalidateQueries({
