@@ -63,12 +63,13 @@ export default function Modal({
           display="flex"
           alignItems="center"
           justifyContent="center"
-          minH="100vh"
+          position="fixed"
+          inset="0"
         >
           <Dialog.Content
             borderRadius="xl"
-            maxW={{ base: "90vw", sm: "auto" }}
-            mx={4}
+            width={{ base: "90vw", sm: "100%" }}
+            mx="auto"
           >
             {/* Header */}
             {(title || !hideCloseButton) && (

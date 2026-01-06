@@ -151,7 +151,7 @@ export default function Calendar({
   );
 
   return (
-    <div style={{ maxWidth: "500px", width: "100%", marginTop: "10px" }}>
+    <div style={{ maxWidth: "500px", width: "100%", margin: "10px auto 0" }}>
       <div css={CalendarStyle("#319795")}>
         <DatePicker
           renderCustomHeader={renderHeader}
@@ -251,7 +251,7 @@ const CalendarStyle = (selectedDateColor: string) => css`
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       padding: 0 5px;
     }
 
@@ -269,7 +269,7 @@ const CalendarStyle = (selectedDateColor: string) => css`
       .day-name {
         flex: 1;
         width: 48px;
-        padding: 14px 0;
+        padding: 8px 0;
       }
 
       .is-sunday {
