@@ -271,7 +271,12 @@ function SchedulePageContent() {
       >
         <Share2 size={20} />
       </IconButton>
-      <TripActionMenu tripId={tripId} tripTitle={tripInfo.title || "여행"} />
+      <TripActionMenu
+        tripId={tripId}
+        tripTitle={tripInfo.title || "여행"}
+        startDate={tripInfo.startDate}
+        endDate={tripInfo.endDate}
+      />
     </HStack>
   );
 

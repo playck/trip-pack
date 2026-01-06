@@ -116,6 +116,8 @@ export default function ExpensePage() {
             <TripActionMenu
               tripId={tripId}
               tripTitle={tripInfo.title || "여행"}
+              startDate={tripInfo.startDate}
+              endDate={tripInfo.endDate}
             />
           </HStack>
         }

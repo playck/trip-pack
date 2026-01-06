@@ -7,21 +7,26 @@ import {
   HStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Settings, Edit3, Trash2 } from "lucide-react";
+import { Settings, Edit3, Trash2, CalendarDays } from "lucide-react";
 import { useOnClickOutside } from "usehooks-ts";
 
 import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
 import { DeleteTripModal } from "./DeleteTripModal";
 import { TripEditModal } from "./TripEditModal";
+import { TripDateEditModal } from "./TripDateEditModal";
 
 interface TripActionMenuProps {
   tripId: string;
   tripTitle: string;
+  startDate: string;
+  endDate: string;
 }
 
 export default function TripActionMenu({
   tripId,
   tripTitle,
+  startDate,
+  endDate,
 }: TripActionMenuProps) {
   const { open: isOpen, onToggle, onClose } = useDisclosure();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,6 +45,12 @@ export default function TripActionMenu({
     onClose: onEditModalClose,
   } = useDisclosure();
 
+  const {
+    open: isDateEditModalOpen,
+    onOpen: onDateEditModalOpen,
+    onClose: onDateEditModalClose,
+  } = useDisclosure();
+
   const deleteTripMutation = useDeleteTrip();
 
   const handleDeleteTrip = () => {
@@ -50,6 +61,11 @@ export default function TripActionMenu({
   const openEditModal = () => {
     onClose();
     onEditModalOpen();
+  };
+
+  const openDateEditModal = () => {
+    onClose();
+    onDateEditModalOpen();
   };
 
   const openDeleteModal = () => {
@@ -103,11 +119,25 @@ export default function TripActionMenu({
               as="button"
               px={4}
               py={2}
+              textAlign="left"
+              w="full"
               _hover={{ bg: "gray.50" }}
-              onClick={openDeleteModal}
+              onClick={openDateEditModal}
+            >
+              <HStack gap={3}>
+                <CalendarDays size={16} />
+                <Text fontSize="sm">여행 기간 수정</Text>
+              </HStack>
+            </Box>
+            <Box
+              as="button"
+              px={4}
+              py={2}
               textAlign="left"
               w="full"
               color="red.500"
+              _hover={{ bg: "gray.50" }}
+              onClick={openDeleteModal}
             >
               <HStack gap={3}>
                 <Trash2 size={16} />
@@ -123,6 +153,14 @@ export default function TripActionMenu({
         onClose={onEditModalClose}
         tripId={tripId}
         currentTitle={tripTitle}
+      />
+
+      <TripDateEditModal
+        isOpen={isDateEditModalOpen}
+        onClose={onDateEditModalClose}
+        tripId={tripId}
+        currentStartDate={startDate}
+        currentEndDate={endDate}
       />
 
       <DeleteTripModal
