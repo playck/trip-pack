@@ -152,8 +152,8 @@ export default function AddExpenseSheet({
               borderRadius="lg"
               borderLeft="4px solid"
               borderColor={colors.primary.palette}
-              cursor="pointer"
-              onClick={() => setIsSelectScheduleOpen(true)}
+              cursor={scheduleId ? "default" : "pointer"}
+              onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
             >
               <HStack justify="space-between" align="center">
                 <HStack gap={2} flex={1} minW={0}>
@@ -169,9 +169,11 @@ export default function AddExpenseSheet({
                     {selectedSchedule.name}
                   </Text>
                 </HStack>
-                <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                  변경
-                </Text>
+                {!scheduleId && (
+                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                    변경
+                  </Text>
+                )}
               </HStack>
             </Box>
           )}
