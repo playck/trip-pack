@@ -1,11 +1,4 @@
-import {
-  VStack,
-  Text,
-  Input,
-  Textarea,
-  Button,
-  HStack,
-} from "@chakra-ui/react";
+import { VStack, Text, Input, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 
 import { BottomSheet } from "@/shared/components";
@@ -78,7 +71,20 @@ export default function EditItemSheet({
   }, [isOpen, item.name, item.notes]);
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleCancel} title="수정하기">
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={handleCancel}
+      title="수정하기"
+      primaryButton={{
+        onClick: handleItemSave,
+        disabled: !itemName.trim() || updateItemMutation.isPending,
+        isLoading: updateItemMutation.isPending,
+      }}
+      secondaryButton={{
+        onClick: handleCancel,
+        disabled: updateItemMutation.isPending,
+      }}
+    >
       <VStack gap={4} p={3} w="full" align="stretch">
         <VStack gap={2} align="stretch">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -117,34 +123,6 @@ export default function EditItemSheet({
             onChange={(e) => setItemNotes(e.target.value)}
           />
         </VStack>
-
-        <HStack gap={3}>
-          <Button
-            variant="outline"
-            size="lg"
-            flex={1}
-            borderColor="gray.300"
-            color="gray.700"
-            onClick={handleCancel}
-            disabled={updateItemMutation.isPending}
-          >
-            취소
-          </Button>
-          <Button
-            size="lg"
-            flex={1}
-            colorPalette={colors.primary.palette}
-            disabled={!itemName.trim() || updateItemMutation.isPending}
-            loading={updateItemMutation.isPending}
-            _disabled={{
-              opacity: 0.6,
-              cursor: "not-allowed",
-            }}
-            onClick={handleItemSave}
-          >
-            저장
-          </Button>
-        </HStack>
       </VStack>
     </BottomSheet>
   );

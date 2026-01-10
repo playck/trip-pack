@@ -35,7 +35,7 @@ export default function TemplateListSheet({
   if (isLoading) {
     return (
       <VStack gap={4} align="stretch" p={4} maxH="600px">
-        <Box flex="1" overflowY="auto" pr={2}>
+        <Box flex="1" overflowY="auto" pr={0}>
           <Box
             w="full"
             bg="gray.50"
@@ -80,8 +80,8 @@ export default function TemplateListSheet({
   }
 
   return (
-    <VStack gap={4} align="stretch" p={4} maxH="600px">
-      <Box flex="1" overflowY="auto" pr={2}>
+    <VStack gap={4} align="stretch" px={4} maxH="600px">
+      <Box flex="1" overflowY="auto" pr={0}>
         <VStack gap={2}>
           {templates.map((template) => (
             <Box
@@ -116,10 +116,6 @@ export default function TemplateListSheet({
           ))}
         </VStack>
       </Box>
-
-      <Button variant="outline" onClick={onClose} flexShrink={0}>
-        닫기
-      </Button>
 
       {selectedCheckList && (
         <CheckListBottomSheet

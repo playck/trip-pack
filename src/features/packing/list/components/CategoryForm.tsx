@@ -1,71 +1,22 @@
-import { useState } from "react";
-import {
-  VStack,
-  HStack,
-  Input,
-  Button,
-  Text,
-  Box,
-  SimpleGrid,
-} from "@chakra-ui/react";
-import { colors } from "@/shared/constants/colors";
+import { VStack, Input, Text, Box, SimpleGrid } from "@chakra-ui/react";
 import { CATEGORY_ICONS } from "../constants/category";
 
 interface CategoryFormProps {
-  onSave: (category: { categoryName: string; iconKey: string }) => void;
-  onCancel: () => void;
-  initialData?: { categoryName: string; iconKey: string };
-  isLoading?: boolean;
+  categoryName: string;
+  selectedIconKey: string;
+  onCategoryNameChange: (value: string) => void;
+  onIconKeyChange: (key: string) => void;
 }
 
 export default function CategoryForm({
-  onSave,
-  onCancel,
-  initialData,
-  isLoading = false,
+  categoryName,
+  selectedIconKey,
+  onCategoryNameChange,
+  onIconKeyChange,
 }: CategoryFormProps) {
-  const [categoryName, setCategoryName] = useState(
-    initialData?.categoryName || ""
-  );
-  const [selectedIconKey, setSelectedIconKey] = useState<string>(
-    initialData?.iconKey || ""
-  );
-
-  const handlAddCategory = () => {
-    const name = categoryName.trim();
-
-    if (!name) {
-      alert("카테고리 이름을 입력해주세요.");
-      return;
-    }
-
-    if (name.length > 20) {
-      alert("카테고리 이름은 20자 이하로 입력해주세요.");
-      return;
-    }
-
-    const validNameRegex = /^[가-힣a-zA-Z0-9\s\-_]+$/;
-    if (!validNameRegex.test(name)) {
-      alert(
-        "카테고리 이름에는 한글, 영문, 숫자, 공백, -, _ 만 사용할 수 있습니다."
-      );
-      return;
-    }
-
-    if (!selectedIconKey) {
-      alert("아이콘을 선택해주세요.");
-      return;
-    }
-
-    onSave({
-      categoryName: name,
-      iconKey: selectedIconKey,
-    });
-  };
-
   return (
-    <VStack gap={0} w="full" h="full" maxH="80vh">
-      <Box flex={1} overflowY="auto" w="full" px={4} pt={2}>
+    <VStack gap={0} w="full" h="full">
+      <Box flex={1} w="full" px={4}>
         <VStack gap={6} w="full">
           {/* 카테고리명 입력 */}
           <VStack gap={2} w="full">
@@ -75,7 +26,7 @@ export default function CategoryForm({
             <Input
               placeholder="카테고리 이름을 입력하세요 (최대 20자)"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              onChange={(e) => onCategoryNameChange(e.target.value)}
               size="lg"
               borderRadius="xl"
               maxLength={20}
@@ -103,7 +54,7 @@ export default function CategoryForm({
                     alignItems="center"
                     cursor="pointer"
                     gap={2}
-                    onClick={() => setSelectedIconKey(key)}
+                    onClick={() => onIconKeyChange(key)}
                   >
                     <IconComponent
                       size={24}
@@ -115,44 +66,6 @@ export default function CategoryForm({
             </SimpleGrid>
           </VStack>
         </VStack>
-      </Box>
-
-      {/* 저장/취소 버튼*/}
-      <Box
-        w="full"
-        position="sticky"
-        bottom={0}
-        left={0}
-        right={0}
-        p={4}
-        mt={2}
-        bg="white"
-        borderTop="1px"
-        borderColor="gray.100"
-      >
-        <HStack gap={3}>
-          <Button
-            flex={1}
-            variant="outline"
-            size="lg"
-            borderRadius="xl"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            취소
-          </Button>
-          <Button
-            flex={1}
-            colorPalette={colors.primary.palette}
-            variant="solid"
-            size="lg"
-            borderRadius="xl"
-            onClick={handlAddCategory}
-            loading={isLoading}
-          >
-            저장
-          </Button>
-        </HStack>
       </Box>
     </VStack>
   );

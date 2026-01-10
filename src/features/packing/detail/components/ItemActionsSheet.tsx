@@ -60,7 +60,7 @@ export default function ItemActionsSheet({
     <BottomSheet isOpen={isOpen} onClose={onClose} title={itemName}>
       <VStack
         gap={0}
-        p={3}
+        px={3}
         w="full"
         separator={<StackSeparator borderColor={borderColors.default} />}
       >
@@ -70,6 +70,7 @@ export default function ItemActionsSheet({
           w="full"
           h="14"
           justifyContent="flex-start"
+          px={2}
           color="gray.800"
           fontWeight="medium"
           onClick={handleEdit}
@@ -86,6 +87,7 @@ export default function ItemActionsSheet({
           w="full"
           h="14"
           justifyContent="flex-start"
+          px={2}
           color="red.500"
           fontWeight="medium"
           onClick={handleDeleteBtnClick}
