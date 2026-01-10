@@ -119,8 +119,11 @@ export default function ListView({ categories }: ListViewProps) {
 
       <VStack gap={2} align="stretch" w="full">
         {categories.map((category) => {
-          const IconComponent = (CATEGORY_ICONS[category.name] ||
-            Package) as LucideIcon;
+          const IconComponent = (
+            category.icon_key
+              ? CATEGORY_ICONS[category.icon_key] || Package
+              : CATEGORY_ICONS[category.name] || Package
+          ) as LucideIcon;
           const isExpanded = expandedCategories[category.name] ?? true;
           const { completed, total } = getCompletionCount(category);
           const sortedItems = sortedItemsByCategory[category.name] || [];
