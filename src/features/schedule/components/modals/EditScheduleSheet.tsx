@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { VStack, Input, Button, Text, Textarea, Box } from "@chakra-ui/react";
+import { VStack, Input, Text, Textarea } from "@chakra-ui/react";
 import { BottomSheet } from "@/shared/components";
 import type { Schedule } from "../../types";
 
@@ -40,9 +40,22 @@ export default function EditScheduleSheet({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="일정 수정">
-      <VStack gap={4} p={4} pt={0} align="stretch">
-        <VStack gap={2} align="stretch">
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title="일정 수정"
+      primaryButton={{
+        text: "저장하기",
+        onClick: handleSave,
+        disabled: !placeName.trim(),
+      }}
+      secondaryButton={{
+        text: "취소",
+        onClick: onClose,
+      }}
+    >
+      <VStack gap={4} p={0} align="stretch">
+        <VStack gap={2} align="stretch" px={4}>
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             장소명
           </Text>
@@ -55,7 +68,7 @@ export default function EditScheduleSheet({
           />
         </VStack>
 
-        <VStack gap={2} align="stretch">
+        <VStack gap={2} align="stretch" px={4}>
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             메모
           </Text>
@@ -69,18 +82,6 @@ export default function EditScheduleSheet({
             resize="none"
           />
         </VStack>
-
-        <Box pt={2}>
-          <Button
-            width="full"
-            size="lg"
-            colorPalette="teal"
-            onClick={handleSave}
-            disabled={!placeName.trim()}
-          >
-            저장하기
-          </Button>
-        </Box>
       </VStack>
     </BottomSheet>
   );

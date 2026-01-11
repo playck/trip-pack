@@ -1,7 +1,22 @@
 import React from "react";
 import { X } from "lucide-react";
-import { Drawer, Portal, IconButton, Text } from "@chakra-ui/react";
+import {
+  Drawer,
+  Portal,
+  IconButton,
+  Text,
+  Button,
+  HStack,
+} from "@chakra-ui/react";
 import { useKeyboardOffset } from "@/shared/hooks";
+import { colors } from "@/shared/constants/colors";
+
+interface BottomSheetAction {
+  text?: string;
+  onClick: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+}
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -11,6 +26,8 @@ interface BottomSheetProps {
   minHeight?: string | number;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
+  primaryButton?: BottomSheetAction;
+  secondaryButton?: BottomSheetAction;
 }
 
 export default function BottomSheet({
@@ -21,6 +38,8 @@ export default function BottomSheet({
   minHeight,
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
+  primaryButton,
+  secondaryButton,
 }: BottomSheetProps) {
   const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
 
@@ -72,6 +91,42 @@ export default function BottomSheet({
               </Drawer.CloseTrigger>
             </Drawer.Header>
             <Drawer.Body p={0}>{children}</Drawer.Body>
+            {(primaryButton || secondaryButton) && (
+              <Drawer.Footer p={3.5} bg="white">
+                <HStack gap={3} w="full">
+                  {secondaryButton && (
+                    <Button
+                      variant="surface"
+                      flex={1}
+                      size="lg"
+                      borderRadius="xl"
+                      colorPalette="gray"
+                      color="gray.700"
+                      onClick={secondaryButton.onClick}
+                      disabled={
+                        secondaryButton.disabled || secondaryButton.isLoading
+                      }
+                    >
+                      {secondaryButton.text || "취소"}
+                    </Button>
+                  )}
+                  {primaryButton && (
+                    <Button
+                      variant="solid"
+                      flex={1}
+                      size="lg"
+                      borderRadius="xl"
+                      colorPalette={colors.primary.palette}
+                      onClick={primaryButton.onClick}
+                      loading={primaryButton.isLoading}
+                      disabled={primaryButton.disabled}
+                    >
+                      {primaryButton.text || "저장"}
+                    </Button>
+                  )}
+                </HStack>
+              </Drawer.Footer>
+            )}
           </Drawer.Content>
         </Drawer.Positioner>
       </Portal>

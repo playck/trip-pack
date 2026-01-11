@@ -141,8 +141,19 @@ export default function AddExpenseSheet({
 
   return (
     <>
-      <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 추가">
-        <VStack gap={3} w="full" p={4} pt={0}>
+      <BottomSheet
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="경비 추가"
+        primaryButton={{
+          onClick: handleSave,
+          disabled: !isCanSaveExpense,
+        }}
+        secondaryButton={{
+          onClick: handleClose,
+        }}
+      >
+        <VStack gap={3} w="full" px={4}>
           {/* 일정 정보 표시 */}
           {selectedSchedule && (
             <Box
@@ -152,8 +163,8 @@ export default function AddExpenseSheet({
               borderRadius="lg"
               borderLeft="4px solid"
               borderColor={colors.primary.palette}
-              cursor="pointer"
-              onClick={() => setIsSelectScheduleOpen(true)}
+              cursor={scheduleId ? "default" : "pointer"}
+              onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
             >
               <HStack justify="space-between" align="center">
                 <HStack gap={2} flex={1} minW={0}>
@@ -169,9 +180,11 @@ export default function AddExpenseSheet({
                     {selectedSchedule.name}
                   </Text>
                 </HStack>
-                <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                  변경
-                </Text>
+                {!scheduleId && (
+                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                    변경
+                  </Text>
+                )}
               </HStack>
             </Box>
           )}
@@ -225,6 +238,7 @@ export default function AddExpenseSheet({
                   colorPalette="teal"
                   h="24px"
                   px={2}
+                  pb={0}
                   onClick={toggleCurrencyType}
                 >
                   <HStack gap={1}>
@@ -275,30 +289,6 @@ export default function AddExpenseSheet({
               </Text>
             </Box>
           </VStack>
-
-          <HStack gap={2} w="full" h="12">
-            <Button
-              variant="outline"
-              size="lg"
-              flex={1}
-              fontWeight="medium"
-              onClick={handleClose}
-            >
-              취소
-            </Button>
-
-            <Button
-              variant="solid"
-              size="lg"
-              flex={1}
-              colorPalette="teal"
-              fontWeight="medium"
-              onClick={handleSave}
-              disabled={!isCanSaveExpense}
-            >
-              저장
-            </Button>
-          </HStack>
         </VStack>
       </BottomSheet>
 

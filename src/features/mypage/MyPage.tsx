@@ -5,13 +5,13 @@ import ProfileCard from "./components/ProfileCard";
 import SettingMenu from "./components/SettingMenu";
 
 export default function MyPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <PageLayout>
       <Box py={6}>
         <VStack gap={8} align="stretch">
-          <ProfileCard user={user} />
+          <ProfileCard user={user} isLoading={loading} />
           <SettingMenu />
         </VStack>
       </Box>

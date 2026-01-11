@@ -17,12 +17,14 @@ import {
   FloatingAddButton,
   LoadingSpinner,
 } from "@/shared/components";
+import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { useTripDetail } from "@/features/main/hooks/useTripDetail";
 
 import PackingItemList from "./components/PackingItemList";
 import { ItemForm, DeleteCategoryModal, SearchBar } from "./components";
 import { useTripChecklist } from "../list/hooks/useTripChecklist";
+import { useCreateItem } from "../list/hooks/useCreateItem";
 import { useDeleteCategory } from "../list/hooks/useDeleteCategory";
 import type { CategoryWithItems } from "../type";
 
@@ -41,9 +43,19 @@ export default function CategoryDetailPage() {
     from: "/packing/category/$tripId",
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemNotes, setNewItemNotes] = useState("");
+
   const categoryParam = (search as { category?: string }).category || "";
   const { categories, isLoading, error } = useTripChecklist(tripId || "");
   const { trip } = useTripDetail(tripId || "");
+  const createItemMutation = useCreateItem(tripId, {
+    onSuccess: () => {
+      onClose();
+      setNewItemName("");
+      setNewItemNotes("");
+    },
+  });
   const deleteCategoryMutation = useDeleteCategory(tripId);
 
   const countryCode = trip?.country_code;
@@ -105,6 +117,40 @@ export default function CategoryDetailPage() {
     }
   };
 
+  const handleSaveItem = () => {
+    if (!newItemName.trim()) {
+      toaster.create({
+        title: "입력 오류",
+        description: "아이템 이름을 입력해주세요.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!category?.id) {
+      toaster.create({
+        title: "오류가 발생했습니다",
+        description: "카테고리 정보를 찾을 수 없습니다.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    createItemMutation.mutate({
+      categoryId: category.id,
+      name: newItemName.trim(),
+      notes: newItemNotes.trim() || undefined,
+    });
+  };
+
+  const handleCloseItemSheet = () => {
+    onClose();
+    setNewItemName("");
+    setNewItemNotes("");
+  };
+
   return (
     <Box bg="gray.50" minH="100vh">
       <Container maxW="6xl" py={0} px={0}>
@@ -162,8 +208,26 @@ export default function CategoryDetailPage() {
 
       <FloatingAddButton onClick={handleAddItem} ariaLabel="새 아이템 추가" />
 
-      <BottomSheet isOpen={isOpen} onClose={onClose} title="새 아이템 추가">
-        <ItemForm tripId={tripId} categoryId={category?.id} onClose={onClose} />
+      <BottomSheet
+        isOpen={isOpen}
+        onClose={handleCloseItemSheet}
+        title="새 아이템 추가"
+        primaryButton={{
+          text: "저장",
+          onClick: handleSaveItem,
+          isLoading: createItemMutation.isPending,
+        }}
+        secondaryButton={{
+          text: "취소",
+          onClick: handleCloseItemSheet,
+        }}
+      >
+        <ItemForm
+          name={newItemName}
+          notes={newItemNotes}
+          onNameChange={setNewItemName}
+          onNotesChange={setNewItemNotes}
+        />
       </BottomSheet>
 
       <DeleteCategoryModal

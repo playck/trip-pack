@@ -96,7 +96,18 @@ export default function EditExpenseSheet({
 
   return (
     <>
-      <BottomSheet isOpen={isOpen} onClose={handleClose} title="경비 수정">
+      <BottomSheet
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="경비 수정"
+        primaryButton={{
+          onClick: handleSave,
+          disabled: !isCanSaveExpense,
+        }}
+        secondaryButton={{
+          onClick: handleClose,
+        }}
+      >
         <VStack gap={4} w="full" p={4}>
           {/* 일정 정보 표시 */}
           {selectedSchedule && (
@@ -176,30 +187,6 @@ export default function EditExpenseSheet({
               borderRadius="xl"
             />
           </VStack>
-
-          <HStack gap={2} w="full" h="12" mt={2}>
-            <Button
-              variant="outline"
-              size="lg"
-              flex={1}
-              fontWeight="medium"
-              onClick={handleClose}
-            >
-              취소
-            </Button>
-
-            <Button
-              variant="solid"
-              size="lg"
-              flex={1}
-              colorPalette="teal"
-              fontWeight="medium"
-              onClick={handleSave}
-              disabled={!isCanSaveExpense}
-            >
-              저장
-            </Button>
-          </HStack>
         </VStack>
       </BottomSheet>
 

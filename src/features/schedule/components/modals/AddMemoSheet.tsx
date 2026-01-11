@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { VStack, HStack, Textarea, Button } from "@chakra-ui/react";
+import { VStack, Textarea } from "@chakra-ui/react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
 
@@ -48,8 +48,15 @@ export default function AddMemoSheet({
       onClose={handleClose}
       title={`${dayNumber}일차 메모 ${isEditMode ? "수정" : "추가"}`}
       minHeight="35vh"
+      primaryButton={{
+        onClick: handleMemoSave,
+        disabled: !memoText.trim(),
+      }}
+      secondaryButton={{
+        onClick: handleClose,
+      }}
     >
-      <VStack gap={3} w="full" p={3}>
+      <VStack gap={3} w="full" px={3}>
         <Textarea
           placeholder="메모를 입력 해 주세요."
           value={memoText}
@@ -58,30 +65,6 @@ export default function AddMemoSheet({
           autoFocus
           w="full"
         />
-
-        <HStack gap={2} w="full" h="12">
-          <Button
-            variant="outline"
-            size="lg"
-            flex={1}
-            fontWeight="medium"
-            onClick={handleClose}
-          >
-            취소
-          </Button>
-
-          <Button
-            variant="solid"
-            size="lg"
-            flex={1}
-            colorPalette="teal"
-            fontWeight="medium"
-            onClick={handleMemoSave}
-            disabled={!memoText.trim()}
-          >
-            저장
-          </Button>
-        </HStack>
       </VStack>
     </BottomSheet>
   );

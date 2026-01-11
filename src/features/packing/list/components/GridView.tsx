@@ -13,8 +13,9 @@ export default function GridView({ categories }: GridViewProps) {
   return (
     <SimpleGrid columns={3} gap={4} w="full" pb="60px">
       {categories.map((category) => {
-        // 카테고리 이름으로 아이콘 매핑
-        const icon = CATEGORY_ICONS[category.name] || Package;
+        const icon = category.icon_key
+          ? CATEGORY_ICONS[category.icon_key] || Package
+          : CATEGORY_ICONS[category.name] || Package;
 
         return (
           <CategoryBox key={category.id} category={category} icon={icon} />
