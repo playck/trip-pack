@@ -44,7 +44,7 @@ export default function EditableScheduleList({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "8px",
+          gap: "12px",
           listStyle: "none",
           padding: 0,
           margin: 0,

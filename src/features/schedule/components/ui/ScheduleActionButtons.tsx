@@ -27,7 +27,8 @@ export default function ScheduleActionButtons({
     <Box
       position="sticky"
       bottom={0}
-      py={4}
+      pt={4}
+      pb={8}
       borderTopWidth="1px"
       borderColor={borderColors.default}
       bg="white"

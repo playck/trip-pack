@@ -19,7 +19,7 @@ export default function EditableScheduleItem({
     <Timeline.Item>
       <Timeline.Connector>
         <Timeline.Separator />
-        <Timeline.Indicator mt="5px">
+        <Timeline.Indicator mt={schedule.notes ? "0" : "5px"} bg="white">
           <MapPin size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>

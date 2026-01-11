@@ -19,7 +19,7 @@ export default function EditableMemoItem({
     <Timeline.Item>
       <Timeline.Connector>
         <Timeline.Separator />
-        <Timeline.Indicator mt="5px">
+        <Timeline.Indicator mt="6px" bg="white">
           <StickyNote size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>
