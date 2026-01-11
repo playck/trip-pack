@@ -29,12 +29,3 @@ export const LAYOUT_HEIGHTS = {
   TRIP_INFO_HEADER: TRIP_INFO_HEADER_HEIGHT, // 여행 정보 헤더 (40px)
   MAP: 200, // 지도 높이 (200px)
 } as const;
-
-/**
- * 일정 일차 카드 헤더의 sticky top 위치
- */
-export const DAY_CARD_STICKY_TOP =
-  LAYOUT_HEIGHTS.PAGE_HEADER +
-  LAYOUT_HEIGHTS.TRIP_INFO_HEADER +
-  LAYOUT_HEIGHTS.MAP +
-  5; // 헤더와 지도 사이 여백 5px

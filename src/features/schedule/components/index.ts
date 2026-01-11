@@ -1,4 +1,5 @@
 export { default as GoogleMapView } from "./map/GoogleMapView";
+export { default as MapCollapseButton } from "./map/MapCollapseButton";
 export { default as Marker } from "./map/Marker";
 export { default as MapWrapper } from "./map/MapWrapper";
 

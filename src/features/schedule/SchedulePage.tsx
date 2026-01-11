@@ -28,6 +28,7 @@ import {
   AddMemoSheet,
   ApiKeyMissingState,
   MapWrapper,
+  MapCollapseButton,
 } from "./components";
 import ScheduleActionSheet from "./components/modals/ScheduleActionSheet";
 import EditScheduleSheet from "./components/modals/EditScheduleSheet";
@@ -216,6 +217,7 @@ function SchedulePageContent() {
   const { handleScheduleShare } = useShareSchedule();
 
   const [isMapFullScreen, setIsMapFullScreen] = useState(false);
+  const [isMapCollapsed, setIsMapCollapsed] = useState(false);
 
   const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
   const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
@@ -305,21 +307,36 @@ function SchedulePageContent() {
           )}
 
           <MapWrapper isFullScreen={isMapFullScreen}>
-            <GoogleMapView
-              center={focusedLocation || mapCenter}
-              zoom={mapZoom}
-              height="200px"
-              markers={scheduleMarkers}
-              onFullScreenChange={setIsMapFullScreen}
-            />
+            <Box
+              transition="height 0.3s ease-in-out"
+              height={isMapCollapsed ? "0px" : "200px"}
+              overflow="hidden"
+              position="relative"
+              zIndex={1}
+            >
+              <GoogleMapView
+                center={focusedLocation || mapCenter}
+                zoom={mapZoom}
+                height="200px"
+                markers={scheduleMarkers}
+                onFullScreenChange={setIsMapFullScreen}
+              />
+            </Box>
+            {!isMapFullScreen && (
+              <MapCollapseButton
+                isCollapsed={isMapCollapsed}
+                onToggle={() => setIsMapCollapsed((prev) => !prev)}
+              />
+            )}
           </MapWrapper>
 
           {/* 일정표 */}
-          <Box pt={3} pb="300px" display={isMapFullScreen ? "none" : "block"}>
+          <Box mt={3} pb="300px" display={isMapFullScreen ? "none" : "block"}>
             <DayScheduleList
               tripId={tripId}
               startDate={tripInfo.startDate}
               endDate={tripInfo.endDate}
+              isMapCollapsed={isMapCollapsed}
               onAddSchedule={handleAddSchedule}
               onAddMemo={handleAddMemo}
             />

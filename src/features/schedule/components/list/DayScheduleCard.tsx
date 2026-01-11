@@ -11,7 +11,6 @@ import { useSchedulesByDay } from "../../hooks/useSchedulesByDay";
 import ScheduleItem from "../schedule-items/ScheduleItem";
 import MemoItem from "../schedule-items/MemoItem";
 import { isMemo } from "../../utils/scheduleHelpers";
-import { DAY_CARD_STICKY_TOP } from "../../constants";
 import type { Schedule } from "../../types";
 
 interface DayScheduleCardProps {
@@ -19,6 +18,7 @@ interface DayScheduleCardProps {
   dayNumber: number;
   date: string;
   formattedDate: string;
+  cardStickyTop?: number;
   onAddSchedule?: () => void;
   onAddMemo?: () => void;
 }
@@ -27,6 +27,7 @@ export default function DayScheduleCard({
   tripId,
   dayNumber,
   formattedDate,
+  cardStickyTop = 0,
   onAddSchedule,
   onAddMemo,
 }: DayScheduleCardProps) {
@@ -49,9 +50,9 @@ export default function DayScheduleCard({
 
   return (
     <Box
-      borderRadius="lg"
       borderWidth="1px"
       borderColor={borderColors.default}
+      borderTopRadius="lg"
       bg={componentColors.card.background}
     >
       {/* 헤더 */}
@@ -65,8 +66,9 @@ export default function DayScheduleCard({
         justify="space-between"
         align="center"
         position="sticky"
-        top={`${DAY_CARD_STICKY_TOP}px`}
+        top={`${cardStickyTop}px`}
         zIndex={5}
+        transition="top 0.3s ease-in-out"
       >
         <HStack gap={1.5} align="baseline">
           <Text fontSize="md" fontWeight="bold" color={colors.primary.fg}>
