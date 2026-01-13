@@ -8,5 +8,6 @@ export const useTripInfo = (tripId: string | undefined) => {
       if (!tripId) throw new Error("Trip ID가 필요합니다.");
       return getTripInfo(tripId);
     },
+    staleTime: 1000 * 60 * 5,
   });
 };
