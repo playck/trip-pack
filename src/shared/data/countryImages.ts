@@ -89,12 +89,64 @@ export const countryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1750563452528-65ae4ff50e80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxKYXBhbiUyMHRyYWRpdGlvbmFsJTIwbmF0dXJlJTIwc2NlbmVyeXxlbnwxfDB8fHwxNzY0NDA2OTA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1742225912052-882435b5e1b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxKYXBhbiUyMHRyYWRpdGlvbmFsJTIwbmF0dXJlJTIwc2NlbmVyeXxlbnwxfDB8fHwxNzY0NDA2OTA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
   ],
-  WEU: [
+  // 서유럽 (WEU -> 개별 국가)
+  GB: [
     "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
   ],
-  EEU: [
+  CH: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  IT: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  FR: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  NL: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  BE: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  RO: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  DE: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  IE: [
+    "https://images.unsplash.com/photo-1685379518596-7e2b240ac982?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1546635585-0bdefb90fd34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1582063411725-9d0778d662de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxXZXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  // 동유럽 (EEU -> 개별 국가)
+  AT: [
+    "https://images.unsplash.com/photo-1758714820406-962e6fe19ae1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760650006801-620f1ec22564?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1759140496200-3379682a61e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  CZ: [
+    "https://images.unsplash.com/photo-1758714820406-962e6fe19ae1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760650006801-620f1ec22564?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1759140496200-3379682a61e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  HU: [
     "https://images.unsplash.com/photo-1758714820406-962e6fe19ae1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1760650006801-620f1ec22564?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1759140496200-3379682a61e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxFYXN0ZXJuJTIwRXVyb3BlJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
@@ -154,17 +206,85 @@ export const countryImages: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1758811570149-5f78d28baa58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxBcm1lbmlhJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNXww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1762007275508-ac986ff0f2ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxBcm1lbmlhJTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNXww&ixlib=rb-4.1.0&q=80&w=1080",
   ],
-  ME: [
+  // 중동 (ME -> 개별 국가)
+  AE: [
     "https://images.unsplash.com/photo-1734383266708-6783b9f12cc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1754400534733-06ba59423253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1758721028337-25cf37229bcd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
   ],
-  NEU: [
+  JO: [
+    "https://images.unsplash.com/photo-1734383266708-6783b9f12cc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1754400534733-06ba59423253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1758721028337-25cf37229bcd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  SA: [
+    "https://images.unsplash.com/photo-1734383266708-6783b9f12cc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1754400534733-06ba59423253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1758721028337-25cf37229bcd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  OM: [
+    "https://images.unsplash.com/photo-1734383266708-6783b9f12cc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1754400534733-06ba59423253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1758721028337-25cf37229bcd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  TN: [
+    "https://images.unsplash.com/photo-1734383266708-6783b9f12cc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1754400534733-06ba59423253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1758721028337-25cf37229bcd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxNaWRkbGUlMjBFYXN0JTIwdHJhdmVsJTIwbGFuZG1hcmt8ZW58MXwwfHx8MTc2NDQwNDkwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  // 북유럽 (NEU -> 개별 국가)
+  NO: [
     "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
   ],
-  AF: [
+  FI: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  DK: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  SE: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  LT: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  EE: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  LV: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  IS: [
+    "https://images.unsplash.com/photo-1758704280201-068a5bb3079b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1761236969200-7959359c7b1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1760810925225-5ffdb7b7ec99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxOb3J0aGVybiUyMEV1cm9wZSUyMHRyYXZlbCUyMGxhbmRtYXJrfGVufDF8MHx8fDE3NjQ0MDQ5MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  // 아프리카 (AF -> 개별 국가)
+  KE: [
+    "https://images.unsplash.com/photo-1705628078522-8cbb49acae1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1705628080778-f86b2f90a114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1602094777645-5701b6128003?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  ZA: [
+    "https://images.unsplash.com/photo-1705628078522-8cbb49acae1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1705628080778-f86b2f90a114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    "https://images.unsplash.com/photo-1602094777645-5701b6128003?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+  ],
+  TZ: [
     "https://images.unsplash.com/photo-1705628078522-8cbb49acae1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwxfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1705628080778-f86b2f90a114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwyfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
     "https://images.unsplash.com/photo-1602094777645-5701b6128003?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MzcxNjh8MHwxfHNlYXJjaHwzfHxBZnJpY2ElMjB0cmF2ZWwlMjBsYW5kbWFya3xlbnwxfDB8fHwxNzY0NDA0OTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
