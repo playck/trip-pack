@@ -1,6 +1,15 @@
-import { VStack, Button, HStack, Text, StackSeparator } from "@chakra-ui/react";
-import { Edit2, Wallet, Trash2 } from "lucide-react";
+import {
+  VStack,
+  Button,
+  HStack,
+  Text,
+  StackSeparator,
+  IconButton,
+} from "@chakra-ui/react";
+import { Copy, Edit2, Wallet, Trash2 } from "lucide-react";
+import { useCopyToClipboard } from "usehooks-ts";
 import BottomSheet from "@/shared/components/BottomSheet";
+import { toaster } from "@/shared/components/ui/toaster";
 import { borderColors, statusColors } from "@/shared/constants/colors";
 
 interface ScheduleActionSheetProps {
@@ -10,6 +19,7 @@ interface ScheduleActionSheetProps {
   onAddExpense: () => void;
   onDelete: () => void;
   scheduleName: string;
+  scheduleAddress?: string;
 }
 
 export default function ScheduleActionSheet({
@@ -19,10 +29,47 @@ export default function ScheduleActionSheet({
   onAddExpense,
   onDelete,
   scheduleName,
+  scheduleAddress,
 }: ScheduleActionSheetProps) {
+  const [, copy] = useCopyToClipboard();
+
+  const handleCopyAddress = async () => {
+    if (!scheduleAddress) return;
+    try {
+      await copy(scheduleAddress);
+      toaster.create({
+        description: "주소를 복사했어요.",
+        type: "success",
+        duration: 1200,
+      });
+    } catch {
+      toaster.create({
+        description: "복사에 실패했어요. 다시 시도해주세요.",
+        type: "error",
+        duration: 1500,
+      });
+    }
+  };
+
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={scheduleName}>
-      <VStack gap={3} p={3} pt={0} align="stretch">
+      <VStack p={3} pt={0} align="stretch" gap={0}>
+        {scheduleAddress && (
+          <HStack px="4px" justify="space-between" align="center">
+            <Text fontSize="sm" color="gray.600" flex="1">
+              {scheduleAddress}
+            </Text>
+            <IconButton
+              aria-label="주소 복사"
+              variant="ghost"
+              size="xs"
+              flexShrink={0}
+              onClick={handleCopyAddress}
+            >
+              <Copy size={12} />
+            </IconButton>
+          </HStack>
+        )}
         <VStack
           gap={0}
           align="stretch"
@@ -34,12 +81,12 @@ export default function ScheduleActionSheet({
             justifyContent="flex-start"
             color="gray.700"
             fontWeight="medium"
+            h="56px"
+            px={2}
             onClick={() => {
               onEdit();
               onClose();
             }}
-            h="56px"
-            px={2}
           >
             <HStack gap={3}>
               <Edit2 size={20} />

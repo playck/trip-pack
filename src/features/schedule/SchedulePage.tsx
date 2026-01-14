@@ -376,6 +376,9 @@ function SchedulePageContent() {
             isOpen={isActionSheetOpen}
             onClose={handleCloseActionSheet}
             scheduleName={selectedScheduleForAction.place_name}
+            scheduleAddress={
+              selectedScheduleForAction.place_address ?? undefined
+            }
             onEdit={handleEditSchedule}
             onAddExpense={handleOpenExpenseSheet}
             onDelete={handleDeleteSchedule}
