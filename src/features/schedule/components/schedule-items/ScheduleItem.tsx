@@ -1,4 +1,4 @@
-import { Text, Timeline, IconButton, Badge } from "@chakra-ui/react";
+import { Text, Timeline, IconButton, Badge, HStack } from "@chakra-ui/react";
 import { MapPin, StickyNote, MoreVertical } from "lucide-react";
 import { textColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
@@ -33,7 +33,7 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
           {isScheduleMemo ? <StickyNote size={14} /> : <MapPin size={14} />}
         </Timeline.Indicator>
       </Timeline.Connector>
-      <Timeline.Content width="full" ml={-2} pb="24px">
+      <Timeline.Content width="full" ml={-2} pb="16px">
         <div
           onClick={handleClick}
           style={{
@@ -41,29 +41,42 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
             paddingRight: !isScheduleMemo && onOpenActionSheet ? "32px" : "0",
           }}
         >
-          <Timeline.Title fontSize="md" fontWeight="semibold" mb="4px">
-            {schedule.place_name}
-            {isExpenseContent && (
-              <Badge
-                colorPalette="gray"
-                variant="surface"
-                fontSize="xs"
-                fontWeight="medium"
+          <HStack justify="space-between" align="center" gap={2}>
+            <Timeline.Title fontSize="md" fontWeight="semibold" mb="4px">
+              {schedule.place_name}
+              {isExpenseContent && (
+                <Badge
+                  colorPalette="gray"
+                  variant="surface"
+                  fontSize="xs"
+                  fontWeight="medium"
+                >
+                  ₩{expenseAmount.toLocaleString()}
+                </Badge>
+              )}
+            </Timeline.Title>
+            {!isScheduleMemo && onOpenActionSheet && (
+              <IconButton
+                aria-label="일정 관리"
+                variant="ghost"
+                size="xs"
+                color="gray.400"
+                position="absolute"
+                right={0}
+                top={0}
+                transform="translateY(-6px)"
+                onClick={handleOpenAction}
               >
-                ₩{expenseAmount.toLocaleString()}
-              </Badge>
+                <MoreVertical size={16} />
+              </IconButton>
             )}
-          </Timeline.Title>
-          {!isScheduleMemo && (
+          </HStack>
+
+          {!isScheduleMemo && schedule.start_time && (
             <Timeline.Description fontSize="sm" color={textColors.tertiary}>
-              {schedule.start_time && (
-                <Text as="span" mr={2}>
-                  {schedule.start_time.slice(0, 5)}
-                </Text>
-              )}
-              {schedule.place_address && (
-                <Text as="span">{schedule.place_address}</Text>
-              )}
+              <Text as="span" mr={2}>
+                {schedule.start_time.slice(0, 5)}
+              </Text>
             </Timeline.Description>
           )}
 
@@ -73,21 +86,6 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
             </Text>
           )}
         </div>
-
-        {!isScheduleMemo && onOpenActionSheet && (
-          <IconButton
-            aria-label="일정 관리"
-            variant="ghost"
-            size="xs"
-            color="gray.400"
-            position="absolute"
-            right={0}
-            top={0}
-            onClick={handleOpenAction}
-          >
-            <MoreVertical size={16} />
-          </IconButton>
-        )}
       </Timeline.Content>
     </Timeline.Item>
   );

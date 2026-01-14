@@ -113,7 +113,7 @@ export default function DayScheduleCard({
         </HStack>
       </HStack>
 
-      <Box p={3} pb={0} minH="100px" borderBottomRadius="lg">
+      <Box p={3} pb={2} minH="80px" borderBottomRadius="lg">
         {renderTimelineContent()}
       </Box>
     </Box>

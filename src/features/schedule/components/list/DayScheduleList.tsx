@@ -30,7 +30,7 @@ export default function DayScheduleList({
 
   const mapHeight = isMapCollapsed ? 0 : 200;
   const mapBottomButtonHeight = 32;
-  const curtainHeight = 4; // 가림막 높이 근사값
+  const curtainHeight = 3.5; // 가림막 높이 근사값
   const dayScheduleCardStickyTop =
     HEADER_HEIGHT +
     TRIP_INFO_HEADER_HEIGHT +

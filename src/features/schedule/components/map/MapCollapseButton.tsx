@@ -48,7 +48,6 @@ export default function MapCollapseButton({
         right={0}
         height="8px"
         bg="white"
-        zIndex={19}
       />
     </Box>
   );
