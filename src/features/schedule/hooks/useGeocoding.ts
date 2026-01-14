@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { regionsList } from "@/shared/data/regions";
 
 interface Coordinates {
   lat: number;
@@ -8,13 +9,23 @@ interface Coordinates {
 
 /**
  * regionId 파싱
- * 예: "cn-jiuzhaigou" → { countryCode: "CN", regionName: "jiuzhaigou" }
+ * regions 데이터에서 정확한 countryCode와 regionName을 찾아서 반환
  */
 export const parseRegionId = (
   regionId: string | null | undefined
 ): { countryCode: string; regionName: string } | null => {
   if (!regionId) return null;
 
+  const region = regionsList.find((r) => r.id === regionId);
+
+  if (region) {
+    return {
+      countryCode: region.countryCode,
+      regionName: region.englishName || region.name,
+    };
+  }
+
+  // 데이터에 없는 경우 기존 방식으로 파싱
   const parts = regionId.split("-");
   if (parts.length < 2) return null;
 
