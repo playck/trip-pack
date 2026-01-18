@@ -34,7 +34,10 @@ import {
   ViewModeToggle,
   CheckListCopySheet,
 } from "./components";
-import { useTripChecklist } from "./hooks/useTripChecklist";
+import {
+  useTripChecklist,
+  useUpdateItemCheckedStatus,
+} from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
 import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 
@@ -60,6 +63,7 @@ export default function PackingListPage() {
   });
   const { categories, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
+  const updateItemStatus = useUpdateItemCheckedStatus(tripId);
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
       onClose();
@@ -129,6 +133,10 @@ export default function PackingListPage() {
     setSelectedIconKey("");
   };
 
+  const handleToggleItem = (itemId: string, isChecked: boolean) => {
+    updateItemStatus.mutate({ itemId, isChecked });
+  };
+
   if (error) {
     return (
       <PageLayout>
@@ -196,7 +204,11 @@ export default function PackingListPage() {
             {viewMode === "그리드" ? (
               <GridView categories={categories} />
             ) : (
-              <ListView categories={categories} />
+              <ListView
+                categories={categories}
+                onToggleItem={handleToggleItem}
+                countryCode={tripInfo.countryCode}
+              />
             )}
 
             {!isCanAddMoreCategories && (

@@ -2,12 +2,10 @@ import { Box } from "@chakra-ui/react";
 import { AlertTriangle, Ban } from "lucide-react";
 import type { CabinPolicy } from "@/shared/data/checkList";
 
-export type { CabinPolicy };
-
 interface CabinPolicyIconProps {
   policy: CabinPolicy | null | undefined;
   size?: number;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export default function CabinPolicyIcon({
@@ -46,6 +44,7 @@ export default function CabinPolicyIcon({
   return (
     <Box
       as="button"
+      aria-label="기내 수화물 정책 상세 정보"
       display="inline-flex"
       alignItems="center"
       ml={1}
@@ -56,8 +55,7 @@ export default function CabinPolicyIcon({
       _active={{
         bg: "gray.200",
       }}
-      onClick={onClick}
-      aria-label="기내 수화물 정책 상세 정보"
+      onClick={(e) => onClick?.(e)}
     >
       <IconComponent size={size} />
     </Box>

@@ -1,5 +1,13 @@
 import { useState, useMemo } from "react";
-import { VStack, Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  Text,
+  HStack,
+  Badge,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -11,19 +19,35 @@ import {
   Package,
 } from "lucide-react";
 
+import { CabinPolicyIcon } from "@/shared/components";
+import type { CabinPolicy } from "@/shared/data/checkList";
+import { Checkbox } from "@/shared/components";
+import { colors } from "@/shared/constants/colors";
+
 import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
-import { CabinPolicyIcon } from "@/shared/components";
-import type { CabinPolicy } from "@/shared/components/CabinPolicyIcon";
+import PackingItemPolicyController from "./PackingItemPolicyController";
 
 type ChecklistItem = CategoryWithItems["items"][0];
 interface ListViewProps {
   categories: CategoryWithItems[];
+  onToggleItem?: (itemId: string, isChecked: boolean) => void;
+  countryCode?: string | null;
 }
 
-export default function ListView({ categories }: ListViewProps) {
+export default function ListView({
+  categories,
+  onToggleItem,
+  countryCode,
+}: ListViewProps) {
   const navigate = useNavigate();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
+  const [selectedItem, setSelectedItem] = useState<ChecklistItem | null>(null);
+  const {
+    open: isPolicyOpen,
+    onOpen: onPolicyOpen,
+    onClose: onPolicyClose,
+  } = useDisclosure();
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >(() => {
@@ -85,19 +109,20 @@ export default function ListView({ categories }: ListViewProps) {
         return;
       }
 
-      result[category.name] = category.items
-        .map((item, index: number) => ({ item, index }))
-        .sort(({ item: itemA }, { item: itemB }) => {
-          const checkedA = itemA.is_checked || false;
-          const checkedB = itemB.is_checked || false;
-
-          if (checkedA === checkedB) return 0;
-          return checkedA ? 1 : -1;
-        });
+      result[category.name] = category.items.map((item, index: number) => ({
+        item,
+        index,
+      }));
     });
 
     return result;
   }, [categories]);
+
+  const handlePolicyClick = (e: React.MouseEvent, item: ChecklistItem) => {
+    e.stopPropagation();
+    setSelectedItem(item);
+    onPolicyOpen();
+  };
 
   return (
     <VStack gap={2} align="stretch" w="full" pb="60px">
@@ -193,20 +218,66 @@ export default function ListView({ categories }: ListViewProps) {
                         <Box
                           key={item.id || index}
                           p={3}
-                          bg={checked ? "blue.50" : "white"}
+                          bg={
+                            checked ? `${colors.primary.palette}.50` : "white"
+                          }
                           borderRadius="md"
                           border="1px solid"
-                          borderColor={checked ? "blue.200" : "gray.200"}
+                          borderColor={
+                            checked
+                              ? `${colors.primary.palette}.200`
+                              : "gray.200"
+                          }
                           shadow="xs"
+                          onClick={() => {
+                            if (onToggleItem && item.id) {
+                              onToggleItem(item.id, !checked);
+                            }
+                          }}
+                          cursor={onToggleItem ? "pointer" : "default"}
+                          transition="all 0.2s"
+                          _active={{
+                            transform: "scale(0.98)",
+                          }}
                         >
                           <HStack justify="space-between" align="center">
-                            <Text fontSize="sm" color="gray.700">
-                              {item.name}
-                            </Text>
-                            <CabinPolicyIcon
-                              policy={item.cabin_policy as CabinPolicy}
-                              size={12}
-                            />
+                            <HStack gap={1} flex={1}>
+                              <Checkbox
+                                isChecked={checked}
+                                onChange={() => {
+                                  if (onToggleItem && item.id) {
+                                    onToggleItem(item.id, !checked);
+                                  }
+                                }}
+                                size="md"
+                                colorScheme={colors.primary.palette}
+                              />
+                              <Text
+                                fontSize="sm"
+                                color={checked ? "gray.500" : "gray.700"}
+                                fontWeight={checked ? "normal" : "medium"}
+                              >
+                                {item.name}
+                              </Text>
+                            </HStack>
+                            {item.cabin_policy &&
+                              item.cabin_policy !== "allowed" && (
+                                <Box
+                                  as="button"
+                                  onClick={(e) => handlePolicyClick(e, item)}
+                                  p={1}
+                                  borderRadius="md"
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  _active={{ bg: "gray.100" }}
+                                >
+                                  <CabinPolicyIcon
+                                    policy={item.cabin_policy as CabinPolicy}
+                                    size={16}
+                                  />
+                                </Box>
+                              )}
                           </HStack>
                         </Box>
                       );
@@ -222,6 +293,13 @@ export default function ListView({ categories }: ListViewProps) {
           );
         })}
       </VStack>
+
+      <PackingItemPolicyController
+        isOpen={isPolicyOpen}
+        onClose={onPolicyClose}
+        item={selectedItem}
+        countryCode={countryCode}
+      />
     </VStack>
   );
 }
