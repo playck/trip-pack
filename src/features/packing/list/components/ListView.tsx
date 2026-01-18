@@ -26,7 +26,7 @@ import { colors } from "@/shared/constants/colors";
 
 import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
-import PackingItemPolicyController from "./PackingItemPolicyController";
+import PackingItemPolicyContainer from "./PackingItemPolicyContainer";
 
 type ChecklistItem = CategoryWithItems["items"][0];
 interface ListViewProps {
@@ -294,7 +294,7 @@ export default function ListView({
         })}
       </VStack>
 
-      <PackingItemPolicyController
+      <PackingItemPolicyContainer
         isOpen={isPolicyOpen}
         onClose={onPolicyClose}
         item={selectedItem}

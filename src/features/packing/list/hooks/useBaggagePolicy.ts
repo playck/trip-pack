@@ -18,10 +18,21 @@ interface UseBaggagePolicyResult {
  * 또한 여행 국가(country_code)에 따른 특별 규정도 함께 검사
  */
 export const useBaggagePolicy = (
-  item: ChecklistItem,
+  item: ChecklistItem | null | undefined,
   targetCountryCode?: string | null
 ): UseBaggagePolicyResult => {
   return useMemo(() => {
+    if (!item) {
+      return {
+        cabinPolicy: null,
+        cabinNotes: null,
+        checkedPolicy: null,
+        checkedNotes: null,
+        isRuleMatched: false,
+        countryWarning: null,
+      };
+    }
+
     // 1. 실시간 규정 검색
     const baggageRule = checkBaggageRule(item.name);
 
@@ -71,5 +82,5 @@ export const useBaggagePolicy = (
       isRuleMatched: !!baggageRule,
       countryWarning,
     };
-  }, [item.name, item.cabin_policy, item.cabin_notes, targetCountryCode]);
+  }, [item?.name, item?.cabin_policy, item?.cabin_notes, targetCountryCode]);
 };
