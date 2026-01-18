@@ -60,6 +60,10 @@ export function TripDateEditModal({
 
   const isValidDate = dates.startDate && dates.endDate;
 
+  const isTripStarted = currentStartDate
+    ? !dayjs().startOf("day").isBefore(dayjs(currentStartDate).startOf("day"))
+    : false;
+
   return (
     <ConfirmDialog
       isOpen={isOpen}
@@ -71,20 +75,28 @@ export function TripDateEditModal({
       confirmDisabled={!isValidDate}
       size="lg"
     >
-      <VStack align="stretch" gap={2}>
+      <VStack align="stretch" gap={1}>
         <Box>
           <Text fontSize="sm" color="gray.600">
             {dates.startDate && dates.endDate ? (
-              <Flex justify="center" align="center">
-                <Text as="span" fontSize="sm">
-                  {dayjs(dates.startDate).format("YYYY.MM.DD")} ~{" "}
-                  {dayjs(dates.endDate).format("YYYY.MM.DD")}
-                </Text>
-                <Text as="span" ml={2} fontSize="sm">
-                  (
-                  {dayjs(dates.endDate).diff(dayjs(dates.startDate), "day") + 1}
-                  일)
-                </Text>
+              <Flex justify="center" align="center" direction="column" gap={1}>
+                <Flex align="center">
+                  <Text as="span" fontSize="sm">
+                    {dayjs(dates.startDate).format("YYYY.MM.DD")} ~{" "}
+                    {dayjs(dates.endDate).format("YYYY.MM.DD")}
+                  </Text>
+                  <Text as="span" ml={2} fontSize="sm">
+                    (
+                    {dayjs(dates.endDate).diff(dayjs(dates.startDate), "day") +
+                      1}
+                    일)
+                  </Text>
+                </Flex>
+                {isTripStarted && (
+                  <Text fontSize="xs" color="orange.500">
+                    ※ 지금은 종료일만 변경 가능합니다
+                  </Text>
+                )}
               </Flex>
             ) : (
               <Flex justify="center" align="center">
@@ -106,7 +118,10 @@ export function TripDateEditModal({
             startDate={dates.startDate}
             endDate={dates.endDate}
             onChange={handleDateChange}
-            minDate={undefined}
+            minDate={
+              isTripStarted && dates.startDate ? dates.startDate : undefined
+            }
+            isStartDateFixed={isTripStarted}
           />
         </Box>
       </VStack>
