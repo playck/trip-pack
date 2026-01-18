@@ -19,6 +19,7 @@ interface CalendarProps {
   minDate?: Date;
   maxDate?: Date;
   onChange?: (dates: TravelDates) => void;
+  isStartDateFixed?: boolean;
 }
 
 export default function Calendar({
@@ -27,6 +28,7 @@ export default function Calendar({
   minDate = new Date(),
   maxDate,
   onChange,
+  isStartDateFixed = false,
 }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(
     dayjs(new Date()).format("YYYY-MM")
@@ -35,7 +37,20 @@ export default function Calendar({
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
 
-    // 같은 날짜 선택 시 초기화
+    if (isStartDateFixed && startDate) {
+      if (start) {
+        if (dayjs(start).isBefore(startDate, "day")) {
+          return;
+        }
+
+        onChange?.({
+          startDate: startDate,
+          endDate: dayjs(start).isSame(startDate, "day") ? null : start,
+        });
+        return;
+      }
+    }
+
     if (start && end && dayjs(start).isSame(dayjs(end), "day")) {
       onChange?.({ startDate: null, endDate: null });
       return;
