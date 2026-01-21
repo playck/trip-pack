@@ -7,6 +7,7 @@ import {
   // Bell,
   // ShieldCheck,
   Map,
+  ClipboardList,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { statusColors } from "@/shared/constants/colors";
@@ -89,6 +90,10 @@ export default function SettingMenu() {
     navigate({ to: "/mypage/past-trips" });
   };
 
+  const goToMyChecklistsPage = () => {
+    navigate({ to: "/mypage/my-checklists" });
+  };
+
   return (
     <>
       <VStack gap={4} align="stretch">
@@ -108,6 +113,11 @@ export default function SettingMenu() {
               icon={Map}
               label="지난 여행 보기"
               onClick={goToPastTripsPage}
+            />
+            <MenuItem
+              icon={ClipboardList}
+              label="체크리스트 목록"
+              onClick={goToMyChecklistsPage}
             />
           </VStack>
         </Box>
