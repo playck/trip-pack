@@ -40,3 +40,14 @@ export const createChecklistTemplate = async (
 
   return data;
 };
+
+export const deleteChecklistTemplate = async (id: string) => {
+  const { error } = await supabase
+    .from("checklist_templates")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(`체크리스트 템플릿 삭제 실패: ${error.message}`);
+  }
+};
