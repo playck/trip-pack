@@ -16,6 +16,7 @@ import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
 import { Route as MypagePastTripsRouteImport } from './routes/mypage/past-trips'
+import { Route as MypageMyChecklistsRouteImport } from './routes/mypage/my-checklists'
 import { Route as ExpenseTripIdRouteImport } from './routes/expense.$tripId'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
@@ -58,6 +59,11 @@ const MypagePastTripsRoute = MypagePastTripsRouteImport.update({
   path: '/mypage/past-trips',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MypageMyChecklistsRoute = MypageMyChecklistsRouteImport.update({
+  id: '/mypage/my-checklists',
+  path: '/mypage/my-checklists',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExpenseTripIdRoute = ExpenseTripIdRouteImport.update({
   id: '/expense/$tripId',
   path: '/expense/$tripId',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
+  MypageMyChecklistsRoute: typeof MypageMyChecklistsRoute
   MypagePastTripsRoute: typeof MypagePastTripsRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MypagePastTripsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mypage/my-checklists': {
+      id: '/mypage/my-checklists'
+      path: '/mypage/my-checklists'
+      fullPath: '/mypage/my-checklists'
+      preLoaderRoute: typeof MypageMyChecklistsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/expense/$tripId': {
       id: '/expense/$tripId'
       path: '/expense/$tripId'
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
+  MypageMyChecklistsRoute: MypageMyChecklistsRoute,
   MypagePastTripsRoute: MypagePastTripsRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
