@@ -16,12 +16,13 @@ import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
 import { Route as MypagePastTripsRouteImport } from './routes/mypage/past-trips'
-import { Route as MypageMyChecklistsRouteImport } from './routes/mypage/my-checklists'
 import { Route as ExpenseTripIdRouteImport } from './routes/expense.$tripId'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as MypageMyChecklistsIndexRouteImport } from './routes/mypage/my-checklists/index'
 import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tripId'
 import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
+import { Route as MypageMyChecklistsTemplateIdRouteImport } from './routes/mypage/my-checklists/$templateId'
 import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
 const MainRoute = MainRouteImport.update({
@@ -59,11 +60,6 @@ const MypagePastTripsRoute = MypagePastTripsRouteImport.update({
   path: '/mypage/past-trips',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MypageMyChecklistsRoute = MypageMyChecklistsRouteImport.update({
-  id: '/mypage/my-checklists',
-  path: '/mypage/my-checklists',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ExpenseTripIdRoute = ExpenseTripIdRouteImport.update({
   id: '/expense/$tripId',
   path: '/expense/$tripId',
@@ -79,6 +75,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MypageMyChecklistsIndexRoute = MypageMyChecklistsIndexRouteImport.update({
+  id: '/mypage/my-checklists/',
+  path: '/mypage/my-checklists/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PackingListTripIdRoute = PackingListTripIdRouteImport.update({
   id: '/packing/list/$tripId',
   path: '/packing/list/$tripId',
@@ -89,6 +90,12 @@ const PackingCategoryTripIdRoute = PackingCategoryTripIdRouteImport.update({
   path: '/packing/category/$tripId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MypageMyChecklistsTemplateIdRoute =
+  MypageMyChecklistsTemplateIdRouteImport.update({
+    id: '/mypage/my-checklists/$templateId',
+    path: '/mypage/my-checklists/$templateId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ScheduleEditTripIdDayNumberRoute =
   ScheduleEditTripIdDayNumberRouteImport.update({
     id: '/schedule/edit/$tripId/$dayNumber',
@@ -102,14 +109,15 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
-  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage': typeof MypageIndexRoute
+  '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/mypage/my-checklists': typeof MypageMyChecklistsIndexRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRoutesByTo {
@@ -118,14 +126,15 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
-  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage': typeof MypageIndexRoute
+  '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/mypage/my-checklists': typeof MypageMyChecklistsIndexRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRoutesById {
@@ -135,14 +144,15 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
-  '/mypage/my-checklists': typeof MypageMyChecklistsRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage/': typeof MypageIndexRoute
+  '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
+  '/mypage/my-checklists/': typeof MypageMyChecklistsIndexRoute
   '/schedule/edit/$tripId/$dayNumber': typeof ScheduleEditTripIdDayNumberRoute
 }
 export interface FileRouteTypes {
@@ -153,14 +163,15 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
-    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage'
+    | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/mypage/my-checklists'
     | '/schedule/edit/$tripId/$dayNumber'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -169,14 +180,15 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
-    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage'
+    | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/mypage/my-checklists'
     | '/schedule/edit/$tripId/$dayNumber'
   id:
     | '__root__'
@@ -185,14 +197,15 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
-    | '/mypage/my-checklists'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage/'
+    | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
+    | '/mypage/my-checklists/'
     | '/schedule/edit/$tripId/$dayNumber'
   fileRoutesById: FileRoutesById
 }
@@ -202,14 +215,15 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
-  MypageMyChecklistsRoute: typeof MypageMyChecklistsRoute
   MypagePastTripsRoute: typeof MypagePastTripsRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
   ScheduleTripIdRoute: typeof ScheduleTripIdRoute
   MypageIndexRoute: typeof MypageIndexRoute
+  MypageMyChecklistsTemplateIdRoute: typeof MypageMyChecklistsTemplateIdRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
+  MypageMyChecklistsIndexRoute: typeof MypageMyChecklistsIndexRoute
   ScheduleEditTripIdDayNumberRoute: typeof ScheduleEditTripIdDayNumberRoute
 }
 
@@ -264,13 +278,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MypagePastTripsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mypage/my-checklists': {
-      id: '/mypage/my-checklists'
-      path: '/mypage/my-checklists'
-      fullPath: '/mypage/my-checklists'
-      preLoaderRoute: typeof MypageMyChecklistsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/expense/$tripId': {
       id: '/expense/$tripId'
       path: '/expense/$tripId'
@@ -292,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mypage/my-checklists/': {
+      id: '/mypage/my-checklists/'
+      path: '/mypage/my-checklists'
+      fullPath: '/mypage/my-checklists'
+      preLoaderRoute: typeof MypageMyChecklistsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packing/list/$tripId': {
       id: '/packing/list/$tripId'
       path: '/packing/list/$tripId'
@@ -304,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: '/packing/category/$tripId'
       fullPath: '/packing/category/$tripId'
       preLoaderRoute: typeof PackingCategoryTripIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mypage/my-checklists/$templateId': {
+      id: '/mypage/my-checklists/$templateId'
+      path: '/mypage/my-checklists/$templateId'
+      fullPath: '/mypage/my-checklists/$templateId'
+      preLoaderRoute: typeof MypageMyChecklistsTemplateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/schedule/edit/$tripId/$dayNumber': {
@@ -322,14 +343,15 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
-  MypageMyChecklistsRoute: MypageMyChecklistsRoute,
   MypagePastTripsRoute: MypagePastTripsRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
   ScheduleTripIdRoute: ScheduleTripIdRoute,
   MypageIndexRoute: MypageIndexRoute,
+  MypageMyChecklistsTemplateIdRoute: MypageMyChecklistsTemplateIdRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,
+  MypageMyChecklistsIndexRoute: MypageMyChecklistsIndexRoute,
   ScheduleEditTripIdDayNumberRoute: ScheduleEditTripIdDayNumberRoute,
 }
 export const routeTree = rootRouteImport
