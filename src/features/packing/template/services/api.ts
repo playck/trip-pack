@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/service/supabase/cilent";
+import type { Json } from "@/shared/types/database.type";
 import type { TablesInsert } from "@/shared/types/database.type";
 
 export const getChecklistTemplate = async () => {
@@ -49,5 +50,42 @@ export const deleteChecklistTemplate = async (id: string) => {
 
   if (error) {
     throw new Error(`체크리스트 템플릿 삭제 실패: ${error.message}`);
+  }
+};
+
+export interface UpdateChecklistTemplateParams {
+  id: string;
+  checklist_data?: Json;
+  title?: string;
+  description?: string | null;
+}
+
+export const updateChecklistTemplate = async ({
+  id,
+  checklist_data,
+  title,
+  description,
+}: UpdateChecklistTemplateParams) => {
+  const updateData: Record<string, unknown> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (checklist_data !== undefined) {
+    updateData.checklist_data = checklist_data;
+  }
+  if (title !== undefined) {
+    updateData.title = title;
+  }
+  if (description !== undefined) {
+    updateData.description = description;
+  }
+
+  const { error } = await supabase
+    .from("checklist_templates")
+    .update(updateData)
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(`체크리스트 템플릿 업데이트 실패: ${error.message}`);
   }
 };
