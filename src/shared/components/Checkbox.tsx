@@ -43,12 +43,6 @@ export default function Checkbox({
       transition="all 0.15s ease"
       cursor={disabled ? "not-allowed" : "pointer"}
       onClick={disabled ? undefined : onChange}
-      _focus={{
-        outline: "2px solid",
-        outlineColor: `${colorScheme}.300`,
-        outlineOffset: "1.5px",
-      }}
-      _active={!disabled ? { transform: "scale(0.98)" } : {}}
     >
       <Box
         w={w}

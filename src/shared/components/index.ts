@@ -10,4 +10,6 @@ export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as Modal } from "./Modal";
 export { default as PageLayout } from "./layout/PageLayout";
 export { default as TripInfoHeader } from "./layout/TripInfoHeader";
+export { default as AddCategorySheet } from "./AddCategorySheet";
+export type { FloatingMenuItem } from "./FloatingAddButton";
 export * from "./trip-action";

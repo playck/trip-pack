@@ -1,5 +1,5 @@
 import React from "react";
-import { X } from "lucide-react";
+import { X, ChevronLeft } from "lucide-react";
 import {
   Drawer,
   Portal,
@@ -21,6 +21,7 @@ interface BottomSheetAction {
 interface BottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
+  onBack?: () => void;
   title?: string;
   children: React.ReactNode;
   minHeight?: string | number;
@@ -33,6 +34,7 @@ interface BottomSheetProps {
 export default function BottomSheet({
   isOpen,
   onClose,
+  onBack,
   title,
   children,
   minHeight,
@@ -75,6 +77,17 @@ export default function BottomSheet({
               justifyContent="center"
               position="relative"
             >
+              {onBack && (
+                <IconButton
+                  variant="ghost"
+                  h="35px"
+                  position="absolute"
+                  left={4}
+                  onClick={onBack}
+                >
+                  <ChevronLeft size={20} />
+                </IconButton>
+              )}
               <Text fontSize="lg" fontWeight="semibold">
                 {title}
               </Text>

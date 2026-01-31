@@ -1,1 +1,1 @@
-export { useChecklistTemplate } from "../services/useChecklistTemplate";
+export { useChecklistTemplates as useChecklistTemplate } from "../services";

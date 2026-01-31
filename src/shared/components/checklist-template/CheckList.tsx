@@ -2,7 +2,7 @@ import { SimpleGrid, Box, VStack, Text } from "@chakra-ui/react";
 import { Package } from "lucide-react";
 import type { CategoryWithItems } from "@/features/packing/type";
 import { CATEGORY_ICONS } from "@/features/packing/list/constants/category";
-import { backgrounds, textColors } from "@/shared/constants/colors";
+import { backgrounds, colors, textColors } from "@/shared/constants/colors";
 
 interface CheckListProps {
   categories: CategoryWithItems[];
@@ -38,7 +38,9 @@ export default function CheckList({
             bg={backgrounds.muted}
             borderRadius="xl"
             border="3px solid"
-            borderColor={isSelected ? "blue.500" : "transparent"}
+            borderColor={
+              isSelected ? `${colors.primary.palette}.500` : "transparent"
+            }
             transition="border-color 0.2s"
             cursor="pointer"
             onClick={() => handleCategoryClick(category)}

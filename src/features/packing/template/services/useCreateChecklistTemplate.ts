@@ -1,14 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createChecklistTemplate, getChecklistTemplate } from "./api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createChecklistTemplate } from "./api";
 import type { TablesInsert } from "@/shared/types/database.type";
 import { toaster } from "@/shared/components/ui/toaster";
-
-export const useChecklistTemplate = () => {
-  return useQuery({
-    queryKey: ["checklistTemplates"],
-    queryFn: getChecklistTemplate,
-  });
-};
 
 export const useCreateChecklistTemplate = () => {
   const queryClient = useQueryClient();

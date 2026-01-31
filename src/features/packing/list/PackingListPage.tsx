@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Container,
   Text,
@@ -14,6 +14,7 @@ import { Share2 } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import {
+  AddCategorySheet,
   BottomSheet,
   ErrorMessage,
   FloatingAddButton,
@@ -28,11 +29,11 @@ import { TripActionMenu } from "@/shared/components";
 
 import {
   ProgressBar,
-  CategoryForm,
   GridView,
   ListView,
   ViewModeToggle,
   CheckListCopySheet,
+  ChecklistSaveSheet,
 } from "./components";
 import {
   useTripChecklist,
@@ -44,8 +45,11 @@ import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 export default function PackingListPage() {
   const navigate = useNavigate();
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const [categoryName, setCategoryName] = useState("");
-  const [selectedIconKey, setSelectedIconKey] = useState<string>("");
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<string>>(
+    new Set()
+  );
+  const [templateName, setTemplateName] = useState("");
+
   const {
     open: isCheckListOpen,
     onOpen: onCheckListOpen,
@@ -55,6 +59,11 @@ export default function PackingListPage() {
     open: isShareOpen,
     onOpen: onShareOpen,
     onClose: onShareClose,
+  } = useDisclosure();
+  const {
+    open: isSaveSheetOpen,
+    onOpen: onSaveSheetOpen,
+    onClose: onSaveSheetClose,
   } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
 
@@ -67,15 +76,22 @@ export default function PackingListPage() {
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
       onClose();
-      setCategoryName("");
-      setSelectedIconKey("");
     },
   });
-  const { handleSaveAsTemplate } = useSaveAsTemplate();
+  const {
+    handleSaveAsTemplate,
+    isLoading: isSavingTemplate,
+    isSuccess: isSaveTemplateSuccess,
+  } = useSaveAsTemplate();
+
+  if (isSaveTemplateSuccess && isSaveSheetOpen) {
+    onSaveSheetClose();
+  }
+
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
-      onClick: () => handleSaveAsTemplate(tripInfo, categories),
+      onClick: () => onSaveSheetOpen(),
     },
     {
       label: "체크리스트 가져오기",
@@ -95,47 +111,41 @@ export default function PackingListPage() {
   const isShowWeatherCard =
     tripInfo?.regionName && tripInfo.startDate && tripInfo.endDate;
 
-  const handleSaveCategory = () => {
-    const name = categoryName.trim();
-
-    if (!name) {
-      alert("카테고리 이름을 입력해주세요.");
-      return;
-    }
-
-    if (name.length > 15) {
-      alert("카테고리 이름은 15자 이하로 입력해주세요.");
-      return;
-    }
-
-    const validNameRegex = /^[가-힣a-zA-Z0-9\s\-_]+$/;
-    if (!validNameRegex.test(name)) {
-      alert(
-        "카테고리 이름에는 한글, 영문, 숫자, 공백, -, _ 만 사용할 수 있습니다."
-      );
-      return;
-    }
-
-    if (!selectedIconKey) {
-      alert("아이콘을 선택해주세요.");
-      return;
-    }
-
+  const handleSaveCategory = (categoryName: string, iconKey: string) => {
     createCategoryMutation.mutate({
-      categoryName: name,
-      iconKey: selectedIconKey,
+      categoryName,
+      iconKey,
     });
-  };
-
-  const handleCancelCategoryCreate = () => {
-    onClose();
-    setCategoryName("");
-    setSelectedIconKey("");
   };
 
   const handleToggleItem = (itemId: string, isChecked: boolean) => {
     updateItemStatus.mutate({ itemId, isChecked });
   };
+
+  const handleSaveSelectedCategories = () => {
+    const selectedCategories = categories.filter((c) =>
+      selectedCategoryIds.has(c.id)
+    );
+    const trimmedName = templateName.trim();
+
+    handleSaveAsTemplate(
+      tripInfo,
+      selectedCategories,
+      trimmedName || undefined
+    );
+  };
+
+  const handleTemplateNameChange = useCallback((name: string) => {
+    setTemplateName(name);
+  }, []);
+
+  const handleSelectedCategoryIdsChange = useCallback((ids: Set<string>) => {
+    setSelectedCategoryIds(ids);
+  }, []);
+
+  const defaultTemplateName = tripInfo?.title
+    ? `${tripInfo.title} 체크리스트`
+    : "체크리스트";
 
   if (error) {
     return (
@@ -231,27 +241,12 @@ export default function PackingListPage() {
 
         <FloatingAddButton menuItems={menuItems} ariaLabel="액션 메뉴" />
 
-        <BottomSheet
+        <AddCategorySheet
           isOpen={isOpen}
-          onClose={handleCancelCategoryCreate}
-          title="새 카테고리 추가"
-          primaryButton={{
-            text: "저장",
-            onClick: handleSaveCategory,
-            isLoading: createCategoryMutation.isPending,
-          }}
-          secondaryButton={{
-            text: "취소",
-            onClick: handleCancelCategoryCreate,
-          }}
-        >
-          <CategoryForm
-            categoryName={categoryName}
-            selectedIconKey={selectedIconKey}
-            onCategoryNameChange={setCategoryName}
-            onIconKeyChange={setSelectedIconKey}
-          />
-        </BottomSheet>
+          isLoading={createCategoryMutation.isPending}
+          onSave={handleSaveCategory}
+          onClose={onClose}
+        />
 
         <BottomSheet
           isOpen={isCheckListOpen}
@@ -267,6 +262,30 @@ export default function PackingListPage() {
 
         <BottomSheet isOpen={isShareOpen} onClose={onShareClose}>
           <CheckListCopySheet categories={categories} onClose={onShareClose} />
+        </BottomSheet>
+
+        <BottomSheet
+          isOpen={isSaveSheetOpen}
+          onClose={onSaveSheetClose}
+          title="체크리스트 템플릿 저장"
+          primaryButton={{
+            text: "저장",
+            onClick: handleSaveSelectedCategories,
+            isLoading: isSavingTemplate,
+            disabled: selectedCategoryIds.size === 0 || !templateName.trim(),
+          }}
+          secondaryButton={{
+            text: "취소",
+            onClick: onSaveSheetClose,
+            disabled: isSavingTemplate,
+          }}
+        >
+          <ChecklistSaveSheet
+            categories={categories}
+            defaultTemplateName={defaultTemplateName}
+            onSelectedChange={handleSelectedCategoryIdsChange}
+            onTemplateNameChange={handleTemplateNameChange}
+          />
         </BottomSheet>
       </PageLayout>
     </>

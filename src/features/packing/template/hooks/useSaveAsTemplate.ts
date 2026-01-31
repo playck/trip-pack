@@ -1,6 +1,6 @@
-import { useCreateChecklistTemplate } from "@/features/packing/template/services/useChecklistTemplate";
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TripInfo } from "@/shared/service/trip/tripInfo";
+import { useCreateChecklistTemplate } from "@/features/packing/template/services";
 import type { CategoryWithItems } from "../../type";
 
 export const useSaveAsTemplate = () => {
@@ -9,11 +9,12 @@ export const useSaveAsTemplate = () => {
 
   const handleSaveAsTemplate = (
     tripInfo: TripInfo | null | undefined,
-    categories: CategoryWithItems[]
+    categories: CategoryWithItems[],
+    customTitle?: string
   ) => {
     if (!tripInfo || !user) return;
 
-    const templateTitle = `${tripInfo.title} 체크리스트`;
+    const templateTitle = customTitle || `${tripInfo.title} 체크리스트`;
     const templateDescription = tripInfo.startDate
       ? `${tripInfo.startDate}${tripInfo.endDate ? ` ~ ${tripInfo.endDate}` : ""}`
       : null;

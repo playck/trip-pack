@@ -61,7 +61,7 @@ export default function CategoryDetailPage() {
   const countryCode = trip?.country_code;
   const categoryName = decodeURIComponent(categoryParam);
   const category = categories?.find(
-    (cat: CategoryWithItems) => cat.name === categoryName
+    (cat: CategoryWithItems) => cat.name === categoryName,
   );
   const isEssentialCategory = category?.name === "필수 준비물";
 
