@@ -107,6 +107,24 @@ export const useTemplateEditor = (templateId: string) => {
     [selectedCategoryId, categories, updateCategories],
   );
 
+  const deleteItems = useCallback(
+    (itemIds: string[]) => {
+      if (!selectedCategoryId) return;
+
+      const newCategories = categories.map((cat) =>
+        cat.id === selectedCategoryId
+          ? {
+              ...cat,
+              items: cat.items.filter((item) => !itemIds.includes(item.id)),
+            }
+          : cat,
+      );
+
+      updateCategories(newCategories);
+    },
+    [selectedCategoryId, categories, updateCategories],
+  );
+
   // ===== 카테고리 CRUD =====
 
   const addCategory = useCallback(
@@ -185,6 +203,7 @@ export const useTemplateEditor = (templateId: string) => {
     addItem,
     updateItem,
     deleteItem,
+    deleteItems,
 
     // 카테고리 CRUD
     addCategory,

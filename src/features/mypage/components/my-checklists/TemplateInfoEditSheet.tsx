@@ -52,7 +52,7 @@ export default function TemplateInfoEditSheet({
         onClick: handleClose,
       }}
     >
-      <VStack gap={4} p={3} w="full" align="stretch">
+      <VStack gap={4} px={3} w="full" align="stretch">
         <VStack gap={2} align="stretch">
           <Text fontSize="sm" fontWeight="medium" color="gray.700">
             제목
