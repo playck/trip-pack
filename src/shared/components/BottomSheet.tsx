@@ -60,8 +60,8 @@ export default function BottomSheet({
           <Drawer.Content
             borderTopRadius="xl"
             borderBottomRadius="none"
-            pb="env(safe-area-inset-bottom)"
             minHeight={minHeight}
+            maxHeight="85vh"
             overscrollBehavior="contain"
             style={{
               transform:
@@ -108,7 +108,7 @@ export default function BottomSheet({
             </Drawer.Header>
             <Drawer.Body p={0}>{children}</Drawer.Body>
             {(primaryButton || secondaryButton) && (
-              <Drawer.Footer p={3.5} bg="white">
+              <Drawer.Footer p={3.5} pb="calc(14px + env(safe-area-inset-bottom))" bg="white">
                 <HStack gap={3} w="full">
                   {secondaryButton && (
                     <Button

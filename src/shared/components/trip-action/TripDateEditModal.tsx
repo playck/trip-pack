@@ -115,6 +115,7 @@ export function TripDateEditModal({
           }}
         >
           <Calendar
+            key={isOpen ? "open" : "closed"}
             startDate={dates.startDate}
             endDate={dates.endDate}
             onChange={handleDateChange}
