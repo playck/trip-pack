@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
 
@@ -48,16 +48,23 @@ export default function DayScheduleList({
         const formattedDate = dayjs(date).locale("ko").format("M월 D일 (ddd)");
 
         return (
-          <DayScheduleCard
+          <Box
             key={date}
-            tripId={tripId}
-            dayNumber={dayNumber}
-            date={date}
-            formattedDate={formattedDate}
-            cardStickyTop={dayScheduleCardStickyTop}
-            onAddSchedule={() => onAddSchedule?.(dayNumber, date)}
-            onAddMemo={() => onAddMemo?.(dayNumber, date)}
-          />
+            style={{
+              contentVisibility: "auto",
+              containIntrinsicSize: "auto 300px",
+            }}
+          >
+            <DayScheduleCard
+              tripId={tripId}
+              dayNumber={dayNumber}
+              date={date}
+              formattedDate={formattedDate}
+              cardStickyTop={dayScheduleCardStickyTop}
+              onAddSchedule={() => onAddSchedule?.(dayNumber, date)}
+              onAddMemo={() => onAddMemo?.(dayNumber, date)}
+            />
+          </Box>
         );
       })}
     </VStack>

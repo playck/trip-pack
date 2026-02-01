@@ -154,7 +154,15 @@ export default function ListView({
           const sortedItems = sortedItemsByCategory[category.name] || [];
 
           return (
-            <VStack key={category.id} gap={isExpanded ? 3 : 0} align="stretch">
+            <VStack
+              key={category.id}
+              gap={isExpanded ? 3 : 0}
+              align="stretch"
+              style={{
+                contentVisibility: "auto",
+                containIntrinsicSize: "auto 200px",
+              }}
+            >
               {/* 카테고리 헤더 */}
               <HStack justify="space-between" align="center" w="full">
                 <HStack gap={1} onClick={() => toggleCategory(category.name)}>

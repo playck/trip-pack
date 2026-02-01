@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import ExpenseSummaryCard from "./ExpenseSummaryCard";
 import ExpenseDaySection from "./ExpenseDaySection";
 
@@ -56,14 +56,21 @@ export default function ExpenseAllContent({
       />
 
       {dayExpenses.map((day) => (
-        <ExpenseDaySection
+        <Box
           key={day.date}
-          dayNumber={day.dayNumber}
-          date={day.label}
-          expenses={day.expenses}
-          tripId={tripId}
-          readOnly
-        />
+          style={{
+            contentVisibility: "auto",
+            containIntrinsicSize: "auto 150px",
+          }}
+        >
+          <ExpenseDaySection
+            dayNumber={day.dayNumber}
+            date={day.label}
+            expenses={day.expenses}
+            tripId={tripId}
+            readOnly
+          />
+        </Box>
       ))}
     </VStack>
   );
