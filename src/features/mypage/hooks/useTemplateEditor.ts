@@ -5,6 +5,20 @@ import {
 } from "@/features/packing/template/services";
 import type { CategoryWithItems, ChecklistItem } from "@/features/packing/type";
 import type { Json } from "@/shared/types/database.type";
+import { generateId } from "@/shared/utils/generateId";
+
+const parseCategoryData = (data: unknown): CategoryWithItems[] => {
+  if (!Array.isArray(data)) return [];
+  return data.filter(
+    (item): item is CategoryWithItems =>
+      typeof item === "object" &&
+      item !== null &&
+      "id" in item &&
+      "name" in item &&
+      "items" in item &&
+      Array.isArray(item.items),
+  );
+};
 
 export const useTemplateEditor = (templateId: string) => {
   const { data: templates, isLoading } = useChecklistTemplates();
@@ -19,7 +33,7 @@ export const useTemplateEditor = (templateId: string) => {
 
   const categories = useMemo(() => {
     if (!template?.checklist_data) return [];
-    return template.checklist_data as unknown as CategoryWithItems[];
+    return parseCategoryData(template.checklist_data);
   }, [template]);
 
   const selectedCategory = useMemo(() => {
@@ -46,7 +60,7 @@ export const useTemplateEditor = (templateId: string) => {
       if (!selectedCategoryId) return;
 
       const newItem: ChecklistItem = {
-        id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        id: generateId("item"),
         name,
         notes: notes || null,
         is_checked: false,
@@ -130,7 +144,7 @@ export const useTemplateEditor = (templateId: string) => {
   const addCategory = useCallback(
     (name: string, iconKey: string) => {
       const newCategory: CategoryWithItems = {
-        id: `cat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        id: generateId("cat"),
         name,
         icon_key: iconKey,
         items: [],
@@ -156,11 +170,11 @@ export const useTemplateEditor = (templateId: string) => {
     (importedCategories: CategoryWithItems[]) => {
       const newCategories = importedCategories.map((cat, idx) => ({
         ...cat,
-        id: `cat-${Date.now()}-${Math.random().toString(36).slice(2, 9)}-${idx}`,
+        id: generateId("cat"),
         display_order: categories.length + idx,
-        items: cat.items.map((item, itemIdx) => ({
+        items: cat.items.map((item) => ({
           ...item,
-          id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 9)}-${itemIdx}`,
+          id: generateId("item"),
           is_checked: false,
         })),
       }));
