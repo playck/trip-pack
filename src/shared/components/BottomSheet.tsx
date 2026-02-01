@@ -51,6 +51,8 @@ export default function BottomSheet({
       onOpenChange={(e) => !e.open && onClose()}
       placement="bottom"
       closeOnInteractOutside={closeOnInteractOutside}
+      lazyMount
+      unmountOnExit
     >
       <Portal>
         <Drawer.Backdrop />
@@ -60,6 +62,7 @@ export default function BottomSheet({
             borderBottomRadius="none"
             pb="env(safe-area-inset-bottom)"
             minHeight={minHeight}
+            overscrollBehavior="contain"
             style={{
               transform:
                 keyboardOffset > 0

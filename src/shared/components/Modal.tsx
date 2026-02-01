@@ -56,6 +56,8 @@ export default function Modal({
       size={size}
       closeOnInteractOutside={closeOnOverlayClick}
       closeOnEscape={closeOnEsc}
+      lazyMount
+      unmountOnExit
     >
       <Portal>
         <Dialog.Backdrop />
@@ -70,6 +72,7 @@ export default function Modal({
             borderRadius="xl"
             width={{ base: "90vw", sm: "100%" }}
             mx="auto"
+            overscrollBehavior="contain"
           >
             {/* Header */}
             {(title || !hideCloseButton) && (
