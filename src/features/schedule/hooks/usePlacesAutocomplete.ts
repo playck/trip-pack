@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useMapsLibrary, useMap } from "@vis.gl/react-google-maps";
 
 /**
@@ -28,6 +28,13 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(
     null
   );
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const getPlaceDetails = useCallback(
     (placeId: string): Promise<PlaceResult> => {
@@ -95,6 +102,8 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
 
         // 검색 실행
         service.getPlacePredictions(request, (predictions, status) => {
+          if (!mountedRef.current) return;
+
           if (status === placesLib.PlacesServiceStatus.OK && predictions) {
             const placeResults: PlaceResult[] = predictions.map(
               (prediction) => ({

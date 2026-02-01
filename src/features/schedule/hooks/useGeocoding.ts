@@ -67,6 +67,8 @@ export const useGeocoding = (
       return;
     }
 
+    let cancelled = false;
+
     const geocodeAddress = async () => {
       setIsLoading(true);
       setError(null);
@@ -75,6 +77,8 @@ export const useGeocoding = (
         const geocoder = new geocodingLib.Geocoder();
 
         const result = await geocoder.geocode({ address: searchQuery });
+
+        if (cancelled) return;
 
         if (result.results && result.results.length > 0) {
           const location = result.results[0].geometry.location;
@@ -89,14 +93,21 @@ export const useGeocoding = (
           setError("위치를 찾을 수 없습니다");
         }
       } catch (error) {
+        if (cancelled) return;
         console.error("❌ Geocoding 에러:", error);
         setError("위치 검색 중 오류가 발생했습니다");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     geocodeAddress();
+
+    return () => {
+      cancelled = true;
+    };
   }, [geocodingLib, regionName, regionId]);
 
   return { coordinates, isLoading, error };
