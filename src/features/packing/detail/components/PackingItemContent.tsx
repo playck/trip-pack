@@ -18,6 +18,8 @@ interface PackingItemContentProps {
   checkedPolicy?: CabinPolicy | null;
   checkedNotes?: string | null;
   countryWarning?: CountryRestriction | null;
+  isEditMode?: boolean;
+  isSelected?: boolean;
   onToggleCheck: () => void;
   onOpenActions: () => void;
 }
@@ -30,6 +32,8 @@ export default function PackingItemContent({
   checkedPolicy,
   checkedNotes,
   countryWarning,
+  isEditMode = false,
+  isSelected = false,
   onToggleCheck,
   onOpenActions,
 }: PackingItemContentProps) {
@@ -41,8 +45,8 @@ export default function PackingItemContent({
         <Flex alignItems="center" flex={1}>
           <Flex gap={1} alignItems="center">
             <Checkbox
-              isChecked={isChecked}
-              onChange={onToggleCheck}
+              isChecked={isEditMode ? isSelected : isChecked}
+              onChange={isEditMode ? () => {} : onToggleCheck}
               size="md"
               colorScheme={colors.primary.palette}
             />
@@ -50,12 +54,14 @@ export default function PackingItemContent({
               fontSize="md"
               fontWeight="medium"
               cursor="pointer"
-              onClick={onToggleCheck}
+              onClick={isEditMode ? undefined : onToggleCheck}
             >
               {itemName}
             </Text>
           </Flex>
-          <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+          {!isEditMode && (
+            <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+          )}
         </Flex>
 
         <Box
@@ -68,8 +74,9 @@ export default function PackingItemContent({
           justifyContent="center"
           color="gray.400"
           borderRadius="md"
-          cursor="pointer"
-          onClick={onOpenActions}
+          cursor={isEditMode ? "default" : "pointer"}
+          visibility={isEditMode ? "hidden" : "visible"}
+          onClick={isEditMode ? undefined : onOpenActions}
         >
           <MoreVertical size={16} />
         </Box>

@@ -19,6 +19,7 @@ import {
 } from "@/shared/components";
 import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import { colors } from "@/shared/constants/colors";
 import { useTripDetail } from "@/features/main/hooks/useTripDetail";
 
 import PackingItemList from "./components/PackingItemList";
@@ -26,6 +27,7 @@ import { ItemForm, DeleteCategoryModal, SearchBar } from "./components";
 import { useTripChecklist } from "../list/hooks/useTripChecklist";
 import { useCreateItem } from "../list/hooks/useCreateItem";
 import { useDeleteCategory } from "../list/hooks/useDeleteCategory";
+import { useDeleteItems } from "../list/hooks/useDeleteItems";
 import type { CategoryWithItems } from "../type";
 
 export default function CategoryDetailPage() {
@@ -45,6 +47,7 @@ export default function CategoryDetailPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [newItemName, setNewItemName] = useState("");
   const [newItemNotes, setNewItemNotes] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const categoryParam = (search as { category?: string }).category || "";
   const { categories, isLoading, error } = useTripChecklist(tripId || "");
@@ -57,6 +60,11 @@ export default function CategoryDetailPage() {
     },
   });
   const deleteCategoryMutation = useDeleteCategory(tripId);
+  const deleteItemsMutation = useDeleteItems(tripId, {
+    onSuccess: () => {
+      setIsEditMode(false);
+    },
+  });
 
   const countryCode = trip?.country_code;
   const categoryName = decodeURIComponent(categoryParam);
@@ -95,6 +103,10 @@ export default function CategoryDetailPage() {
   }
 
   const handleBackClick = () => {
+    if (isEditMode) {
+      setIsEditMode(false);
+      return;
+    }
     navigate({
       to: "/packing/list/$tripId",
       params: { tripId },
@@ -115,6 +127,10 @@ export default function CategoryDetailPage() {
       deleteCategoryMutation.mutate(category.id);
       onDeleteModalClose();
     }
+  };
+
+  const handleDeleteItems = (itemIds: string[]) => {
+    deleteItemsMutation.mutate(itemIds);
   };
 
   const handleSaveItem = () => {
@@ -181,17 +197,34 @@ export default function CategoryDetailPage() {
                   {category.name}
                 </Text>
               </HStack>
-              {!isEssentialCategory && (
-                <IconButton
-                  aria-label="카테고리 삭제"
-                  size="sm"
-                  variant="ghost"
-                  color="red.500"
-                  onClick={onDeleteModalOpen}
-                >
-                  <Trash2 size={18} />
-                </IconButton>
-              )}
+              <HStack gap={1}>
+                {!isEssentialCategory && !isEditMode && (
+                  <IconButton
+                    aria-label="카테고리 삭제"
+                    size="sm"
+                    variant="ghost"
+                    color="red.500"
+                    onClick={onDeleteModalOpen}
+                  >
+                    <Trash2 size={18} />
+                  </IconButton>
+                )}
+                {(isEditMode || category.items.length > 0) && (
+                  <Box
+                    as="button"
+                    px={3}
+                    py={1.5}
+                    bg={isEditMode ? colors.primary.palette : "gray.100"}
+                    color={isEditMode ? "white" : "gray.600"}
+                    fontWeight="medium"
+                    fontSize="sm"
+                    borderRadius="md"
+                    onClick={() => setIsEditMode(!isEditMode)}
+                  >
+                    {isEditMode ? "완료" : "편집"}
+                  </Box>
+                )}
+              </HStack>
             </HStack>
             <SearchBar onSearch={handleSearch} />
           </Box>
@@ -201,34 +234,44 @@ export default function CategoryDetailPage() {
               category={category}
               searchQuery={searchQuery}
               countryCode={countryCode}
+              isEditMode={isEditMode}
+              isDeleting={deleteItemsMutation.isPending}
+              onDeleteItems={handleDeleteItems}
             />
           </Box>
         </VStack>
       </Container>
 
-      <FloatingAddButton onClick={handleAddItem} ariaLabel="새 아이템 추가" />
+      {!isEditMode && (
+        <>
+          <FloatingAddButton
+            onClick={handleAddItem}
+            ariaLabel="새 아이템 추가"
+          />
 
-      <BottomSheet
-        isOpen={isOpen}
-        onClose={handleCloseItemSheet}
-        title="새 아이템 추가"
-        primaryButton={{
-          text: "저장",
-          onClick: handleSaveItem,
-          isLoading: createItemMutation.isPending,
-        }}
-        secondaryButton={{
-          text: "취소",
-          onClick: handleCloseItemSheet,
-        }}
-      >
-        <ItemForm
-          name={newItemName}
-          notes={newItemNotes}
-          onNameChange={setNewItemName}
-          onNotesChange={setNewItemNotes}
-        />
-      </BottomSheet>
+          <BottomSheet
+            isOpen={isOpen}
+            onClose={handleCloseItemSheet}
+            title="새 아이템 추가"
+            primaryButton={{
+              text: "저장",
+              onClick: handleSaveItem,
+              isLoading: createItemMutation.isPending,
+            }}
+            secondaryButton={{
+              text: "취소",
+              onClick: handleCloseItemSheet,
+            }}
+          >
+            <ItemForm
+              name={newItemName}
+              notes={newItemNotes}
+              onNameChange={setNewItemName}
+              onNotesChange={setNewItemNotes}
+            />
+          </BottomSheet>
+        </>
+      )}
 
       <DeleteCategoryModal
         isOpen={isDeleteModalOpen}

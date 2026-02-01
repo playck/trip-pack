@@ -166,6 +166,15 @@ export const useTemplateEditor = (templateId: string) => {
     [categories, updateCategories],
   );
 
+  const deleteCategories = useCallback(
+    (categoryIds: string[]) => {
+      const idSet = new Set(categoryIds);
+      const newCategories = categories.filter((cat) => !idSet.has(cat.id));
+      updateCategories(newCategories);
+    },
+    [categories, updateCategories],
+  );
+
   const importCategories = useCallback(
     (importedCategories: CategoryWithItems[]) => {
       const newCategories = importedCategories.map((cat, idx) => ({
@@ -222,6 +231,7 @@ export const useTemplateEditor = (templateId: string) => {
     // 카테고리 CRUD
     addCategory,
     deleteCategory,
+    deleteCategories,
     importCategories,
     selectCategory,
     clearSelectedCategory,

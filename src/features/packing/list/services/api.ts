@@ -193,6 +193,20 @@ export const updateChecklistItem = async (
   }
 };
 
+// 체크리스트 아이템을 일괄 삭제하는 API
+export const deleteChecklistItems = async (
+  itemIds: string[]
+): Promise<void> => {
+  const { error } = await supabase
+    .from("checklist_items")
+    .delete()
+    .in("id", itemIds);
+
+  if (error) {
+    throw new Error(`아이템 일괄 삭제 실패: ${error.message}`);
+  }
+};
+
 // 체크리스트 아이템을 삭제하는 API
 export const deleteChecklistItem = async (itemId: string): Promise<void> => {
   const { error } = await supabase

@@ -1,5 +1,7 @@
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
+import { colors } from "@/shared/constants/colors";
+
 import { useBaggagePolicy } from "../../list/hooks/useBaggagePolicy";
 import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 import type { ChecklistItem } from "../../type";
@@ -11,9 +13,18 @@ import EditItemSheet from "./EditItemSheet";
 interface PackingItemProps {
   item: ChecklistItem;
   countryCode?: string | null;
+  isEditMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: (itemId: string) => void;
 }
 
-export default function PackingItem({ item, countryCode }: PackingItemProps) {
+export default function PackingItem({
+  item,
+  countryCode,
+  isEditMode = false,
+  isSelected = false,
+  onSelect,
+}: PackingItemProps) {
   const {
     open: isActionsOpen,
     onOpen: onActionsOpen,
@@ -54,14 +65,22 @@ export default function PackingItem({ item, countryCode }: PackingItemProps) {
     onEditOpen();
   };
 
+  const handleCardClick = () => {
+    if (isEditMode && item.id && onSelect) {
+      onSelect(item.id);
+    }
+  };
+
   return (
     <Box
       p={3}
       bg="white"
       borderRadius="md"
       border="1px solid"
-      borderColor="gray.200"
+      borderColor={isSelected ? `${colors.primary.palette}.500` : "gray.200"}
       shadow="xs"
+      onClick={isEditMode ? handleCardClick : undefined}
+      cursor={isEditMode ? "pointer" : "default"}
     >
       <VStack gap={1} align="stretch">
         <PackingItemContent
@@ -72,6 +91,8 @@ export default function PackingItem({ item, countryCode }: PackingItemProps) {
           checkedPolicy={checkedPolicy}
           checkedNotes={checkedNotes}
           countryWarning={countryWarning}
+          isEditMode={isEditMode}
+          isSelected={isSelected}
           onToggleCheck={handleItemCheck}
           onOpenActions={onActionsOpen}
         />
@@ -83,21 +104,25 @@ export default function PackingItem({ item, countryCode }: PackingItemProps) {
         )}
       </VStack>
 
-      <ItemActionsSheet
-        isOpen={isActionsOpen}
-        itemId={item.id}
-        itemName={item.name}
-        tripId={tripId}
-        onEdit={handleItemEdit}
-        onClose={onActionsClose}
-      />
+      {!isEditMode && (
+        <>
+          <ItemActionsSheet
+            isOpen={isActionsOpen}
+            itemId={item.id}
+            itemName={item.name}
+            tripId={tripId}
+            onEdit={handleItemEdit}
+            onClose={onActionsClose}
+          />
 
-      <EditItemSheet
-        isOpen={isEditOpen}
-        item={item}
-        tripId={tripId}
-        onClose={onEditClose}
-      />
+          <EditItemSheet
+            isOpen={isEditOpen}
+            item={item}
+            tripId={tripId}
+            onClose={onEditClose}
+          />
+        </>
+      )}
     </Box>
   );
 }

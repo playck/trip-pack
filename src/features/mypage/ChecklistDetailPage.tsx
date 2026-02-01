@@ -46,6 +46,7 @@ export default function ChecklistDetailPage() {
     deleteItems,
     addCategory,
     deleteCategory,
+    deleteCategories,
     importCategories,
     selectCategory,
     clearSelectedCategory,
@@ -75,6 +76,13 @@ export default function ChecklistDetailPage() {
     onOpen: onDeleteCategoryOpen,
     onClose: onDeleteCategoryClose,
   } = useDisclosure();
+
+  // 현재 뷰 상태 변수들
+  const isCurrentEditMode = selectedCategory ? isItemEditMode : isEditMode;
+  const hasContent = selectedCategory
+    ? selectedCategory.items.length > 0
+    : categories.length > 0;
+  const shouldShowEditButton = isCurrentEditMode || hasContent;
 
   const handleSaveCategory = (name: string, iconKey: string) => {
     addCategory(name, iconKey);
@@ -180,33 +188,25 @@ export default function ChecklistDetailPage() {
                 </IconButton>
               )}
               {/* 편집 버튼 */}
-              <Box
-                as="button"
-                px={3}
-                py={1.5}
-                bg={
-                  (selectedCategory ? isItemEditMode : isEditMode)
-                    ? colors.primary.palette
-                    : "gray.100"
-                }
-                color={
-                  (selectedCategory ? isItemEditMode : isEditMode)
-                    ? "white"
-                    : "gray.600"
-                }
-                fontWeight="medium"
-                fontSize="sm"
-                borderRadius="md"
-                onClick={() =>
-                  selectedCategory
-                    ? setIsItemEditMode(!isItemEditMode)
-                    : setIsEditMode(!isEditMode)
-                }
-              >
-                {(selectedCategory ? isItemEditMode : isEditMode)
-                  ? "완료"
-                  : "편집"}
-              </Box>
+              {shouldShowEditButton && (
+                <Box
+                  as="button"
+                  px={3}
+                  py={1.5}
+                  bg={isCurrentEditMode ? colors.primary.palette : "gray.100"}
+                  color={isCurrentEditMode ? "white" : "gray.600"}
+                  fontWeight="medium"
+                  fontSize="sm"
+                  borderRadius="md"
+                  onClick={() =>
+                    selectedCategory
+                      ? setIsItemEditMode(!isItemEditMode)
+                      : setIsEditMode(!isEditMode)
+                  }
+                >
+                  {isCurrentEditMode ? "완료" : "편집"}
+                </Box>
+              )}
             </HStack>
           </Box>
 
@@ -230,14 +230,13 @@ export default function ChecklistDetailPage() {
               categories={categories}
               isEditMode={isEditMode}
               onCategoryClick={selectCategory}
-              onDeleteCategory={deleteCategory}
+              onDeleteCategories={deleteCategories}
             />
           )}
         </Box>
       </VStack>
 
-      {/* 플로팅 메뉴 버튼 - 카테고리 목록일 때만 표시 */}
-      {!selectedCategory && (
+      {!selectedCategory && !isEditMode && (
         <>
           <FloatingAddButton ariaLabel="메뉴" menuItems={floatingMenuItems} />
 
