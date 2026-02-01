@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeftRight, Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
@@ -40,13 +40,6 @@ export default function AddExpenseSheet({
   date,
   tripId,
 }: AddExpenseSheetProps) {
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
-  const [selectedSchedule, setSelectedSchedule] =
-    useState<SelectedScheduleInfo | null>(null);
-  const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
-
   const { data: tripInfo } = useTripInfo(tripId);
   const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
   const currencySymbol = getCurrencySymbol(targetCurrency);
@@ -57,31 +50,18 @@ export default function AddExpenseSheet({
     enabled: isForeignCurrency,
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      setName("");
-      setAmount("");
-
-      if (isForeignCurrency && showLocalCurrency) {
-        setCurrencyType("LOCAL");
-      } else {
-        setCurrencyType("KRW");
-      }
-
-      if (scheduleId && scheduleName) {
-        setSelectedSchedule({ id: scheduleId, name: scheduleName });
-      } else {
-        setSelectedSchedule(null);
-      }
-    }
-  }, [
-    isOpen,
-    showLocalCurrency,
-    isForeignCurrency,
-    scheduleId,
-    scheduleName,
-    date,
-  ]);
+  const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [currencyType, setCurrencyType] = useState<CurrencyType>(
+    isForeignCurrency && showLocalCurrency ? "LOCAL" : "KRW",
+  );
+  const [selectedSchedule, setSelectedSchedule] =
+    useState<SelectedScheduleInfo | null>(
+      scheduleId && scheduleName
+        ? { id: scheduleId, name: scheduleName }
+        : null,
+    );
+  const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
 
   const handleSave = () => {
     const parsedName = name.trim();

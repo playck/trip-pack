@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { VStack, Input, Button, HStack, Text, Box } from "@chakra-ui/react";
 import { ArrowLeftRight } from "lucide-react";
 import { ConfirmDialog } from "@/shared/components";
@@ -26,34 +26,20 @@ export default function SetBudgetModal({
   onSave,
   tripId,
 }: SetBudgetModalProps) {
-  const [inputAmount, setInputAmount] = useState("");
-  const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const { data: tripInfo } = useTripInfo(tripId);
   const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
   const currencySymbol = getCurrencySymbol(targetCurrency);
   const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
 
+  const [inputAmount, setInputAmount] = useState(
+    currentBudget ? currentBudget.toString() : "",
+  );
+  const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
+
+
   const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
     enabled: isForeignCurrency,
   });
-
-  useEffect(() => {
-    if (isOpen) {
-      if (currentBudget) {
-        setInputAmount(currentBudget.toString());
-      } else {
-        setInputAmount("");
-      }
-      setCurrencyType("KRW");
-
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    }
-  }, [isOpen, currentBudget]);
 
   const handleSave = () => {
     const amount = parseInt(inputAmount.replace(/,/g, ""), 10);
@@ -86,9 +72,6 @@ export default function SetBudgetModal({
   const toggleCurrencyType = () => {
     setCurrencyType((prev) => (prev === "KRW" ? "LOCAL" : "KRW"));
     setInputAmount("");
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
   };
 
   const estimatedKrw =
@@ -143,8 +126,8 @@ export default function SetBudgetModal({
 
         <Box position="relative">
           <Input
-            ref={inputRef}
             placeholder="0"
+            autoFocus
             value={inputAmount}
             onChange={handleAmountChange}
             inputMode="numeric"

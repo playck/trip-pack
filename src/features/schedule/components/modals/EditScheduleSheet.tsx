@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { VStack, Input, Text, Textarea } from "@chakra-ui/react";
 import { BottomSheet } from "@/shared/components";
 import type { Schedule } from "../../types";
@@ -21,13 +21,6 @@ export default function EditScheduleSheet({
 }: EditScheduleSheetProps) {
   const [placeName, setPlaceName] = useState(schedule.place_name);
   const [notes, setNotes] = useState(schedule.notes || "");
-
-  useEffect(() => {
-    if (isOpen) {
-      setPlaceName(schedule.place_name);
-      setNotes(schedule.notes || "");
-    }
-  }, [isOpen, schedule]);
 
   const handleSave = () => {
     if (placeName.trim()) {

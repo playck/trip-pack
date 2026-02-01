@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { VStack, Textarea } from "@chakra-ui/react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
@@ -22,12 +22,6 @@ export default function AddMemoSheet({
   isEditMode = false,
 }: AddMemoSheetProps) {
   const [memoText, setMemoText] = useState(initialMemoText);
-
-  useEffect(() => {
-    if (isOpen) {
-      setMemoText(initialMemoText);
-    }
-  }, [isOpen, initialMemoText]);
 
   const handleMemoSave = () => {
     if (memoText.trim()) {
