@@ -215,6 +215,8 @@ export default function LoginPage() {
                   </Box>
                   <Input
                     type="email"
+                    name="email"
+                    autoComplete="email"
                     placeholder="이메일"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
@@ -256,6 +258,8 @@ export default function LoginPage() {
                   </Box>
                   <Input
                     type="password"
+                    name="password"
+                    autoComplete="current-password"
                     placeholder="비밀번호"
                     value={formData.password}
                     onChange={(e) =>

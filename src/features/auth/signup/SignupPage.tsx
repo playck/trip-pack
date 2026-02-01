@@ -221,6 +221,8 @@ export default function SignupPage() {
                   </Box>
                   <Input
                     type="email"
+                    name="email"
+                    autoComplete="email"
                     placeholder="이메일 (example@email.com)"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
@@ -261,6 +263,8 @@ export default function SignupPage() {
                   </Box>
                   <Input
                     type="password"
+                    name="password"
+                    autoComplete="new-password"
                     placeholder="비밀번호 (6자리 이상)"
                     value={formData.password}
                     onChange={(e) =>
@@ -303,6 +307,8 @@ export default function SignupPage() {
                   </Box>
                   <Input
                     type="text"
+                    name="username"
+                    autoComplete="username"
                     placeholder="유저명(닉네임)"
                     value={formData.username}
                     onChange={(e) =>
