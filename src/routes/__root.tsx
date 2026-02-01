@@ -13,6 +13,8 @@ function RootComponent() {
         maxWidth: "600px",
         margin: "0 auto",
         width: "100%",
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
       <Header />
