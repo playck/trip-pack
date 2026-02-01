@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   Container,
   Text,
@@ -40,15 +40,10 @@ import {
   useUpdateItemCheckedStatus,
 } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
-import { useSaveAsTemplate } from "../template/hooks/useSaveAsTemplate";
 
 export default function PackingListPage() {
   const navigate = useNavigate();
   const { open: isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<string>>(
-    new Set()
-  );
-  const [templateName, setTemplateName] = useState("");
 
   const {
     open: isCheckListOpen,
@@ -78,15 +73,6 @@ export default function PackingListPage() {
       onClose();
     },
   });
-  const {
-    handleSaveAsTemplate,
-    isLoading: isSavingTemplate,
-    isSuccess: isSaveTemplateSuccess,
-  } = useSaveAsTemplate();
-
-  if (isSaveTemplateSuccess && isSaveSheetOpen) {
-    onSaveSheetClose();
-  }
 
   const menuItems: FloatingMenuItem[] = [
     {
@@ -121,31 +107,6 @@ export default function PackingListPage() {
   const handleToggleItem = (itemId: string, isChecked: boolean) => {
     updateItemStatus.mutate({ itemId, isChecked });
   };
-
-  const handleSaveSelectedCategories = () => {
-    const selectedCategories = categories.filter((c) =>
-      selectedCategoryIds.has(c.id)
-    );
-    const trimmedName = templateName.trim();
-
-    handleSaveAsTemplate(
-      tripInfo,
-      selectedCategories,
-      trimmedName || undefined
-    );
-  };
-
-  const handleTemplateNameChange = useCallback((name: string) => {
-    setTemplateName(name);
-  }, []);
-
-  const handleSelectedCategoryIdsChange = useCallback((ids: Set<string>) => {
-    setSelectedCategoryIds(ids);
-  }, []);
-
-  const defaultTemplateName = tripInfo?.title
-    ? `${tripInfo.title} 체크리스트`
-    : "체크리스트";
 
   if (error) {
     return (
@@ -264,29 +225,12 @@ export default function PackingListPage() {
           <CheckListCopySheet categories={categories} onClose={onShareClose} />
         </BottomSheet>
 
-        <BottomSheet
+        <ChecklistSaveSheet
           isOpen={isSaveSheetOpen}
           onClose={onSaveSheetClose}
-          title="체크리스트 템플릿 저장"
-          primaryButton={{
-            text: "저장",
-            onClick: handleSaveSelectedCategories,
-            isLoading: isSavingTemplate,
-            disabled: selectedCategoryIds.size === 0 || !templateName.trim(),
-          }}
-          secondaryButton={{
-            text: "취소",
-            onClick: onSaveSheetClose,
-            disabled: isSavingTemplate,
-          }}
-        >
-          <ChecklistSaveSheet
-            categories={categories}
-            defaultTemplateName={defaultTemplateName}
-            onSelectedChange={handleSelectedCategoryIdsChange}
-            onTemplateNameChange={handleTemplateNameChange}
-          />
-        </BottomSheet>
+          categories={categories}
+          tripInfo={tripInfo}
+        />
       </PageLayout>
     </>
   );

@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Box, Button, Flex, HStack } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import type { CategoryWithItems } from "@/features/packing/type";
-import { backgrounds, borderColors, colors } from "@/shared/constants/colors";
 import { useCreateCategoriesFromCheckList } from "@/features/packing/list/hooks/useCreateCategoriesFromCheckList";
 import CheckList from "./CheckList";
 import BottomSheet from "../BottomSheet";
@@ -46,7 +45,22 @@ export default function CheckListBottomSheet({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose} title={title} adjustForKeyboard={false}>
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={title}
+      adjustForKeyboard={false}
+      secondaryButton={{
+        text: "취소",
+        onClick: handleClose,
+      }}
+      primaryButton={{
+        text: `추가${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`,
+        onClick: handleAddCategories,
+        disabled: selectedIds.size === 0 || createCategories.isPending,
+        isLoading: createCategories.isPending,
+      }}
+    >
       <Flex flexDirection="column" h="100%" minHeight="70vh">
         <Box px={4} py={4} flex={1} overflowY="auto">
           <CheckList
@@ -54,42 +68,6 @@ export default function CheckListBottomSheet({
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
           />
-        </Box>
-        <Box
-          w="full"
-          position="sticky"
-          bottom={0}
-          left={0}
-          right={0}
-          p={4}
-          mt={2}
-          bg={backgrounds.primary}
-          borderTop="1px"
-          borderColor={borderColors.default}
-        >
-          <HStack gap={3}>
-            <Button
-              flex={1}
-              variant="outline"
-              size="lg"
-              borderRadius="xl"
-              onClick={handleClose}
-            >
-              취소
-            </Button>
-            <Button
-              flex={1}
-              colorPalette={colors.primary.palette}
-              variant="solid"
-              size="lg"
-              borderRadius="xl"
-              onClick={handleAddCategories}
-              disabled={selectedIds.size === 0 || createCategories.isPending}
-              loading={createCategories.isPending}
-            >
-              추가 {selectedIds.size > 0 && `(${selectedIds.size})`}
-            </Button>
-          </HStack>
         </Box>
       </Flex>
     </BottomSheet>
