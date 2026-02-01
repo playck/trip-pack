@@ -10,25 +10,30 @@ interface Location {
   lng: number;
 }
 
+type MapMarker = {
+  id: string;
+  position: Location;
+  title?: string;
+  label?: string | number;
+};
+
 interface GoogleMapViewProps {
   center?: Location;
   zoom?: number;
-  markers?: Array<{
-    id: string;
-    position: Location;
-    title?: string;
-    label?: string | number;
-  }>;
+  markers?: MapMarker[];
   height?: string;
   showRoute?: boolean;
   onMarkerClick?: (markerId: string) => void;
   onFullScreenChange?: (isFullScreen: boolean) => void;
 }
 
+const DEFAULT_CENTER: Location = { lat: 37.5665, lng: 126.978 };
+const DEFAULT_MARKERS: MapMarker[] = [];
+
 export default function GoogleMapView({
-  center = { lat: 37.5665, lng: 126.978 }, // 서울 좌표
+  center = DEFAULT_CENTER,
   zoom = 12,
-  markers = [],
+  markers = DEFAULT_MARKERS,
   height = "200px",
   showRoute = true,
   onMarkerClick,
