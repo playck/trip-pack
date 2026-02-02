@@ -73,14 +73,14 @@ export default function PackingItem({
 
   return (
     <Box
-      p={3}
+      p={isSelected ? "11px" : 3}
       bg="white"
       borderRadius="md"
-      border="1px solid"
+      border={isSelected ? "2px solid" : "1px solid"}
       borderColor={isSelected ? `${colors.primary.palette}.500` : "gray.200"}
       shadow="xs"
-      onClick={isEditMode ? handleCardClick : undefined}
       cursor={isEditMode ? "pointer" : "default"}
+      onClick={isEditMode ? handleCardClick : undefined}
     >
       <VStack gap={1} align="stretch">
         <PackingItemContent
@@ -92,7 +92,6 @@ export default function PackingItem({
           checkedNotes={checkedNotes}
           countryWarning={countryWarning}
           isEditMode={isEditMode}
-          isSelected={isSelected}
           onToggleCheck={handleItemCheck}
           onOpenActions={onActionsOpen}
         />

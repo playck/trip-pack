@@ -19,7 +19,6 @@ interface PackingItemContentProps {
   checkedNotes?: string | null;
   countryWarning?: CountryRestriction | null;
   isEditMode?: boolean;
-  isSelected?: boolean;
   onToggleCheck: () => void;
   onOpenActions: () => void;
 }
@@ -33,7 +32,6 @@ export default function PackingItemContent({
   checkedNotes,
   countryWarning,
   isEditMode = false,
-  isSelected = false,
   onToggleCheck,
   onOpenActions,
 }: PackingItemContentProps) {
@@ -43,19 +41,20 @@ export default function PackingItemContent({
     <>
       <HStack justify="space-between" align="center">
         <Flex alignItems="center" flex={1}>
-          <Flex gap={1} alignItems="center">
+          <Flex
+            gap={1}
+            alignItems="center"
+            flex={1}
+            cursor="pointer"
+            onClick={isEditMode ? undefined : onToggleCheck}
+          >
             <Checkbox
-              isChecked={isEditMode ? isSelected : isChecked}
+              isChecked={isChecked}
               onChange={isEditMode ? () => {} : onToggleCheck}
               size="md"
               colorScheme={colors.primary.palette}
             />
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              cursor="pointer"
-              onClick={isEditMode ? undefined : onToggleCheck}
-            >
+            <Text fontSize="md" fontWeight="medium">
               {itemName}
             </Text>
           </Flex>

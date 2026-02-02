@@ -64,7 +64,7 @@ export default function TemplateItem({
       p={3}
       bg="white"
       borderRadius="md"
-      border="1px solid"
+      border={isSelected ? "2px solid" : "1px solid"}
       borderColor={isSelected ? `${colors.primary.palette}.500` : "gray.200"}
       shadow="xs"
       onClick={isEditMode ? handleCheckboxChange : undefined}
