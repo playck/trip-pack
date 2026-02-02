@@ -10,6 +10,7 @@ import {
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2 } from "lucide-react";
+import dayjs from "dayjs";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -102,7 +103,12 @@ function SchedulePageContent() {
   const [selectedScheduleForExpense, setSelectedScheduleForExpense] =
     useState<Schedule | null>(null);
 
-  const createExpenseMutation = useCreateExpense(tripId || "");
+  const createExpenseMutation = useCreateExpense(tripId || "", {
+    onSuccess: () => {
+      setIsExpenseSheetOpen(false);
+      setSelectedScheduleForExpense(null);
+    },
+  });
 
   // 일정 액션 시트 및 수정 관련 로직
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
@@ -199,7 +205,9 @@ function SchedulePageContent() {
 
     createExpenseMutation.mutate({
       tripId,
-      expenseDate: selectedScheduleForExpense.schedule_date,
+      expenseDate: dayjs(selectedScheduleForExpense.schedule_date).format(
+        "YYYY-MM-DD",
+      ),
       dayNumber: selectedScheduleForExpense.day_number,
       category: name,
       amount,

@@ -52,7 +52,10 @@ export default function ExpensePage() {
     return dateList.map((dateItem) => {
       // 해당 날짜의 경비만 필터링
       const dayExpenseItems = (expenses || [])
-        .filter((expense) => expense.expense_date === dateItem.date)
+        .filter(
+          (expense) =>
+            dayjs(expense.expense_date).format("YYYY-MM-DD") === dateItem.date,
+        )
         .map((expense) => ({
           id: expense.id,
           name: expense.expense_category,
