@@ -1,5 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { colors } from "@/shared/constants/colors";
 
 interface MapCollapseButtonProps {
   isCollapsed: boolean;
@@ -33,9 +34,9 @@ export default function MapCollapseButton({
             {isCollapsed ? "지도 보기" : "지도 숨기기"}
           </Text>
           {isCollapsed ? (
-            <ChevronDown size={14} color="#718096" />
+            <ChevronDown size={14} color={colors.neutral.hex[500]} />
           ) : (
-            <ChevronUp size={14} color="#718096" />
+            <ChevronUp size={14} color={colors.neutral.hex[500]} />
           )}
         </Box>
       </Box>

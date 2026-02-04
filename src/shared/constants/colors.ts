@@ -33,6 +33,22 @@ export const systemColors = {
   },
 } as const;
 
+// 커스텀 레드 계열 색상
+export const customPalette = {
+  rose: {
+    50: "#FFF1F2",
+    100: "#FFE4E6",
+    200: "#FECDD3",
+    300: "#FDA4AF",
+    400: "#FB7185",
+    500: "#F43F5E",
+    600: "#E11D48",
+    700: "#BE123C",
+    800: "#9F1239",
+    900: "#881337",
+  },
+} as const;
+
 export const backgrounds = systemColors.background;
 export const textColors = systemColors.text;
 export const borderColors = systemColors.border;
@@ -58,12 +74,21 @@ export const statusColors = {
   },
 
   error: {
-    bg: "bg.error",
-    text: "fg.error",
-    border: "border.error",
-    solid: "red.solid",
-    contrast: "red.contrast",
+    bg: customPalette.rose[50],
+    text: customPalette.rose[600],
+    border: customPalette.rose[200],
+    solid: customPalette.rose[500],
+    contrast: "#FFFFFF",
     palette: "red",
+    hex: {
+      50: customPalette.rose[50],
+      100: customPalette.rose[100],
+      200: customPalette.rose[200],
+      300: customPalette.rose[300],
+      400: customPalette.rose[400],
+      500: customPalette.rose[500],
+      600: customPalette.rose[600],
+    },
   },
 
   info: {
@@ -73,6 +98,34 @@ export const statusColors = {
     solid: "blue.solid",
     contrast: "blue.contrast",
     palette: "blue",
+  },
+} as const;
+
+// Chakra Teal 팔레트 hex 값 (아이콘 등 직접 hex 필요한 곳에서 사용)
+export const hexColors = {
+  teal: {
+    50: "#E6FFFA",
+    100: "#B2F5EA",
+    200: "#81E6D9",
+    300: "#4FD1C5",
+    400: "#38B2AC",
+    500: "#319795",
+    600: "#2C7A7B",
+    700: "#285E61",
+    800: "#234E52",
+    900: "#1D4044",
+  },
+  gray: {
+    50: "#F7FAFC",
+    100: "#EDF2F7",
+    200: "#E2E8F0",
+    300: "#CBD5E0",
+    400: "#A0AEC0",
+    500: "#718096",
+    600: "#4A5568",
+    700: "#2D3748",
+    800: "#1A202C",
+    900: "#171923",
   },
 } as const;
 
@@ -87,6 +140,7 @@ export const colors = {
     emphasized: "teal.emphasized",
     fg: "teal.fg",
     focusRing: "teal.focusRing",
+    hex: hexColors.teal,
   },
 
   secondary: {
@@ -117,6 +171,7 @@ export const colors = {
     muted: "gray.muted",
     emphasized: "gray.emphasized",
     fg: "gray.fg",
+    hex: hexColors.gray,
   },
 } as const;
 

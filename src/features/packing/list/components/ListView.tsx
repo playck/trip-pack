@@ -186,14 +186,14 @@ export default function ListView({
                   {/* 카테고리 정보 */}
                   <HStack gap={2}>
                     {IconComponent && (
-                      <IconComponent size={18} color="#3182CE" />
+                      <IconComponent size={18} color={colors.primary.hex[500]} />
                     )}
                     <Text fontSize="md" fontWeight="semibold" color="gray.800">
                       {category.name}
                     </Text>
                   </HStack>
 
-                  <Badge colorScheme="blue" size="sm">
+                  <Badge colorScheme={colors.primary.palette} size="sm">
                     {completed} / {total}
                   </Badge>
                 </HStack>
@@ -270,21 +270,11 @@ export default function ListView({
                             </HStack>
                             {item.cabin_policy &&
                               item.cabin_policy !== "allowed" && (
-                                <Box
-                                  as="button"
+                                <CabinPolicyIcon
+                                  policy={item.cabin_policy as CabinPolicy}
+                                  size={16}
                                   onClick={(e) => handlePolicyClick(e, item)}
-                                  p={1}
-                                  borderRadius="md"
-                                  display="flex"
-                                  alignItems="center"
-                                  justifyContent="center"
-                                  _active={{ bg: "gray.100" }}
-                                >
-                                  <CabinPolicyIcon
-                                    policy={item.cabin_policy as CabinPolicy}
-                                    size={16}
-                                  />
-                                </Box>
+                                />
                               )}
                           </HStack>
                         </Box>

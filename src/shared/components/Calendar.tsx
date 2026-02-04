@@ -7,6 +7,7 @@ import DatePicker, {
   type ReactDatePickerCustomHeaderProps,
 } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { colors } from "@/shared/constants/colors";
 
 export interface TravelDates {
   startDate: Date | null;
@@ -167,7 +168,7 @@ export default function Calendar({
 
   return (
     <div style={{ maxWidth: "500px", width: "100%", margin: "10px auto 0" }}>
-      <div css={CalendarStyle("#319795")}>
+      <div css={CalendarStyle(colors.primary.hex[500])}>
         <DatePicker
           renderCustomHeader={renderHeader}
           renderDayContents={renderDay}

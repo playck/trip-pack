@@ -2,6 +2,7 @@ import { HStack, SegmentGroup } from "@chakra-ui/react";
 import { Grid3X3, List } from "lucide-react";
 
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
+import { colors } from "@/shared/constants/colors";
 
 interface ViewModeToggleProps {
   viewMode: string;
@@ -37,7 +38,7 @@ export default function ViewModeToggle({
                     <Grid3X3
                       size={18}
                       color={
-                        viewMode === "그리드" ? "#3182CE" : "currentColor"
+                        viewMode === "그리드" ? colors.primary.hex[500] : "currentColor"
                       }
                     />
                   </HStack>
@@ -50,7 +51,7 @@ export default function ViewModeToggle({
                     <List
                       size={18}
                       color={
-                        viewMode === "일렬형식" ? "#3182CE" : "currentColor"
+                        viewMode === "일렬형식" ? colors.primary.hex[500] : "currentColor"
                       }
                     />
                   </HStack>

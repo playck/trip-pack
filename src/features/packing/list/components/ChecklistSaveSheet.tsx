@@ -186,7 +186,7 @@ export default function ChecklistSaveSheet({
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      color="blue.500"
+                      color={`${colors.primary.palette}.500`}
                     >
                       <IconComponent size={28} />
                     </Box>

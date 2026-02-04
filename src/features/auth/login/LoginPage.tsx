@@ -16,6 +16,7 @@ import { Mail, Lock } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
+import { colors, statusColors } from "@/shared/constants/colors";
 import {
   validateLoginForm,
   handleLoginError,
@@ -189,9 +190,9 @@ export default function LoginPage() {
               {(errors.general || socialError) && (
                 <Box
                   p={3}
-                  bg="red.50"
+                  bg={statusColors.error.bg}
                   borderRadius="lg"
-                  color="red.600"
+                  color={statusColors.error.text}
                   fontSize="sm"
                   fontWeight="medium"
                   textAlign="center"
@@ -225,19 +226,21 @@ export default function LoginPage() {
                     h="50px"
                     bg="white"
                     borderRadius="xl"
-                    borderColor={errors.email ? "red.300" : "gray.200"}
+                    borderColor={errors.email ? statusColors.error.hex[300] : "gray.200"}
                     _focus={{
-                      borderColor: errors.email ? "red.400" : "blue.500",
+                      borderColor: errors.email
+                        ? statusColors.error.hex[400]
+                        : `${colors.primary.palette}.500`,
                       boxShadow: errors.email
-                        ? "0 0 0 1px #F56565"
-                        : "0 0 0 1px #4299E1",
+                        ? `0 0 0 1px ${statusColors.error.hex[400]}`
+                        : `0 0 0 1px var(--chakra-colors-${colors.primary.palette}-500)`,
                       bg: "white",
                     }}
                     _placeholder={{ color: "gray.400" }}
                   />
                 </Box>
                 {errors.email && (
-                  <Text color="red.500" fontSize="xs" mt={1} ml={1}>
+                  <Text color={statusColors.error.solid} fontSize="xs" mt={1} ml={1}>
                     {errors.email}
                   </Text>
                 )}
@@ -270,19 +273,21 @@ export default function LoginPage() {
                     h="50px"
                     bg="white"
                     borderRadius="xl"
-                    borderColor={errors.password ? "red.300" : "gray.200"}
+                    borderColor={errors.password ? statusColors.error.hex[300] : "gray.200"}
                     _focus={{
-                      borderColor: errors.password ? "red.400" : "blue.500",
+                      borderColor: errors.password
+                        ? statusColors.error.hex[400]
+                        : `${colors.primary.palette}.500`,
                       boxShadow: errors.password
-                        ? "0 0 0 1px #F56565"
-                        : "0 0 0 1px #4299E1",
+                        ? `0 0 0 1px ${statusColors.error.hex[400]}`
+                        : `0 0 0 1px var(--chakra-colors-${colors.primary.palette}-500)`,
                       bg: "white",
                     }}
                     _placeholder={{ color: "gray.400" }}
                   />
                 </Box>
                 {errors.password && (
-                  <Text color="red.500" fontSize="xs" mt={1} ml={1}>
+                  <Text color={statusColors.error.solid} fontSize="xs" mt={1} ml={1}>
                     {errors.password}
                   </Text>
                 )}
@@ -291,7 +296,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 size="lg"
-                colorScheme="blue"
+                colorScheme={colors.primary.palette}
                 borderRadius="xl"
                 loading={isLoading}
                 h="50px"
@@ -310,7 +315,7 @@ export default function LoginPage() {
                   아직 계정이 없으신가요?{" "}
                   <Text
                     as="button"
-                    color="blue.600"
+                    color={`${colors.primary.palette}.600`}
                     fontWeight="semibold"
                     onClick={() => navigate({ to: "/auth/signup" })}
                     _hover={{ textDecoration: "underline" }}

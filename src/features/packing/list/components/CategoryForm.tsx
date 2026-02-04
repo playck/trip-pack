@@ -1,4 +1,5 @@
 import { VStack, Input, Text, Box, SimpleGrid } from "@chakra-ui/react";
+import { colors } from "@/shared/constants/colors";
 import { CATEGORY_ICONS } from "../constants/category";
 
 interface CategoryFormProps {
@@ -45,9 +46,9 @@ export default function CategoryForm({
                   <Box
                     key={key}
                     p={3}
-                    bg={isSelected ? "blue.50" : "gray.50"}
+                    bg={isSelected ? `${colors.primary.palette}.50` : "gray.50"}
                     border="2px"
-                    borderColor={isSelected ? "blue.500" : "gray.200"}
+                    borderColor={isSelected ? `${colors.primary.palette}.500` : "gray.200"}
                     borderRadius="xl"
                     display="flex"
                     flexDirection="column"
@@ -58,7 +59,7 @@ export default function CategoryForm({
                   >
                     <IconComponent
                       size={24}
-                      color={isSelected ? "#3182ce" : "#718096"}
+                      color={isSelected ? colors.primary.hex[500] : colors.neutral.hex[500]}
                     />
                   </Box>
                 );

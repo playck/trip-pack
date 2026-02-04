@@ -54,7 +54,7 @@ export default function CheckList({
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                color="blue.500"
+                color={`${colors.primary.palette}.500`}
               >
                 <Icon size={28} />
               </Box>

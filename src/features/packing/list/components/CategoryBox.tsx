@@ -3,6 +3,7 @@ import { Box, VStack, Text } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { type LucideIcon } from "lucide-react";
 
+import { colors } from "@/shared/constants/colors";
 import type { CategoryWithItems } from "../../type";
 
 interface CategoryBoxProps {
@@ -62,7 +63,7 @@ export default function CategoryBox({
           display="flex"
           alignItems="center"
           justifyContent="center"
-          color="blue.500"
+          color={`${colors.primary.palette}.500`}
         >
           <Icon size={28} />
         </Box>
@@ -85,7 +86,7 @@ export default function CategoryBox({
             >
               <Box
                 h="full"
-                bg="blue.500"
+                bg={`${colors.primary.palette}.500`}
                 borderRadius="full"
                 width={`${progress}%`}
                 transition="width 0.3s ease"

@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Copy, Check } from "lucide-react";
 
+import { colors } from "@/shared/constants/colors";
 import type { CategoryWithItems } from "../../type";
 import {
   exportChecklistToText,
@@ -90,8 +91,8 @@ export default function TextExportSheet({
           bg="gray.50"
           borderColor="gray.200"
           _focus={{
-            borderColor: "blue.400",
-            boxShadow: "0 0 0 1px var(--chakra-colors-blue-400)",
+            borderColor: `${colors.primary.palette}.400`,
+            boxShadow: `0 0 0 1px var(--chakra-colors-${colors.primary.palette}-400)`,
           }}
         />
       </Box>
@@ -99,7 +100,7 @@ export default function TextExportSheet({
       <HStack gap={3}>
         <Button
           flex={1}
-          colorScheme={copied ? "green" : "blue"}
+          colorScheme={copied ? "green" : colors.primary.palette}
           onClick={handleCopy}
           disabled={copied}
         >
