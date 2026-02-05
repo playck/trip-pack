@@ -18,6 +18,9 @@ export function useDeleteSchedule(
       queryClient.invalidateQueries({
         queryKey: ["tripSchedules", tripId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["tripExpenses", tripId],
+      });
 
       toaster.create({
         title: "일정이 삭제되었습니다",
