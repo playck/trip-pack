@@ -1,4 +1,8 @@
 import { supabase } from "@/shared/service/supabase/cilent";
+import {
+  deleteExpensesByScheduleId,
+  deleteExpensesByScheduleIds,
+} from "@/features/expense/services/api";
 import type {
   CreateScheduleParams,
   Schedule,
@@ -86,9 +90,12 @@ export const getLastVisitOrder = async (
 };
 
 /**
- * 일정 삭제
+ * 일정 삭제 (연결된 경비도 함께 삭제)
  */
 export const deleteSchedule = async (scheduleId: string): Promise<void> => {
+  // 연결된 경비 먼저 삭제
+  await deleteExpensesByScheduleId(scheduleId);
+
   const { error } = await supabase
     .from("trip_schedules")
     .delete()
@@ -100,7 +107,7 @@ export const deleteSchedule = async (scheduleId: string): Promise<void> => {
 };
 
 /**
- * 일정 일괄 삭제
+ * 일정 일괄 삭제 (연결된 경비도 함께 삭제)
  */
 export const deleteBulkSchedules = async (
   scheduleIds: string[]
@@ -108,6 +115,9 @@ export const deleteBulkSchedules = async (
   if (scheduleIds.length === 0) {
     return;
   }
+
+  // 연결된 경비 먼저 삭제
+  await deleteExpensesByScheduleIds(scheduleIds);
 
   const { error } = await supabase
     .from("trip_schedules")

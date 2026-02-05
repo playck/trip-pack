@@ -115,3 +115,35 @@ export async function deleteExpense(expenseId: string): Promise<void> {
     throw new Error(error.message);
   }
 }
+
+// 일정 ID로 연결된 경비 삭제
+export async function deleteExpensesByScheduleId(
+  scheduleId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("trip_expenses")
+    .delete()
+    .eq("schedule_id", scheduleId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+// 여러 일정 ID로 연결된 경비 일괄 삭제
+export async function deleteExpensesByScheduleIds(
+  scheduleIds: string[]
+): Promise<void> {
+  if (scheduleIds.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("trip_expenses")
+    .delete()
+    .in("schedule_id", scheduleIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
