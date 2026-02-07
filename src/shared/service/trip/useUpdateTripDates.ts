@@ -1,15 +1,21 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { updateTripDates } from "./api";
+import { updateTripDatesWithSchedules, getSchedulesOutOfRange } from "./api";
 
 interface UseUpdateTripDatesParams {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
+interface MutationParams {
+  startDate: string;
+  endDate: string;
+  deleteOutOfRangeSchedules?: boolean;
+}
+
 export function useUpdateTripDates(
   tripId: string,
-  callback?: UseUpdateTripDatesParams
+  callback?: UseUpdateTripDatesParams,
 ) {
   const queryClient = useQueryClient();
 
@@ -17,20 +23,35 @@ export function useUpdateTripDates(
     mutationFn: ({
       startDate,
       endDate,
-    }: {
-      startDate: string;
-      endDate: string;
-    }) => updateTripDates(tripId, startDate, endDate),
-    onSuccess: () => {
+      deleteOutOfRangeSchedules = false,
+    }: MutationParams) =>
+      updateTripDatesWithSchedules({
+        tripId,
+        startDate,
+        endDate,
+        deleteOutOfRangeSchedules,
+      }),
+    onSuccess: (result) => {
       queryClient.invalidateQueries({
         queryKey: ["tripInfo", tripId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tripSchedules", tripId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tripExpenses", tripId],
       });
 
       if (callback?.onSuccess) {
         callback.onSuccess();
       } else {
+        const message =
+          result.deletedScheduleCount > 0
+            ? `여행 기간이 수정되었습니다 (${result.deletedScheduleCount}개 일정 삭제됨)`
+            : "여행 기간이 수정되었습니다";
+
         toaster.create({
-          title: "여행 기간이 수정되었습니다",
+          title: message,
           type: "success",
           duration: 2000,
         });
@@ -48,5 +69,19 @@ export function useUpdateTripDates(
         });
       }
     },
+  });
+}
+
+// 범위 밖 일정 개수 조회 훅
+export function useOutOfRangeScheduleCount(
+  tripId: string,
+  maxDayNumber: number,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ["outOfRangeSchedules", tripId, maxDayNumber],
+    queryFn: () => getSchedulesOutOfRange(tripId, maxDayNumber),
+    enabled: enabled && !!tripId && maxDayNumber > 0,
+    select: (data) => data.length,
   });
 }
