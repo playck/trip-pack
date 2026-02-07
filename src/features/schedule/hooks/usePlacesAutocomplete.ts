@@ -26,11 +26,12 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
   const map = useMap("schedule-map");
 
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(
-    null
+    null,
   );
   const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
     };
@@ -73,7 +74,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
         });
       });
     },
-    [placesLib, map]
+    [placesLib, map],
   );
 
   /**
@@ -100,7 +101,6 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
             : undefined,
         };
 
-        // 검색 실행
         service.getPlacePredictions(request, (predictions, status) => {
           if (!mountedRef.current) return;
 
@@ -110,27 +110,25 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
                 placeId: prediction.place_id,
                 name: prediction.structured_formatting.main_text,
                 address: prediction.structured_formatting.secondary_text || "",
-              })
+              }),
             );
 
             setResults(placeResults);
           } else if (status === placesLib.PlacesServiceStatus.ZERO_RESULTS) {
             setResults([]);
           } else {
-            console.error("❌ Places 검색 에러:", status);
             setError("장소 검색에 실패했습니다");
             setResults([]);
           }
           setIsLoading(false);
         });
-      } catch (err) {
-        console.error("❌ Places 검색 예외:", err);
+      } catch {
         setError("장소 검색 중 오류가 발생했습니다");
         setResults([]);
         setIsLoading(false);
       }
     },
-    [placesLib, countryCode]
+    [placesLib, countryCode],
   );
 
   /**
