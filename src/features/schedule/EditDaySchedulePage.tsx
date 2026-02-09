@@ -42,6 +42,7 @@ export default function ManageDaySchedulePage() {
 
   const { handleDelete, handleMove, isDeleting, isMoving } = useScheduleActions(
     tripId,
+    tripInfo?.startDate ?? "",
     () => {
       clearSelection();
       closeDialog();

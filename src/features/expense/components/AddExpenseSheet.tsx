@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowLeftRight, Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
@@ -62,6 +62,16 @@ export default function AddExpenseSheet({
         : null,
     );
   const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleSave = () => {
     const parsedName = name.trim();
@@ -190,12 +200,12 @@ export default function AddExpenseSheet({
             </HStack>
 
             <Input
+              ref={nameInputRef}
               placeholder="예) 조식"
               value={name}
               onChange={(e) => setName(e.target.value)}
               size="lg"
               borderRadius="xl"
-              autoFocus
             />
           </VStack>
 

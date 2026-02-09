@@ -125,6 +125,29 @@ export default function ExpenseSummaryCard({
                     {Math.round(exchangeRate).toLocaleString()}원
                   </Text>
                 )}
+
+                {/* 현지화 토글 버튼 */}
+                {isForeignCurrency && (
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    color="gray.400"
+                    h="18px"
+                    px={1}
+                    minW="auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowLocalCurrency(!showLocalCurrency);
+                    }}
+                  >
+                    <HStack gap={1}>
+                      <ArrowLeftRight size={10} />
+                      <Text fontSize="xs" fontWeight="medium">
+                        {showLocalCurrency ? "원화" : "현지화"}
+                      </Text>
+                    </HStack>
+                  </Button>
+                )}
               </HStack>
               <HStack gap={1} align="baseline">
                 <Text
@@ -140,30 +163,6 @@ export default function ExpenseSummaryCard({
                   {formatAmountValue(0).replace(/[0-9.,-]/g, "")}
                 </Text>
 
-                {/* 토글 버튼 (금액 단위 옆에 배치) */}
-                {isForeignCurrency && (
-                  <Button
-                    size="xs"
-                    variant="ghost"
-                    color="gray.400"
-                    h="18px"
-                    px={1}
-                    minW="auto"
-                    ml={1}
-                    transform="translateY(2px)"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowLocalCurrency(!showLocalCurrency);
-                    }}
-                  >
-                    <HStack gap={1}>
-                      <ArrowLeftRight size={10} />
-                      <Text fontSize="xs" fontWeight="medium">
-                        {showLocalCurrency ? "원화" : "현지화"}
-                      </Text>
-                    </HStack>
-                  </Button>
-                )}
               </HStack>
             </VStack>
           </HStack>

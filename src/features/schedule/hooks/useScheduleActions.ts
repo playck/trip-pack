@@ -4,12 +4,16 @@ import { useMoveSchedules } from "../services/useMoveSchedules";
 /**
  * 일정 액션(삭제, 이동) 관리 훅
  */
-export function useScheduleActions(tripId: string, onSuccess?: () => void) {
+export function useScheduleActions(
+  tripId: string,
+  tripStartDate: string,
+  onSuccess?: () => void
+) {
   const deleteMutation = useBulkDeleteSchedules(tripId, {
     onSuccess,
   });
 
-  const moveMutation = useMoveSchedules(tripId, {
+  const moveMutation = useMoveSchedules(tripId, tripStartDate, {
     onSuccess,
   });
 

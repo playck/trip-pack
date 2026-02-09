@@ -8,16 +8,20 @@ interface UseMoveSchedulesOptions {
 
 export function useMoveSchedules(
   tripId: string,
+  tripStartDate: string,
   options?: UseMoveSchedulesOptions
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (params: { scheduleIds: string[]; targetDayNumber: number }) =>
-      moveSchedulesToDay({ ...params, tripId }),
+      moveSchedulesToDay({ ...params, tripId, tripStartDate }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["tripSchedules", tripId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tripExpenses", tripId],
       });
 
       toaster.create({

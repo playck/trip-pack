@@ -3,6 +3,7 @@ import {
   deleteExpensesByScheduleId,
   deleteExpensesByScheduleIds,
 } from "@/features/expense/services/api";
+import { getDayDate } from "@/shared/utiles/date";
 import type {
   CreateScheduleParams,
   Schedule,
@@ -216,14 +217,15 @@ export const updateScheduleOrder = async (
 };
 
 /**
- * 일정을 다른 일차 일정으로 업데이트
+ * 일정을 다른 일차 일정으로 업데이트 (연동된 경비도 함께 이동)
  */
 export const moveSchedulesToDay = async (params: {
   scheduleIds: string[];
   targetDayNumber: number;
   tripId: string;
+  tripStartDate: string;
 }): Promise<void> => {
-  const { scheduleIds, targetDayNumber, tripId } = params;
+  const { scheduleIds, targetDayNumber, tripId, tripStartDate } = params;
 
   if (scheduleIds.length === 0) {
     return;
@@ -231,12 +233,14 @@ export const moveSchedulesToDay = async (params: {
 
   const lastOrder = await getLastVisitOrder(tripId, targetDayNumber);
 
+  // 1. 일정 이동
   const updatePromises = scheduleIds.map((id, index) =>
     supabase
       .from("trip_schedules")
       .update({
         day_number: targetDayNumber,
         visit_order: lastOrder + index + 1,
+        schedule_date: getDayDate(tripStartDate, targetDayNumber),
       })
       .eq("id", id)
   );
@@ -249,5 +253,20 @@ export const moveSchedulesToDay = async (params: {
     throw new Error(
       `일정 이동 실패: ${errors.map((e) => e.error?.message).join(", ")}`
     );
+  }
+
+  // 2. 연동된 경비 날짜도 함께 이동
+  const targetExpenseDate = getDayDate(tripStartDate, targetDayNumber);
+
+  const { error: expenseError } = await supabase
+    .from("trip_expenses")
+    .update({
+      day_number: targetDayNumber,
+      expense_date: targetExpenseDate,
+    })
+    .in("schedule_id", scheduleIds);
+
+  if (expenseError) {
+    throw new Error(`연동 경비 이동 실패: ${expenseError.message}`);
   }
 };
