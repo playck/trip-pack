@@ -53,15 +53,15 @@ export default function ListView({
   >(() => {
     const initialState: Record<string, boolean> = {};
     categories.forEach((category) => {
-      initialState[category.name] = true;
+      initialState[category.id] = true;
     });
     return initialState;
   });
 
-  const toggleCategory = (categoryName: string) => {
+  const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => ({
       ...prev,
-      [categoryName]: !prev[categoryName],
+      [categoryId]: !prev[categoryId],
     }));
   };
 
@@ -84,7 +84,7 @@ export default function ListView({
 
   const isAllExpanded = () => {
     return categories.every(
-      (category) => expandedCategories[category.name] !== false
+      (category) => expandedCategories[category.id] !== false
     );
   };
   const allExpanded = isAllExpanded();
@@ -94,7 +94,7 @@ export default function ListView({
     const newState: Record<string, boolean> = {};
 
     categories.forEach((category) => {
-      newState[category.name] = shouldExpandAll;
+      newState[category.id] = shouldExpandAll;
     });
 
     setExpandedCategories(newState);
@@ -105,11 +105,11 @@ export default function ListView({
 
     categories.forEach((category) => {
       if (!category.items || category.items.length === 0) {
-        result[category.name] = [];
+        result[category.id] = [];
         return;
       }
 
-      result[category.name] = category.items.map((item, index: number) => ({
+      result[category.id] = category.items.map((item, index: number) => ({
         item,
         index,
       }));
@@ -149,9 +149,9 @@ export default function ListView({
               ? CATEGORY_ICONS[category.icon_key] || Package
               : CATEGORY_ICONS[category.name] || Package
           ) as LucideIcon;
-          const isExpanded = expandedCategories[category.name] ?? true;
+          const isExpanded = expandedCategories[category.id] ?? true;
           const { completed, total } = getCompletionCount(category);
-          const sortedItems = sortedItemsByCategory[category.name] || [];
+          const sortedItems = sortedItemsByCategory[category.id] || [];
 
           return (
             <VStack
@@ -165,7 +165,7 @@ export default function ListView({
             >
               {/* 카테고리 헤더 */}
               <HStack justify="space-between" align="center" w="full">
-                <HStack gap={1} onClick={() => toggleCategory(category.name)}>
+                <HStack gap={1} onClick={() => toggleCategory(category.id)}>
                   <Box
                     as="button"
                     w="6"
