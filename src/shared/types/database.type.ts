@@ -362,6 +362,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      create_trip_with_checklist: {
+        Args: {
+          p_trip_data: Json;
+          p_categories: Json;
+          p_items: Json;
+        };
+        Returns: string;
+      };
       get_trips_with_check_progress: {
         Args: { p_user_id: string };
         Returns: {
