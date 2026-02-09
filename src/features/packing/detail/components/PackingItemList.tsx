@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   VStack,
   Text,
@@ -7,11 +7,15 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useParams } from "@tanstack/react-router";
 
-import PackingItem from "./PackingItem";
-import type { CategoryWithItems } from "../../type";
 import { Checkbox, ConfirmDialog } from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
+import PackingItem from "./PackingItem";
+import ItemActionsSheet from "./ItemActionsSheet";
+import EditItemSheet from "./EditItemSheet";
+import type { CategoryWithItems, ChecklistItem } from "../../type";
+import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 
 interface PackingItemListProps {
   category: CategoryWithItems;
@@ -30,11 +34,25 @@ export default function PackingItemList({
   isDeleting = false,
   onDeleteItems,
 }: PackingItemListProps) {
+  const { tripId } = useParams({ from: "/packing/category/$tripId" });
+  const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [activeItem, setActiveItem] = useState<ChecklistItem | null>(null);
   const {
     open: isDeleteConfirmOpen,
     onOpen: onDeleteConfirmOpen,
     onClose: onDeleteConfirmClose,
+  } = useDisclosure();
+  const {
+    open: isActionsOpen,
+    onOpen: onActionsOpen,
+    onClose: onActionsClose,
+  } = useDisclosure();
+  const {
+    open: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
   } = useDisclosure();
 
   const filteredItems = useMemo(() => {
@@ -42,7 +60,7 @@ export default function PackingItemList({
 
     if (searchQuery.trim()) {
       items = items.filter((item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim()),
+        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
       );
     }
 
@@ -73,8 +91,8 @@ export default function PackingItemList({
     } else {
       setSelectedIds(
         new Set(
-          filteredItems.map((item) => item.id).filter(Boolean) as string[],
-        ),
+          filteredItems.map((item) => item.id).filter(Boolean) as string[]
+        )
       );
     }
   };
@@ -86,6 +104,26 @@ export default function PackingItemList({
       onDeleteConfirmClose();
     }
   };
+
+  const handleToggleCheck = useCallback(
+    (itemId: string, isChecked: boolean) => {
+      updateItemCheckedMutation.mutate({ itemId, isChecked });
+    },
+    [updateItemCheckedMutation]
+  );
+
+  const handleOpenActions = useCallback(
+    (item: ChecklistItem) => {
+      setActiveItem(item);
+      onActionsOpen();
+    },
+    [onActionsOpen]
+  );
+
+  const handleEditFromActions = useCallback(() => {
+    onActionsClose();
+    onEditOpen();
+  }, [onActionsClose, onEditOpen]);
 
   const isAllSelected =
     filteredItems.length > 0 && selectedIds.size === filteredItems.length;
@@ -127,9 +165,32 @@ export default function PackingItemList({
             isEditMode={isEditMode}
             isSelected={item.id ? selectedIds.has(item.id) : false}
             onSelect={handleSelect}
+            onToggleCheck={handleToggleCheck}
+            onOpenActions={handleOpenActions}
           />
         ))}
       </VStack>
+
+      {/* 액션/편집 BottomSheet */}
+      {activeItem && (
+        <>
+          <ItemActionsSheet
+            isOpen={isActionsOpen}
+            itemId={activeItem.id}
+            itemName={activeItem.name}
+            tripId={tripId}
+            onEdit={handleEditFromActions}
+            onClose={onActionsClose}
+          />
+
+          <EditItemSheet
+            isOpen={isEditOpen}
+            item={activeItem}
+            tripId={tripId}
+            onClose={onEditClose}
+          />
+        </>
+      )}
 
       {isEditMode && selectedIds.size > 0 && (
         <Box position="fixed" bottom={6} left={4} right={4} zIndex={10}>

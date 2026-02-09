@@ -1,14 +1,10 @@
-import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
-import { useParams } from "@tanstack/react-router";
+import { Box, VStack, Text } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 
 import { useBaggagePolicy } from "../../list/hooks/useBaggagePolicy";
-import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 import type { ChecklistItem } from "../../type";
 
 import PackingItemContent from "./PackingItemContent";
-import ItemActionsSheet from "./ItemActionsSheet";
-import EditItemSheet from "./EditItemSheet";
 
 interface PackingItemProps {
   item: ChecklistItem;
@@ -16,6 +12,8 @@ interface PackingItemProps {
   isEditMode?: boolean;
   isSelected?: boolean;
   onSelect?: (itemId: string) => void;
+  onToggleCheck?: (itemId: string, isChecked: boolean) => void;
+  onOpenActions?: (item: ChecklistItem) => void;
 }
 
 export default function PackingItem({
@@ -24,23 +22,9 @@ export default function PackingItem({
   isEditMode = false,
   isSelected = false,
   onSelect,
+  onToggleCheck,
+  onOpenActions,
 }: PackingItemProps) {
-  const {
-    open: isActionsOpen,
-    onOpen: onActionsOpen,
-    onClose: onActionsClose,
-  } = useDisclosure();
-  const {
-    open: isEditOpen,
-    onOpen: onEditOpen,
-    onClose: onEditClose,
-  } = useDisclosure();
-
-  const { tripId } = useParams({
-    from: "/packing/category/$tripId",
-  });
-  const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
-
   const {
     cabinPolicy,
     cabinNotes,
@@ -53,22 +37,17 @@ export default function PackingItem({
 
   const handleItemCheck = () => {
     if (!item.id) return;
-
-    updateItemCheckedMutation.mutate({
-      itemId: item.id,
-      isChecked: !item.is_checked,
-    });
-  };
-
-  const handleItemEdit = () => {
-    onActionsClose();
-    onEditOpen();
+    onToggleCheck?.(item.id, !item.is_checked);
   };
 
   const handleCardClick = () => {
     if (isEditMode && item.id && onSelect) {
       onSelect(item.id);
     }
+  };
+
+  const handleOpenActions = () => {
+    onOpenActions?.(item);
   };
 
   return (
@@ -93,7 +72,7 @@ export default function PackingItem({
           countryWarning={countryWarning}
           isEditMode={isEditMode}
           onToggleCheck={handleItemCheck}
-          onOpenActions={onActionsOpen}
+          onOpenActions={handleOpenActions}
         />
 
         {item.notes && (
@@ -102,26 +81,6 @@ export default function PackingItem({
           </Text>
         )}
       </VStack>
-
-      {!isEditMode && (
-        <>
-          <ItemActionsSheet
-            isOpen={isActionsOpen}
-            itemId={item.id}
-            itemName={item.name}
-            tripId={tripId}
-            onEdit={handleItemEdit}
-            onClose={onActionsClose}
-          />
-
-          <EditItemSheet
-            isOpen={isEditOpen}
-            item={item}
-            tripId={tripId}
-            onClose={onEditClose}
-          />
-        </>
-      )}
     </Box>
   );
 }
