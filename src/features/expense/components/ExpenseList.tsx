@@ -1,25 +1,14 @@
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
-import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
-import {
-  getCurrencyByCountryCode,
-  getCurrencySymbol,
-} from "@/shared/utiles/currency";
-import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import ExpenseItem from "./ExpenseItem";
+import type { ExpenseItemData } from "../types";
+import { useTripCurrency } from "../hooks/useTripCurrency";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
 
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-  scheduleId?: string | null;
-}
-
 interface ExpenseListProps {
-  expenses: ExpenseItem[];
+  expenses: ExpenseItemData[];
   tripId: string;
   selectedDate?: string;
 }
@@ -30,20 +19,14 @@ export default function ExpenseList({
   selectedDate,
 }: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const { data: tripInfo } = useTripInfo(tripId);
-  const [showLocalCurrency] = useAtom(showLocalCurrencyAtom);
-  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
-  const currencySymbol = getCurrencySymbol(targetCurrency);
-  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
-
-  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
-    enabled: isForeignCurrency,
-  });
+  const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
+  const { targetCurrency, currencySymbol, isForeignCurrency, exchangeRate } =
+    useTripCurrency(tripId);
 
   const { value: totalValue, unit: totalUnit } = formatAmount(total, {
     showLocalCurrency,
     isForeignCurrency,
-    exchangeRate: exchangeRate || 0,
+    exchangeRate,
     targetCurrency,
     currencySymbol,
   });

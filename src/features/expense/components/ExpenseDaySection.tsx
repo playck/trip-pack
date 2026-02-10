@@ -1,28 +1,17 @@
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { Box, Flex, Text, VStack, HStack } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
-import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
-import {
-  getCurrencyByCountryCode,
-  getCurrencySymbol,
-} from "@/shared/utiles/currency";
-import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import type { ExpenseItemData } from "../types";
+import { useTripCurrency } from "../hooks/useTripCurrency";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
 import ExpenseItem from "./ExpenseItem";
 
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-  scheduleId?: string | null;
-}
-
 interface ExpenseDaySectionProps {
   dayNumber: number;
   date: string;
-  expenses: ExpenseItem[];
+  expenses: ExpenseItemData[];
   tripId: string;
   readOnly?: boolean;
 }
@@ -37,20 +26,14 @@ export default function ExpenseDaySection({
   readOnly = false,
 }: ExpenseDaySectionProps) {
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const { data: tripInfo } = useTripInfo(tripId);
-  const [showLocalCurrency] = useAtom(showLocalCurrencyAtom);
-  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
-  const currencySymbol = getCurrencySymbol(targetCurrency);
-  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
-
-  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
-    enabled: isForeignCurrency,
-  });
+  const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
+  const { targetCurrency, currencySymbol, isForeignCurrency, exchangeRate } =
+    useTripCurrency(tripId);
 
   const { value: totalValue, unit: totalUnit } = formatAmount(totalAmount, {
     showLocalCurrency,
     isForeignCurrency,
-    exchangeRate: exchangeRate || 0,
+    exchangeRate,
     targetCurrency,
     currencySymbol,
   });

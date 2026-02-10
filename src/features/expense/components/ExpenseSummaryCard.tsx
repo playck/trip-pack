@@ -9,12 +9,7 @@ import {
   ArrowLeftRight,
 } from "lucide-react";
 import { colors, statusColors } from "@/shared/constants/colors";
-import { useTripInfo } from "@/shared/service/trip/useTripQuery";
-import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
-import {
-  getCurrencyByCountryCode,
-  getCurrencySymbol,
-} from "@/shared/utiles/currency";
+import { useTripCurrency } from "../hooks/useTripCurrency";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
 import { useUpdateTripBudget } from "../services";
@@ -38,37 +33,34 @@ export default function ExpenseSummaryCard({
 }: ExpenseSummaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
-  const { data: tripInfo } = useTripInfo(tripId);
   const updateBudgetMutation = useUpdateTripBudget(tripId);
-  const budget = tripInfo?.budget || null;
 
   const [showLocalCurrency, setShowLocalCurrency] = useAtom(
-    showLocalCurrencyAtom
+    showLocalCurrencyAtom,
   );
 
-  // 여행 국가에 따른 통화 코드 설정
-  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
-  const currencySymbol = getCurrencySymbol(targetCurrency);
-  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
-
-  const { rate: exchangeRate, isLoading: isRateLoading } = useExchangeRate(
+  const {
+    tripInfo,
     targetCurrency,
-    "krw",
-    { enabled: isForeignCurrency }
-  );
+    currencySymbol,
+    isForeignCurrency,
+    exchangeRate,
+    isRateLoading,
+  } = useTripCurrency(tripId);
+  const budget = tripInfo?.budget || null;
 
   const handleSaveBudget = (newBudget: number | null) => {
     updateBudgetMutation.mutate(newBudget);
   };
 
-  const formatAmountValue = (amount: number) => {
+  const getFormattedAmount = (amount: number) => {
     return formatAmount(amount, {
       showLocalCurrency,
       isForeignCurrency,
-      exchangeRate: exchangeRate || 0,
+      exchangeRate,
       targetCurrency,
       currencySymbol,
-    }).full;
+    });
   };
 
   const hasBudget = budget !== null && budget > 0;
@@ -149,21 +141,26 @@ export default function ExpenseSummaryCard({
                   </Button>
                 )}
               </HStack>
-              <HStack gap={1} align="baseline">
-                <Text
-                  fontSize="xl"
-                  fontWeight="bold"
-                  color={isOverBudget ? errorColor : "gray.800"}
-                >
-                  {formatAmountValue(
-                    hasBudget ? remainingAmount : totalAmount
-                  ).replace(/[^0-9.,-]/g, "")}
-                </Text>
-                <Text fontSize="sm" fontWeight="medium" color="gray.500">
-                  {formatAmountValue(0).replace(/[0-9.,-]/g, "")}
-                </Text>
-
-              </HStack>
+              {(() => {
+                const { value, unit } = getFormattedAmount(
+                  hasBudget ? remainingAmount : totalAmount,
+                );
+                return (
+                  <HStack gap={1} align="baseline">
+                    <Text
+                      fontSize="xl"
+                      fontWeight="bold"
+                      color={isOverBudget ? errorColor : "gray.800"}
+                    >
+                      {unit !== "원" && unit}
+                      {value}
+                    </Text>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                      {unit === "원" ? "원" : ""}
+                    </Text>
+                  </HStack>
+                );
+              })()}
             </VStack>
           </HStack>
 
@@ -217,7 +214,7 @@ export default function ExpenseSummaryCard({
                 {usagePercent.toFixed(0)}% 사용
               </Text>
               <Text fontSize="xs" color="gray.500">
-                총 {formatAmountValue(budget)}
+                총 {getFormattedAmount(budget).full}
               </Text>
             </Flex>
           </Box>
@@ -231,18 +228,18 @@ export default function ExpenseSummaryCard({
               {hasBudget && (
                 <ExpenseSummaryItem
                   label="총 지출"
-                  value={formatAmountValue(totalAmount)}
+                  value={getFormattedAmount(totalAmount).full}
                 />
               )}
 
               <ExpenseSummaryItem
                 label="일 평균 지출"
-                value={formatAmountValue(averagePerDay)}
+                value={getFormattedAmount(averagePerDay).full}
               />
 
               <ExpenseSummaryItem
                 label="최대 지출일"
-                value={formatAmountValue(maxDayAmount)}
+                value={getFormattedAmount(maxDayAmount).full}
                 subValue={maxDayDate}
                 isLast
               />

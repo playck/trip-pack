@@ -5,14 +5,8 @@ import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense, useUpdateExpense } from "../services";
 import EditExpenseSheet from "./EditExpenseSheet";
 import ExpenseActionSheet from "./ExpenseActionSheet";
+import type { ExpenseItemData } from "../types";
 import { formatAmount } from "../utils/helper";
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-  scheduleId?: string | null;
-}
 
 interface ExchangeInfo {
   showLocalCurrency: boolean;
@@ -22,7 +16,7 @@ interface ExchangeInfo {
 }
 
 interface ExpenseItemProps {
-  expense: ExpenseItem;
+  expense: ExpenseItemData;
   tripId: string;
   showBorder?: boolean;
   exchangeInfo?: ExchangeInfo;
