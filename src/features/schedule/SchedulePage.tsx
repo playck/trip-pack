@@ -1,16 +1,8 @@
-import { useState, useMemo } from "react";
-import {
-  VStack,
-  Box,
-  HStack,
-  IconButton,
-  useDisclosure,
-  Text,
-} from "@chakra-ui/react";
+import { useMemo } from "react";
+import { VStack, Box, HStack, IconButton, Text } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2 } from "lucide-react";
-import dayjs from "dayjs";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -18,10 +10,7 @@ import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu, ConfirmDialog } from "@/shared/components";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
-import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
 import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
-import { useDeleteSchedule } from "./services/useDeleteSchedule";
-import { useUpdateSchedule } from "./services/useUpdateSchedule";
 import {
   GoogleMapView,
   DayScheduleList,
@@ -41,19 +30,15 @@ import {
   useTripSchedules,
   useShareSchedule,
 } from "./hooks";
-import {
-  DEFAULT_MAP_CENTER,
-  DEFAULT_MAP_ZOOM,
-  FOCUSED_MAP_ZOOM,
-} from "./constants";
-import { isMemo } from "./utils/scheduleHelpers";
+import { useScheduleDetailActions } from "./hooks/useScheduleDetailActions";
+import { useScheduleMap } from "./hooks/useScheduleMap";
 import { ScheduleProvider } from "./context";
-import type { Schedule } from "./types";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses } = useTripExpenses(tripId);
+  const { data: allSchedules } = useTripSchedules(tripId);
 
   const scheduleExpenseMap = useMemo(() => {
     if (!expenses) return {};
@@ -73,12 +58,7 @@ function SchedulePageContent() {
     return parseRegionId(tripInfo?.regionId)?.countryCode;
   }, [tripInfo?.regionId]);
 
-  const [focusedLocation, setFocusedLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
-
-  // 일정 추가 관련 로직
+  // 일정 추가
   const {
     isSheetOpen,
     selectedDay,
@@ -87,7 +67,7 @@ function SchedulePageContent() {
     handleSelectPlace,
   } = useScheduleAdd(tripId || "");
 
-  // 메모 관련 로직
+  // 메모
   const {
     isMemoSheetOpen,
     selectedDay: memoSelectedDay,
@@ -98,171 +78,47 @@ function SchedulePageContent() {
     handleSaveMemo,
   } = useScheduleMemo(tripId || "");
 
-  // 경비 추가 관련 로직
-  const [isExpenseSheetOpen, setIsExpenseSheetOpen] = useState(false);
-  const [selectedScheduleForExpense, setSelectedScheduleForExpense] =
-    useState<Schedule | null>(null);
-
-  const createExpenseMutation = useCreateExpense(tripId || "", {
-    onSuccess: () => {
-      setIsExpenseSheetOpen(false);
-      setSelectedScheduleForExpense(null);
-    },
-  });
-
-  // 일정 액션 시트 및 수정 관련 로직
-  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [selectedScheduleForAction, setSelectedScheduleForAction] =
-    useState<Schedule | null>(null);
-
+  // 액션 시트 + 수정 + 삭제 + 경비
   const {
-    open: isDeleteConfirmOpen,
-    onOpen: openDeleteConfirm,
-    onClose: closeDeleteConfirm,
-  } = useDisclosure();
+    isActionSheetOpen,
+    selectedSchedule,
+    handleOpenActionSheet,
+    handleCloseActionSheet,
+    isEditSheetOpen,
+    handleEditSchedule,
+    handleCloseEditSheet,
+    handleSaveEditSchedule,
+    isDeleteConfirmOpen,
+    closeDeleteConfirm,
+    handleDeleteSchedule,
+    handleConfirmDelete,
+    isDeleting,
+    isExpenseSheetOpen,
+    selectedScheduleForExpense,
+    handleOpenExpenseSheet,
+    handleCloseExpenseSheet,
+    handleSaveExpense,
+  } = useScheduleDetailActions(tripId || "", handleEditMemo);
 
-  const deleteScheduleMutation = useDeleteSchedule(tripId || "", {
-    onSuccess: () => {
-      closeDeleteConfirm();
-      setSelectedScheduleForAction(null);
-    },
-  });
-  const updateScheduleMutation = useUpdateSchedule(tripId || "");
-
-  const handleOpenActionSheet = (schedule: Schedule) => {
-    setSelectedScheduleForAction(schedule);
-    setIsActionSheetOpen(true);
-  };
-
-  const handleCloseActionSheet = () => {
-    setIsActionSheetOpen(false);
-    // 액션 시트가 닫힐 때 선택된 일정을 바로 초기화하지 않음 (수정/경비추가 등으로 이어질 수 있음)
-    // 각 후속 액션에서 필요 없으면 초기화하거나, 후속 액션 종료 시 초기화
-  };
-
-  const handleEditSchedule = () => {
-    if (!selectedScheduleForAction) return;
-
-    if (isMemo(selectedScheduleForAction)) {
-      handleEditMemo(
-        selectedScheduleForAction.id,
-        selectedScheduleForAction.place_name,
-        selectedScheduleForAction.day_number,
-        selectedScheduleForAction.schedule_date
-      );
-      setSelectedScheduleForAction(null);
-    } else {
-      setIsEditSheetOpen(true);
-    }
-  };
-
-  const handleCloseEditSheet = () => {
-    setIsEditSheetOpen(false);
-    setSelectedScheduleForAction(null);
-  };
-
-  const handleSaveEditSchedule = (
-    scheduleId: string,
-    updates: { placeName: string; notes?: string }
-  ) => {
-    updateScheduleMutation.mutate({
-      scheduleId,
-      ...updates,
-    });
-  };
-
-  const handleDeleteSchedule = () => {
-    if (selectedScheduleForAction) {
-      openDeleteConfirm();
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    if (selectedScheduleForAction) {
-      deleteScheduleMutation.mutate(selectedScheduleForAction.id);
-    }
-  };
-
-  const handleOpenExpenseSheet = () => {
-    if (selectedScheduleForAction) {
-      setSelectedScheduleForExpense(selectedScheduleForAction);
-      setIsExpenseSheetOpen(true);
-    }
-  };
-
-  const handleCloseExpenseSheet = () => {
-    setIsExpenseSheetOpen(false);
-    setSelectedScheduleForExpense(null);
-  };
-
-  const handleSaveExpense = (
-    name: string,
-    amount: number,
-    scheduleId?: string
-  ) => {
-    if (!tripId || !selectedScheduleForExpense) return;
-
-    createExpenseMutation.mutate({
-      tripId,
-      expenseDate: dayjs(selectedScheduleForExpense.schedule_date).format(
-        "YYYY-MM-DD",
-      ),
-      dayNumber: selectedScheduleForExpense.day_number,
-      category: name,
-      amount,
-      scheduleId,
-    });
-  };
-
+  // 지도
   const { coordinates: regionCoordinates } = useGeocoding(
     tripInfo?.regionName,
     tripInfo?.regionId
   );
 
-  const { data: allSchedules } = useTripSchedules(tripId);
+  const {
+    isMapFullScreen,
+    isMapCollapsed,
+    mapCenter,
+    mapZoom,
+    scheduleMarkers,
+    setIsMapFullScreen,
+    handleScheduleClick,
+    handleToggleCollapse,
+  } = useScheduleMap(allSchedules, regionCoordinates);
 
+  // 공유
   const { handleScheduleShare } = useShareSchedule();
-
-  const [isMapFullScreen, setIsMapFullScreen] = useState(false);
-  const [isMapCollapsed, setIsMapCollapsed] = useState(false);
-
-  const mapCenter = regionCoordinates || DEFAULT_MAP_CENTER;
-  const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
-
-  const scheduleMarkers = useMemo(() => {
-    if (!allSchedules || allSchedules.length === 0) return [];
-
-    const isNotMemo = (schedule: Schedule) => !isMemo(schedule);
-    const hasLocation = (schedule: Schedule) =>
-      schedule.latitude != null && schedule.longitude != null;
-    const sortByVisitOrder = (a: Schedule, b: Schedule) =>
-      a.visit_order - b.visit_order;
-    const createMarker = (schedule: Schedule, index: number) => ({
-      id: schedule.id,
-      position: {
-        lat: schedule.latitude!,
-        lng: schedule.longitude!,
-      },
-      title: schedule.place_name,
-      label: index + 1,
-    });
-
-    return allSchedules
-      .filter(isNotMemo)
-      .filter(hasLocation)
-      .sort(sortByVisitOrder)
-      .map(createMarker);
-  }, [allSchedules]);
-
-  const handleScheduleClick = (schedule: Schedule) => {
-    if (!schedule.latitude || !schedule.longitude) return;
-
-    setFocusedLocation({
-      lat: schedule.latitude!,
-      lng: schedule.longitude!,
-    });
-  };
 
   const handleShareSchedule = () => {
     handleScheduleShare(allSchedules || [], tripInfo?.title);
@@ -323,7 +179,7 @@ function SchedulePageContent() {
               zIndex={1}
             >
               <GoogleMapView
-                center={focusedLocation || mapCenter}
+                center={mapCenter}
                 zoom={mapZoom}
                 height="200px"
                 markers={scheduleMarkers}
@@ -333,7 +189,7 @@ function SchedulePageContent() {
             {!isMapFullScreen && (
               <MapCollapseButton
                 isCollapsed={isMapCollapsed}
-                onToggle={() => setIsMapCollapsed((prev) => !prev)}
+                onToggle={handleToggleCollapse}
               />
             )}
           </MapWrapper>
@@ -378,15 +234,13 @@ function SchedulePageContent() {
       )}
 
       {/* 일정 액션 시트 */}
-      {selectedScheduleForAction && (
+      {selectedSchedule && (
         <>
           <ScheduleActionSheet
             isOpen={isActionSheetOpen}
             onClose={handleCloseActionSheet}
-            scheduleName={selectedScheduleForAction.place_name}
-            scheduleAddress={
-              selectedScheduleForAction.place_address ?? undefined
-            }
+            scheduleName={selectedSchedule.place_name}
+            scheduleAddress={selectedSchedule.place_address ?? undefined}
             onEdit={handleEditSchedule}
             onAddExpense={handleOpenExpenseSheet}
             onDelete={handleDeleteSchedule}
@@ -395,7 +249,7 @@ function SchedulePageContent() {
           <EditScheduleSheet
             isOpen={isEditSheetOpen}
             onClose={handleCloseEditSheet}
-            schedule={selectedScheduleForAction}
+            schedule={selectedSchedule}
             onSave={handleSaveEditSchedule}
           />
         </>
@@ -409,11 +263,11 @@ function SchedulePageContent() {
         confirmLabel="삭제"
         isDangerous
         onConfirm={handleConfirmDelete}
-        isLoading={deleteScheduleMutation.isPending}
+        isLoading={isDeleting}
       >
         <Text>
           <Text as="span" fontWeight="bold">
-            "{selectedScheduleForAction?.place_name}"
+            "{selectedSchedule?.place_name}"
           </Text>
           <br />
           일정을 정말로 삭제하시겠습니까?
