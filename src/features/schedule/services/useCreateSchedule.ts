@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { createSchedule, getLastVisitOrder } from "./api";
-import type { CreateScheduleParams } from "../types";
+import { createSchedule } from "./api";
+import type { CreateScheduleParams, Schedule } from "../types";
 
 interface UseCreateScheduleOptions {
   onSuccess?: (data: { id: string }) => void;
@@ -16,10 +16,11 @@ export const useCreateSchedule = (
 
   return useMutation({
     mutationFn: async (params: Omit<CreateScheduleParams, "visitOrder">) => {
-      const lastOrder = await getLastVisitOrder(
-        params.tripId,
-        params.dayNumber
-      );
+      const cached =
+        queryClient.getQueryData<Schedule[]>(["tripSchedules", tripId]) ?? [];
+      const lastOrder = cached
+        .filter((s) => s.day_number === params.dayNumber)
+        .reduce((max, s) => Math.max(max, s.visit_order), 0);
 
       return createSchedule({
         ...params,
@@ -40,8 +41,6 @@ export const useCreateSchedule = (
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      console.error("일정 생성 실패:", error);
-
       toaster.create({
         title: "일정 추가 실패",
         description: error.message || "다시 시도해주세요.",

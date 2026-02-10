@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { createSchedule, getLastVisitOrder } from "./api";
+import { createSchedule } from "./api";
 import { createMemoId } from "../utils/scheduleHelpers";
+import type { Schedule } from "../types";
 
 interface CreateMemoParams {
   tripId: string;
@@ -23,10 +24,11 @@ export const useCreateMemo = (
 
   return useMutation({
     mutationFn: async (params: CreateMemoParams) => {
-      const lastOrder = await getLastVisitOrder(
-        params.tripId,
-        params.dayNumber
-      );
+      const cached =
+        queryClient.getQueryData<Schedule[]>(["tripSchedules", tripId]) ?? [];
+      const lastOrder = cached
+        .filter((s) => s.day_number === params.dayNumber)
+        .reduce((max, s) => Math.max(max, s.visit_order), 0);
 
       return createSchedule({
         tripId: params.tripId,
@@ -51,8 +53,6 @@ export const useCreateMemo = (
       options?.onSuccess?.(data);
     },
     onError: (error: Error) => {
-      console.error("메모 생성 실패:", error);
-
       toaster.create({
         title: "메모 추가 실패",
         description: error.message || "다시 시도해주세요.",
