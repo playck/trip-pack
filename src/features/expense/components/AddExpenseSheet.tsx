@@ -4,13 +4,9 @@ import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
-import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
-import {
-  getCurrencyByCountryCode,
-  getCurrencySymbol,
-} from "@/shared/utiles/currency";
-import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import type { Schedule } from "@/features/schedule/types";
+import { useTripCurrency } from "../hooks/useTripCurrency";
+import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import SelectScheduleSheet from "./SelectScheduleSheet";
 
@@ -23,8 +19,6 @@ interface AddExpenseSheetProps {
   date?: string;
   tripId: string;
 }
-
-type CurrencyType = "KRW" | "LOCAL";
 
 interface SelectedScheduleInfo {
   id: string;
@@ -40,21 +34,27 @@ export default function AddExpenseSheet({
   date,
   tripId,
 }: AddExpenseSheetProps) {
-  const { data: tripInfo } = useTripInfo(tripId);
-  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
-  const currencySymbol = getCurrencySymbol(targetCurrency);
-  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
+  const { currencySymbol, isForeignCurrency, exchangeRate } =
+    useTripCurrency(tripId);
 
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
-  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
-    enabled: isForeignCurrency,
+
+  const {
+    amount,
+    handleAmountChange,
+    isValidAmount,
+    currencyType,
+    toggleCurrencyType,
+    estimatedKrw,
+    toKrwAmount,
+    reset: resetAmount,
+  } = useAmountInput({
+    exchangeRate,
+    initialCurrencyType:
+      isForeignCurrency && showLocalCurrency ? "LOCAL" : "KRW",
   });
 
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [currencyType, setCurrencyType] = useState<CurrencyType>(
-    isForeignCurrency && showLocalCurrency ? "LOCAL" : "KRW",
-  );
   const [selectedSchedule, setSelectedSchedule] =
     useState<SelectedScheduleInfo | null>(
       scheduleId && scheduleName
@@ -75,41 +75,18 @@ export default function AddExpenseSheet({
 
   const handleSave = () => {
     const parsedName = name.trim();
-    const inputAmount = parseInt(amount.replace(/,/g, ""), 10);
-
-    if (parsedName && inputAmount > 0) {
-      let finalAmount = inputAmount;
-
-      // 현지통화 입력 시 원화로 환산
-      if (currencyType === "LOCAL" && exchangeRate && exchangeRate > 0) {
-        finalAmount = Math.round(inputAmount * exchangeRate);
-      }
-
-      onSaveExpense(parsedName, finalAmount, selectedSchedule?.id);
+    if (parsedName && isValidAmount) {
+      onSaveExpense(parsedName, toKrwAmount(), selectedSchedule?.id);
       setName("");
-      setAmount("");
+      resetAmount();
       onClose();
     }
   };
 
   const handleClose = () => {
     setName("");
-    setAmount("");
+    resetAmount();
     onClose();
-  };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    if (value) {
-      const formatted = parseInt(value, 10).toLocaleString();
-      setAmount(formatted);
-    } else {
-      setAmount("");
-    }
-  };
-
-  const toggleCurrencyType = () => {
-    setCurrencyType((prev) => (prev === "KRW" ? "LOCAL" : "KRW"));
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -119,15 +96,7 @@ export default function AddExpenseSheet({
     });
   };
 
-  const isCanSaveExpense =
-    name.trim() && amount && parseInt(amount.replace(/,/g, ""), 10) > 0;
-
-  const estimatedKrw =
-    currencyType === "LOCAL" && amount && exchangeRate
-      ? Math.round(
-          parseInt(amount.replace(/,/g, ""), 10) * exchangeRate
-        ).toLocaleString()
-      : null;
+  const isCanSaveExpense = name.trim() && isValidAmount;
 
   return (
     <>

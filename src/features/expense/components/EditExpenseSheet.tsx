@@ -5,6 +5,7 @@ import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import type { Schedule } from "@/features/schedule/types";
+import { useAmountInput } from "../hooks/useAmountInput";
 import SelectScheduleSheet from "./SelectScheduleSheet";
 
 interface EditExpenseSheetProps {
@@ -13,7 +14,7 @@ interface EditExpenseSheetProps {
   onSaveExpense: (
     name: string,
     amount: number,
-    scheduleId?: string | null
+    scheduleId?: string | null,
   ) => void;
   initialName: string;
   initialAmount: number;
@@ -33,7 +34,8 @@ export default function EditExpenseSheet({
   selectedDate,
 }: EditExpenseSheetProps) {
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
+  const { amount, setAmount, handleAmountChange, isValidAmount } =
+    useAmountInput();
   const [selectedSchedule, setSelectedSchedule] = useState<{
     id: string;
     name: string;
@@ -49,7 +51,7 @@ export default function EditExpenseSheet({
 
       if (initialScheduleId) {
         const scheduleName = schedules?.find(
-          (s) => s.id === initialScheduleId
+          (s) => s.id === initialScheduleId,
         )?.place_name;
         setSelectedSchedule({
           id: initialScheduleId,
@@ -59,28 +61,12 @@ export default function EditExpenseSheet({
         setSelectedSchedule(null);
       }
     }
-  }, [isOpen, initialName, initialAmount, initialScheduleId, schedules]);
+  }, [isOpen, initialName, initialAmount, initialScheduleId, schedules, setAmount]);
 
   const handleSave = () => {
     const trimmedName = name.trim();
-    const parsedAmount = parseInt(amount.replace(/,/g, ""), 10);
-
-    if (trimmedName && parsedAmount > 0) {
-      onSaveExpense(trimmedName, parsedAmount, selectedSchedule?.id ?? null);
-    }
-  };
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    if (value) {
-      const formatted = parseInt(value, 10).toLocaleString();
-      setAmount(formatted);
-    } else {
-      setAmount("");
+    if (trimmedName && isValidAmount) {
+      onSaveExpense(trimmedName, parseInt(amount.replace(/,/g, ""), 10), selectedSchedule?.id ?? null);
     }
   };
 
@@ -91,21 +77,20 @@ export default function EditExpenseSheet({
     });
   };
 
-  const isCanSaveExpense =
-    name.trim() && amount && parseInt(amount.replace(/,/g, ""), 10) > 0;
+  const isCanSaveExpense = name.trim() && isValidAmount;
 
   return (
     <>
       <BottomSheet
         isOpen={isOpen}
-        onClose={handleClose}
+        onClose={onClose}
         title="경비 수정"
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,
         }}
         secondaryButton={{
-          onClick: handleClose,
+          onClick: onClose,
         }}
       >
         <VStack gap={4} w="full" p={4}>

@@ -1,13 +1,9 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { VStack, Input, Button, HStack, Text, Box } from "@chakra-ui/react";
 import { ArrowLeftRight } from "lucide-react";
 import { ConfirmDialog } from "@/shared/components";
-import { useTripInfo } from "@/shared/service/trip/useTripQuery";
-import { useExchangeRate } from "@/shared/service/trip/useExchangeRate";
-import {
-  getCurrencyByCountryCode,
-  getCurrencySymbol,
-} from "@/shared/utiles/currency";
+import { useTripCurrency } from "../hooks/useTripCurrency";
+import { useAmountInput } from "../hooks/useAmountInput";
 
 interface SetBudgetModalProps {
   isOpen: boolean;
@@ -17,8 +13,6 @@ interface SetBudgetModalProps {
   tripId: string;
 }
 
-type CurrencyType = "KRW" | "LOCAL";
-
 export default function SetBudgetModal({
   isOpen,
   onClose,
@@ -26,60 +20,34 @@ export default function SetBudgetModal({
   onSave,
   tripId,
 }: SetBudgetModalProps) {
-  const { data: tripInfo } = useTripInfo(tripId);
-  const targetCurrency = getCurrencyByCountryCode(tripInfo?.countryCode);
-  const currencySymbol = getCurrencySymbol(targetCurrency);
-  const isForeignCurrency = targetCurrency.toLowerCase() !== "krw";
+  const { currencySymbol, isForeignCurrency, exchangeRate } =
+    useTripCurrency(tripId);
 
-  const [inputAmount, setInputAmount] = useState(
-    currentBudget ? currentBudget.toString() : "",
-  );
-  const [currencyType, setCurrencyType] = useState<CurrencyType>("KRW");
+  const {
+    amount,
+    handleAmountChange,
+    isValidAmount,
+    currencyType,
+    toggleCurrencyType,
+    estimatedKrw,
+    toKrwAmount,
+    reset,
+  } = useAmountInput({ exchangeRate });
 
-
-  const { rate: exchangeRate } = useExchangeRate(targetCurrency, "krw", {
-    enabled: isForeignCurrency,
-  });
+  useEffect(() => {
+    if (isOpen) {
+      reset(currentBudget ? currentBudget.toLocaleString() : "");
+    }
+  }, [isOpen, currentBudget]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = () => {
-    const amount = parseInt(inputAmount.replace(/,/g, ""), 10);
-
-    if (!isNaN(amount)) {
-      let finalAmount = amount;
-
-      // 현지통화 입력 시 원화로 환산
-      if (currencyType === "LOCAL" && exchangeRate && exchangeRate > 0) {
-        finalAmount = Math.round(amount * exchangeRate);
-      }
-
-      onSave(finalAmount);
+    if (isValidAmount) {
+      onSave(toKrwAmount());
     } else {
       onSave(null);
     }
     onClose();
   };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    if (value) {
-      const formatted = parseInt(value, 10).toLocaleString();
-      setInputAmount(formatted);
-    } else {
-      setInputAmount("");
-    }
-  };
-
-  const toggleCurrencyType = () => {
-    setCurrencyType((prev) => (prev === "KRW" ? "LOCAL" : "KRW"));
-    setInputAmount("");
-  };
-
-  const estimatedKrw =
-    currencyType === "LOCAL" && inputAmount && exchangeRate
-      ? Math.round(
-          parseInt(inputAmount.replace(/,/g, ""), 10) * exchangeRate
-        ).toLocaleString()
-      : null;
 
   return (
     <ConfirmDialog
@@ -128,7 +96,7 @@ export default function SetBudgetModal({
           <Input
             placeholder="0"
             autoFocus
-            value={inputAmount}
+            value={amount}
             onChange={handleAmountChange}
             inputMode="numeric"
             size="lg"
