@@ -6,11 +6,11 @@ interface UseMoveSchedulesOptions {
   onSuccess?: () => void;
 }
 
-export function useMoveSchedules(
+export const useMoveSchedules = (
   tripId: string,
   tripStartDate: string,
   options?: UseMoveSchedulesOptions
-) {
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -41,4 +41,4 @@ export function useMoveSchedules(
       });
     },
   });
-}
+};

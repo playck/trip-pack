@@ -3,7 +3,7 @@ import { toaster } from "@/shared/components/ui/toaster";
 import { updateSchedule } from "./api";
 import type { UpdateScheduleParams } from "../types";
 
-export function useUpdateSchedule(tripId: string) {
+export const useUpdateSchedule = (tripId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -28,4 +28,4 @@ export function useUpdateSchedule(tripId: string) {
       });
     },
   });
-}
+};

@@ -6,10 +6,10 @@ interface UseBulkDeleteSchedulesOptions {
   onSuccess?: () => void;
 }
 
-export function useBulkDeleteSchedules(
+export const useBulkDeleteSchedules = (
   tripId: string,
   options?: UseBulkDeleteSchedulesOptions
-) {
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -39,4 +39,4 @@ export function useBulkDeleteSchedules(
       });
     },
   });
-}
+};

@@ -10,16 +10,15 @@ interface UseUpdateScheduleOrderOptions {
   onSuccess?: () => void;
 }
 
-export function useUpdateScheduleOrder(
+export const useUpdateScheduleOrder = (
   tripId: string,
   options?: UseUpdateScheduleOrderOptions
-) {
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ updates }: UpdateOrderParams) => {
-      return updateScheduleOrder(updates);
-    },
+    mutationFn: ({ updates }: UpdateOrderParams) =>
+      updateScheduleOrder(updates),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tripSchedules", tripId],
@@ -42,4 +41,4 @@ export function useUpdateScheduleOrder(
       });
     },
   });
-}
+};
