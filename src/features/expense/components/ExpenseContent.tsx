@@ -1,20 +1,7 @@
 import { Box, Container } from "@chakra-ui/react";
+import type { DayExpense } from "../types";
 import ExpenseAllContent from "./ExpenseAllContent";
 import ExpenseList from "./ExpenseList";
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-  scheduleId?: string | null;
-}
-
-interface DayExpense {
-  date: string;
-  label: string;
-  dayNumber: number;
-  expenses: ExpenseItem[];
-}
 
 interface ExpenseContentProps {
   selectedDate: string;

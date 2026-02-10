@@ -1,20 +1,7 @@
 import { Box, VStack } from "@chakra-ui/react";
+import type { DayExpense } from "../types";
 import ExpenseSummaryCard from "./ExpenseSummaryCard";
 import ExpenseDaySection from "./ExpenseDaySection";
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-  scheduleId?: string | null;
-}
-
-interface DayExpense {
-  date: string;
-  label: string;
-  dayNumber: number;
-  expenses: ExpenseItem[];
-}
 
 interface ExpenseAllContentProps {
   dayExpenses: DayExpense[];

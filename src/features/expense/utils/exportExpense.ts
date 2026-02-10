@@ -1,26 +1,8 @@
 import dayjs from "dayjs";
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-}
-
-interface DayExpense {
-  date: string;
-  label: string;
-  dayNumber: number;
-  expenses: ExpenseItem[];
-}
-
-interface TripInfo {
-  title: string | null;
-  startDate: string;
-  endDate: string;
-}
+import type { DayExpense, TripBasicInfo } from "../types";
 
 export function formatAllExpensesToText(
-  tripInfo: TripInfo,
+  tripInfo: TripBasicInfo,
   dayExpenses: DayExpense[]
 ): string {
   const title = tripInfo.title || "여행 가계부";

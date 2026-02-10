@@ -1,28 +1,10 @@
 import { useCallback } from "react";
 import { formatAllExpensesToText } from "../utils/exportExpense";
 import { toaster } from "@/shared/components/ui/toaster";
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  amount: number;
-}
-
-interface DayExpense {
-  date: string;
-  label: string;
-  dayNumber: number;
-  expenses: ExpenseItem[];
-}
-
-interface TripInfo {
-  title: string | null;
-  startDate: string;
-  endDate: string;
-}
+import type { DayExpense, TripBasicInfo } from "../types";
 
 interface UseShareExpenseProps {
-  tripInfo: TripInfo | null | undefined;
+  tripInfo: TripBasicInfo | null | undefined;
   dayExpenses: DayExpense[];
 }
 
