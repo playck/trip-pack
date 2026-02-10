@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { useCreateSchedule } from "../services/useCreateSchedule";
 import type { PlaceResult } from "./usePlacesAutocomplete";
-
-interface SelectedDay {
-  dayNumber: number;
-  date: string;
-}
+import type { SelectedDay } from "../types";
 
 export const useScheduleAdd = (tripId: string) => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);

@@ -2,8 +2,7 @@ import { Box, Text, Timeline } from "@chakra-ui/react";
 import { Reorder } from "framer-motion";
 import { colors, borderColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
-import { isMemo } from "../../utils/scheduleHelpers";
-import { EditableScheduleItem, EditableMemoItem } from "../schedule-items";
+import { EditableScheduleItem } from "../schedule-items";
 
 interface EditableScheduleListProps {
   schedules: Schedule[];
@@ -50,32 +49,19 @@ export default function EditableScheduleList({
           margin: 0,
         }}
       >
-        {schedules.map((schedule) => {
-          const isScheduleMemo = isMemo(schedule);
-          const isSelected = selectedIds.has(schedule.id);
-
-          return (
-            <Reorder.Item
-              key={schedule.id}
-              value={schedule}
-              style={{ position: "relative" }}
-            >
-              {isScheduleMemo ? (
-                <EditableMemoItem
-                  memo={schedule}
-                  isSelected={isSelected}
-                  onToggleSelect={() => onToggleSelect(schedule.id)}
-                />
-              ) : (
-                <EditableScheduleItem
-                  schedule={schedule}
-                  isSelected={isSelected}
-                  onToggleSelect={() => onToggleSelect(schedule.id)}
-                />
-              )}
-            </Reorder.Item>
-          );
-        })}
+        {schedules.map((schedule) => (
+          <Reorder.Item
+            key={schedule.id}
+            value={schedule}
+            style={{ position: "relative" }}
+          >
+            <EditableScheduleItem
+              schedule={schedule}
+              isSelected={selectedIds.has(schedule.id)}
+              onToggleSelect={() => onToggleSelect(schedule.id)}
+            />
+          </Reorder.Item>
+        ))}
       </Reorder.Group>
     </Timeline.Root>
   );

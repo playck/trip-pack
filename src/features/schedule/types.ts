@@ -18,6 +18,11 @@ export interface CreateScheduleParams {
   category?: string;
 }
 
+export interface SelectedDay {
+  dayNumber: number;
+  date: string;
+}
+
 export interface UpdateScheduleParams {
   scheduleId: string;
   placeName?: string;

@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { useCreateMemo } from "../services/useCreateMemo";
 import { useUpdateSchedule } from "../services/useUpdateSchedule";
-
-interface SelectedDay {
-  dayNumber: number;
-  date: string;
-}
+import type { SelectedDay } from "../types";
 
 interface EditingMemo {
   scheduleId: string;
