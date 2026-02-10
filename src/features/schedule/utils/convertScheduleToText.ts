@@ -1,4 +1,5 @@
 import type { Schedule } from "../types";
+import { isMemo } from "./scheduleHelpers";
 
 /**
  * 일정 데이터를 공유 가능한 텍스트 형태로 변환
@@ -32,43 +33,44 @@ export function convertSchedulesToText(
   }
 
   // 일차별로 정렬하여 텍스트 생성
-  Object.keys(schedulesByDay)
+  const sortedDays = Object.keys(schedulesByDay)
     .map(Number)
-    .sort((a, b) => a - b)
-    .forEach((dayNumber) => {
-      const daySchedules = schedulesByDay[dayNumber];
+    .sort((a, b) => a - b);
 
-      text += `${dayNumber}일차 일정\n`;
+  sortedDays.forEach((dayNumber, dayIdx) => {
+    const daySchedules = schedulesByDay[dayNumber];
 
-      const sortedSchedules = [...daySchedules].sort(
-        (a, b) => a.visit_order - b.visit_order
-      );
+    text += `${dayNumber}일차 일정\n`;
 
-      sortedSchedules.forEach((schedule, idx) => {
-        const scheduleNumber = idx + 1;
+    const sortedSchedules = [...daySchedules].sort(
+      (a, b) => a.visit_order - b.visit_order
+    );
 
-        const timePrefix = schedule.start_time
-          ? `[${schedule.start_time}] `
-          : "";
+    sortedSchedules.forEach((schedule, idx) => {
+      const scheduleNumber = idx + 1;
 
-        if (schedule.place_id === "memo") {
-          text += `${scheduleNumber}. 📝 ${schedule.place_name}`;
-        } else {
-          text += `${scheduleNumber}. ${timePrefix}${schedule.place_name}`;
-        }
+      const timePrefix = schedule.start_time
+        ? `[${schedule.start_time}] `
+        : "";
 
-        if (schedule.notes) {
-          text += `\n   ㄴ ${schedule.notes}`;
-        }
-
-        text += "\n";
-      });
-
-      const isNotLastDay = dayNumber < Object.keys(schedulesByDay).length;
-      if (isNotLastDay) {
-        text += "\n";
+      if (isMemo(schedule)) {
+        text += `${scheduleNumber}. 📝 ${schedule.place_name}`;
+      } else {
+        text += `${scheduleNumber}. ${timePrefix}${schedule.place_name}`;
       }
+
+      if (schedule.notes) {
+        text += `\n   ㄴ ${schedule.notes}`;
+      }
+
+      text += "\n";
     });
+
+    const isNotLastDay = dayIdx < sortedDays.length - 1;
+    if (isNotLastDay) {
+      text += "\n";
+    }
+  });
 
   return text;
 }
