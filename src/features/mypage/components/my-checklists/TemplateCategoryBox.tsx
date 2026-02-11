@@ -67,7 +67,7 @@ export default function TemplateCategoryBox({
           display="flex"
           alignItems="center"
           justifyContent="center"
-          color="teal.500"
+          color={colors.primary.solid}
         >
           <Icon size={28} />
         </Box>

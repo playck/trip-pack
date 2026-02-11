@@ -1,4 +1,4 @@
-import { Box, HStack, VStack, Text } from "@chakra-ui/react";
+import { Box, HStack, VStack, Text, IconButton } from "@chakra-ui/react";
 import { ClipboardList, Trash2 } from "lucide-react";
 import type { Tables } from "@/shared/types/database.type";
 import { colors, statusColors } from "@/shared/constants/colors";
@@ -49,9 +49,15 @@ export default function ChecklistCard({
             )}
           </VStack>
         </HStack>
-        <Box as="button" p={2} color={statusColors.error.palette} onClick={handleDelete}>
+        <IconButton
+          aria-label="체크리스트 삭제"
+          variant="ghost"
+          size="sm"
+          color={statusColors.error.palette}
+          onClick={handleDelete}
+        >
           <Trash2 size={18} />
-        </Box>
+        </IconButton>
       </HStack>
     </Box>
   );

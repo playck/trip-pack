@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { VStack, Text, HStack, Box, Icon } from "@chakra-ui/react";
-import {
-  ChevronRight,
-  LogOut,
-  UserX,
-  // Bell,
-  // ShieldCheck,
-  Map,
-  ClipboardList,
-} from "lucide-react";
+import { ChevronRight, LogOut, UserX, Map, ClipboardList } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-import { statusColors } from "@/shared/constants/colors";
+import { systemColors, statusColors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import type { DialogConfig, DialogType } from "../type";
@@ -55,7 +47,7 @@ function MenuItem({
             {label}
           </Text>
         </HStack>
-        <ChevronRight size={18} color="#A0AEC0" />
+        <ChevronRight size={18} color={systemColors.text.subtle} />
       </HStack>
     </Box>
   );
@@ -121,23 +113,6 @@ export default function SettingMenu() {
             />
           </VStack>
         </Box>
-
-        {/* <Box>
-          <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
-            설정
-          </Text>
-          <VStack
-            gap={0}
-            bg="white"
-            borderRadius="xl"
-            px={4}
-            borderWidth="1px"
-            borderColor="gray.100"
-          >
-            <MenuItem icon={Bell} label="알림 설정" />
-            <MenuItem icon={ShieldCheck} label="개인정보 처리방침" />
-          </VStack>
-        </Box> */}
 
         <Box>
           <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
