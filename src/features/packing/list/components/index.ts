@@ -7,4 +7,5 @@ export { default as CheckListCopySheet } from "./CheckListCopySheet";
 export { default as ChecklistSaveSheet } from "./ChecklistSaveSheet";
 export { default as ViewModeToggle } from "./ViewModeToggle";
 export { default as PackingItemPolicyContainer } from "./PackingItemPolicyContainer";
+export { default as CabinPolicyModal } from "./CabinPolicyModal";
 export * from "./types";

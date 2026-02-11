@@ -1,4 +1,4 @@
-import { CabinPolicyModal } from "@/shared/components";
+import CabinPolicyModal from "./CabinPolicyModal";
 import { useBaggagePolicy } from "../hooks/useBaggagePolicy";
 import type { ChecklistItem } from "../../type";
 

@@ -1,11 +1,8 @@
 import { Box, Flex, HStack, Text, useDisclosure } from "@chakra-ui/react";
 import { MoreVertical } from "lucide-react";
 
-import {
-  Checkbox,
-  CabinPolicyIcon,
-  CabinPolicyModal,
-} from "@/shared/components";
+import { Checkbox, CabinPolicyIcon } from "@/shared/components";
+import { CabinPolicyModal } from "@/features/packing/list/components";
 import { colors } from "@/shared/constants/colors";
 import type { CabinPolicy } from "@/shared/data/checkList";
 import type { CountryRestriction } from "@/shared/data/baggagePolicyData";
