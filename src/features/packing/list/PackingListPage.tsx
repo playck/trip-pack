@@ -15,7 +15,6 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import {
   AddCategorySheet,
-  BottomSheet,
   ErrorMessage,
   FloatingAddButton,
 } from "@/shared/components";
@@ -209,21 +208,17 @@ export default function PackingListPage() {
           onClose={onClose}
         />
 
-        <BottomSheet
+        <TemplateListSheet
           isOpen={isCheckListOpen}
           onClose={onCheckListClose}
-          title="체크리스트 모음"
-          secondaryButton={{
-            text: "닫기",
-            onClick: onCheckListClose,
-          }}
-        >
-          <TemplateListSheet onClose={onCheckListClose} tripId={tripId} />
-        </BottomSheet>
+          tripId={tripId}
+        />
 
-        <BottomSheet isOpen={isShareOpen} onClose={onShareClose}>
-          <CheckListCopySheet categories={categories} onClose={onShareClose} />
-        </BottomSheet>
+        <CheckListCopySheet
+          isOpen={isShareOpen}
+          categories={categories}
+          onClose={onShareClose}
+        />
 
         <ChecklistSaveSheet
           isOpen={isSaveSheetOpen}

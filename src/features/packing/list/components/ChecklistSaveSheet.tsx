@@ -77,7 +77,7 @@ export default function ChecklistSaveSheet({
     handleSaveAsTemplate(
       tripInfo,
       selectedCategories,
-      trimmedName || undefined,
+      trimmedName || undefined
     );
   };
 
@@ -92,6 +92,7 @@ export default function ChecklistSaveSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title="체크리스트 템플릿 저장"
+      minHeight="70vh"
       primaryButton={{
         text: "저장",
         onClick: handleSave,

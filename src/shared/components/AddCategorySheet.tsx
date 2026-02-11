@@ -93,6 +93,7 @@ export default function AddCategorySheet({
       <CategoryForm
         categoryName={categoryName}
         selectedIconKey={selectedIconKey}
+        autoFocus={isOpen}
         onCategoryNameChange={setCategoryName}
         onIconKeyChange={setSelectedIconKey}
       />
