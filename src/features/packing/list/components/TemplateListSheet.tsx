@@ -2,8 +2,8 @@ import { useState } from "react";
 import { VStack, Text, Button, Box, Skeleton } from "@chakra-ui/react";
 import { useChecklistTemplate } from "@/features/packing/template/hooks";
 import { BottomSheet, ErrorMessage } from "@/shared/components";
-import { CheckListBottomSheet } from "@/shared/components/checklist-template";
 import type { CategoryWithItems } from "@/features/packing/type";
+import CheckListBottomSheet from "./CheckListBottomSheet";
 
 interface TemplateListSheetProps {
   isOpen: boolean;

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import type { CategoryWithItems } from "@/features/packing/type";
 import { useCreateCategoriesFromCheckList } from "@/features/packing/list/hooks/useCreateCategoriesFromCheckList";
+import { BottomSheet } from "@/shared/components";
 import CheckList from "./CheckList";
-import BottomSheet from "../BottomSheet";
 
 interface CheckListBottomSheetProps {
   isOpen: boolean;
