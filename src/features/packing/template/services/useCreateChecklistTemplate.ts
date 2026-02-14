@@ -1,14 +1,40 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createChecklistTemplate } from "./api";
 import type { TablesInsert } from "@/shared/types/database.type";
 import { toaster } from "@/shared/components/ui/toaster";
+import {
+  createChecklistTemplate,
+  createTemplateCategoriesWithItems,
+} from "./api";
+
+interface CreateTemplateWithCategoriesParams {
+  template: TablesInsert<"checklist_templates">;
+  categories: {
+    name: string;
+    icon_key: string | null;
+    display_order: number;
+    items: {
+      name: string;
+      notes: string | null;
+      is_required: boolean | null;
+      display_order: number;
+    }[];
+  }[];
+}
 
 export const useCreateChecklistTemplate = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (template: TablesInsert<"checklist_templates">) =>
-      createChecklistTemplate(template),
+    mutationFn: async ({
+      template,
+      categories,
+    }: CreateTemplateWithCategoriesParams) => {
+      const newTemplate = await createChecklistTemplate(template);
+      if (categories.length > 0) {
+        await createTemplateCategoriesWithItems(newTemplate.id, categories);
+      }
+      return newTemplate;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["checklistTemplates"],

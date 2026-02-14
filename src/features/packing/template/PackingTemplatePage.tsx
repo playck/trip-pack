@@ -1,4 +1,5 @@
 import { Container, Text, VStack } from "@chakra-ui/react";
+import { useNavigate } from "@tanstack/react-router";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { colorCombinations } from "@/shared/constants/colors";
@@ -15,6 +16,7 @@ interface PackingTemplate {
 }
 
 export default function PackingTemplatePage() {
+  const navigate = useNavigate();
   const { data: templates = [], isLoading, error } = useChecklistTemplate();
 
   if (isLoading) {
@@ -46,9 +48,7 @@ export default function PackingTemplatePage() {
     title: template.title,
     description: template.description || "",
     category: "템플릿",
-    items: Array.isArray(template.checklist_data)
-      ? (template.checklist_data as string[])
-      : [],
+    items: (template.template_categories ?? []).map((c) => c.name),
   }));
 
   return (
@@ -64,9 +64,11 @@ export default function PackingTemplatePage() {
               <TemplateCard
                 key={template.id}
                 template={template}
-                onClick={(template) => {
-                  // 템플릿 클릭 핸들러 (나중에 구현)
-                  console.log("Template clicked:", template);
+                onClick={(t) => {
+                  navigate({
+                    to: "/mypage/my-checklists/$templateId",
+                    params: { templateId: t.id },
+                  });
                 }}
               />
             ))}

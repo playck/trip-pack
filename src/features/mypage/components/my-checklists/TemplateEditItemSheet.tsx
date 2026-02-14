@@ -2,11 +2,11 @@ import { VStack, Text, Input, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { BottomSheet } from "@/shared/components";
 import { toaster } from "@/shared/components/ui/toaster";
-import type { ChecklistItem } from "@/features/packing/type";
+import type { TemplateItem } from "@/features/packing/type";
 
 interface TemplateEditItemSheetProps {
   isOpen: boolean;
-  item?: ChecklistItem;
+  item?: TemplateItem;
   onSave: (name: string, notes?: string) => void;
   onClose: () => void;
 }

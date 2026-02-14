@@ -7,7 +7,7 @@ import {
   HStack,
   SegmentGroup,
 } from "@chakra-ui/react";
-import { Copy, Check } from "lucide-react";
+import { Share2, Check } from "lucide-react";
 
 import { colors, statusColors } from "@/shared/constants/colors";
 import { BottomSheet } from "@/shared/components";
@@ -39,12 +39,20 @@ export default function CheckListCopySheet({
       ? exportChecklistToDetailedText(categories)
       : exportChecklistToText(categories);
 
-  const handleCopy = async () => {
-    const success = await copyToClipboard(textContent);
-
-    if (success) {
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: textContent });
+      } catch {
+        // 사용자가 공유 취소한 경우 무시
+      }
+    } else {
+      // Share API 미지원 시 클립보드 복사 폴백
+      const success = await copyToClipboard(textContent);
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }
     }
   };
 
@@ -98,12 +106,12 @@ export default function CheckListCopySheet({
             colorPalette={
               isCopied ? statusColors.success.palette : colors.primary.palette
             }
-            onClick={handleCopy}
+            onClick={handleShare}
             disabled={isCopied}
           >
             <HStack gap={2}>
-              {isCopied ? <Check size={16} /> : <Copy size={16} />}
-              <Text>{isCopied ? "복사됨!" : "복사"}</Text>
+              {isCopied ? <Check size={16} /> : <Share2 size={16} />}
+              <Text>{isCopied ? "복사됨!" : "공유"}</Text>
             </HStack>
           </Button>
           <Button variant="outline" onClick={onClose}>

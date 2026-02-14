@@ -10,5 +10,8 @@ export { default as Modal } from "./Modal";
 export { default as PageLayout } from "./layout/PageLayout";
 export { default as TripInfoHeader } from "./layout/TripInfoHeader";
 export { default as AddCategorySheet } from "./AddCategorySheet";
+export { default as SelectableCategoryBox } from "./SelectableCategoryBox";
+export { default as SelectableCategoryGrid } from "./SelectableCategoryGrid";
+export type { BaseCategoryWithItems } from "./SelectableCategoryGrid";
 export type { FloatingMenuItem } from "./FloatingAddButton";
 export * from "./trip-action";

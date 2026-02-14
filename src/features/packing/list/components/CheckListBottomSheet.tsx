@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, HStack, Text } from "@chakra-ui/react";
 import type { CategoryWithItems } from "@/features/packing/type";
 import { useCreateCategoriesFromCheckList } from "@/features/packing/list/hooks/useCreateCategoriesFromCheckList";
-import { BottomSheet } from "@/shared/components";
+import { BottomSheet, Checkbox } from "@/shared/components";
+import { colors } from "@/shared/constants/colors";
 import CheckList from "./CheckList";
 
 interface CheckListBottomSheetProps {
@@ -39,6 +40,17 @@ export default function CheckListBottomSheet({
     createCategories.mutate(selectedCategories);
   };
 
+  const isAllSelected =
+    categories.length > 0 && selectedIds.size === categories.length;
+
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(categories.map((c) => c.id)));
+    }
+  };
+
   const handleClose = () => {
     setSelectedIds(new Set());
     onClose();
@@ -62,6 +74,17 @@ export default function CheckListBottomSheet({
       }}
     >
       <Flex flexDirection="column" h="100%" minHeight="70vh">
+        <HStack justify="space-between" align="center" px={4} pt={3}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600">
+            카테고리 선택 ({selectedIds.size}/{categories.length})
+          </Text>
+          <Checkbox
+            isChecked={isAllSelected}
+            onChange={handleSelectAll}
+            label="전체 선택"
+            colorScheme={colors.primary.palette}
+          />
+        </HStack>
         <Box px={4} py={4} flex={1} overflowY="auto">
           <CheckList
             categories={categories}

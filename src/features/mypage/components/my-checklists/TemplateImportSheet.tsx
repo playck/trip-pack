@@ -4,14 +4,14 @@ import { ChevronRight } from "lucide-react";
 import { BottomSheet } from "@/shared/components";
 import { useChecklistTemplates } from "@/features/packing/template/services";
 import { colors, systemColors } from "@/shared/constants/colors";
-import type { CategoryWithItems } from "@/features/packing/type";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import ImportCategorySelect from "./ImportCategorySelect";
 
 interface TemplateImportSheetProps {
   isOpen: boolean;
   currentTemplateId: string;
   existingCategoryNames: string[];
-  onImport: (categories: CategoryWithItems[]) => void;
+  onImport: (categories: TemplateCategoryWithItems[]) => void;
   onClose: () => void;
 }
 
@@ -27,22 +27,25 @@ export default function TemplateImportSheet({
   const { data: templates, isLoading } = useChecklistTemplates();
   const [step, setStep] = useState<Step>("select-template");
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
-    null,
+    null
   );
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   const availableTemplates = useMemo(() => {
     return templates?.filter((t) => t.id !== currentTemplateId) || [];
   }, [templates, currentTemplateId]);
 
-  const selectedTemplateCategories = useMemo(() => {
-    if (!selectedTemplateId) return [];
-    const template = templates?.find((t) => t.id === selectedTemplateId);
-    if (!template?.checklist_data) return [];
-    return template.checklist_data as unknown as CategoryWithItems[];
-  }, [templates, selectedTemplateId]);
+  const selectedTemplateCategories =
+    useMemo((): TemplateCategoryWithItems[] => {
+      if (!selectedTemplateId) return [];
+      const template = templates?.find((t) => t.id === selectedTemplateId);
+      if (!template?.template_categories) return [];
+      return [...template.template_categories].sort(
+        (a, b) => (a.display_order ?? 0) - (b.display_order ?? 0)
+      );
+    }, [templates, selectedTemplateId]);
 
   const existingNamesSet = useMemo(() => {
     return new Set(existingCategoryNames.map((name) => name.toLowerCase()));
@@ -54,7 +57,7 @@ export default function TemplateImportSheet({
 
   const selectableCategories = useMemo(() => {
     return selectedTemplateCategories.filter(
-      (c) => !existingNamesSet.has(c.name.toLowerCase()),
+      (c) => !existingNamesSet.has(c.name.toLowerCase())
     );
   }, [selectedTemplateCategories, existingNamesSet]);
 
@@ -69,7 +72,7 @@ export default function TemplateImportSheet({
 
   const handleCategoryToggle = (categoryId: string) => {
     const category = selectedTemplateCategories.find(
-      (c) => c.id === categoryId,
+      (c) => c.id === categoryId
     );
     if (category && isCategoryDuplicate(category.name)) return;
 
@@ -100,7 +103,7 @@ export default function TemplateImportSheet({
 
   const handleImport = () => {
     const categoriesToImport = selectedTemplateCategories.filter((c) =>
-      selectedCategoryIds.has(c.id),
+      selectedCategoryIds.has(c.id)
     );
     onImport(categoriesToImport);
     handleClose();
@@ -110,10 +113,6 @@ export default function TemplateImportSheet({
     resetState();
     onClose();
   };
-
-  const isAllSelected =
-    selectedCategoryIds.size === selectableCategories.length &&
-    selectableCategories.length > 0;
 
   // Step 1: 템플릿 선택
   if (step === "select-template") {
@@ -182,7 +181,6 @@ export default function TemplateImportSheet({
         selectedIds={selectedCategoryIds}
         selectableCount={selectableCategories.length}
         duplicateCount={duplicateCount}
-        isAllSelected={isAllSelected}
         isCategoryDuplicate={isCategoryDuplicate}
         onToggle={handleCategoryToggle}
         onSelectAll={handleSelectAll}

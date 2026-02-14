@@ -7,14 +7,14 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
-import type { ChecklistItem } from "@/features/packing/type";
+import type { TemplateItem as TemplateItemType } from "@/features/packing/type";
 import { FloatingAddButton, Checkbox, ConfirmDialog } from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
 import TemplateItem from "./TemplateItem";
 import TemplateEditItemSheet from "./TemplateEditItemSheet";
 
 interface TemplateItemListProps {
-  items: ChecklistItem[];
+  items: TemplateItemType[];
   searchQuery?: string;
   isEditMode?: boolean;
   onAddItem: (name: string, notes?: string) => void;

@@ -3,6 +3,7 @@ import { VStack, Text, Button, Box, Skeleton } from "@chakra-ui/react";
 import { useChecklistTemplate } from "@/features/packing/template/hooks";
 import { BottomSheet, ErrorMessage } from "@/shared/components";
 import type { CategoryWithItems } from "@/features/packing/type";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import CheckListBottomSheet from "./CheckListBottomSheet";
 
 interface TemplateListSheetProps {
@@ -10,6 +11,35 @@ interface TemplateListSheetProps {
   onClose: () => void;
   tripId: string;
 }
+
+const convertToCategories = (
+  templateCategories: TemplateCategoryWithItems[]
+): CategoryWithItems[] =>
+  templateCategories
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+    .map((tc) => ({
+      id: tc.id,
+      name: tc.name,
+      icon_key: tc.icon_key,
+      display_order: tc.display_order,
+      created_at: tc.created_at,
+      trip_id: null,
+      items: tc.template_items
+        .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+        .map((ti) => ({
+          id: ti.id,
+          name: ti.name,
+          notes: ti.notes,
+          is_required: ti.is_required,
+          display_order: ti.display_order,
+          category_id: tc.id,
+          is_checked: false,
+          cabin_notes: null,
+          cabin_policy: null,
+          created_at: ti.created_at,
+          updated_at: null,
+        })),
+    }));
 
 export default function TemplateListSheet({
   isOpen,
@@ -25,11 +55,11 @@ export default function TemplateListSheet({
 
   const handleSelectTemplate = (
     templateTitle: string,
-    checklistData: unknown
+    templateCategories: TemplateCategoryWithItems[]
   ) => {
     setSelectedCheckList({
       title: templateTitle,
-      categories: checklistData as CategoryWithItems[],
+      categories: convertToCategories(templateCategories),
     });
     setIsCheckListOpen(true);
   };
@@ -126,7 +156,10 @@ export default function TemplateListSheet({
                 borderColor="gray.200"
                 cursor="pointer"
                 onClick={() => {
-                  handleSelectTemplate(template.title, template.checklist_data);
+                  handleSelectTemplate(
+                    template.title,
+                    template.template_categories ?? []
+                  );
                 }}
               >
                 <VStack align="start" gap={1}>

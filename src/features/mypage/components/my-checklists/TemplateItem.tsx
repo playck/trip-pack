@@ -1,13 +1,13 @@
 import { Box, HStack, Text, useDisclosure } from "@chakra-ui/react";
 import { EllipsisVertical } from "lucide-react";
-import type { ChecklistItem } from "@/features/packing/type";
+import type { TemplateItem as TemplateItemType } from "@/features/packing/type";
 import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import TemplateItemActionsSheet from "./TemplateItemActionsSheet";
 import TemplateEditItemSheet from "./TemplateEditItemSheet";
 
 interface TemplateItemProps {
-  item: ChecklistItem;
+  item: TemplateItemType;
   isEditMode?: boolean;
   isSelected?: boolean;
   onSelect?: (itemId: string) => void;

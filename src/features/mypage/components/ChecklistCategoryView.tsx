@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { FloatingAddButton, AddCategorySheet } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
-import type { CategoryWithItems } from "@/features/packing/type";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import {
   TemplateCategoryGrid,
   TemplateInfoEditSheet,
@@ -14,13 +14,13 @@ import {
 interface ChecklistCategoryViewProps {
   title: string;
   description: string | null;
-  categories: CategoryWithItems[];
+  categories: TemplateCategoryWithItems[];
   currentTemplateId: string;
   onBack: () => void;
-  onCategoryClick: (category: CategoryWithItems) => void;
+  onCategoryClick: (category: TemplateCategoryWithItems) => void;
   onAddCategory: (name: string, iconKey: string) => void;
   onDeleteCategories: (categoryIds: string[]) => void;
-  onImportCategories: (categories: CategoryWithItems[]) => void;
+  onImportCategories: (categories: TemplateCategoryWithItems[]) => void;
   onUpdateInfo: (title: string, description: string | null) => void;
 }
 
@@ -60,7 +60,7 @@ export default function ChecklistCategoryView({
     onAddCategoryClose();
   };
 
-  const handleImportCategories = (imported: CategoryWithItems[]) => {
+  const handleImportCategories = (imported: TemplateCategoryWithItems[]) => {
     onImportCategories(imported);
     onImportClose();
   };

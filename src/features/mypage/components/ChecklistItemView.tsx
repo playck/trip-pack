@@ -12,11 +12,11 @@ import { ConfirmDialog } from "@/shared/components";
 import { SearchBar } from "@/features/packing/detail/components";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors } from "@/shared/constants/colors";
-import type { CategoryWithItems } from "@/features/packing/type";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import { TemplateItemList } from "./my-checklists";
 
 interface ChecklistItemViewProps {
-  category: CategoryWithItems;
+  category: TemplateCategoryWithItems;
   onBack: () => void;
   onAddItem: (name: string, notes?: string) => void;
   onUpdateItem: (itemId: string, name: string, notes?: string) => void;
@@ -42,7 +42,7 @@ export default function ChecklistItemView({
     onClose: onDeleteClose,
   } = useDisclosure();
 
-  const hasItems = category.items.length > 0;
+  const hasItems = category.template_items.length > 0;
 
   const handleBack = () => {
     setIsEditMode(false);
@@ -107,7 +107,7 @@ export default function ChecklistItemView({
       {/* 아이템 리스트 */}
       <Box pb={5}>
         <TemplateItemList
-          items={category.items}
+          items={category.template_items}
           searchQuery={searchQuery}
           isEditMode={isEditMode}
           onAddItem={onAddItem}

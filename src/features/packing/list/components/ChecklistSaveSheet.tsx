@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
-import { VStack, Text, HStack, Box, SimpleGrid, Input } from "@chakra-ui/react";
-import { Package } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { VStack, Text, Box, Input } from "@chakra-ui/react";
 
-import { backgrounds, colors, textColors } from "@/shared/constants/colors";
-import { BottomSheet, Checkbox } from "@/shared/components";
+import { colors } from "@/shared/constants/colors";
+import { BottomSheet, SelectableCategoryGrid } from "@/shared/components";
 import type { TripInfo } from "@/shared/service/trip/tripInfo";
 import type { CategoryWithItems } from "../../type";
-import { CATEGORY_ICONS } from "../constants/category";
 import { useSaveAsTemplate } from "../../template/hooks/useSaveAsTemplate";
 
 interface ChecklistSaveSheetProps {
@@ -46,25 +43,22 @@ export default function ChecklistSaveSheet({
     }
   }, [isSuccess, isOpen, onClose]);
 
-  const isAllSelected =
-    categories.length > 0 && selectedIds.size === categories.length;
-
   const handleToggleAll = () => {
-    if (isAllSelected) {
+    if (selectedIds.size === categories.length) {
       setSelectedIds(new Set());
     } else {
       setSelectedIds(new Set(categories.map((c) => c.id)));
     }
   };
 
-  const handleToggleCategory = (id: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
+  const handleToggle = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
     } else {
-      newSelected.add(id);
+      next.add(id);
     }
-    setSelectedIds(newSelected);
+    setSelectedIds(next);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,85 +119,27 @@ export default function ChecklistSaveSheet({
           />
         </VStack>
 
-        <HStack justify="space-between" align="center" px={1}>
-          <Text fontSize="md" fontWeight="medium" color="gray.600">
-            저장할 카테고리 선택 ({selectedIds.size}/{categories.length})
-          </Text>
-          <Checkbox
-            isChecked={isAllSelected}
-            onChange={handleToggleAll}
-            label="전체 선택"
-            colorScheme={colors.primary.palette}
-          />
-        </HStack>
-
-        {/* 카테고리 그리드 */}
         <Box
           maxH="50vh"
           overflowY="auto"
           pr={1}
           css={{
-            "&::-webkit-scrollbar": {
-              width: "4px",
-            },
-            "&::-webkit-scrollbar-track": {
-              width: "6px",
-            },
+            "&::-webkit-scrollbar": { width: "4px" },
+            "&::-webkit-scrollbar-track": { width: "6px" },
             "&::-webkit-scrollbar-thumb": {
               background: "gray.200",
               borderRadius: "24px",
             },
           }}
         >
-          <SimpleGrid columns={3} gap={4} w="full">
-            {categories.map((category) => {
-              const IconComponent = (
-                category.icon_key
-                  ? CATEGORY_ICONS[category.icon_key] || Package
-                  : CATEGORY_ICONS[category.name] || Package
-              ) as LucideIcon;
-              const isSelected = selectedIds.has(category.id);
-
-              return (
-                <Box
-                  key={category.id}
-                  p={3}
-                  bg={backgrounds.muted}
-                  borderRadius="xl"
-                  border="3px solid"
-                  borderColor={
-                    isSelected ? `${colors.primary.palette}.500` : "transparent"
-                  }
-                  transition="border-color 0.2s"
-                  cursor="pointer"
-                  onClick={() => handleToggleCategory(category.id)}
-                >
-                  <VStack gap={2} w="full">
-                    <Box
-                      w="12"
-                      h="12"
-                      bg={backgrounds.primary}
-                      borderRadius="full"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      color={`${colors.primary.palette}.500`}
-                    >
-                      <IconComponent size={28} />
-                    </Box>
-                    <Text
-                      fontSize="sm"
-                      fontWeight="medium"
-                      textAlign="center"
-                      color={textColors.secondary}
-                    >
-                      {category.name}
-                    </Text>
-                  </VStack>
-                </Box>
-              );
-            })}
-          </SimpleGrid>
+          <SelectableCategoryGrid
+            categories={categories}
+            selectedIds={selectedIds}
+            onToggle={handleToggle}
+            showSelectAll
+            onSelectAll={handleToggleAll}
+            selectLabel={`저장할 카테고리 선택 (${selectedIds.size}/${categories.length})`}
+          />
         </Box>
       </VStack>
     </BottomSheet>

@@ -19,12 +19,26 @@ export const useSaveAsTemplate = () => {
       ? `${tripInfo.startDate}${tripInfo.endDate ? ` ~ ${tripInfo.endDate}` : ""}`
       : null;
 
+    const templateCategories = categories.map((cat, idx) => ({
+      name: cat.name,
+      icon_key: cat.icon_key,
+      display_order: idx,
+      items: cat.items.map((item, itemIdx) => ({
+        name: item.name,
+        notes: item.notes,
+        is_required: item.is_required,
+        display_order: itemIdx,
+      })),
+    }));
+
     createTemplateMutation.mutate({
-      title: templateTitle,
-      description: templateDescription,
-      checklist_data: JSON.parse(JSON.stringify(categories)),
-      is_public: false,
-      user_id: user.id,
+      template: {
+        title: templateTitle,
+        description: templateDescription,
+        is_public: false,
+        user_id: user.id,
+      },
+      categories: templateCategories,
     });
   };
 

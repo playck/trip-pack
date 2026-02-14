@@ -1,8 +1,5 @@
-import { SimpleGrid, Box, VStack, Text } from "@chakra-ui/react";
-import { Package } from "lucide-react";
 import type { CategoryWithItems } from "@/features/packing/type";
-import { CATEGORY_ICONS } from "@/features/packing/list/constants/category";
-import { backgrounds, colors, textColors } from "@/shared/constants/colors";
+import { SelectableCategoryGrid } from "@/shared/components";
 
 interface CheckListProps {
   categories: CategoryWithItems[];
@@ -15,61 +12,22 @@ export default function CheckList({
   selectedIds,
   onSelectionChange,
 }: CheckListProps) {
-  const handleCategoryClick = (category: CategoryWithItems) => {
-    const newSelectedIds = new Set(selectedIds);
-    if (newSelectedIds.has(category.id)) {
-      newSelectedIds.delete(category.id);
+  const handleToggle = (categoryId: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(categoryId)) {
+      next.delete(categoryId);
     } else {
-      newSelectedIds.add(category.id);
+      next.add(categoryId);
     }
-    onSelectionChange(newSelectedIds);
+    onSelectionChange(next);
   };
 
   return (
-    <SimpleGrid columns={3} gap={4} w="full">
-      {categories.map((category) => {
-        const Icon = CATEGORY_ICONS[category.name] || Package;
-        const isSelected = selectedIds.has(category.id);
-
-        return (
-          <Box
-            key={category.id}
-            p={3}
-            bg={backgrounds.muted}
-            borderRadius="xl"
-            border="3px solid"
-            borderColor={
-              isSelected ? `${colors.primary.palette}.500` : "transparent"
-            }
-            transition="border-color 0.2s"
-            cursor="pointer"
-            onClick={() => handleCategoryClick(category)}
-          >
-            <VStack gap={3} w="full">
-              <Box
-                w="12"
-                h="12"
-                bg={backgrounds.primary}
-                borderRadius="full"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color={`${colors.primary.palette}.500`}
-              >
-                <Icon size={28} />
-              </Box>
-              <Text
-                fontSize="sm"
-                fontWeight="medium"
-                textAlign="center"
-                color={textColors.secondary}
-              >
-                {category.name}
-              </Text>
-            </VStack>
-          </Box>
-        );
-      })}
-    </SimpleGrid>
+    <SelectableCategoryGrid
+      categories={categories}
+      selectedIds={selectedIds}
+      onToggle={handleToggle}
+      subText={(c) => `${c.items.length}개 아이템`}
+    />
   );
 }

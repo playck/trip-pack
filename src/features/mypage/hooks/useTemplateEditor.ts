@@ -1,28 +1,24 @@
 import { useMemo, useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useChecklistTemplates,
   useUpdateChecklistTemplate,
 } from "@/features/packing/template/services";
-import type { CategoryWithItems, ChecklistItem } from "@/features/packing/type";
-import type { Json } from "@/shared/types/database.type";
-import { generateId } from "@/shared/utils/generateId";
-
-const parseCategoryData = (data: unknown): CategoryWithItems[] => {
-  if (!Array.isArray(data)) return [];
-  return data.filter(
-    (item): item is CategoryWithItems =>
-      typeof item === "object" &&
-      item !== null &&
-      "id" in item &&
-      "name" in item &&
-      "items" in item &&
-      Array.isArray(item.items),
-  );
-};
+import {
+  addTemplateCategory,
+  addTemplateItem,
+  updateTemplateItem,
+  deleteTemplateItem,
+  deleteTemplateItems,
+  deleteTemplateCategories,
+  getTemplateCategories,
+} from "@/features/packing/template/services/api";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 
 export const useTemplateEditor = (templateId: string) => {
   const { data: templates, isLoading } = useChecklistTemplates();
   const updateTemplateMutation = useUpdateChecklistTemplate();
+  const queryClient = useQueryClient();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
@@ -31,9 +27,11 @@ export const useTemplateEditor = (templateId: string) => {
     return templates?.find((t) => t.id === templateId);
   }, [templates, templateId]);
 
-  const categories = useMemo(() => {
-    if (!template?.checklist_data) return [];
-    return parseCategoryData(template.checklist_data);
+  const categories = useMemo((): TemplateCategoryWithItems[] => {
+    if (!template?.template_categories) return [];
+    return [...template.template_categories].sort(
+      (a, b) => (a.display_order ?? 0) - (b.display_order ?? 0),
+    );
   }, [template]);
 
   const selectedCategory = useMemo(() => {
@@ -41,159 +39,85 @@ export const useTemplateEditor = (templateId: string) => {
     return categories.find((c) => c.id === selectedCategoryId) || null;
   }, [categories, selectedCategoryId]);
 
-  // 카테고리 데이터 업데이트 헬퍼
-  const updateCategories = useCallback(
-    (newCategories: CategoryWithItems[]) => {
-      if (!templateId) return;
-      updateTemplateMutation.mutate({
-        id: templateId,
-        checklist_data: newCategories as unknown as Json,
-      });
-    },
-    [templateId, updateTemplateMutation],
-  );
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["checklistTemplates"] });
+  }, [queryClient]);
 
   // ===== 아이템 CRUD =====
 
-  const addItem = useCallback(
-    (name: string, notes?: string) => {
+  const handleAddItem = useCallback(
+    async (name: string, notes?: string) => {
       if (!selectedCategoryId) return;
-
-      const newItem: ChecklistItem = {
-        id: generateId("item"),
-        name,
-        notes: notes || null,
-        is_checked: false,
-        category_id: selectedCategoryId,
-        display_order: selectedCategory?.items.length || 0,
-        cabin_notes: null,
-        cabin_policy: null,
-        created_at: new Date().toISOString(),
-        is_required: false,
-        updated_at: new Date().toISOString(),
-      };
-
-      const newCategories = categories.map((cat) =>
-        cat.id === selectedCategoryId
-          ? { ...cat, items: [...cat.items, newItem] }
-          : cat,
-      );
-
-      updateCategories(newCategories);
+      const itemCount = selectedCategory?.template_items.length || 0;
+      await addTemplateItem(selectedCategoryId, name, notes, itemCount);
+      invalidate();
     },
-    [selectedCategoryId, selectedCategory, categories, updateCategories],
+    [selectedCategoryId, selectedCategory, invalidate],
   );
 
-  const updateItem = useCallback(
-    (itemId: string, name: string, notes?: string) => {
-      if (!selectedCategoryId) return;
-
-      const newCategories = categories.map((cat) =>
-        cat.id === selectedCategoryId
-          ? {
-              ...cat,
-              items: cat.items.map((item) =>
-                item.id === itemId
-                  ? { ...item, name, notes: notes || null }
-                  : item,
-              ),
-            }
-          : cat,
-      );
-
-      updateCategories(newCategories);
+  const handleUpdateItem = useCallback(
+    async (itemId: string, name: string, notes?: string) => {
+      await updateTemplateItem(itemId, name, notes);
+      invalidate();
     },
-    [selectedCategoryId, categories, updateCategories],
+    [invalidate],
   );
 
-  const deleteItem = useCallback(
-    (itemId: string) => {
-      if (!selectedCategoryId) return;
-
-      const newCategories = categories.map((cat) =>
-        cat.id === selectedCategoryId
-          ? { ...cat, items: cat.items.filter((item) => item.id !== itemId) }
-          : cat,
-      );
-
-      updateCategories(newCategories);
+  const handleDeleteItem = useCallback(
+    async (itemId: string) => {
+      await deleteTemplateItem(itemId);
+      invalidate();
     },
-    [selectedCategoryId, categories, updateCategories],
+    [invalidate],
   );
 
-  const deleteItems = useCallback(
-    (itemIds: string[]) => {
-      if (!selectedCategoryId) return;
-
-      const newCategories = categories.map((cat) =>
-        cat.id === selectedCategoryId
-          ? {
-              ...cat,
-              items: cat.items.filter((item) => !itemIds.includes(item.id)),
-            }
-          : cat,
-      );
-
-      updateCategories(newCategories);
+  const handleDeleteItems = useCallback(
+    async (itemIds: string[]) => {
+      await deleteTemplateItems(itemIds);
+      invalidate();
     },
-    [selectedCategoryId, categories, updateCategories],
+    [invalidate],
   );
 
   // ===== 카테고리 CRUD =====
 
-  const addCategory = useCallback(
-    (name: string, iconKey: string) => {
-      const newCategory: CategoryWithItems = {
-        id: generateId("cat"),
-        name,
-        icon_key: iconKey,
-        items: [],
-        trip_id: null,
-        created_at: new Date().toISOString(),
-        display_order: categories.length,
-      };
-
-      updateCategories([...categories, newCategory]);
+  const handleAddCategory = useCallback(
+    async (name: string, iconKey: string) => {
+      await addTemplateCategory(templateId, name, iconKey, categories.length);
+      invalidate();
     },
-    [categories, updateCategories],
+    [templateId, categories.length, invalidate],
   );
 
-  const deleteCategory = useCallback(
-    (categoryId: string) => {
-      const newCategories = categories.filter((cat) => cat.id !== categoryId);
-      updateCategories(newCategories);
+  const handleDeleteCategory = useCallback(
+    async (categoryId: string) => {
+      await deleteTemplateCategories([categoryId]);
+      invalidate();
     },
-    [categories, updateCategories],
+    [invalidate],
   );
 
-  const deleteCategories = useCallback(
-    (categoryIds: string[]) => {
-      const idSet = new Set(categoryIds);
-      const newCategories = categories.filter((cat) => !idSet.has(cat.id));
-      updateCategories(newCategories);
+  const handleDeleteCategories = useCallback(
+    async (categoryIds: string[]) => {
+      await deleteTemplateCategories(categoryIds);
+      invalidate();
     },
-    [categories, updateCategories],
+    [invalidate],
   );
 
-  const importCategories = useCallback(
-    (importedCategories: CategoryWithItems[]) => {
-      const newCategories = importedCategories.map((cat, idx) => ({
-        ...cat,
-        id: generateId("cat"),
-        display_order: categories.length + idx,
-        items: cat.items.map((item) => ({
-          ...item,
-          id: generateId("item"),
-          is_checked: false,
-        })),
-      }));
-
-      updateCategories([...categories, ...newCategories]);
+  const handleImportCategories = useCallback(
+    async (importedCategories: TemplateCategoryWithItems[]) => {
+      await getTemplateCategories(
+        templateId,
+        importedCategories,
+        categories.length,
+      );
+      invalidate();
     },
-    [categories, updateCategories],
+    [templateId, categories.length, invalidate],
   );
 
-  const selectCategory = useCallback((category: CategoryWithItems | null) => {
+  const selectCategory = useCallback((category: TemplateCategoryWithItems | null) => {
     setSelectedCategoryId(category?.id || null);
   }, []);
 
@@ -223,16 +147,16 @@ export const useTemplateEditor = (templateId: string) => {
     isLoading,
 
     // 아이템 CRUD
-    addItem,
-    updateItem,
-    deleteItem,
-    deleteItems,
+    addItem: handleAddItem,
+    updateItem: handleUpdateItem,
+    deleteItem: handleDeleteItem,
+    deleteItems: handleDeleteItems,
 
     // 카테고리 CRUD
-    addCategory,
-    deleteCategory,
-    deleteCategories,
-    importCategories,
+    addCategory: handleAddCategory,
+    deleteCategory: handleDeleteCategory,
+    deleteCategories: handleDeleteCategories,
+    importCategories: handleImportCategories,
     selectCategory,
     clearSelectedCategory,
 

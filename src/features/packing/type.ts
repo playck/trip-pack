@@ -9,6 +9,15 @@ export interface CategoryWithItems extends ChecklistCategory {
   items: ChecklistItem[];
 }
 
+export type TemplateCategory =
+  Database["public"]["Tables"]["template_categories"]["Row"];
+export type TemplateItem =
+  Database["public"]["Tables"]["template_items"]["Row"];
+
+export interface TemplateCategoryWithItems extends TemplateCategory {
+  template_items: TemplateItem[];
+}
+
 export interface UseTripChecklistReturn {
   categories: CategoryWithItems[];
   isLoading: boolean;

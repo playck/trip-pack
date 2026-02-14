@@ -1,23 +1,17 @@
 import { useState, useEffect } from "react";
+import { HStack, Text, Box, Button, useDisclosure } from "@chakra-ui/react";
+import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import {
-  SimpleGrid,
-  HStack,
-  Text,
-  Box,
-  Button,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { Package } from "lucide-react";
-import { CATEGORY_ICONS } from "@/features/packing/list/constants/category";
-import type { CategoryWithItems } from "@/features/packing/type";
-import { Checkbox, ConfirmDialog } from "@/shared/components";
+  Checkbox,
+  ConfirmDialog,
+  SelectableCategoryGrid,
+} from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
-import TemplateCategoryBox from "./TemplateCategoryBox";
 
 interface TemplateCategoryGridProps {
-  categories: CategoryWithItems[];
+  categories: TemplateCategoryWithItems[];
   isEditMode?: boolean;
-  onCategoryClick: (category: CategoryWithItems) => void;
+  onCategoryClick: (category: TemplateCategoryWithItems) => void;
   onDeleteCategories: (categoryIds: string[]) => void;
 }
 
@@ -40,16 +34,21 @@ export default function TemplateCategoryGrid({
     }
   }, [isEditMode]);
 
-  const handleSelect = (categoryId: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(categoryId)) {
-        next.delete(categoryId);
-      } else {
-        next.add(categoryId);
-      }
-      return next;
-    });
+  const handleToggle = (categoryId: string) => {
+    if (isEditMode) {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(categoryId)) {
+          next.delete(categoryId);
+        } else {
+          next.add(categoryId);
+        }
+        return next;
+      });
+    } else {
+      const category = categories.find((c) => c.id === categoryId);
+      if (category) onCategoryClick(category);
+    }
   };
 
   const handleSelectAll = () => {
@@ -87,25 +86,14 @@ export default function TemplateCategoryGrid({
         </HStack>
       )}
 
-      <SimpleGrid columns={3} gap={4} w="full" pb="80px">
-        {categories.map((category) => {
-          const icon = category.icon_key
-            ? CATEGORY_ICONS[category.icon_key] || Package
-            : CATEGORY_ICONS[category.name] || Package;
-
-          return (
-            <TemplateCategoryBox
-              key={category.id}
-              category={category}
-              icon={icon}
-              isEditMode={isEditMode}
-              isSelected={selectedIds.has(category.id)}
-              onClick={() => onCategoryClick(category)}
-              onSelect={() => handleSelect(category.id)}
-            />
-          );
-        })}
-      </SimpleGrid>
+      <Box pb="80px">
+        <SelectableCategoryGrid
+          categories={categories}
+          selectedIds={selectedIds}
+          onToggle={handleToggle}
+          subText={(c) => `${c.template_items.length}개 아이템`}
+        />
+      </Box>
 
       {isEditMode && selectedIds.size > 0 && (
         <Box position="fixed" bottom={6} left={4} right={4} zIndex={10}>
