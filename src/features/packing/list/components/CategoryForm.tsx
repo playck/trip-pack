@@ -54,38 +54,44 @@ export default function CategoryForm({
             <Text fontSize="md" fontWeight="medium" alignSelf="start">
               아이콘 선택
             </Text>
-            <SimpleGrid columns={4} gap={3} w="full">
-              {Object.entries(CATEGORY_ICONS).map(([key, IconComponent]) => {
-                const isSelected = selectedIconKey === key;
-                return (
-                  <Box
-                    key={key}
-                    p={3}
-                    bg={isSelected ? `${colors.primary.palette}.50` : "gray.50"}
-                    border="2px"
-                    borderColor={
-                      isSelected ? `${colors.primary.palette}.500` : "gray.200"
-                    }
-                    borderRadius="xl"
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    cursor="pointer"
-                    gap={2}
-                    onClick={() => onIconKeyChange(key)}
-                  >
-                    <IconComponent
-                      size={24}
-                      color={
-                        isSelected
-                          ? colors.primary.hex[500]
-                          : colors.neutral.hex[500]
+            <Box w="full" maxH="240px" overflowY="auto" pr={1}>
+              <SimpleGrid columns={5} gap={2} w="full">
+                {Object.entries(CATEGORY_ICONS).map(([key, IconComponent]) => {
+                  const isSelected = selectedIconKey === key;
+                  return (
+                    <Box
+                      key={key}
+                      p={2.5}
+                      bg={
+                        isSelected ? `${colors.primary.palette}.50` : "gray.50"
                       }
-                    />
-                  </Box>
-                );
-              })}
-            </SimpleGrid>
+                      border="2px"
+                      borderColor={
+                        isSelected
+                          ? `${colors.primary.palette}.500`
+                          : "gray.200"
+                      }
+                      borderRadius="xl"
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                      cursor="pointer"
+                      gap={2}
+                      onClick={() => onIconKeyChange(key)}
+                    >
+                      <IconComponent
+                        size={22}
+                        color={
+                          isSelected
+                            ? colors.primary.hex[500]
+                            : colors.neutral.hex[500]
+                        }
+                      />
+                    </Box>
+                  );
+                })}
+              </SimpleGrid>
+            </Box>
           </VStack>
         </VStack>
       </Box>
