@@ -298,6 +298,32 @@ export const createChecklistCategory = async (
   return { id: data.id };
 };
 
+// 체크리스트 카테고리를 수정하는 API
+export const updateChecklistCategory = async (params: {
+  categoryId: string;
+  categoryName: string;
+  iconKey: string;
+}): Promise<void> => {
+  const name = params.categoryName.trim();
+
+  if (!name) {
+    throw new Error("카테고리 이름을 입력해주세요.");
+  }
+
+  if (name.length > 15) {
+    throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
+  }
+
+  const { error } = await supabase
+    .from("checklist_categories")
+    .update({ name, icon_key: params.iconKey })
+    .eq("id", params.categoryId);
+
+  if (error) {
+    throw new Error(`카테고리 수정 실패: ${error.message}`);
+  }
+};
+
 // 체크리스트 카테고리를 삭제하는 API
 export const deleteChecklistCategory = async (
   categoryId: string

@@ -63,3 +63,9 @@ export interface UseCreateCategoryParams {
   categoryName: string;
   iconKey: string;
 }
+
+export interface UseUpdateCategoryParams {
+  categoryId: string;
+  categoryName: string;
+  iconKey: string;
+}
