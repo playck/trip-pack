@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import dayjs from "dayjs";
 import { ChevronRight } from "lucide-react";
@@ -32,8 +32,14 @@ export default function Calendar({
   isStartDateFixed = false,
 }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(
-    dayjs(new Date()).format("YYYY-MM")
+    dayjs(startDate || new Date()).format("YYYY-MM")
   );
+
+  useEffect(() => {
+    if (startDate) {
+      setCurrentDate(dayjs(startDate).format("YYYY-MM"));
+    }
+  }, [startDate]);
 
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
