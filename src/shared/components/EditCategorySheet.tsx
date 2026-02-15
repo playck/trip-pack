@@ -3,28 +3,32 @@ import CategoryForm from "@/features/packing/list/components/CategoryForm";
 import { toaster } from "@/shared/components/ui/toaster";
 import BottomSheet from "./BottomSheet";
 
-interface AddCategorySheetProps {
+interface EditCategorySheetProps {
   isOpen: boolean;
   isLoading?: boolean;
+  initialName: string;
+  initialIconKey: string;
   onSave: (categoryName: string, iconKey: string) => void;
   onClose: () => void;
 }
 
-export default function AddCategorySheet({
+export default function EditCategorySheet({
   isOpen,
   isLoading = false,
+  initialName,
+  initialIconKey,
   onSave,
   onClose,
-}: AddCategorySheetProps) {
-  const [categoryName, setCategoryName] = useState("");
-  const [selectedIconKey, setSelectedIconKey] = useState("");
+}: EditCategorySheetProps) {
+  const [categoryName, setCategoryName] = useState(initialName);
+  const [selectedIconKey, setSelectedIconKey] = useState(initialIconKey);
 
   useEffect(() => {
     if (isOpen) {
-      setCategoryName("");
-      setSelectedIconKey("");
+      setCategoryName(initialName);
+      setSelectedIconKey(initialIconKey);
     }
-  }, [isOpen]);
+  }, [isOpen, initialName, initialIconKey]);
 
   const handleSave = () => {
     const name = categoryName.trim();
@@ -70,8 +74,8 @@ export default function AddCategorySheet({
   };
 
   const handleClose = () => {
-    setCategoryName("");
-    setSelectedIconKey("");
+    setCategoryName(initialName);
+    setSelectedIconKey(initialIconKey);
     onClose();
   };
 
@@ -79,7 +83,7 @@ export default function AddCategorySheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={handleClose}
-      title="새 카테고리 추가"
+      title="카테고리 수정"
       primaryButton={{
         text: "저장",
         onClick: handleSave,

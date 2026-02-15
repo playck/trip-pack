@@ -8,11 +8,12 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 import {
   BottomSheet,
+  EditCategorySheet,
   ErrorMessage,
   FloatingAddButton,
   LoadingSpinner,
@@ -28,6 +29,7 @@ import { useTripChecklist } from "../list/hooks/useTripChecklist";
 import { useCreateItem } from "../list/hooks/useCreateItem";
 import { useDeleteCategory } from "../list/hooks/useDeleteCategory";
 import { useDeleteItems } from "../list/hooks/useDeleteItems";
+import { useUpdateCategory } from "../list/hooks/useUpdateCategory";
 import type { CategoryWithItems } from "../type";
 
 export default function CategoryDetailPage() {
@@ -37,6 +39,11 @@ export default function CategoryDetailPage() {
     open: isDeleteModalOpen,
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
+  } = useDisclosure();
+  const {
+    open: isEditCategoryOpen,
+    onOpen: onEditCategoryOpen,
+    onClose: onEditCategoryClose,
   } = useDisclosure();
   const { tripId } = useParams({
     from: "/packing/category/$tripId",
@@ -60,6 +67,23 @@ export default function CategoryDetailPage() {
     },
   });
   const deleteCategoryMutation = useDeleteCategory(tripId);
+  const [pendingCategoryName, setPendingCategoryName] = useState<string | null>(
+    null,
+  );
+  const updateCategoryMutation = useUpdateCategory(tripId, {
+    onSuccess: () => {
+      onEditCategoryClose();
+      if (pendingCategoryName) {
+        navigate({
+          to: "/packing/category/$tripId",
+          params: { tripId },
+          search: { category: pendingCategoryName },
+          replace: true,
+        });
+        setPendingCategoryName(null);
+      }
+    },
+  });
   const deleteItemsMutation = useDeleteItems(tripId, {
     onSuccess: () => {
       setIsEditMode(false);
@@ -120,6 +144,16 @@ export default function CategoryDetailPage() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+  };
+
+  const handleUpdateCategory = (newName: string, newIconKey: string) => {
+    if (!category?.id) return;
+    setPendingCategoryName(newName);
+    updateCategoryMutation.mutate({
+      categoryId: category.id,
+      categoryName: newName,
+      iconKey: newIconKey,
+    });
   };
 
   const handleDeleteCategory = () => {
@@ -199,15 +233,26 @@ export default function CategoryDetailPage() {
               </HStack>
               <HStack gap={1}>
                 {!isEssentialCategory && !isEditMode && (
-                  <IconButton
-                    aria-label="카테고리 삭제"
-                    size="sm"
-                    variant="ghost"
-                    color="red.500"
-                    onClick={onDeleteModalOpen}
-                  >
-                    <Trash2 size={18} />
-                  </IconButton>
+                  <>
+                    <IconButton
+                      aria-label="카테고리 수정"
+                      size="sm"
+                      variant="ghost"
+                      color="gray.600"
+                      onClick={onEditCategoryOpen}
+                    >
+                      <Pencil size={18} />
+                    </IconButton>
+                    <IconButton
+                      aria-label="카테고리 삭제"
+                      size="sm"
+                      variant="ghost"
+                      color="red.500"
+                      onClick={onDeleteModalOpen}
+                    >
+                      <Trash2 size={18} />
+                    </IconButton>
+                  </>
                 )}
                 {(isEditMode || category.items.length > 0) && (
                   <Box
@@ -272,6 +317,15 @@ export default function CategoryDetailPage() {
           </BottomSheet>
         </>
       )}
+
+      <EditCategorySheet
+        isOpen={isEditCategoryOpen}
+        isLoading={updateCategoryMutation.isPending}
+        initialName={category.name}
+        initialIconKey={category.icon_key || category.name}
+        onSave={handleUpdateCategory}
+        onClose={onEditCategoryClose}
+      />
 
       <DeleteCategoryModal
         isOpen={isDeleteModalOpen}
