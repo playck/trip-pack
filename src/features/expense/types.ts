@@ -4,6 +4,7 @@ export interface ExpenseItemData {
   name: string;
   amount: number;
   scheduleId?: string | null;
+  scheduleName?: string | null;
 }
 
 /** 날짜별 경비 그룹 */

@@ -10,6 +10,7 @@ import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
 import { useShareExpense } from "./hooks";
@@ -20,6 +21,7 @@ export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses } = useTripExpenses(tripId);
+  const { data: schedules } = useTripSchedules(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });
@@ -47,6 +49,13 @@ export default function ExpensePage() {
     return dates;
   }, [tripInfo]);
 
+  // 일정 ID → 장소명 매핑
+  const scheduleMap = useMemo(() => {
+    const map = new Map<string, string>();
+    (schedules || []).forEach((s) => map.set(s.id, s.place_name));
+    return map;
+  }, [schedules]);
+
   // 날짜별 경비 데이터 생성
   const dayExpenses = useMemo(() => {
     return dateList.map((dateItem) => {
@@ -54,13 +63,16 @@ export default function ExpensePage() {
       const dayExpenseItems = (expenses || [])
         .filter(
           (expense) =>
-            dayjs(expense.expense_date).format("YYYY-MM-DD") === dateItem.date,
+            dayjs(expense.expense_date).format("YYYY-MM-DD") === dateItem.date
         )
         .map((expense) => ({
           id: expense.id,
           name: expense.expense_category,
           amount: expense.amount,
           scheduleId: expense.schedule_id,
+          scheduleName: expense.schedule_id
+            ? (scheduleMap.get(expense.schedule_id) ?? null)
+            : null,
         }));
 
       return {
@@ -70,7 +82,7 @@ export default function ExpensePage() {
         expenses: dayExpenseItems,
       };
     });
-  }, [dateList, expenses]);
+  }, [dateList, expenses, scheduleMap]);
 
   const { handleShareExpense } = useShareExpense({ tripInfo, dayExpenses });
 

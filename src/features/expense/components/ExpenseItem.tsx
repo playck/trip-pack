@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Flex, Text, HStack, IconButton } from "@chakra-ui/react";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Link2 } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { useDeleteExpense, useUpdateExpense } from "../services";
 import EditExpenseSheet from "./EditExpenseSheet";
@@ -99,10 +99,20 @@ export default function ExpenseItem({
         borderColor="gray.100"
       >
         <Flex justify="space-between" align="center" pr={readOnly ? 0 : 8}>
-          <Text fontSize="15px" color="gray.700">
-            {expense.name}
-          </Text>
-          <HStack gap={0.5} align="baseline">
+          <Box flex={1} minW={0}>
+            <Text fontSize="15px" color="gray.700">
+              {expense.name}
+            </Text>
+            {expense.scheduleName && (
+              <HStack gap={1} mt={0.5}>
+                <Link2 size={11} color="var(--chakra-colors-gray-400)" />
+                <Text fontSize="xs" color="gray.400" lineClamp={1}>
+                  {expense.scheduleName}
+                </Text>
+              </HStack>
+            )}
+          </Box>
+          <HStack gap={0.5} align="baseline" flexShrink={0}>
             <Text fontSize="md" fontWeight="semibold" color="gray.900">
               {amountUnit !== "원" && amountUnit}
               {amountValue}

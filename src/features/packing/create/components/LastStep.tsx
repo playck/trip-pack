@@ -14,7 +14,6 @@ import {
 } from "../store/packingCreateAtom";
 import { useCreateTrip } from "../services/useCreateTrip";
 
-/** 사용자 입력 맥락에 맞는 로딩 메시지를 생성 */
 function buildLoadingMessages(
   regionName: string | undefined,
   tripTypes: string[]
@@ -76,7 +75,7 @@ export default function LastStep() {
     }
   }, [loadingMessages]);
 
-  // 메시지 순차 전환 (1.2초 간격)
+  // 메시지 순차 전환 (1.1초 간격)
   useEffect(() => {
     const timer = setInterval(() => {
       messageIndexRef.current += 1;
@@ -85,7 +84,7 @@ export default function LastStep() {
       if (idx < loadingMessages.length) {
         setMessage(loadingMessages[idx]);
       }
-    }, 1200);
+    }, 1100);
 
     return () => clearInterval(timer);
   }, [loadingMessages]);
