@@ -9,6 +9,8 @@ import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
+import { ScrollToTopButton } from "@/shared/components";
+import { useScrollToTop } from "@/shared/hooks";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
@@ -28,6 +30,7 @@ export default function ExpensePage() {
 
   const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { showScrollTop, scrollToTop } = useScrollToTop();
 
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
@@ -168,7 +171,15 @@ export default function ExpensePage() {
       )}
 
       {selectedDate !== ALL_TAB_VALUE && (
-        <FloatingAddButton onClick={handleAddExpense} ariaLabel="경비 추가" />
+        <FloatingAddButton
+          onClick={handleAddExpense}
+          ariaLabel="경비 추가"
+          topSlot={
+            showScrollTop ? (
+              <ScrollToTopButton onClick={scrollToTop} />
+            ) : undefined
+          }
+        />
       )}
 
       <AddExpenseSheet

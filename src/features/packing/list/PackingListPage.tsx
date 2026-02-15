@@ -17,6 +17,7 @@ import {
   AddCategorySheet,
   ErrorMessage,
   FloatingAddButton,
+  ScrollToTopButton,
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
@@ -39,6 +40,7 @@ import {
   useUpdateItemCheckedStatus,
 } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
+import { useScrollToTop } from "@/shared/hooks";
 
 export default function PackingListPage() {
   const navigate = useNavigate();
@@ -64,6 +66,8 @@ export default function PackingListPage() {
   const [viewMode, setViewMode] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.TRIP_PACK_VIEW_MODE) || "그리드";
   });
+  const { showScrollTop, scrollToTop } = useScrollToTop();
+
   const { categories, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
   const updateItemStatus = useUpdateItemCheckedStatus(tripId);
@@ -199,7 +203,15 @@ export default function PackingListPage() {
           </VStack>
         </Container>
 
-        <FloatingAddButton menuItems={menuItems} ariaLabel="액션 메뉴" />
+        <FloatingAddButton
+          menuItems={menuItems}
+          ariaLabel="액션 메뉴"
+          topSlot={
+            showScrollTop ? (
+              <ScrollToTopButton onClick={scrollToTop} />
+            ) : undefined
+          }
+        />
 
         <AddCategorySheet
           isOpen={isOpen}

@@ -8,7 +8,8 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu, ConfirmDialog } from "@/shared/components";
+import { TripActionMenu, ConfirmDialog, ScrollToTopButton } from "@/shared/components";
+import { useScrollToTop } from "@/shared/hooks";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
 import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
 import {
@@ -117,6 +118,8 @@ function SchedulePageContent() {
     handleToggleCollapse,
   } = useScheduleMap(allSchedules, regionCoordinates);
 
+  const { showScrollTop, scrollToTop } = useScrollToTop();
+
   // 공유
   const { handleScheduleShare } = useShareSchedule();
 
@@ -207,6 +210,11 @@ function SchedulePageContent() {
           </Box>
         </VStack>
       </ScheduleProvider>
+
+      {/* 맨 위로 스크롤 버튼 */}
+      {showScrollTop && (
+        <ScrollToTopButton onClick={scrollToTop} floating />
+      )}
 
       {/* 일정 추가 바텀시트 */}
       {selectedDay && (
