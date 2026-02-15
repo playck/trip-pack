@@ -14,4 +14,18 @@ export default defineConfig({
     }),
     react(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "chakra": ["@chakra-ui/react", "@emotion/react", "@emotion/styled"],
+          "motion": ["framer-motion"],
+          "supabase": ["@supabase/supabase-js"],
+          "router": ["@tanstack/react-router"],
+          "query": ["@tanstack/react-query"],
+          "google-maps": ["@vis.gl/react-google-maps"],
+        },
+      },
+    },
+  },
 });
