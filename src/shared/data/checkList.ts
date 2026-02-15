@@ -55,6 +55,21 @@ export const ESSENTIAL_ITEMS: PackItem[] = [
   },
 ];
 
+export const DOMESTIC_ESSENTIAL_ITEMS: PackItem[] = [
+  { name: "신분증", required: true, notes: "숙소 체크인·렌터카 필수" },
+  {
+    name: "숙소 예약 확인서",
+    required: true,
+    notes: "앱/스크린샷 저장",
+  },
+  {
+    name: "교통 예약(KTX/버스/항공)",
+    notes: "QR/바코드 오프라인 저장",
+  },
+  { name: "현금", notes: "시장·소규모 가게 카드 미지원 대비" },
+  { name: "렌터카 예약 확인서", notes: "면허증 필수 지참" },
+];
+
 export const ELECTRONICS_ITEMS: PackItem[] = [
   {
     name: "이어폰/헤드폰",
@@ -431,6 +446,220 @@ export const KOREAN_FOOD_ITEMS: PackItem[] = [
   },
   {
     name: "지퍼백/밀폐용기",
+    notes: "",
+    cabin: "allowed",
+  },
+];
+
+// ── 여행 유형별 아이템 ──
+
+export const BUSINESS_ITEMS: PackItem[] = [
+  {
+    name: "노트북/태블릿",
+    notes: "충전기·어댑터 함께",
+    cabin: "allowed",
+  },
+  {
+    name: "노트북 충전기",
+    notes: "기내 콘센트 확인",
+    cabin: "allowed",
+  },
+  {
+    name: "정장/비즈니스 캐주얼",
+    notes: "구김 방지 파우치 활용",
+    cabin: "allowed",
+  },
+  { name: "명함", notes: "여분 넉넉히", cabin: "allowed" },
+  { name: "서류/문서", notes: "오프라인 백업", cabin: "allowed" },
+];
+
+export const SIGHTSEEING_ITEMS: PackItem[] = [
+  { name: "카메라", notes: "메모리카드·배터리 여분", cabin: "allowed" },
+  {
+    name: "셀카봉/삼각대",
+    notes: "미니 삼각대 겸용 추천",
+    cabin: "allowed",
+  },
+  {
+    name: "미니 배낭/크로스백",
+    notes: "소매치기 방지 지퍼형 권장",
+    cabin: "allowed",
+  },
+  { name: "편한 워킹화", notes: "많이 걷는 일정 대비", cabin: "allowed" },
+];
+
+export const NATURE_ITEMS: PackItem[] = [
+  {
+    name: "등산화/트레킹화",
+    notes: "발목 보호형 권장",
+    cabin: "allowed",
+  },
+  { name: "경량 배낭", notes: "20~30L, 등판 통기성", cabin: "allowed" },
+  {
+    name: "우비/방수 재킷",
+    notes: "산악 날씨 급변 대비",
+    cabin: "allowed",
+  },
+  { name: "물병(텀블러)", notes: "1인 500ml 이상", cabin: "allowed" },
+  {
+    name: "등산 스틱(접이식)",
+    notes: "무릎 보호, 기내 위탁 필요",
+    cabin: "prohibited",
+    cabinNotes: "기내 반입 금지, 위탁 수하물로",
+  },
+  {
+    name: "헤드랜턴/손전등",
+    notes: "야간·동굴 탐방 대비",
+    cabin: "allowed",
+  },
+];
+
+export const ACTIVITY_ITEMS: PackItem[] = [
+  {
+    name: "액션캠/방수 카메라",
+    notes: "마운트·방수 케이스 확인",
+    cabin: "allowed",
+  },
+  { name: "스포츠 선글라스", notes: "UV 차단 필수", cabin: "allowed" },
+  { name: "스포츠 의류", notes: "속건성 소재 권장", cabin: "allowed" },
+  {
+    name: "보호대(무릎/팔꿈치)",
+    notes: "액티비티 종류에 맞게",
+    cabin: "allowed",
+  },
+  {
+    name: "방수 스마트폰 케이스",
+    notes: "수상 액티비티 대비",
+    cabin: "allowed",
+  },
+];
+
+export const RESORT_ITEMS: PackItem[] = [
+  {
+    name: "리조트웨어/비치원피스",
+    notes: "편안한 리조트 룩",
+    cabin: "allowed",
+  },
+  { name: "킨들/책", notes: "풀사이드·비치 독서용", cabin: "allowed" },
+  {
+    name: "눈가리개/귀마개",
+    notes: "숙면 필수템",
+    cabin: "allowed",
+  },
+  { name: "양산", notes: "자외선 차단 겸 비 대비", cabin: "allowed" },
+  {
+    name: "아로마 오일/미스트",
+    notes: "휴식 분위기 조성",
+    cabin: "restricted",
+    cabinNotes: "액체 100ml 규정",
+  },
+];
+
+export const CULTURE_ITEMS: PackItem[] = [
+  {
+    name: "카메라",
+    notes: "박물관·미술관 촬영 규정 확인",
+    cabin: "allowed",
+  },
+  {
+    name: "가이드북/도슨트 앱",
+    notes: "사전 다운로드 권장",
+    cabin: "allowed",
+  },
+  {
+    name: "단정한 복장",
+    notes: "사원·성당 등 드레스코드 대비",
+    cabin: "allowed",
+  },
+  {
+    name: "스카프/숄",
+    notes: "종교시설 어깨·무릎 가림용",
+    cabin: "allowed",
+  },
+  {
+    name: "노트/필기도구",
+    notes: "영감·메모 기록용",
+    cabin: "allowed",
+  },
+];
+
+export const SHOPPING_ITEMS: PackItem[] = [
+  {
+    name: "여분 접이식 가방",
+    notes: "쇼핑백 대용, 캐리어 수납",
+    cabin: "allowed",
+  },
+  { name: "에코백", notes: "비닐봉투 유료 국가 대비", cabin: "allowed" },
+  {
+    name: "면세 쇼핑 리스트",
+    notes: "사전 가격 비교·면세점 예약",
+    cabin: "allowed",
+  },
+  {
+    name: "여권 사본(면세 구매용)",
+    notes: "시내 면세 구매 시 필요",
+    cabin: "allowed",
+  },
+  {
+    name: "보호 포장재(뽁뽁이)",
+    notes: "깨지기 쉬운 물건 보호",
+    cabin: "allowed",
+  },
+];
+
+// ── 계절별 추가 아이템 ──
+
+export const SUMMER_ITEMS: PackItem[] = [
+  {
+    name: "양산/UV 우산",
+    notes: "자외선 차단 겸 소나기 대비",
+    cabin: "allowed",
+  },
+  {
+    name: "쿨링 스프레이/쿨타월",
+    notes: "야외 더위 대비",
+    cabin: "restricted",
+    cabinNotes: "스프레이 100ml 규정",
+  },
+  { name: "휴대용 선풍기", notes: "USB 충전식 권장", cabin: "allowed" },
+  {
+    name: "반팔/반바지 여벌",
+    notes: "땀 많은 계절, 여벌 필수",
+    cabin: "allowed",
+  },
+  {
+    name: "벌레 퇴치 팔찌/패치",
+    notes: "모기 많은 지역 대비",
+    cabin: "allowed",
+  },
+];
+
+export const WINTER_ITEMS: PackItem[] = [
+  { name: "핫팩", notes: "붙이는 타입 + 손난로 타입", cabin: "allowed" },
+  { name: "내복/히트텍", notes: "얇은 발열 내의 1~2세트", cabin: "allowed" },
+  { name: "장갑", notes: "터치스크린 가능 장갑 권장", cabin: "allowed" },
+  { name: "목도리", notes: "방한 필수", cabin: "allowed" },
+  { name: "귀마개", notes: "찬바람 대비", cabin: "allowed" },
+  {
+    name: "보습 핸드크림",
+    notes: "건조한 겨울 필수",
+    cabin: "restricted",
+    cabinNotes: "크림류 100ml 규정",
+  },
+  { name: "방한 패딩/코트", notes: "두꺼운 겉옷 필수", cabin: "allowed" },
+];
+
+export const RAINY_ITEMS: PackItem[] = [
+  { name: "우산(접이식)", notes: "휴대 간편한 접이식", cabin: "allowed" },
+  { name: "우비/방수 재킷", notes: "야외 활동 시 필수", cabin: "allowed" },
+  { name: "방수 신발커버", notes: "신발 젖음 방지", cabin: "allowed" },
+  {
+    name: "방수 파우치",
+    notes: "전자기기·서류 보호",
+    cabin: "allowed",
+  },
+  {
+    name: "여분 수건",
     notes: "",
     cabin: "allowed",
   },

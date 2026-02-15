@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   ESSENTIAL_ITEMS,
+  DOMESTIC_ESSENTIAL_ITEMS,
   ELECTRONICS_ITEMS,
   CLOTHING_ITEMS,
   TOILETRIES_ITEMS,
@@ -9,59 +10,50 @@ import {
   MISC_OPTIONAL_ITEMS,
   BABY_ITEMS,
   PET_TRAVEL_ITEMS,
-  FITNESS_GYM_ITEMS,
-  SWIM_WATER_ITEMS,
+  SUMMER_ITEMS,
+  WINTER_ITEMS,
+  RAINY_ITEMS,
 } from "@/shared/data/checkList";
 import type { PackItem } from "@/shared/data/checkList";
 
 import type { PackingCreateState } from "../store/packingCreateAtom";
+import { checkVisaRequirement } from "../utils/visaRules";
+import { getSeason, isRainySeason, getTripDays } from "../utils/climateRules";
+import { TRIP_TYPE_CATEGORY_MAP } from "../utils/tripTypeMap";
 
 export interface GeneratedCheckList {
   categoryName: string;
   items: PackItem[];
 }
 
-const VISA_RULES = {
-  CN: { exceptions: ["cn-hainan"] },
-  AU: { exceptions: [] },
-} as const;
-
-const checkVisaRequirement = (
-  countryCode: string | undefined,
-  regionId: string | undefined
-): boolean => {
-  if (!countryCode || !regionId) return false;
-
-  const visaRule = VISA_RULES[countryCode as keyof typeof VISA_RULES];
-  if (!visaRule) return false;
-
-  return !(visaRule.exceptions as readonly string[]).includes(regionId);
-};
-
 export default function useGenerateCheckList(state: PackingCreateState) {
   const handleSetUpCheckList = useCallback(() => {
     const result: GeneratedCheckList[] = [];
-    const isOverseasTrip = state.region?.countryCode !== "KR";
-    const isNeedVisa = checkVisaRequirement(
-      state.region?.countryCode,
-      state.region?.id
-    );
-    const visaItem = {
+    const countryCode = state.region?.countryCode ?? "KR";
+    const isOverseasTrip = countryCode !== "KR";
+    const isNeedVisa = checkVisaRequirement(countryCode, state.region?.id);
+
+    const visaItem: PackItem = {
       name: "비자",
       required: true,
       notes: "전자비자/도착비자 규정 확인",
     };
 
+    // ── 1. 필수 준비물 ──
     if (isOverseasTrip) {
       const essentialItems = [...ESSENTIAL_ITEMS];
-
       if (isNeedVisa) {
         essentialItems.push(visaItem);
       }
-
       result.push({ categoryName: "필수 준비물", items: essentialItems });
+    } else {
+      result.push({
+        categoryName: "필수 준비물",
+        items: DOMESTIC_ESSENTIAL_ITEMS,
+      });
     }
 
+    // ── 2. 기본 카테고리 ──
     result.push(
       { categoryName: "전자제품", items: ELECTRONICS_ITEMS },
       { categoryName: "의류", items: CLOTHING_ITEMS },
@@ -71,31 +63,72 @@ export default function useGenerateCheckList(state: PackingCreateState) {
       { categoryName: "기타용품", items: MISC_OPTIONAL_ITEMS }
     );
 
+    // ── 3. 계절별 아이템 ──
+    if (state.dates.startDate) {
+      const month = state.dates.startDate.getMonth();
+      const season = getSeason(month, countryCode);
+      const tripDays = state.dates.endDate
+        ? getTripDays(state.dates.startDate, state.dates.endDate)
+        : 1;
+
+      if (season === "summer") {
+        result.push({ categoryName: "여름 준비물", items: SUMMER_ITEMS });
+      }
+
+      if (season === "winter") {
+        result.push({ categoryName: "겨울 준비물", items: WINTER_ITEMS });
+      }
+
+      if (isRainySeason(month, countryCode)) {
+        result.push({ categoryName: "우기/장마 대비", items: RAINY_ITEMS });
+      }
+
+      // 여행 기간 기반 notes 힌트를 의류 카테고리에 반영
+      if (tripDays > 1) {
+        const clothingCategory = result.find((c) => c.categoryName === "의류");
+        if (clothingCategory) {
+          clothingCategory.items = clothingCategory.items.map((item) => {
+            if (["속옷", "양말"].includes(item.name)) {
+              return {
+                ...item,
+                notes: `${tripDays - 1}박이면 ${tripDays}벌 이상 권장`,
+              };
+            }
+            return item;
+          });
+        }
+      }
+    }
+
+    // ── 4. 동행자 유형별 카테고리 ──
     if (state.companionTypes.includes("아기")) {
-      result.push({
-        categoryName: "유아용품",
-        items: BABY_ITEMS,
-      });
+      result.push({ categoryName: "유아용품", items: BABY_ITEMS });
     }
 
     if (state.companionTypes.includes("반려동물")) {
-      result.push({
-        categoryName: "반려동물용품",
-        items: PET_TRAVEL_ITEMS,
-      });
+      result.push({ categoryName: "반려동물용품", items: PET_TRAVEL_ITEMS });
     }
 
-    if (state.tripTypes.includes("운동")) {
-      result.push({
-        categoryName: "운동",
-        items: FITNESS_GYM_ITEMS,
-      });
+    // ── 5. 여행 유형별 카테고리 (미식은 해외일 때만) ──
+    for (const tripType of state.tripTypes) {
+      if (tripType === "미식" && !isOverseasTrip) continue;
+
+      const mapping = TRIP_TYPE_CATEGORY_MAP[tripType];
+      if (mapping) {
+        result.push({
+          categoryName: mapping.categoryName,
+          items: mapping.items,
+        });
+      }
     }
 
-    if (state.tripTypes.includes("수영")) {
-      result.push({
-        categoryName: "수영",
-        items: SWIM_WATER_ITEMS,
+    // 카테고리 간 중복 아이템 제거 (먼저 등장한 카테고리 우선)
+    const usedItemNames = new Set<string>();
+    for (const category of result) {
+      category.items = category.items.filter((item) => {
+        if (usedItemNames.has(item.name)) return false;
+        usedItemNames.add(item.name);
+        return true;
       });
     }
 
@@ -105,6 +138,8 @@ export default function useGenerateCheckList(state: PackingCreateState) {
     state.region?.id,
     state.companionTypes,
     state.tripTypes,
+    state.dates.startDate,
+    state.dates.endDate,
   ]);
 
   return { handleSetUpCheckList };
