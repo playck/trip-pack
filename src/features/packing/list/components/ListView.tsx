@@ -48,6 +48,7 @@ export default function ListView({
     onOpen: onPolicyOpen,
     onClose: onPolicyClose,
   } = useDisclosure();
+  const [showUncheckedOnly, setShowUncheckedOnly] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >(() => {
@@ -109,14 +110,18 @@ export default function ListView({
         return;
       }
 
-      result[category.id] = category.items.map((item, index: number) => ({
+      const items = showUncheckedOnly
+        ? category.items.filter((item) => !item.is_checked)
+        : category.items;
+
+      result[category.id] = items.map((item, index: number) => ({
         item,
         index,
       }));
     });
 
     return result;
-  }, [categories]);
+  }, [categories, showUncheckedOnly]);
 
   const handlePolicyClick = (e: React.MouseEvent, item: ChecklistItem) => {
     e.stopPropagation();
@@ -126,8 +131,8 @@ export default function ListView({
 
   return (
     <VStack gap={2} align="stretch" w="full" pb="60px">
-      {/* 모든 카테고리 접기/펼치기 버튼 */}
-      <HStack justify="flex-end" w="full">
+      {/* 미체크 필터 & 접기/펼치기 버튼 */}
+      <HStack justify="flex-end" w="full" gap={2}>
         <Button
           size="sm"
           variant="ghost"
@@ -140,6 +145,12 @@ export default function ListView({
             <Text>{allExpanded ? "모두 접기" : "모두 펼치기"}</Text>
           </HStack>
         </Button>
+        <Checkbox
+          isChecked={showUncheckedOnly}
+          onChange={() => setShowUncheckedOnly((prev) => !prev)}
+          label="미체크만 보기"
+          size="md"
+        />
       </HStack>
 
       <VStack gap={2} align="stretch" w="full">
@@ -186,7 +197,10 @@ export default function ListView({
                   {/* 카테고리 정보 */}
                   <HStack gap={2}>
                     {IconComponent && (
-                      <IconComponent size={18} color={colors.primary.hex[500]} />
+                      <IconComponent
+                        size={18}
+                        color={colors.primary.hex[500]}
+                      />
                     )}
                     <Text fontSize="md" fontWeight="semibold" color="gray.800">
                       {category.name}
@@ -282,7 +296,9 @@ export default function ListView({
                     })
                   ) : (
                     <Text fontSize="sm" color="gray.400" fontStyle="italic">
-                      아이템이 없습니다
+                      {showUncheckedOnly
+                        ? "모든 항목을 체크했습니다"
+                        : "아이템이 없습니다"}
                     </Text>
                   )}
                 </VStack>

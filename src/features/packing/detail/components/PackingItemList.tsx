@@ -6,9 +6,10 @@ import {
   HStack,
   Button,
   useDisclosure,
+  Icon,
 } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
-
+import { CircleCheck, Search, PackageOpen } from "lucide-react";
 import { Checkbox, ConfirmDialog } from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
 import PackingItem from "./PackingItem";
@@ -37,6 +38,7 @@ export default function PackingItemList({
   const { tripId } = useParams({ from: "/packing/category/$tripId" });
   const updateItemCheckedMutation = useUpdateItemCheckedStatus(tripId);
 
+  const [showUncheckedOnly, setShowUncheckedOnly] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeItem, setActiveItem] = useState<ChecklistItem | null>(null);
   const {
@@ -64,8 +66,12 @@ export default function PackingItemList({
       );
     }
 
+    if (showUncheckedOnly) {
+      items = items.filter((item) => !item.is_checked);
+    }
+
     return items;
-  }, [category.items, searchQuery]);
+  }, [category.items, searchQuery, showUncheckedOnly]);
 
   useEffect(() => {
     if (!isEditMode) {
@@ -128,20 +134,48 @@ export default function PackingItemList({
   const isAllSelected =
     filteredItems.length > 0 && selectedIds.size === filteredItems.length;
 
-  if (filteredItems.length === 0) {
-    return (
-      <Box py={8} textAlign="center">
-        <Text color="gray.500" fontSize="sm">
-          {searchQuery.trim()
-            ? `'${searchQuery}' 검색 결과가 없습니다`
-            : "아이템이 없습니다"}
-        </Text>
-      </Box>
-    );
-  }
+  const hasItems = category.items.length > 0;
+  const emptyState = showUncheckedOnly
+    ? {
+        icon: CircleCheck,
+        color: "teal.500" as const,
+        message: "모든 항목을 체크했습니다",
+      }
+    : searchQuery.trim()
+      ? {
+          icon: Search,
+          color: "gray.400" as const,
+          message: `'${searchQuery}' 검색 결과가 없습니다`,
+        }
+      : {
+          icon: PackageOpen,
+          color: "gray.400" as const,
+          message: "아직 추가된 아이템이 없습니다",
+        };
 
   return (
     <Box>
+      {/* 전체/미체크 필터 토글 */}
+      {hasItems && !isEditMode && (
+        <HStack justify="flex-end" mb={2}>
+          <Checkbox
+            isChecked={showUncheckedOnly}
+            onChange={() => setShowUncheckedOnly((prev) => !prev)}
+            label="미체크만 보기"
+            size="md"
+          />
+        </HStack>
+      )}
+
+      {filteredItems.length === 0 ? (
+        <VStack py={10} gap={2}>
+          <Icon as={emptyState.icon} boxSize={10} color={emptyState.color} />
+          <Text color="gray.500" fontSize="sm">
+            {emptyState.message}
+          </Text>
+        </VStack>
+      ) : null}
+
       {isEditMode && filteredItems.length > 0 && (
         <HStack justify="flex-end" align="center" gap={3} mb={2}>
           <Text fontSize="sm" color="gray.500">
@@ -156,20 +190,22 @@ export default function PackingItemList({
         </HStack>
       )}
 
-      <VStack gap={3} align="stretch" pb="80px">
-        {filteredItems.map((item, idx) => (
-          <PackingItem
-            key={item.id || `${item.name}-${idx}`}
-            item={item}
-            countryCode={countryCode}
-            isEditMode={isEditMode}
-            isSelected={item.id ? selectedIds.has(item.id) : false}
-            onSelect={handleSelect}
-            onToggleCheck={handleToggleCheck}
-            onOpenActions={handleOpenActions}
-          />
-        ))}
-      </VStack>
+      {filteredItems.length > 0 && (
+        <VStack gap={3} align="stretch" pb="80px">
+          {filteredItems.map((item, idx) => (
+            <PackingItem
+              key={item.id || `${item.name}-${idx}`}
+              item={item}
+              countryCode={countryCode}
+              isEditMode={isEditMode}
+              isSelected={item.id ? selectedIds.has(item.id) : false}
+              onSelect={handleSelect}
+              onToggleCheck={handleToggleCheck}
+              onOpenActions={handleOpenActions}
+            />
+          ))}
+        </VStack>
+      )}
 
       {/* 액션/편집 BottomSheet */}
       {activeItem && (
