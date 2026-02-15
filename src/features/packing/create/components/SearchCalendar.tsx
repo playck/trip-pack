@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
-import Calendar, { type TravelDates } from "@/shared/components/Calendar";
+import LazyCalendar from "@/shared/components/LazyCalendar";
+import type { TravelDates } from "@/shared/components/Calendar";
 import { packingCreateAtom } from "../store/packingCreateAtom";
 
 export default function SearchCalendar() {
@@ -13,7 +14,7 @@ export default function SearchCalendar() {
   };
 
   return (
-    <Calendar
+    <LazyCalendar
       startDate={packingState.dates.startDate}
       endDate={packingState.dates.endDate}
       onChange={handleDateChange}

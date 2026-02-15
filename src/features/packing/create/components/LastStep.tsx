@@ -2,8 +2,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Text, VStack, Box } from "@chakra-ui/react";
 import { useAtom } from "jotai";
-import Lottie from "lottie-react";
-
+import LazyLottie from "@/shared/components/LazyLottie";
 import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
 
@@ -155,7 +154,7 @@ export default function LastStep() {
       h="calc(100vh - 240px)"
     >
       <Box w="240px" h="240px">
-        <Lottie
+        <LazyLottie
           animationData={animationData}
           loop={true}
           autoplay={true}
