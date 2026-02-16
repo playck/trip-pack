@@ -5,7 +5,6 @@ import {
   Text,
   HStack,
   Badge,
-  Button,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
@@ -14,14 +13,11 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowRight,
-  Minimize2,
-  Maximize2,
   Package,
 } from "lucide-react";
 
-import { CabinPolicyIcon } from "@/shared/components";
+import { CabinPolicyIcon, Checkbox } from "@/shared/components";
 import type { CabinPolicy } from "@/shared/data/checkList";
-import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 
 import type { CategoryWithItems } from "../../type";
@@ -33,12 +29,18 @@ interface ListViewProps {
   categories: CategoryWithItems[];
   onToggleItem?: (itemId: string, isChecked: boolean) => void;
   countryCode?: string | null;
+  showUncheckedOnly: boolean;
+  expandedCategories: Record<string, boolean>;
+  toggleCategory: (categoryId: string) => void;
 }
 
 export default function ListView({
   categories,
   onToggleItem,
   countryCode,
+  showUncheckedOnly,
+  expandedCategories,
+  toggleCategory,
 }: ListViewProps) {
   const navigate = useNavigate();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
@@ -48,23 +50,6 @@ export default function ListView({
     onOpen: onPolicyOpen,
     onClose: onPolicyClose,
   } = useDisclosure();
-  const [showUncheckedOnly, setShowUncheckedOnly] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<
-    Record<string, boolean>
-  >(() => {
-    const initialState: Record<string, boolean> = {};
-    categories.forEach((category) => {
-      initialState[category.id] = true;
-    });
-    return initialState;
-  });
-
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId],
-    }));
-  };
 
   const getCompletionCount = (category: CategoryWithItems) => {
     if (!category.items || category.items.length === 0)
@@ -81,24 +66,6 @@ export default function ListView({
       params: { tripId },
       search: { category: categoryName },
     });
-  };
-
-  const isAllExpanded = () => {
-    return categories.every(
-      (category) => expandedCategories[category.id] !== false
-    );
-  };
-  const allExpanded = isAllExpanded();
-
-  const toggleAllCategories = () => {
-    const shouldExpandAll = !isAllExpanded();
-    const newState: Record<string, boolean> = {};
-
-    categories.forEach((category) => {
-      newState[category.id] = shouldExpandAll;
-    });
-
-    setExpandedCategories(newState);
   };
 
   const sortedItemsByCategory = useMemo(() => {
@@ -131,28 +98,6 @@ export default function ListView({
 
   return (
     <VStack gap={2} align="stretch" w="full" pb="60px">
-      {/* 미체크 필터 & 접기/펼치기 버튼 */}
-      <HStack justify="flex-end" w="full" gap={2}>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={toggleAllCategories}
-          color="gray.600"
-          pr={0}
-        >
-          <HStack gap={1}>
-            {allExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-            <Text>{allExpanded ? "모두 접기" : "모두 펼치기"}</Text>
-          </HStack>
-        </Button>
-        <Checkbox
-          isChecked={showUncheckedOnly}
-          onChange={() => setShowUncheckedOnly((prev) => !prev)}
-          label="미체크만 보기"
-          size="md"
-        />
-      </HStack>
-
       <VStack gap={2} align="stretch" w="full">
         {categories.map((category) => {
           const IconComponent = (

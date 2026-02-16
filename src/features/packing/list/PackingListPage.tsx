@@ -3,18 +3,18 @@ import {
   Container,
   Text,
   VStack,
-  useDisclosure,
   Box,
   HStack,
   IconButton,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "@tanstack/react-router";
-import { Share2, ChevronRight } from "lucide-react";
+import { Share2, ChevronRight, Minimize2, Maximize2 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import {
   AddCategorySheet,
+  Checkbox,
   ErrorMessage,
   FloatingAddButton,
   ScrollToTopButton,
@@ -32,6 +32,8 @@ import {
   useUpdateItemCheckedStatus,
 } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
+import { usePackingSheets } from "./hooks/usePackingSheets";
+import { useListViewControls } from "./hooks/useListViewControls";
 import {
   GridView,
   ListView,
@@ -44,28 +46,7 @@ import {
 
 export default function PackingListPage() {
   const navigate = useNavigate();
-  const { open: isOpen, onOpen, onClose } = useDisclosure();
-
-  const {
-    open: isCheckListOpen,
-    onOpen: onCheckListOpen,
-    onClose: onCheckListClose,
-  } = useDisclosure();
-  const {
-    open: isShareOpen,
-    onOpen: onShareOpen,
-    onClose: onShareClose,
-  } = useDisclosure();
-  const {
-    open: isSaveSheetOpen,
-    onOpen: onSaveSheetOpen,
-    onClose: onSaveSheetClose,
-  } = useDisclosure();
-  const {
-    open: isBaggageOpen,
-    onOpen: onBaggageOpen,
-    onClose: onBaggageClose,
-  } = useDisclosure();
+  const sheets = usePackingSheets();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
 
   const [viewMode, setViewMode] = useState<string>(() => {
@@ -75,29 +56,26 @@ export default function PackingListPage() {
 
   const { categories, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
+  const listControls = useListViewControls(categories);
   const updateItemStatus = useUpdateItemCheckedStatus(tripId);
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
-      onClose();
+      sheets.category.onClose();
     },
   });
 
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
-      onClick: () => onSaveSheetOpen(),
+      onClick: () => sheets.save.onOpen(),
     },
     {
       label: "체크리스트 가져오기",
-      onClick: () => {
-        onCheckListOpen();
-      },
+      onClick: () => sheets.template.onOpen(),
     },
     {
       label: "카테고리 추가",
-      onClick: () => {
-        onOpen();
-      },
+      onClick: () => sheets.category.onOpen(),
     },
   ];
 
@@ -147,7 +125,7 @@ export default function PackingListPage() {
                 variant="ghost"
                 size="sm"
                 color="gray.600"
-                onClick={onShareOpen}
+                onClick={sheets.share.onOpen}
               >
                 <Share2 size={20} />
               </IconButton>
@@ -209,21 +187,52 @@ export default function PackingListPage() {
               />
             )}
 
-            {/* 항공사별 수하물 규정 열람 버튼*/}
-            <HStack
-              as="button"
-              gap={1}
-              py={1}
-              justify="flex-end"
-              cursor="pointer"
-              onClick={onBaggageOpen}
-            >
-              <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                항공사별 수하물 규정
-              </Text>
-              <Box color="gray.400">
-                <ChevronRight size={14} />
-              </Box>
+            {/* 툴바: 수하물 규정 + 리스트뷰 컨트롤 */}
+            <HStack justify="space-between" align="center">
+              <HStack
+                as="button"
+                gap={1}
+                cursor="pointer"
+                onClick={sheets.baggage.onOpen}
+                _hover={{ opacity: 0.7 }}
+              >
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  항공사별 수하물 규정
+                </Text>
+                <Box color="gray.400">
+                  <ChevronRight size={14} />
+                </Box>
+              </HStack>
+
+              {viewMode === "일렬형식" && (
+                <HStack gap={2}>
+                  <HStack
+                    as="button"
+                    gap={1}
+                    cursor="pointer"
+                    onClick={listControls.toggleAllCategories}
+                    color="gray.600"
+                    _hover={{ opacity: 0.7 }}
+                  >
+                    {listControls.allExpanded ? (
+                      <Minimize2 size={14} />
+                    ) : (
+                      <Maximize2 size={14} />
+                    )}
+                    <Text fontSize="sm">
+                      {listControls.allExpanded ? "모두 접기" : "모두 펼치기"}
+                    </Text>
+                  </HStack>
+                  <Checkbox
+                    isChecked={listControls.showUncheckedOnly}
+                    onChange={() =>
+                      listControls.setShowUncheckedOnly((prev) => !prev)
+                    }
+                    label="미체크만 보기"
+                    size="md"
+                  />
+                </HStack>
+              )}
             </HStack>
 
             {viewMode === "그리드" ? (
@@ -233,6 +242,9 @@ export default function PackingListPage() {
                 categories={categories}
                 onToggleItem={handleToggleItem}
                 countryCode={tripInfo.countryCode}
+                showUncheckedOnly={listControls.showUncheckedOnly}
+                expandedCategories={listControls.expandedCategories}
+                toggleCategory={listControls.toggleCategory}
               />
             )}
 
@@ -265,34 +277,34 @@ export default function PackingListPage() {
         />
 
         <AddCategorySheet
-          isOpen={isOpen}
+          isOpen={sheets.category.isOpen}
           isLoading={createCategoryMutation.isPending}
           onSave={handleSaveCategory}
-          onClose={onClose}
+          onClose={sheets.category.onClose}
         />
 
         <TemplateListSheet
-          isOpen={isCheckListOpen}
-          onClose={onCheckListClose}
+          isOpen={sheets.template.isOpen}
+          onClose={sheets.template.onClose}
           tripId={tripId}
         />
 
         <CheckListCopySheet
-          isOpen={isShareOpen}
+          isOpen={sheets.share.isOpen}
           categories={categories}
-          onClose={onShareClose}
+          onClose={sheets.share.onClose}
         />
 
         <ChecklistSaveSheet
-          isOpen={isSaveSheetOpen}
-          onClose={onSaveSheetClose}
+          isOpen={sheets.save.isOpen}
+          onClose={sheets.save.onClose}
           categories={categories}
           tripInfo={tripInfo}
         />
 
         <AirlineBaggagePolicySheet
-          isOpen={isBaggageOpen}
-          onClose={onBaggageClose}
+          isOpen={sheets.baggage.isOpen}
+          onClose={sheets.baggage.onClose}
         />
       </PageLayout>
     </>
