@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "@tanstack/react-router";
-import { Share2 } from "lucide-react";
+import { Share2, ChevronRight } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -21,26 +21,26 @@ import {
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import WeatherCard from "@/shared/components/weather/weatherCard";
-import { TemplateListSheet } from "./components";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
-
-import {
-  ProgressBar,
-  GridView,
-  ListView,
-  ViewModeToggle,
-  CheckListCopySheet,
-  ChecklistSaveSheet,
-} from "./components";
+import { colors } from "@/shared/constants/colors";
+import { useScrollToTop } from "@/shared/hooks";
 import {
   useTripChecklist,
   useUpdateItemCheckedStatus,
 } from "./hooks/useTripChecklist";
 import { useCreateCategory } from "./hooks/useCreateCategory";
-import { useScrollToTop } from "@/shared/hooks";
+import {
+  GridView,
+  ListView,
+  ViewModeToggle,
+  CheckListCopySheet,
+  ChecklistSaveSheet,
+  TemplateListSheet,
+  AirlineBaggagePolicySheet,
+} from "./components";
 
 export default function PackingListPage() {
   const navigate = useNavigate();
@@ -60,6 +60,11 @@ export default function PackingListPage() {
     open: isSaveSheetOpen,
     onOpen: onSaveSheetOpen,
     onClose: onSaveSheetClose,
+  } = useDisclosure();
+  const {
+    open: isBaggageOpen,
+    onOpen: onBaggageOpen,
+    onClose: onBaggageClose,
   } = useDisclosure();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
 
@@ -157,14 +162,43 @@ export default function PackingListPage() {
         />
         <Container maxW="6xl" pt={1} pb={6} px={0}>
           <VStack gap={3} align="stretch">
-            <VStack align="stretch" gap={3}>
-              <ViewModeToggle
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-              />
+            {/* 체크율 + 뷰 모드 토글 */}
+            <VStack align="stretch" gap={2}>
+              <HStack justify="space-between" align="center">
+                <HStack gap={1.5}>
+                  <Text fontSize="sm" color="gray.600">
+                    체크율
+                  </Text>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    color={colors.primary.fg}
+                  >
+                    ({progress.progressPercentage}%) {progress.checkedItems}/
+                    {progress.totalItems}
+                  </Text>
+                </HStack>
+                <ViewModeToggle
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                />
+              </HStack>
+              <Box
+                w="full"
+                h="1.5"
+                bg="gray.200"
+                borderRadius="full"
+                overflow="hidden"
+              >
+                <Box
+                  h="full"
+                  bg={colors.primary.solid}
+                  borderRadius="full"
+                  width={`${progress.progressPercentage}%`}
+                  transition="width 0.3s ease"
+                />
+              </Box>
             </VStack>
-
-            <ProgressBar progress={progress} />
 
             {/* 여행지 날씨 정보 */}
             {isShowWeatherCard && (
@@ -174,6 +208,23 @@ export default function PackingListPage() {
                 endDate={tripInfo.endDate}
               />
             )}
+
+            {/* 항공사별 수하물 규정 열람 버튼*/}
+            <HStack
+              as="button"
+              gap={1}
+              py={1}
+              justify="flex-end"
+              cursor="pointer"
+              onClick={onBaggageOpen}
+            >
+              <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                항공사별 수하물 규정
+              </Text>
+              <Box color="gray.400">
+                <ChevronRight size={14} />
+              </Box>
+            </HStack>
 
             {viewMode === "그리드" ? (
               <GridView categories={categories} />
@@ -237,6 +288,11 @@ export default function PackingListPage() {
           onClose={onSaveSheetClose}
           categories={categories}
           tripInfo={tripInfo}
+        />
+
+        <AirlineBaggagePolicySheet
+          isOpen={isBaggageOpen}
+          onClose={onBaggageClose}
         />
       </PageLayout>
     </>
