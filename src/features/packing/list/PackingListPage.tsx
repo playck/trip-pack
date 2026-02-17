@@ -8,7 +8,15 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "@tanstack/react-router";
-import { Share2, ChevronRight, Minimize2, Maximize2 } from "lucide-react";
+import {
+  Share2,
+  ChevronRight,
+  Minimize2,
+  Maximize2,
+  Save,
+  Download,
+  FolderPlus,
+} from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -67,14 +75,17 @@ export default function PackingListPage() {
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
+      icon: <Save size={18} />,
       onClick: () => sheets.save.onOpen(),
     },
     {
       label: "체크리스트 가져오기",
+      icon: <Download size={18} />,
       onClick: () => sheets.template.onOpen(),
     },
     {
       label: "카테고리 추가",
+      icon: <FolderPlus size={18} />,
       onClick: () => sheets.category.onOpen(),
     },
   ];
