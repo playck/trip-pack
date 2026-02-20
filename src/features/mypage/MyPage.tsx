@@ -2,7 +2,9 @@ import { Box, VStack } from "@chakra-ui/react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { useAuth } from "@/shared/hooks/useAuth";
 import ProfileCard from "./components/ProfileCard";
-import SettingMenu from "./components/SettingMenu";
+import ActivitySection from "./components/ActivitySection";
+import AccountSection from "./components/AccountSection";
+import TravelHelperSection from "./components/travel-helper/TravelHelperSection";
 
 export default function MyPage() {
   const { user, loading } = useAuth();
@@ -12,7 +14,9 @@ export default function MyPage() {
       <Box py={6}>
         <VStack gap={8} align="stretch">
           <ProfileCard user={user} isLoading={loading} />
-          <SettingMenu />
+          <ActivitySection />
+          <TravelHelperSection />
+          <AccountSection />
         </VStack>
       </Box>
     </PageLayout>
