@@ -57,7 +57,7 @@ export const BAGGAGE_POLICY_BY_AIR: {
   },
   {
     id: 7,
-    iataCode: "We", // IATA 변경 가능성 있음 (구 4V)
+    iataCode: "WE", // IATA 변경 가능성 있음 (구 4V)
     country: "대한민국",
     airline: "파라타항공(구 플라이강원)",
     cabinBaggage: "1개 / 10KG",

@@ -58,9 +58,9 @@ export default function AirlineBaggagePolicySheet({
       isOpen={isOpen}
       onClose={onClose}
       title="항공사별 수하물 규정"
-      minHeight="85vh"
+      minHeight="90vh"
     >
-      <VStack align="stretch" gap={0} h="calc(85vh - 60px)">
+      <VStack align="stretch" gap={0} h="calc(90vh - 60px)">
         {/* 고정 영역: 검색 + 안내 */}
         <Box px={4} pb={2} pt={1} flexShrink={0}>
           <Box position="relative" mb={1}>
