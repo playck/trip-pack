@@ -161,10 +161,13 @@ export default function CabinPolicyModal({
               )}
 
               <Box bg="gray.50" p={3} borderRadius="md">
-                <Text fontSize="xs" color="gray.500" lineHeight="1.4">
-                  💡 항공사별로 규정이 다를 수 있으니, 출발 전 해당 항공사의
-                  최신 규정을 확인해주세요.
-                </Text>
+                <HStack align="start" gap={1.5}>
+                  <Text fontSize="xs" lineHeight="1.4">💡</Text>
+                  <Text fontSize="xs" color="gray.500" lineHeight="1.4">
+                    항공사별로 규정이 다를 수 있으니, 출발 전 해당 항공사의
+                    최신 규정을 확인해주세요.
+                  </Text>
+                </HStack>
               </Box>
             </VStack>
           </Dialog.Body>
