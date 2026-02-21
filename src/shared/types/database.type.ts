@@ -297,6 +297,90 @@ export type Database = {
           },
         ]
       }
+      trip_invitations: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          expires_at: string | null
+          id: string
+          invite_code: string
+          is_active: boolean | null
+          trip_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          invite_code: string
+          is_active?: boolean | null
+          trip_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          is_active?: boolean | null
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_invitations_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_members: {
+        Row: {
+          id: string
+          joined_at: string | null
+          role: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          role?: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          role?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_members_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_schedules: {
         Row: {
           category: string | null
