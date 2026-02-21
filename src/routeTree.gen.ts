@@ -16,6 +16,7 @@ import { Route as ScheduleTripIdRouteImport } from './routes/schedule.$tripId'
 import { Route as PackingTemplateRouteImport } from './routes/packing.template'
 import { Route as PackingCreateRouteImport } from './routes/packing.create'
 import { Route as MypagePastTripsRouteImport } from './routes/mypage/past-trips'
+import { Route as InviteInviteCodeRouteImport } from './routes/invite.$inviteCode'
 import { Route as ExpenseTripIdRouteImport } from './routes/expense.$tripId'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
@@ -58,6 +59,11 @@ const PackingCreateRoute = PackingCreateRouteImport.update({
 const MypagePastTripsRoute = MypagePastTripsRouteImport.update({
   id: '/mypage/past-trips',
   path: '/mypage/past-trips',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteInviteCodeRoute = InviteInviteCodeRouteImport.update({
+  id: '/invite/$inviteCode',
+  path: '/invite/$inviteCode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExpenseTripIdRoute = ExpenseTripIdRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
   '/mypage/past-trips': typeof MypagePastTripsRoute
   '/packing/create': typeof PackingCreateRoute
   '/packing/template': typeof PackingTemplateRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/invite/$inviteCode'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/invite/$inviteCode'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
+    | '/invite/$inviteCode'
     | '/mypage/past-trips'
     | '/packing/create'
     | '/packing/template'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
+  InviteInviteCodeRoute: typeof InviteInviteCodeRoute
   MypagePastTripsRoute: typeof MypagePastTripsRoute
   PackingCreateRoute: typeof PackingCreateRoute
   PackingTemplateRoute: typeof PackingTemplateRoute
@@ -276,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/mypage/past-trips'
       fullPath: '/mypage/past-trips'
       preLoaderRoute: typeof MypagePastTripsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$inviteCode': {
+      id: '/invite/$inviteCode'
+      path: '/invite/$inviteCode'
+      fullPath: '/invite/$inviteCode'
+      preLoaderRoute: typeof InviteInviteCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/expense/$tripId': {
@@ -343,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,
+  InviteInviteCodeRoute: InviteInviteCodeRoute,
   MypagePastTripsRoute: MypagePastTripsRoute,
   PackingCreateRoute: PackingCreateRoute,
   PackingTemplateRoute: PackingTemplateRoute,
