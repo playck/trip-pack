@@ -11,7 +11,7 @@ interface GridViewProps {
 
 export default function GridView({ categories }: GridViewProps) {
   return (
-    <SimpleGrid columns={3} gap={4} w="full" pb="60px">
+    <SimpleGrid columns={3} gap={4} w="full">
       {categories.map((category) => {
         const icon = category.icon_key
           ? CATEGORY_ICONS[category.icon_key] || Package
