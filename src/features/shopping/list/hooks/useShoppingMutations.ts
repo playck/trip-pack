@@ -4,6 +4,7 @@ import { toaster } from "@/shared/components/ui/toaster";
 import { shoppingKeys } from "./useShoppingChecklist";
 import {
   createShoppingCategory,
+  updateShoppingCategory,
   deleteShoppingCategory,
   createShoppingItem,
   updateShoppingItem,
@@ -39,6 +40,42 @@ export function useCreateShoppingCategory(
     onError: (error: Error) => {
       toaster.create({
         title: "카테고리 추가 실패",
+        description: error.message,
+        type: "error",
+        duration: 3000,
+      });
+    },
+  });
+}
+
+export function useUpdateShoppingCategory(
+  tripId?: string,
+  options?: { onSuccess?: () => void }
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: {
+      categoryId: string;
+      categoryName: string;
+      iconKey: string;
+    }) => updateShoppingCategory(params),
+    onSuccess: () => {
+      if (tripId) {
+        queryClient.invalidateQueries({
+          queryKey: shoppingKeys.checklist(tripId),
+        });
+      }
+      toaster.create({
+        title: "카테고리가 수정되었습니다",
+        type: "success",
+        duration: 2000,
+      });
+      options?.onSuccess?.();
+    },
+    onError: (error: Error) => {
+      toaster.create({
+        title: "카테고리 수정 실패",
         description: error.message,
         type: "error",
         duration: 3000,

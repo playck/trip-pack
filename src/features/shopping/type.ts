@@ -29,4 +29,5 @@ export interface UseCreateShoppingCategoryParams {
   tripId: string;
   categoryName: string;
   iconKey: string;
+  isShared?: boolean;
 }
