@@ -73,6 +73,7 @@ export const createShoppingCategory = async (
       icon_key: params.iconKey,
       display_order: nextOrder,
       created_by: user?.id ?? null,
+      is_shared: params.isShared ?? false,
     })
     .select("id")
     .single();
