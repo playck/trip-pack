@@ -16,6 +16,9 @@ import {
   Save,
   Download,
   FolderPlus,
+  ShoppingCart,
+  UserPlus,
+  Users,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -35,6 +38,16 @@ import { formatTripDateRange } from "@/shared/utiles/date";
 import { TripActionMenu } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
+import InviteSheet from "@/features/trip-members/components/InviteSheet";
+import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
+import {
+  useShoppingChecklist,
+  useUpdateShoppingItemChecked,
+} from "@/features/shopping/list/hooks/useShoppingChecklist";
+import { useCreateShoppingCategory } from "@/features/shopping/list/hooks/useShoppingMutations";
+import { useShoppingListViewControls } from "@/features/shopping/list/hooks/useShoppingListViewControls";
+import ShoppingGridView from "@/features/shopping/list/components/ShoppingGridView";
+import ShoppingListView from "@/features/shopping/list/components/ShoppingListView";
 import {
   useTripChecklist,
   useUpdateItemCheckedStatus,
@@ -62,6 +75,7 @@ export default function PackingListPage() {
   });
   const { showScrollTop, scrollToTop } = useScrollToTop();
 
+  // 준비물
   const { categories, error, progress } = useTripChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
   const listControls = useListViewControls(categories);
@@ -69,6 +83,20 @@ export default function PackingListPage() {
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => {
       sheets.category.onClose();
+    },
+  });
+
+  // 쇼핑
+  const {
+    categories: shoppingCategories,
+    error: shoppingError,
+    progress: shoppingProgress,
+  } = useShoppingChecklist(tripId);
+  const shoppingListControls = useShoppingListViewControls(shoppingCategories);
+  const updateShoppingItemStatus = useUpdateShoppingItemChecked(tripId);
+  const createShoppingCategoryMutation = useCreateShoppingCategory(tripId, {
+    onSuccess: () => {
+      sheets.shoppingCategory.onClose();
     },
   });
 
@@ -84,9 +112,14 @@ export default function PackingListPage() {
       onClick: () => sheets.template.onOpen(),
     },
     {
-      label: "카테고리 추가",
+      label: "준비물 카테고리 추가",
       icon: <FolderPlus size={18} />,
       onClick: () => sheets.category.onOpen(),
+    },
+    {
+      label: "쇼핑 카테고리 추가",
+      icon: <ShoppingCart size={18} />,
+      onClick: () => sheets.shoppingCategory.onOpen(),
     },
   ];
 
@@ -101,15 +134,31 @@ export default function PackingListPage() {
     });
   };
 
+  const handleSaveShoppingCategory = (
+    categoryName: string,
+    iconKey: string,
+    isShared?: boolean
+  ) => {
+    createShoppingCategoryMutation.mutate({
+      categoryName,
+      iconKey,
+      isShared,
+    });
+  };
+
   const handleToggleItem = (itemId: string, isChecked: boolean) => {
     updateItemStatus.mutate({ itemId, isChecked });
   };
 
-  if (error) {
+  const handleToggleShoppingItem = (itemId: string, isChecked: boolean) => {
+    updateShoppingItemStatus.mutate({ itemId, isChecked });
+  };
+
+  if (error || shoppingError) {
     return (
       <PageLayout>
         <ErrorMessage
-          message={error || "알 수 없는 오류가 발생했습니다"}
+          message={error || shoppingError || "알 수 없는 오류가 발생했습니다"}
           title="체크리스트 불러오기 실패"
           centered
           fullScreen
@@ -132,6 +181,24 @@ export default function PackingListPage() {
           rightAction={
             <HStack gap={0}>
               <IconButton
+                aria-label="일행 목록"
+                variant="ghost"
+                size="sm"
+                color="gray.600"
+                onClick={sheets.members.onOpen}
+              >
+                <Users size={20} />
+              </IconButton>
+              <IconButton
+                aria-label="일행 초대"
+                variant="ghost"
+                size="sm"
+                color="gray.600"
+                onClick={sheets.invite.onOpen}
+              >
+                <UserPlus size={20} />
+              </IconButton>
+              <IconButton
                 aria-label="공유하기"
                 variant="ghost"
                 size="sm"
@@ -150,7 +217,7 @@ export default function PackingListPage() {
           }
         />
         <Container maxW="6xl" pt={1} pb={6} px={0}>
-          <VStack gap={3} align="stretch">
+          <VStack gap={3} align="stretch" pb="100px">
             {/* 체크율 + 뷰 모드 토글 */}
             <VStack align="stretch" gap={2}>
               <HStack justify="space-between" align="center">
@@ -274,6 +341,46 @@ export default function PackingListPage() {
                 </Text>
               </Box>
             )}
+
+            {/* 쇼핑 리스트 섹션 */}
+            {shoppingCategories.length > 0 && (
+              <>
+                <HStack gap={2} align="center">
+                  <Box flex={1} h="1px" bg="gray.300" />
+                  <HStack gap={1.5}>
+                    <ShoppingCart size={16} color={colors.primary.hex[500]} />
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+                      쇼핑 리스트
+                    </Text>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      color={colors.primary.fg}
+                    >
+                      {shoppingProgress.checkedItems}/
+                      {shoppingProgress.totalItems}
+                    </Text>
+                  </HStack>
+                  <Box flex={1} h="1px" bg="gray.300" />
+                </HStack>
+
+                {viewMode === "그리드" ? (
+                  <ShoppingGridView
+                    categories={shoppingCategories}
+                    tripId={tripId}
+                  />
+                ) : (
+                  <ShoppingListView
+                    categories={shoppingCategories}
+                    tripId={tripId}
+                    onToggleItem={handleToggleShoppingItem}
+                    showUncheckedOnly={shoppingListControls.showUncheckedOnly}
+                    expandedCategories={shoppingListControls.expandedCategories}
+                    toggleCategory={shoppingListControls.toggleCategory}
+                  />
+                )}
+              </>
+            )}
           </VStack>
         </Container>
 
@@ -292,6 +399,14 @@ export default function PackingListPage() {
           isLoading={createCategoryMutation.isPending}
           onSave={handleSaveCategory}
           onClose={sheets.category.onClose}
+        />
+
+        <AddCategorySheet
+          isOpen={sheets.shoppingCategory.isOpen}
+          isLoading={createShoppingCategoryMutation.isPending}
+          showSharedToggle
+          onSave={handleSaveShoppingCategory}
+          onClose={sheets.shoppingCategory.onClose}
         />
 
         <TemplateListSheet
@@ -316,6 +431,18 @@ export default function PackingListPage() {
         <AirlineBaggagePolicySheet
           isOpen={sheets.baggage.isOpen}
           onClose={sheets.baggage.onClose}
+        />
+
+        <InviteSheet
+          isOpen={sheets.invite.isOpen}
+          onClose={sheets.invite.onClose}
+          tripId={tripId}
+        />
+
+        <MemberListSheet
+          isOpen={sheets.members.isOpen}
+          onClose={sheets.members.onClose}
+          tripId={tripId}
         />
       </PageLayout>
     </>
