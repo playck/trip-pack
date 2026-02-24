@@ -330,9 +330,7 @@ export default function ShoppingDetailPage() {
 
       <DeleteCategoryModal
         isOpen={isDeleteModalOpen}
-        category={
-          category as unknown as import("@/features/packing/type").CategoryWithItems
-        }
+        category={category}
         isDeleting={deleteCategoryMutation.isPending}
         onClose={onDeleteModalClose}
         onDelete={handleDeleteCategory}

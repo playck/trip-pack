@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Text,
@@ -154,6 +154,12 @@ export default function PackingListPage() {
     updateShoppingItemStatus.mutate({ itemId, isChecked });
   };
 
+  useEffect(() => {
+    if (!tripId || !tripInfo) {
+      navigate({ to: "/main" });
+    }
+  }, [tripId, tripInfo, navigate]);
+
   if (error || shoppingError) {
     return (
       <PageLayout>
@@ -168,7 +174,6 @@ export default function PackingListPage() {
   }
 
   if (!tripId || !tripInfo) {
-    navigate({ to: "/main" });
     return null;
   }
 

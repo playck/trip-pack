@@ -206,13 +206,9 @@ export default function ListView({
                             <HStack gap={1} flex={1}>
                               <Checkbox
                                 isChecked={checked}
-                                onChange={() => {
-                                  if (onToggleItem && item.id) {
-                                    onToggleItem(item.id, !checked);
-                                  }
-                                }}
                                 size="md"
                                 colorScheme={colors.primary.palette}
+                                onChange={() => {}}
                               />
                               <Text
                                 fontSize="sm"
