@@ -60,7 +60,7 @@ export const createShoppingCategory = async (
     .eq("trip_id", params.tripId)
     .order("display_order", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const nextOrder = (lastCategory?.display_order ?? 0) + 1;
 
@@ -97,7 +97,8 @@ export const updateShoppingCategory = async (params: {
     .select("trip_id")
     .eq("id", params.categoryId)
     .single();
-  if (cat) await verifyTripMembership(cat.trip_id);
+  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+  await verifyTripMembership(cat.trip_id);
 
   const name = params.categoryName.trim();
   if (!name) throw new Error("카테고리 이름을 입력해주세요.");
@@ -120,7 +121,8 @@ export const deleteShoppingCategory = async (
     .select("trip_id")
     .eq("id", categoryId)
     .single();
-  if (cat) await verifyTripMembership(cat.trip_id);
+  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+  await verifyTripMembership(cat.trip_id);
 
   const { error: itemsError } = await supabase
     .from("shopping_items")
@@ -146,7 +148,8 @@ export const createShoppingItem = async (
     .select("trip_id")
     .eq("id", params.categoryId)
     .single();
-  if (cat) await verifyTripMembership(cat.trip_id);
+  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+  await verifyTripMembership(cat.trip_id);
 
   const name = params.name.trim();
   if (!name) throw new Error("아이템 이름을 입력해주세요.");
@@ -157,7 +160,7 @@ export const createShoppingItem = async (
     .eq("category_id", params.categoryId)
     .order("display_order", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const nextOrder = (lastItem?.display_order ?? 0) + 1;
 
@@ -210,14 +213,16 @@ const verifyMembershipByItemId = async (itemId: string): Promise<void> => {
     .select("category_id")
     .eq("id", itemId)
     .single();
-  if (item) {
-    const { data: cat } = await supabase
-      .from("shopping_categories")
-      .select("trip_id")
-      .eq("id", item.category_id)
-      .single();
-    if (cat) await verifyTripMembership(cat.trip_id);
-  }
+  if (!item) throw new Error("아이템을 찾을 수 없습니다.");
+
+  const { data: cat } = await supabase
+    .from("shopping_categories")
+    .select("trip_id")
+    .eq("id", item.category_id)
+    .single();
+  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+
+  await verifyTripMembership(cat.trip_id);
 };
 
 export const updateShoppingItemChecked = async (
@@ -240,9 +245,9 @@ export const updateShoppingItemChecked = async (
 export const deleteShoppingItems = async (
   itemIds: string[]
 ): Promise<void> => {
-  if (itemIds.length > 0) {
-    await verifyMembershipByItemId(itemIds[0]);
-  }
+  if (itemIds.length === 0) return;
+
+  await verifyMembershipByItemId(itemIds[0]);
 
   const { error } = await supabase
     .from("shopping_items")
