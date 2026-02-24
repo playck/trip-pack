@@ -1,4 +1,5 @@
 import { supabase } from "@/shared/service/supabase/cilent";
+import { verifyTripMembership } from "@/features/trip-members/services/api";
 import type {
   ShoppingCategoryWithItems,
   UseCreateShoppingItemParams,
@@ -46,6 +47,8 @@ export const getShoppingChecklist = async (
 export const createShoppingCategory = async (
   params: UseCreateShoppingCategoryParams
 ): Promise<{ id: string }> => {
+  await verifyTripMembership(params.tripId);
+
   const name = params.categoryName.trim();
   if (!name) throw new Error("카테고리 이름을 입력해주세요.");
   if (name.length > 15)
@@ -89,6 +92,13 @@ export const updateShoppingCategory = async (params: {
   categoryName: string;
   iconKey: string;
 }): Promise<void> => {
+  const { data: cat } = await supabase
+    .from("shopping_categories")
+    .select("trip_id")
+    .eq("id", params.categoryId)
+    .single();
+  if (cat) await verifyTripMembership(cat.trip_id);
+
   const name = params.categoryName.trim();
   if (!name) throw new Error("카테고리 이름을 입력해주세요.");
   if (name.length > 15)
@@ -105,6 +115,13 @@ export const updateShoppingCategory = async (params: {
 export const deleteShoppingCategory = async (
   categoryId: string
 ): Promise<void> => {
+  const { data: cat } = await supabase
+    .from("shopping_categories")
+    .select("trip_id")
+    .eq("id", categoryId)
+    .single();
+  if (cat) await verifyTripMembership(cat.trip_id);
+
   const { error: itemsError } = await supabase
     .from("shopping_items")
     .delete()
@@ -124,6 +141,13 @@ export const deleteShoppingCategory = async (
 export const createShoppingItem = async (
   params: UseCreateShoppingItemParams
 ): Promise<{ id: string }> => {
+  const { data: cat } = await supabase
+    .from("shopping_categories")
+    .select("trip_id")
+    .eq("id", params.categoryId)
+    .single();
+  if (cat) await verifyTripMembership(cat.trip_id);
+
   const name = params.name.trim();
   if (!name) throw new Error("아이템 이름을 입력해주세요.");
 
@@ -160,6 +184,8 @@ export const createShoppingItem = async (
 export const updateShoppingItem = async (
   params: UseUpdateShoppingItemParams
 ): Promise<void> => {
+  await verifyMembershipByItemId(params.itemId);
+
   const name = params.name.trim();
   if (!name) throw new Error("아이템 이름을 입력해주세요.");
 
@@ -177,10 +203,29 @@ export const updateShoppingItem = async (
   if (error) throw new Error(`아이템 수정 실패: ${error.message}`);
 };
 
+/** 아이템 ID로 trip_id를 조회하여 멤버십 검증 */
+const verifyMembershipByItemId = async (itemId: string): Promise<void> => {
+  const { data: item } = await supabase
+    .from("shopping_items")
+    .select("category_id")
+    .eq("id", itemId)
+    .single();
+  if (item) {
+    const { data: cat } = await supabase
+      .from("shopping_categories")
+      .select("trip_id")
+      .eq("id", item.category_id)
+      .single();
+    if (cat) await verifyTripMembership(cat.trip_id);
+  }
+};
+
 export const updateShoppingItemChecked = async (
   itemId: string,
   isChecked: boolean
 ): Promise<void> => {
+  await verifyMembershipByItemId(itemId);
+
   const { error } = await supabase
     .from("shopping_items")
     .update({
@@ -195,6 +240,10 @@ export const updateShoppingItemChecked = async (
 export const deleteShoppingItems = async (
   itemIds: string[]
 ): Promise<void> => {
+  if (itemIds.length > 0) {
+    await verifyMembershipByItemId(itemIds[0]);
+  }
+
   const { error } = await supabase
     .from("shopping_items")
     .delete()
@@ -204,6 +253,8 @@ export const deleteShoppingItems = async (
 };
 
 export const deleteShoppingItem = async (itemId: string): Promise<void> => {
+  await verifyMembershipByItemId(itemId);
+
   const { error } = await supabase
     .from("shopping_items")
     .delete()
