@@ -9,6 +9,8 @@ import {
   ArrowLeftRight,
 } from "lucide-react";
 import { colors, statusColors } from "@/shared/constants/colors";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import { formatAmount } from "../utils/helper";
@@ -34,6 +36,9 @@ export default function ExpenseSummaryCard({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const updateBudgetMutation = useUpdateTripBudget(tripId);
+  const { user } = useAuth();
+  const { data: members = [] } = useTripMembers(tripId);
+  const isOwner = members.find((m) => m.user_id === user?.id)?.role === "owner";
 
   const [showLocalCurrency, setShowLocalCurrency] = useAtom(
     showLocalCurrencyAtom,
@@ -167,20 +172,22 @@ export default function ExpenseSummaryCard({
           <VStack align="flex-end" gap={1}>
             {/* 우측 상단 버튼 영역 */}
             <HStack gap={2}>
-              <Button
-                size="xs"
-                variant="surface"
-                colorPalette="teal"
-                h="24px"
-                px={2}
-                fontSize="xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsBudgetModalOpen(true);
-                }}
-              >
-                {hasBudget ? "예산 수정" : "예산 설정"}
-              </Button>
+              {isOwner && (
+                <Button
+                  size="xs"
+                  variant="surface"
+                  colorPalette="teal"
+                  h="24px"
+                  px={2}
+                  fontSize="xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsBudgetModalOpen(true);
+                  }}
+                >
+                  {hasBudget ? "예산 수정" : "예산 설정"}
+                </Button>
+              )}
               <Box color="gray.400">
                 {isExpanded ? (
                   <ChevronUp size={20} />
