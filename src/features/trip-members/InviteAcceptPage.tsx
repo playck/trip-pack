@@ -23,7 +23,10 @@ export default function InviteAcceptPage() {
     if (authLoading) return;
 
     if (!user) {
-      navigate({ to: "/auth/login" });
+      navigate({
+        to: "/auth/login",
+        search: { returnTo: `/invite/${inviteCode}` },
+      });
       return;
     }
 
