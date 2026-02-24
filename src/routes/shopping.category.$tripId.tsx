@@ -6,6 +6,6 @@ export const Route = createFileRoute("/shopping/category/$tripId")({
   component: ShoppingDetailPage,
   beforeLoad: requireAuth,
   validateSearch: (search: Record<string, unknown>) => ({
-    category: (search.category as string) || "",
+    categoryId: (search.categoryId as string) || "",
   }),
 });

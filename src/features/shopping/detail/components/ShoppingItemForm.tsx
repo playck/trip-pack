@@ -55,12 +55,14 @@ export default function ShoppingItemForm({
               <Input
                 placeholder="0"
                 type="number"
+                min={0}
                 value={price ?? ""}
                 size="lg"
                 borderRadius="xl"
                 onChange={(e) => {
                   const val = e.target.value;
-                  onPriceChange(val ? Number(val) : undefined);
+                  const num = Number(val);
+                  onPriceChange(val ? Math.max(0, num) : undefined);
                 }}
               />
             </VStack>

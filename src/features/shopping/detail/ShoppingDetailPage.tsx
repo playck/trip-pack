@@ -57,7 +57,7 @@ export default function ShoppingDetailPage() {
   const [newItemQuantity, setNewItemQuantity] = useState<number | undefined>();
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const categoryParam = (search as { category?: string }).category || "";
+  const { categoryId: categoryIdParam } = search;
   const { categories, error } = useShoppingChecklist(tripId || "");
 
   const createItemMutation = useCreateShoppingItem(tripId, {
@@ -73,28 +73,14 @@ export default function ShoppingDetailPage() {
     onSuccess: () => setIsEditMode(false),
   });
 
-  const [pendingCategoryName, setPendingCategoryName] = useState<string | null>(
-    null
-  );
-
   const updateCategoryMutation = useUpdateShoppingCategory(tripId, {
     onSuccess: () => {
       onEditCategoryClose();
-      if (pendingCategoryName) {
-        navigate({
-          to: "/shopping/category/$tripId",
-          params: { tripId },
-          search: { category: pendingCategoryName },
-          replace: true,
-        });
-        setPendingCategoryName(null);
-      }
     },
   });
 
-  const categoryName = decodeURIComponent(categoryParam);
   const category = categories?.find(
-    (cat: ShoppingCategoryWithItems) => cat.name === categoryName
+    (cat: ShoppingCategoryWithItems) => cat.id === categoryIdParam
   );
 
   const resetForm = () => {
@@ -144,7 +130,6 @@ export default function ShoppingDetailPage() {
 
   const handleUpdateCategory = (newName: string, newIconKey: string) => {
     if (!category?.id) return;
-    setPendingCategoryName(newName);
     updateCategoryMutation.mutate({
       categoryId: category.id,
       categoryName: newName,

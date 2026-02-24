@@ -34,11 +34,11 @@ export default function ShoppingListView({
 }: ShoppingListViewProps) {
   const navigate = useNavigate();
 
-  const handleCategoryClick = (categoryName: string) => {
+  const handleCategoryClick = (categoryId: string) => {
     navigate({
       to: "/shopping/category/$tripId",
       params: { tripId },
-      search: { category: categoryName },
+      search: { categoryId },
     });
   };
 
@@ -124,7 +124,7 @@ export default function ShoppingListView({
                 alignItems="center"
                 justifyContent="center"
                 borderRadius="md"
-                onClick={() => handleCategoryClick(category.name)}
+                onClick={() => handleCategoryClick(category.id)}
                 cursor="pointer"
               >
                 <ArrowRight size={16} color="#6B7280" />

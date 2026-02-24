@@ -32,7 +32,7 @@ export default function ShoppingCategoryBox({
     navigate({
       to: "/shopping/category/$tripId",
       params: { tripId },
-      search: { category: category.name },
+      search: { categoryId: category.id },
     });
   };
 
