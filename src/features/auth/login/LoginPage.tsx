@@ -83,8 +83,14 @@ export default function LoginPage() {
       }
 
       if (authData.user) {
-        if (returnTo) {
-          navigate({ to: returnTo });
+        const safeReturnTo =
+          returnTo &&
+          returnTo.startsWith("/") &&
+          !returnTo.startsWith("//")
+            ? returnTo
+            : undefined;
+        if (safeReturnTo) {
+          navigate({ to: safeReturnTo });
         } else {
           navigate({ to: "/main" });
         }
