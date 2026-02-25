@@ -1,5 +1,13 @@
 import { useRef, useEffect } from "react";
-import { VStack, Input, Text, Box, SimpleGrid } from "@chakra-ui/react";
+import {
+  VStack,
+  Input,
+  Text,
+  Box,
+  SimpleGrid,
+  HStack,
+  Switch,
+} from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 import { CATEGORY_ICONS } from "../constants/category";
 
@@ -9,6 +17,9 @@ interface CategoryFormProps {
   autoFocus?: boolean;
   onCategoryNameChange: (value: string) => void;
   onIconKeyChange: (key: string) => void;
+  showSharedToggle?: boolean;
+  isShared?: boolean;
+  onSharedChange?: (value: boolean) => void;
 }
 
 export default function CategoryForm({
@@ -17,6 +28,9 @@ export default function CategoryForm({
   autoFocus = false,
   onCategoryNameChange,
   onIconKeyChange,
+  showSharedToggle = false,
+  isShared = false,
+  onSharedChange,
 }: CategoryFormProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +107,27 @@ export default function CategoryForm({
               </SimpleGrid>
             </Box>
           </VStack>
+
+          {/* 일행 공유 토글 */}
+          {showSharedToggle && (
+            <HStack justify="space-between" w="full" py={1} mt={-3}>
+              <VStack gap={0.5} align="start">
+                <Text fontSize="md" fontWeight="medium">
+                  일행과 공유
+                </Text>
+              </VStack>
+              <Switch.Root
+                checked={isShared}
+                onCheckedChange={(e) => onSharedChange?.(e.checked)}
+                colorPalette="teal"
+              >
+                <Switch.HiddenInput />
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch.Root>
+            </HStack>
+          )}
         </VStack>
       </Box>
     </VStack>

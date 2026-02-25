@@ -6,23 +6,27 @@ import BottomSheet from "./BottomSheet";
 interface AddCategorySheetProps {
   isOpen: boolean;
   isLoading?: boolean;
-  onSave: (categoryName: string, iconKey: string) => void;
+  showSharedToggle?: boolean;
+  onSave: (categoryName: string, iconKey: string, isShared?: boolean) => void;
   onClose: () => void;
 }
 
 export default function AddCategorySheet({
   isOpen,
   isLoading = false,
+  showSharedToggle = false,
   onSave,
   onClose,
 }: AddCategorySheetProps) {
   const [categoryName, setCategoryName] = useState("");
   const [selectedIconKey, setSelectedIconKey] = useState("");
+  const [isShared, setIsShared] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setCategoryName("");
       setSelectedIconKey("");
+      setIsShared(false);
     }
   }, [isOpen]);
 
@@ -66,7 +70,7 @@ export default function AddCategorySheet({
       return;
     }
 
-    onSave(name, selectedIconKey);
+    onSave(name, selectedIconKey, showSharedToggle ? isShared : undefined);
   };
 
   const handleClose = () => {
@@ -96,6 +100,9 @@ export default function AddCategorySheet({
         autoFocus={isOpen}
         onCategoryNameChange={setCategoryName}
         onIconKeyChange={setSelectedIconKey}
+        showSharedToggle={showSharedToggle}
+        isShared={isShared}
+        onSharedChange={setIsShared}
       />
     </BottomSheet>
   );

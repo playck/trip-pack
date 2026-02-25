@@ -24,12 +24,30 @@ export const getTripList = async (): Promise<TripListData> => {
 
   const today = dayjs().format("YYYY-MM-DD");
 
+  // 소유 + 초대받은 여행 ID 목록 조회
+  const { data: tripIds, error: rpcError } =
+    await supabase.rpc("get_my_trip_ids");
+
+  if (rpcError) {
+    throw new Error(`여행 ID 목록 조회 오류: ${rpcError.message}`);
+  }
+
+  if (!tripIds || tripIds.length === 0) {
+    return {
+      currentTrips: null,
+      futureTrips: [],
+      pastTrips: [],
+      allTrips: [],
+    };
+  }
+
+  // 현재 여행 (시작일 <= 오늘 < 종료일 또는 종료일이 null)
   const { data: currentTrips, error: currentError } = await supabase
     .from("trips")
     .select(
       "id, title, start_date, end_date, region_name, budget, country_code"
     )
-    .eq("user_id", user.id)
+    .in("id", tripIds)
     .lte("start_date", today)
     .or(`end_date.gte.${today},end_date.is.null`)
     .order("start_date", { ascending: true });
@@ -46,7 +64,7 @@ export const getTripList = async (): Promise<TripListData> => {
     .select(
       "id, title, start_date, end_date, region_name, budget, country_code"
     )
-    .eq("user_id", user.id)
+    .in("id", tripIds)
     .gt("start_date", today)
     .order("start_date", { ascending: true });
 
@@ -62,7 +80,7 @@ export const getTripList = async (): Promise<TripListData> => {
     .select(
       "id, title, start_date, end_date, region_name, budget, country_code"
     )
-    .eq("user_id", user.id)
+    .in("id", tripIds)
     .or(`end_date.lt.${today},and(start_date.lt.${today},end_date.is.null)`)
     .not("start_date", "gte", today)
     .order("start_date", { ascending: false });

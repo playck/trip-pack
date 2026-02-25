@@ -158,6 +158,121 @@ export type Database = {
         }
         Relationships: []
       }
+      shopping_categories: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          icon_key: string | null
+          id: string
+          is_shared: boolean
+          name: string
+          trip_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          is_shared?: boolean
+          name: string
+          trip_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          is_shared?: boolean
+          name?: string
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopping_categories_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopping_items: {
+        Row: {
+          assignee_id: string | null
+          category_id: string
+          checked_by: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_checked: boolean | null
+          name: string
+          notes: string | null
+          price: number | null
+          quantity: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          category_id: string
+          checked_by?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_checked?: boolean | null
+          name: string
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          category_id?: string
+          checked_by?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_checked?: boolean | null
+          name?: string
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_items_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "trip_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopping_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shopping_items_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       template_categories: {
         Row: {
           created_at: string | null
@@ -297,6 +412,90 @@ export type Database = {
           },
         ]
       }
+      trip_invitations: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          expires_at: string | null
+          id: string
+          invite_code: string
+          is_active: boolean | null
+          trip_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          invite_code: string
+          is_active?: boolean | null
+          trip_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          is_active?: boolean | null
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_invitations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_invitations_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_members: {
+        Row: {
+          id: string
+          joined_at: string | null
+          role: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          role?: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          role?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_members_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_schedules: {
         Row: {
           category: string | null
@@ -427,6 +626,8 @@ export type Database = {
         Args: { p_categories: Json; p_items: Json; p_trip_data: Json }
         Returns: string
       }
+      get_my_owned_trip_ids: { Args: never; Returns: string[] }
+      get_my_trip_ids: { Args: never; Returns: string[] }
       get_trips_with_check_progress: {
         Args: { p_user_id: string }
         Returns: {

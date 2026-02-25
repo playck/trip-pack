@@ -10,7 +10,7 @@ import {
   VStack,
   AbsoluteCenter,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Mail, Lock } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -31,7 +31,10 @@ interface LoginForm {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { handleKakaoLogin, handleGoogleLogin, socialError } = useSocialLogin();
+  const { returnTo } = useSearch({ from: "/auth/login" });
+  const { handleKakaoLogin, handleGoogleLogin, socialError } = useSocialLogin(
+    returnTo
+  );
 
   const [formData, setFormData] = useState<LoginForm>({
     email: "",
@@ -80,7 +83,17 @@ export default function LoginPage() {
       }
 
       if (authData.user) {
-        navigate({ to: "/main" });
+        const safeReturnTo =
+          returnTo &&
+          returnTo.startsWith("/") &&
+          !returnTo.startsWith("//")
+            ? returnTo
+            : undefined;
+        if (safeReturnTo) {
+          navigate({ to: safeReturnTo });
+        } else {
+          navigate({ to: "/main" });
+        }
       }
     } catch {
       setErrors({

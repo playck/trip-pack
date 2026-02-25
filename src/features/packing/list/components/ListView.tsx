@@ -9,12 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import {
-  ChevronDown,
-  ChevronRight,
-  ArrowRight,
-  Package,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, ArrowRight, Package } from "lucide-react";
 
 import { CabinPolicyIcon, Checkbox } from "@/shared/components";
 import type { CabinPolicy } from "@/shared/data/checkList";
@@ -97,7 +92,7 @@ export default function ListView({
   };
 
   return (
-    <VStack gap={2} align="stretch" w="full" pb="60px">
+    <VStack gap={2} align="stretch" w="full">
       <VStack gap={2} align="stretch" w="full">
         {categories.map((category) => {
           const IconComponent = (
@@ -211,13 +206,9 @@ export default function ListView({
                             <HStack gap={1} flex={1}>
                               <Checkbox
                                 isChecked={checked}
-                                onChange={() => {
-                                  if (onToggleItem && item.id) {
-                                    onToggleItem(item.id, !checked);
-                                  }
-                                }}
                                 size="md"
                                 colorScheme={colors.primary.palette}
+                                onChange={() => {}}
                               />
                               <Text
                                 fontSize="sm"

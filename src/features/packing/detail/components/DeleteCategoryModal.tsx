@@ -1,10 +1,9 @@
 import { Text } from "@chakra-ui/react";
 import { ConfirmDialog } from "@/shared/components";
-import type { CategoryWithItems } from "../../type";
 
 interface DeleteCategoryModalProps {
   isOpen: boolean;
-  category: CategoryWithItems | undefined;
+  category: { name: string } | undefined;
   isDeleting: boolean;
   onClose: () => void;
   onDelete: () => void;
