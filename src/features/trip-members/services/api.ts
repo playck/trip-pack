@@ -55,10 +55,10 @@ export const createInvitation = async (
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
-  const inviteCode = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  const inviteCode = crypto.randomUUID().replace(/-/g, "");
 
   const expiresAt = new Date();
-  expiresAt.setHours(23, 59, 59, 999);
+  expiresAt.setTime(expiresAt.getTime() + 12 * 60 * 60 * 1000); // 12시간 후 만료
 
   const { data, error } = await supabase
     .from("trip_invitations")

@@ -5,6 +5,8 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { ErrorMessage } from "@/shared/components";
 import { useInvitationInfo, useAcceptInvitation } from "./hooks/useInvitation";
 
+const SAFE_PATH_REGEX = /^[a-zA-Z0-9-]+$/;
+
 export default function InviteAcceptPage() {
   const navigate = useNavigate();
   const { inviteCode } = useParams({ from: "/invite/$inviteCode" });
@@ -18,6 +20,8 @@ export default function InviteAcceptPage() {
   } = useInvitationInfo(inviteCode);
 
   const acceptMutation = useAcceptInvitation();
+  const acceptMutationRef = useRef(acceptMutation);
+  acceptMutationRef.current = acceptMutation;
 
   useEffect(() => {
     if (authLoading) return;
@@ -25,7 +29,11 @@ export default function InviteAcceptPage() {
     if (!user) {
       navigate({
         to: "/auth/login",
-        search: { returnTo: `/invite/${inviteCode}` },
+        search: {
+          returnTo: SAFE_PATH_REGEX.test(inviteCode)
+            ? `/invite/${inviteCode}`
+            : "/main",
+        },
       });
       return;
     }
@@ -33,8 +41,12 @@ export default function InviteAcceptPage() {
     if (!invitation || hasAccepted.current) return;
     hasAccepted.current = true;
 
-    acceptMutation.mutate(inviteCode, {
+    acceptMutationRef.current.mutate(inviteCode, {
       onSuccess: (tripId) => {
+        if (!SAFE_PATH_REGEX.test(tripId)) {
+          navigate({ to: "/main" });
+          return;
+        }
         navigate({
           to: "/packing/list/$tripId",
           params: { tripId },
@@ -44,7 +56,8 @@ export default function InviteAcceptPage() {
         setTimeout(() => navigate({ to: "/main" }), 2000);
       },
     });
-  }, [authLoading, user, invitation, inviteCode, acceptMutation, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user, invitation, inviteCode]);
 
   if (authLoading || inviteLoading) {
     return (

@@ -10,6 +10,8 @@ import type {
 export const getShoppingChecklist = async (
   tripId: string
 ): Promise<ShoppingCategoryWithItems[]> => {
+  await verifyTripMembership(tripId);
+
   const { data: categories, error: categoriesError } = await supabase
     .from("shopping_categories")
     .select("*")
@@ -137,7 +139,13 @@ export const deleteShoppingCategory = async (
     .delete()
     .eq("id", categoryId);
 
-  if (error) throw new Error(`카테고리 삭제 실패: ${error.message}`);
+  if (error) {
+    console.error(
+      `카테고리 삭제 실패 (아이템은 이미 삭제됨, categoryId: ${categoryId}):`,
+      error.message
+    );
+    throw new Error(`카테고리 삭제 실패: ${error.message}`);
+  }
 };
 
 export const createShoppingItem = async (
