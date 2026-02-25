@@ -293,17 +293,24 @@ export default function PackingListPage() {
                     as="button"
                     gap={1}
                     cursor="pointer"
-                    onClick={listControls.toggleAllCategories}
+                    onClick={() => {
+                      listControls.toggleAllCategories();
+                      shoppingListControls.toggleAllCategories();
+                    }}
                     color="gray.600"
                     _hover={{ opacity: 0.7 }}
                   >
-                    {listControls.allExpanded ? (
+                    {listControls.allExpanded &&
+                    shoppingListControls.allExpanded ? (
                       <Minimize2 size={14} />
                     ) : (
                       <Maximize2 size={14} />
                     )}
                     <Text fontSize="sm">
-                      {listControls.allExpanded ? "모두 접기" : "모두 펼치기"}
+                      {listControls.allExpanded &&
+                      shoppingListControls.allExpanded
+                        ? "모두 접기"
+                        : "모두 펼치기"}
                     </Text>
                   </HStack>
                   <Checkbox

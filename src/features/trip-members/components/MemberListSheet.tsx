@@ -72,7 +72,11 @@ export default function MemberListSheet({
                 <HStack
                   key={member.id}
                   py={3}
-                  borderBottom="1px solid"
+                  borderBottom={
+                    member.id === members[members.length - 1].id
+                      ? "none"
+                      : "1px solid"
+                  }
                   borderColor="gray.100"
                   justify="space-between"
                 >
