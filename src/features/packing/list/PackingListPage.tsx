@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "@tanstack/react-router";
 import {
-  Share2,
+  Settings,
   ChevronRight,
   Minimize2,
   Maximize2,
@@ -17,8 +17,6 @@ import {
   Download,
   FolderPlus,
   ShoppingCart,
-  UserPlus,
-  Users,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -35,8 +33,11 @@ import WeatherCard from "@/shared/components/weather/weatherCard";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
+import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
+import { TripEditModal } from "@/shared/components/trip-action/TripEditModal";
+import { TripDateEditModal } from "@/shared/components/trip-action/TripDateEditModal";
+import { DeleteTripModal } from "@/shared/components/trip-action/DeleteTripModal";
 import { useScrollToTop } from "@/shared/hooks";
 import InviteSheet from "@/features/trip-members/components/InviteSheet";
 import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
@@ -63,6 +64,7 @@ import {
   ChecklistSaveSheet,
   TemplateListSheet,
   AirlineBaggagePolicySheet,
+  TripSettingsDrawer,
 } from "./components";
 
 export default function PackingListPage() {
@@ -154,6 +156,13 @@ export default function PackingListPage() {
     updateShoppingItemStatus.mutate({ itemId, isChecked });
   };
 
+  const { mutate: deleteTripMutate, isPending: isDeletePending } =
+    useDeleteTrip();
+
+  const handleDeleteTrip = () => {
+    deleteTripMutate(tripId);
+  };
+
   useEffect(() => {
     if (!tripId || !tripInfo) {
       navigate({ to: "/main" });
@@ -184,41 +193,15 @@ export default function PackingListPage() {
           title={tripInfo.title || "여행"}
           subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
           rightAction={
-            <HStack gap={0}>
-              <IconButton
-                aria-label="일행 목록"
-                variant="ghost"
-                size="sm"
-                color="gray.600"
-                onClick={sheets.members.onOpen}
-              >
-                <Users size={20} />
-              </IconButton>
-              <IconButton
-                aria-label="일행 초대"
-                variant="ghost"
-                size="sm"
-                color="gray.600"
-                onClick={sheets.invite.onOpen}
-              >
-                <UserPlus size={20} />
-              </IconButton>
-              <IconButton
-                aria-label="공유하기"
-                variant="ghost"
-                size="sm"
-                color="gray.600"
-                onClick={sheets.share.onOpen}
-              >
-                <Share2 size={20} />
-              </IconButton>
-              <TripActionMenu
-                tripId={tripId}
-                tripTitle={tripInfo.title || "여행"}
-                startDate={tripInfo.startDate}
-                endDate={tripInfo.endDate}
-              />
-            </HStack>
+            <IconButton
+              aria-label="여행 설정"
+              variant="ghost"
+              size="sm"
+              color="gray.600"
+              onClick={sheets.settings.onOpen}
+            >
+              <Settings size={20} />
+            </IconButton>
           }
         />
         <Container maxW="6xl" pt={1} pb={6} px={0}>
@@ -455,6 +438,40 @@ export default function PackingListPage() {
           isOpen={sheets.members.isOpen}
           onClose={sheets.members.onClose}
           tripId={tripId}
+        />
+
+        <TripSettingsDrawer
+          isOpen={sheets.settings.isOpen}
+          onClose={sheets.settings.onClose}
+          onOpenMembers={sheets.members.onOpen}
+          onOpenInvite={sheets.invite.onOpen}
+          onOpenShare={sheets.share.onOpen}
+          onOpenEditTitle={sheets.editTitle.onOpen}
+          onOpenEditDate={sheets.editDate.onOpen}
+          onOpenDeleteTrip={sheets.deleteTrip.onOpen}
+        />
+
+        <TripEditModal
+          isOpen={sheets.editTitle.isOpen}
+          onClose={sheets.editTitle.onClose}
+          tripId={tripId}
+          currentTitle={tripInfo.title || "여행"}
+        />
+
+        <TripDateEditModal
+          isOpen={sheets.editDate.isOpen}
+          onClose={sheets.editDate.onClose}
+          tripId={tripId}
+          currentStartDate={tripInfo.startDate}
+          currentEndDate={tripInfo.endDate}
+        />
+
+        <DeleteTripModal
+          isOpen={sheets.deleteTrip.isOpen}
+          onClose={sheets.deleteTrip.onClose}
+          tripTitle={tripInfo.title || "여행"}
+          onDeleteTrip={handleDeleteTrip}
+          isLoading={isDeletePending}
         />
       </PageLayout>
     </>

@@ -41,6 +41,26 @@ export function usePackingSheets() {
     onOpen: onShoppingCategoryOpen,
     onClose: onShoppingCategoryClose,
   } = useDisclosure();
+  const {
+    open: isSettingsOpen,
+    onOpen: onSettingsOpen,
+    onClose: onSettingsClose,
+  } = useDisclosure();
+  const {
+    open: isEditTitleOpen,
+    onOpen: onEditTitleOpen,
+    onClose: onEditTitleClose,
+  } = useDisclosure();
+  const {
+    open: isEditDateOpen,
+    onOpen: onEditDateOpen,
+    onClose: onEditDateClose,
+  } = useDisclosure();
+  const {
+    open: isDeleteTripOpen,
+    onOpen: onDeleteTripOpen,
+    onClose: onDeleteTripClose,
+  } = useDisclosure();
 
   return {
     category: { isOpen: isCategoryOpen, onOpen: onCategoryOpen, onClose: onCategoryClose },
@@ -51,5 +71,9 @@ export function usePackingSheets() {
     baggage: { isOpen: isBaggageOpen, onOpen: onBaggageOpen, onClose: onBaggageClose },
     invite: { isOpen: isInviteOpen, onOpen: onInviteOpen, onClose: onInviteClose },
     members: { isOpen: isMembersOpen, onOpen: onMembersOpen, onClose: onMembersClose },
+    settings: { isOpen: isSettingsOpen, onOpen: onSettingsOpen, onClose: onSettingsClose },
+    editTitle: { isOpen: isEditTitleOpen, onOpen: onEditTitleOpen, onClose: onEditTitleClose },
+    editDate: { isOpen: isEditDateOpen, onOpen: onEditDateOpen, onClose: onEditDateClose },
+    deleteTrip: { isOpen: isDeleteTripOpen, onOpen: onDeleteTripOpen, onClose: onDeleteTripClose },
   };
 }
