@@ -57,8 +57,8 @@ export default function CheckListCopySheet({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose}>
-      <VStack gap={3} align="stretch" pt={4.5} pb={3} px={3}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} minHeight="70vh">
+      <VStack gap={3} align="stretch" pt={4.5} pb={3} px={3} flex={1}>
         <HStack justify="space-between" align="center">
           <Text fontSize="lg" fontWeight="semibold" color="gray.800">
             체크리스트 공유
@@ -94,13 +94,13 @@ export default function CheckListCopySheet({
         <Textarea
           value={textContent}
           readOnly
-          minH="300px"
+          flex={1}
           fontSize="sm"
           bg="gray.50"
           borderColor="gray.200"
         />
 
-        <HStack gap={3}>
+        <HStack gap={3} mt="auto">
           <Button
             flex={1}
             colorPalette={

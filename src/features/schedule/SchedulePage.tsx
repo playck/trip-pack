@@ -1,15 +1,16 @@
 import { useMemo } from "react";
-import { VStack, Box, HStack, IconButton, Text } from "@chakra-ui/react";
+import { VStack, Box, HStack, IconButton, Text, useDisclosure } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Share2 } from "lucide-react";
+import { Share2, Settings } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu, ConfirmDialog, ScrollToTopButton } from "@/shared/components";
+import { ConfirmDialog, ScrollToTopButton } from "@/shared/components";
 import { useScrollToTop } from "@/shared/hooks";
+import { TripSettingsPanel } from "@/features/trip-settings";
 import AddExpenseSheet from "@/features/expense/components/AddExpenseSheet";
 import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
 import {
@@ -38,6 +39,7 @@ import { ScheduleProvider } from "./context";
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  const settingsDrawer = useDisclosure();
   const { data: expenses } = useTripExpenses(tripId);
   const { data: allSchedules } = useTripSchedules(tripId);
 
@@ -140,12 +142,15 @@ function SchedulePageContent() {
       >
         <Share2 size={20} />
       </IconButton>
-      <TripActionMenu
-        tripId={tripId}
-        tripTitle={tripInfo.title || "여행"}
-        startDate={tripInfo.startDate}
-        endDate={tripInfo.endDate}
-      />
+      <IconButton
+        aria-label="여행 설정"
+        variant="ghost"
+        size="sm"
+        onClick={settingsDrawer.onOpen}
+        color="gray.600"
+      >
+        <Settings size={20} />
+      </IconButton>
     </HStack>
   );
 
@@ -294,6 +299,12 @@ function SchedulePageContent() {
           tripId={tripId || ""}
         />
       )}
+
+      <TripSettingsPanel
+        isOpen={settingsDrawer.open}
+        onClose={settingsDrawer.onClose}
+        tripId={tripId}
+      />
     </PageLayout>
   );
 }

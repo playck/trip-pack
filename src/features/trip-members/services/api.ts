@@ -45,7 +45,7 @@ export const getTripMembers = async (
   return (data as TripMemberWithProfile[]) ?? [];
 };
 
-/** 초대 코드 생성 */
+/** 초대 코드 조회 또는 생성 (기존 초대코드가 있으면 재사용) */
 export const createInvitation = async (
   tripId: string,
 ): Promise<TripInvitation> => {
@@ -55,6 +55,20 @@ export const createInvitation = async (
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
+  // 기존 유효한 초대가 있으면 재사용
+  const { data: existing } = await supabase
+    .from("trip_invitations")
+    .select()
+    .eq("trip_id", tripId)
+    .eq("is_active", true)
+    .gt("expires_at", new Date().toISOString())
+    .order("expires_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) return existing;
+
+  // 없으면 새로 생성
   const inviteCode = crypto.randomUUID().replace(/-/g, "");
 
   const expiresAt = new Date();

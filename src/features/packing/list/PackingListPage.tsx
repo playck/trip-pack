@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "@tanstack/react-router";
 import {
+  Settings,
   Share2,
   ChevronRight,
   Minimize2,
@@ -17,8 +18,6 @@ import {
   Download,
   FolderPlus,
   ShoppingCart,
-  UserPlus,
-  Users,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -35,11 +34,9 @@ import WeatherCard from "@/shared/components/weather/weatherCard";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
-import InviteSheet from "@/features/trip-members/components/InviteSheet";
-import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
+import { TripSettingsPanel } from "@/features/trip-settings";
 import {
   useShoppingChecklist,
   useUpdateShoppingItemChecked,
@@ -186,25 +183,7 @@ export default function PackingListPage() {
           rightAction={
             <HStack gap={0}>
               <IconButton
-                aria-label="일행 목록"
-                variant="ghost"
-                size="sm"
-                color="gray.600"
-                onClick={sheets.members.onOpen}
-              >
-                <Users size={20} />
-              </IconButton>
-              <IconButton
-                aria-label="일행 초대"
-                variant="ghost"
-                size="sm"
-                color="gray.600"
-                onClick={sheets.invite.onOpen}
-              >
-                <UserPlus size={20} />
-              </IconButton>
-              <IconButton
-                aria-label="공유하기"
+                aria-label="체크리스트 공유"
                 variant="ghost"
                 size="sm"
                 color="gray.600"
@@ -212,12 +191,15 @@ export default function PackingListPage() {
               >
                 <Share2 size={20} />
               </IconButton>
-              <TripActionMenu
-                tripId={tripId}
-                tripTitle={tripInfo.title || "여행"}
-                startDate={tripInfo.startDate}
-                endDate={tripInfo.endDate}
-              />
+              <IconButton
+                aria-label="여행 설정"
+                variant="ghost"
+                size="sm"
+                color="gray.600"
+                onClick={sheets.settings.onOpen}
+              >
+                <Settings size={20} />
+              </IconButton>
             </HStack>
           }
         />
@@ -445,15 +427,9 @@ export default function PackingListPage() {
           onClose={sheets.baggage.onClose}
         />
 
-        <InviteSheet
-          isOpen={sheets.invite.isOpen}
-          onClose={sheets.invite.onClose}
-          tripId={tripId}
-        />
-
-        <MemberListSheet
-          isOpen={sheets.members.isOpen}
-          onClose={sheets.members.onClose}
+        <TripSettingsPanel
+          isOpen={sheets.settings.isOpen}
+          onClose={sheets.settings.onClose}
           tripId={tripId}
         />
       </PageLayout>
