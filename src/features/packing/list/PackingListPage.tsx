@@ -10,6 +10,7 @@ import {
 import { useParams, useNavigate } from "@tanstack/react-router";
 import {
   Settings,
+  Share2,
   ChevronRight,
   Minimize2,
   Maximize2,
@@ -34,13 +35,8 @@ import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { colors } from "@/shared/constants/colors";
-import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
-import { TripEditModal } from "@/shared/components/trip-action/TripEditModal";
-import { TripDateEditModal } from "@/shared/components/trip-action/TripDateEditModal";
-import { DeleteTripModal } from "@/shared/components/trip-action/DeleteTripModal";
 import { useScrollToTop } from "@/shared/hooks";
-import InviteSheet from "@/features/trip-members/components/InviteSheet";
-import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
+import { TripSettingsPanel } from "@/features/trip-settings";
 import {
   useShoppingChecklist,
   useUpdateShoppingItemChecked,
@@ -64,7 +60,6 @@ import {
   ChecklistSaveSheet,
   TemplateListSheet,
   AirlineBaggagePolicySheet,
-  TripSettingsDrawer,
 } from "./components";
 
 export default function PackingListPage() {
@@ -156,13 +151,6 @@ export default function PackingListPage() {
     updateShoppingItemStatus.mutate({ itemId, isChecked });
   };
 
-  const { mutate: deleteTripMutate, isPending: isDeletePending } =
-    useDeleteTrip();
-
-  const handleDeleteTrip = () => {
-    deleteTripMutate(tripId);
-  };
-
   useEffect(() => {
     if (!tripId || !tripInfo) {
       navigate({ to: "/main" });
@@ -193,15 +181,26 @@ export default function PackingListPage() {
           title={tripInfo.title || "여행"}
           subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
           rightAction={
-            <IconButton
-              aria-label="여행 설정"
-              variant="ghost"
-              size="sm"
-              color="gray.600"
-              onClick={sheets.settings.onOpen}
-            >
-              <Settings size={20} />
-            </IconButton>
+            <HStack gap={0}>
+              <IconButton
+                aria-label="체크리스트 공유"
+                variant="ghost"
+                size="sm"
+                color="gray.600"
+                onClick={sheets.share.onOpen}
+              >
+                <Share2 size={20} />
+              </IconButton>
+              <IconButton
+                aria-label="여행 설정"
+                variant="ghost"
+                size="sm"
+                color="gray.600"
+                onClick={sheets.settings.onOpen}
+              >
+                <Settings size={20} />
+              </IconButton>
+            </HStack>
           }
         />
         <Container maxW="6xl" pt={1} pb={6} px={0}>
@@ -428,50 +427,10 @@ export default function PackingListPage() {
           onClose={sheets.baggage.onClose}
         />
 
-        <InviteSheet
-          isOpen={sheets.invite.isOpen}
-          onClose={sheets.invite.onClose}
-          tripId={tripId}
-        />
-
-        <MemberListSheet
-          isOpen={sheets.members.isOpen}
-          onClose={sheets.members.onClose}
-          tripId={tripId}
-        />
-
-        <TripSettingsDrawer
+        <TripSettingsPanel
           isOpen={sheets.settings.isOpen}
           onClose={sheets.settings.onClose}
-          onOpenMembers={sheets.members.onOpen}
-          onOpenInvite={sheets.invite.onOpen}
-          onOpenShare={sheets.share.onOpen}
-          onOpenEditTitle={sheets.editTitle.onOpen}
-          onOpenEditDate={sheets.editDate.onOpen}
-          onOpenDeleteTrip={sheets.deleteTrip.onOpen}
-        />
-
-        <TripEditModal
-          isOpen={sheets.editTitle.isOpen}
-          onClose={sheets.editTitle.onClose}
           tripId={tripId}
-          currentTitle={tripInfo.title || "여행"}
-        />
-
-        <TripDateEditModal
-          isOpen={sheets.editDate.isOpen}
-          onClose={sheets.editDate.onClose}
-          tripId={tripId}
-          currentStartDate={tripInfo.startDate}
-          currentEndDate={tripInfo.endDate}
-        />
-
-        <DeleteTripModal
-          isOpen={sheets.deleteTrip.isOpen}
-          onClose={sheets.deleteTrip.onClose}
-          tripTitle={tripInfo.title || "여행"}
-          onDeleteTrip={handleDeleteTrip}
-          isLoading={isDeletePending}
         />
       </PageLayout>
     </>

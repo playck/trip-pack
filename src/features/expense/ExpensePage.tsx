@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { useParams } from "@tanstack/react-router";
-import { Box, Text, HStack, IconButton } from "@chakra-ui/react";
-import { Share2 } from "lucide-react";
+import { Box, Text, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Share2, Settings } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
-import { TripActionMenu } from "@/shared/components";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { ScrollToTopButton } from "@/shared/components";
 import { useScrollToTop } from "@/shared/hooks";
+import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
@@ -31,6 +31,7 @@ export default function ExpensePage() {
   const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { showScrollTop, scrollToTop } = useScrollToTop();
+  const settingsDrawer = useDisclosure();
 
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
@@ -131,12 +132,15 @@ export default function ExpensePage() {
             >
               <Share2 size={20} />
             </IconButton>
-            <TripActionMenu
-              tripId={tripId}
-              tripTitle={tripInfo.title || "여행"}
-              startDate={tripInfo.startDate}
-              endDate={tripInfo.endDate}
-            />
+            <IconButton
+              aria-label="여행 설정"
+              variant="ghost"
+              size="sm"
+              onClick={settingsDrawer.onOpen}
+              color="gray.600"
+            >
+              <Settings size={20} />
+            </IconButton>
           </HStack>
         }
       />
@@ -187,6 +191,12 @@ export default function ExpensePage() {
         onClose={() => setIsSheetOpen(false)}
         onSaveExpense={handleSaveExpense}
         date={selectedDate}
+        tripId={tripId}
+      />
+
+      <TripSettingsPanel
+        isOpen={settingsDrawer.open}
+        onClose={settingsDrawer.onClose}
         tripId={tripId}
       />
     </PageLayout>

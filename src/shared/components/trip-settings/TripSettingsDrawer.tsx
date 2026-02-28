@@ -11,7 +11,6 @@ import {
 import {
   Users,
   UserPlus,
-  Share2,
   Edit3,
   CalendarDays,
   MapPin,
@@ -26,7 +25,6 @@ interface TripSettingsDrawerProps {
   onClose: () => void;
   onOpenMembers: () => void;
   onOpenInvite: () => void;
-  onOpenShare: () => void;
   onOpenEditTitle: () => void;
   onOpenEditDate: () => void;
   onOpenDeleteTrip: () => void;
@@ -79,7 +77,6 @@ export default function TripSettingsDrawer({
   onClose,
   onOpenMembers,
   onOpenInvite,
-  onOpenShare,
   onOpenEditTitle,
   onOpenEditDate,
   onOpenDeleteTrip,
@@ -179,18 +176,6 @@ export default function TripSettingsDrawer({
 
                 <Separator my={3} />
 
-                {/* 공유 섹션 */}
-                <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
-                  공유
-                </Text>
-                <MenuItemRow
-                  icon={<Share2 size={18} />}
-                  label="체크리스트 공유"
-                  onClick={() => handleAction(onOpenShare)}
-                />
-
-                <Separator my={3} />
-
                 {/* 일행 설정 섹션 */}
                 <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
                   일행 설정
@@ -220,11 +205,6 @@ export default function TripSettingsDrawer({
                   bg={customPalette.rose[50]}
                   color={statusColors.error.text}
                   _hover={{ bg: customPalette.rose[100] }}
-                  _focusVisible={{
-                    outline: "2px solid",
-                    outlineColor: customPalette.rose[400],
-                    outlineOffset: "-2px",
-                  }}
                   onClick={() => handleAction(onOpenDeleteTrip)}
                   css={{ touchAction: "manipulation" }}
                 >
