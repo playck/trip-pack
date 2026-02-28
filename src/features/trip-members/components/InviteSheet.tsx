@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { VStack, Text, Input, HStack, Button } from "@chakra-ui/react";
-import { Link, Copy, Check } from "lucide-react";
-import { BottomSheet } from "@/shared/components";
+import { useCallback, useEffect, useRef } from "react";
+import { Center, Spinner } from "@chakra-ui/react";
 import { copyToClipboard } from "@/shared/utiles/clipboard";
 import { toaster } from "@/shared/components/ui/toaster";
 import { colors } from "@/shared/constants/colors";
@@ -18,83 +16,66 @@ export default function InviteSheet({
   onClose,
   tripId,
 }: InviteSheetProps) {
-  const [inviteLink, setInviteLink] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const createInvitation = useCreateInvitation();
+  const hasMutatedRef = useRef(false);
 
-  const handleCreateLink = () => {
-    createInvitation.mutate(tripId, {
-      onSuccess: (data) => {
-        const baseUrl = window.location.origin;
-        setInviteLink(`${baseUrl}/invite/${data.invite_code}`);
-      },
-    });
-  };
+  const triggerShare = useCallback(
+    async (link: string) => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "여행 초대",
+            text: "함께 여행을 준비해요!",
+            url: link,
+          });
+        } catch (error) {
+          // 사용자가 공유를 취소한 경우 무시
+          if (error instanceof Error && error.name !== "AbortError") {
+            await fallbackCopy(link);
+          }
+        }
+      } else {
+        await fallbackCopy(link);
+      }
+      onClose();
+    },
+    [onClose],
+  );
 
-  const handleCopy = async () => {
-    if (!inviteLink) return;
-    const ok = await copyToClipboard(inviteLink);
-    if (ok) {
-      setCopied(true);
-      toaster.create({
-        title: "초대 링크가 복사되었습니다",
-        type: "success",
-        duration: 2000,
+  useEffect(() => {
+    if (isOpen && !hasMutatedRef.current) {
+      hasMutatedRef.current = true;
+      createInvitation.mutate(tripId, {
+        onSuccess: (data) => {
+          const link = `${window.location.origin}/invite/${data.invite_code}`;
+          triggerShare(link);
+        },
+        onError: () => {
+          onClose();
+        },
       });
-      setTimeout(() => setCopied(false), 2000);
     }
-  };
+    if (!isOpen) {
+      hasMutatedRef.current = false;
+    }
+  }, [isOpen]);
 
-  const handleClose = () => {
-    setInviteLink(null);
-    setCopied(false);
-    onClose();
-  };
+  if (!isOpen || !createInvitation.isPending) return null;
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose} title="일행 초대">
-      <VStack gap={5} px={4} pb={4}>
-        <VStack gap={2} align="start" w="full">
-          <Text fontSize="sm" color="gray.600">
-            초대 링크를 생성하여 일행에게 공유하세요.
-          </Text>
-          <Text fontSize="xs" color="gray.400">
-            링크를 받은 사람은 로그인 후 여행에 참가할 수 있습니다.
-          </Text>
-        </VStack>
-
-        {!inviteLink ? (
-          <Button
-            w="full"
-            size="lg"
-            colorPalette={colors.primary.palette}
-            onClick={handleCreateLink}
-            loading={createInvitation.isPending}
-          >
-            <Link size={18} />
-            초대 링크 생성
-          </Button>
-        ) : (
-          <HStack w="full" gap={2}>
-            <Input
-              value={inviteLink}
-              readOnly
-              size="lg"
-              borderRadius="xl"
-              fontSize="sm"
-            />
-            <Button
-              size="lg"
-              colorPalette={copied ? "green" : colors.primary.palette}
-              onClick={handleCopy}
-              px={4}
-              flexShrink={0}
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-            </Button>
-          </HStack>
-        )}
-      </VStack>
-    </BottomSheet>
+    <Center position="fixed" inset={0} zIndex="overlay" bg="blackAlpha.300">
+      <Spinner size="xl" color={colors.primary.solid} />
+    </Center>
   );
+}
+
+async function fallbackCopy(link: string) {
+  const ok = await copyToClipboard(link);
+  if (ok) {
+    toaster.create({
+      title: "초대 링크가 복사되었습니다",
+      type: "success",
+      duration: 2000,
+    });
+  }
 }
