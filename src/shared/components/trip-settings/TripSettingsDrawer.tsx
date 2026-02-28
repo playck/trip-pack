@@ -50,15 +50,9 @@ function MenuItemRow({ icon, label, onClick }: MenuItem) {
       w="full"
       gap={3}
       py={3}
-      px={3}
-      cursor="pointer"
       borderRadius="lg"
+      cursor="pointer"
       _hover={{ bg: "gray.50" }}
-      _focusVisible={{
-        outline: "2px solid",
-        outlineColor: "teal.400",
-        outlineOffset: "-2px",
-      }}
       onClick={onClick}
       css={{ touchAction: "manipulation" }}
     >
