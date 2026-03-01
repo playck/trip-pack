@@ -5,6 +5,7 @@ import { useAtom } from "jotai";
 import LazyLottie from "@/shared/components/LazyLottie";
 import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { scheduleTripNotification } from "@/shared/utils/nativeMessage";
 
 import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import {
@@ -15,7 +16,7 @@ import { useCreateTrip } from "../services/useCreateTrip";
 
 function buildLoadingMessages(
   regionName: string | undefined,
-  tripTypes: string[]
+  tripTypes: string[],
 ): string[] {
   const destination = regionName ?? "여행";
   const messages = [`${destination} 체크리스트를 만들고 있어요...`];
@@ -62,9 +63,9 @@ export default function LastStep() {
     () =>
       buildLoadingMessages(
         packingCreateState.region?.name,
-        packingCreateState.tripTypes
+        packingCreateState.tripTypes,
       ),
-    [packingCreateState.region?.name, packingCreateState.tripTypes]
+    [packingCreateState.region?.name, packingCreateState.tripTypes],
   );
 
   // 초기 메시지 설정
@@ -93,16 +94,27 @@ export default function LastStep() {
       const categoryCount =
         completePackingState.generatedCheckList?.length ?? 0;
       setMessage(
-        `완료! ${categoryCount}개 카테고리, ${totalItemCount}개 아이템을 준비했어요`
+        `완료! ${categoryCount}개 카테고리, ${totalItemCount}개 아이템을 준비했어요`,
       );
       setSubMessage("곧 체크리스트로 이동합니다");
+
+      const tripTitle = packingCreateState.region?.name ?? "";
+      const startDate = packingCreateState.dates.startDate;
+
+      if (startDate) {
+        scheduleTripNotification({
+          tripId,
+          tripTitle,
+          startDate: startDate.toISOString().split("T")[0],
+        });
+      }
 
       setTimeout(() => {
         setPackingCreateState(INITIAL_PACKING_CREATE_STATE);
         navigate({
           to: "/packing/list/$tripId",
           params: { tripId },
-          search: { tripTitle: packingCreateState.region?.name ?? "" },
+          search: { tripTitle },
         });
       }, 1500);
     },
@@ -112,7 +124,8 @@ export default function LastStep() {
       setPackingCreateState,
       navigate,
       packingCreateState.region?.name,
-    ]
+      packingCreateState.dates.startDate,
+    ],
   );
 
   const handleError = useCallback(() => {

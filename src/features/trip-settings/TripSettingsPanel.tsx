@@ -72,6 +72,7 @@ export default function TripSettingsPanel({
         isOpen={editDate.open}
         onClose={editDate.onClose}
         tripId={tripId}
+        tripTitle={tripInfo?.title || "여행"}
         currentStartDate={tripInfo?.startDate || ""}
         currentEndDate={tripInfo?.endDate || ""}
       />

@@ -17,6 +17,7 @@ interface TripDateEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   tripId: string;
+  tripTitle?: string;
   currentStartDate: string;
   currentEndDate: string;
 }
@@ -25,6 +26,7 @@ export function TripDateEditModal({
   isOpen,
   onClose,
   tripId,
+  tripTitle,
   currentStartDate,
   currentEndDate,
 }: TripDateEditModalProps) {
@@ -45,6 +47,7 @@ export function TripDateEditModal({
   }, [isOpen, currentStartDate, currentEndDate]);
 
   const updateTripDatesMutation = useUpdateTripDates(tripId, {
+    tripTitle,
     onSuccess: () => {
       setShowDeleteWarning(false);
       onClose();

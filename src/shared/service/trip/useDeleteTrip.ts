@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toaster } from "@/shared/components/ui/toaster";
+import { cancelTripNotification } from "@/shared/utils/nativeMessage";
 import { deleteTrip } from "./api";
 
 interface UseDeleteTripParams {
@@ -26,6 +27,8 @@ export function useDeleteTrip(callback?: UseDeleteTripParams) {
       queryClient.invalidateQueries({
         queryKey: ["tripChecklist", tripId],
       });
+
+      cancelTripNotification({ tripId });
 
       if (callback?.onSuccess) {
         callback.onSuccess(tripId);

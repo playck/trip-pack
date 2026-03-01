@@ -1,8 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
+import {
+  scheduleTripNotification,
+  cancelTripNotification,
+} from "@/shared/utils/nativeMessage";
 import { updateTripDatesWithSchedules, getSchedulesOutOfRange } from "./api";
 
 interface UseUpdateTripDatesParams {
+  tripTitle?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
@@ -31,7 +36,7 @@ export function useUpdateTripDates(
         endDate,
         deleteOutOfRangeSchedules,
       }),
-    onSuccess: (result) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["tripInfo", tripId],
       });
@@ -41,6 +46,15 @@ export function useUpdateTripDates(
       queryClient.invalidateQueries({
         queryKey: ["tripExpenses", tripId],
       });
+
+      cancelTripNotification({ tripId });
+      if (callback?.tripTitle) {
+        scheduleTripNotification({
+          tripId,
+          tripTitle: callback.tripTitle,
+          startDate: variables.startDate,
+        });
+      }
 
       if (callback?.onSuccess) {
         callback.onSuccess();

@@ -159,6 +159,7 @@ export default function TripActionMenu({
         isOpen={isDateEditModalOpen}
         onClose={onDateEditModalClose}
         tripId={tripId}
+        tripTitle={tripTitle}
         currentStartDate={startDate}
         currentEndDate={endDate}
       />
