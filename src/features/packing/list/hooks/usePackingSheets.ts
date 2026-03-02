@@ -36,10 +36,16 @@ export function usePackingSheets() {
     onOpen: onSettingsOpen,
     onClose: onSettingsClose,
   } = useDisclosure();
+  const {
+    open: isTodoCategoryOpen,
+    onOpen: onTodoCategoryOpen,
+    onClose: onTodoCategoryClose,
+  } = useDisclosure();
 
   return {
     category: { isOpen: isCategoryOpen, onOpen: onCategoryOpen, onClose: onCategoryClose },
     shoppingCategory: { isOpen: isShoppingCategoryOpen, onOpen: onShoppingCategoryOpen, onClose: onShoppingCategoryClose },
+    todoCategory: { isOpen: isTodoCategoryOpen, onOpen: onTodoCategoryOpen, onClose: onTodoCategoryClose },
     template: { isOpen: isTemplateOpen, onOpen: onTemplateOpen, onClose: onTemplateClose },
     share: { isOpen: isShareOpen, onOpen: onShareOpen, onClose: onShareClose },
     save: { isOpen: isSaveOpen, onOpen: onSaveOpen, onClose: onSaveClose },

@@ -18,6 +18,7 @@ import {
   Download,
   FolderPlus,
   ShoppingCart,
+  ClipboardList,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -36,7 +37,9 @@ import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { TripSettingsPanel } from "@/features/trip-settings";
+import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import {
   useShoppingChecklist,
   useUpdateShoppingItemChecked,
@@ -45,6 +48,14 @@ import { useCreateShoppingCategory } from "@/features/shopping/list/hooks/useSho
 import { useShoppingListViewControls } from "@/features/shopping/list/hooks/useShoppingListViewControls";
 import ShoppingGridView from "@/features/shopping/list/components/ShoppingGridView";
 import ShoppingListView from "@/features/shopping/list/components/ShoppingListView";
+import {
+  useTodoChecklist,
+  useUpdateTodoItemChecked,
+} from "@/features/todo/list/hooks/useTodoChecklist";
+import { useCreateTodoCategory } from "@/features/todo/list/hooks/useTodoMutations";
+import { useTodoListViewControls } from "@/features/todo/list/hooks/useTodoListViewControls";
+import TodoGridView from "@/features/todo/list/components/TodoGridView";
+import TodoListView from "@/features/todo/list/components/TodoListView";
 import {
   useTripChecklist,
   useUpdateItemCheckedStatus,
@@ -97,6 +108,26 @@ export default function PackingListPage() {
     },
   });
 
+  // 본인것만 보기
+  const { user } = useAuth();
+  const { data: tripMembers = [] } = useTripMembers(tripId);
+  const currentMemberId = tripMembers.find((m) => m.user_id === user?.id)?.id;
+  const [showOnlyMine, setShowOnlyMine] = useState(false);
+
+  // 할일
+  const {
+    categories: todoCategories,
+    error: todoError,
+    progress: todoProgress,
+  } = useTodoChecklist(tripId);
+  const todoListControls = useTodoListViewControls(todoCategories);
+  const updateTodoItemStatus = useUpdateTodoItemChecked(tripId);
+  const createTodoCategoryMutation = useCreateTodoCategory(tripId, {
+    onSuccess: () => {
+      sheets.todoCategory.onClose();
+    },
+  });
+
   const menuItems: FloatingMenuItem[] = [
     {
       label: "체크리스트 저장",
@@ -118,6 +149,11 @@ export default function PackingListPage() {
       icon: <ShoppingCart size={18} />,
       onClick: () => sheets.shoppingCategory.onOpen(),
     },
+    {
+      label: "할일 카테고리 추가",
+      icon: <ClipboardList size={18} />,
+      onClick: () => sheets.todoCategory.onOpen(),
+    },
   ];
 
   const isCanAddMoreCategories = categories.length < 20;
@@ -134,9 +170,21 @@ export default function PackingListPage() {
   const handleSaveShoppingCategory = (
     categoryName: string,
     iconKey: string,
-    isShared?: boolean
+    isShared?: boolean,
   ) => {
     createShoppingCategoryMutation.mutate({
+      categoryName,
+      iconKey,
+      isShared,
+    });
+  };
+
+  const handleSaveTodoCategory = (
+    categoryName: string,
+    iconKey: string,
+    isShared?: boolean,
+  ) => {
+    createTodoCategoryMutation.mutate({
       categoryName,
       iconKey,
       isShared,
@@ -151,17 +199,26 @@ export default function PackingListPage() {
     updateShoppingItemStatus.mutate({ itemId, isChecked });
   };
 
+  const handleToggleTodoItem = (itemId: string, isChecked: boolean) => {
+    updateTodoItemStatus.mutate({ itemId, isChecked });
+  };
+
   useEffect(() => {
     if (!tripId || !tripInfo) {
       navigate({ to: "/main" });
     }
   }, [tripId, tripInfo, navigate]);
 
-  if (error || shoppingError) {
+  if (error || shoppingError || todoError) {
     return (
       <PageLayout>
         <ErrorMessage
-          message={error || shoppingError || "알 수 없는 오류가 발생했습니다"}
+          message={
+            error ||
+            shoppingError ||
+            todoError ||
+            "알 수 없는 오류가 발생했습니다"
+          }
           title="체크리스트 불러오기 실패"
           centered
           fullScreen
@@ -278,19 +335,22 @@ export default function PackingListPage() {
                     onClick={() => {
                       listControls.toggleAllCategories();
                       shoppingListControls.toggleAllCategories();
+                      todoListControls.toggleAllCategories();
                     }}
                     color="gray.600"
                     _hover={{ opacity: 0.7 }}
                   >
                     {listControls.allExpanded &&
-                    shoppingListControls.allExpanded ? (
+                    shoppingListControls.allExpanded &&
+                    todoListControls.allExpanded ? (
                       <Minimize2 size={14} />
                     ) : (
                       <Maximize2 size={14} />
                     )}
                     <Text fontSize="sm">
                       {listControls.allExpanded &&
-                      shoppingListControls.allExpanded
+                      shoppingListControls.allExpanded &&
+                      todoListControls.allExpanded
                         ? "모두 접기"
                         : "모두 펼치기"}
                     </Text>
@@ -339,12 +399,12 @@ export default function PackingListPage() {
             {/* 쇼핑 리스트 섹션 */}
             {shoppingCategories.length > 0 && (
               <>
-                <HStack gap={2} align="center">
+                <HStack gap={2} align="center" mt={4} mb={2}>
                   <Box flex={1} h="1px" bg="gray.300" />
                   <HStack gap={1.5}>
                     <ShoppingCart size={16} color={colors.primary.hex[500]} />
                     <Text fontSize="sm" fontWeight="semibold" color="gray.600">
-                      쇼핑 리스트
+                      쇼핑
                     </Text>
                     <Text
                       fontSize="sm"
@@ -375,6 +435,55 @@ export default function PackingListPage() {
                 )}
               </>
             )}
+
+            {/* 할일 리스트 섹션 */}
+            {todoCategories.length > 0 && (
+              <>
+                <HStack gap={2} align="center" mt={4} mb={2}>
+                  <Box flex={1} h="1px" bg="gray.300" />
+                  <HStack gap={1.5}>
+                    <ClipboardList size={16} color={colors.primary.hex[500]} />
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+                      할일
+                    </Text>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="semibold"
+                      color={colors.primary.fg}
+                    >
+                      {todoProgress.checkedItems}/{todoProgress.totalItems}
+                    </Text>
+                  </HStack>
+                  <Box flex={1} h="1px" bg="gray.300" />
+                </HStack>
+
+                {viewMode === "일렬형식" && tripMembers.length > 1 && (
+                  <HStack justify="flex-end">
+                    <Checkbox
+                      isChecked={showOnlyMine}
+                      onChange={() => setShowOnlyMine((prev) => !prev)}
+                      label="내 할일만 보기"
+                      size="md"
+                    />
+                  </HStack>
+                )}
+
+                {viewMode === "그리드" ? (
+                  <TodoGridView categories={todoCategories} tripId={tripId} />
+                ) : (
+                  <TodoListView
+                    categories={todoCategories}
+                    tripId={tripId}
+                    onToggleItem={handleToggleTodoItem}
+                    showUncheckedOnly={todoListControls.showUncheckedOnly}
+                    showOnlyMine={showOnlyMine}
+                    currentMemberId={currentMemberId}
+                    expandedCategories={todoListControls.expandedCategories}
+                    toggleCategory={todoListControls.toggleCategory}
+                  />
+                )}
+              </>
+            )}
           </VStack>
         </Container>
 
@@ -401,6 +510,14 @@ export default function PackingListPage() {
           showSharedToggle
           onSave={handleSaveShoppingCategory}
           onClose={sheets.shoppingCategory.onClose}
+        />
+
+        <AddCategorySheet
+          isOpen={sheets.todoCategory.isOpen}
+          isLoading={createTodoCategoryMutation.isPending}
+          showSharedToggle
+          onSave={handleSaveTodoCategory}
+          onClose={sheets.todoCategory.onClose}
         />
 
         <TemplateListSheet

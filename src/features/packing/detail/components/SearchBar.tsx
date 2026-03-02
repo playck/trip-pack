@@ -3,9 +3,10 @@ import ItemSearch from "./ItemSearch";
 
 interface SearchBarProps extends BoxProps {
   onSearch: (query: string) => void;
+  placeholder?: string;
 }
 
-export function SearchBar({ onSearch, ...boxProps }: SearchBarProps) {
+export function SearchBar({ onSearch, placeholder, ...boxProps }: SearchBarProps) {
   return (
     <Box
       bg="white"
@@ -17,7 +18,7 @@ export function SearchBar({ onSearch, ...boxProps }: SearchBarProps) {
       zIndex={99}
       {...boxProps}
     >
-      <ItemSearch onSearch={onSearch} />
+      <ItemSearch onSearch={onSearch} placeholder={placeholder} />
     </Box>
   );
 }
