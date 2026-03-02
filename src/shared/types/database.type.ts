@@ -346,6 +346,154 @@ export type Database = {
           },
         ]
       }
+      todo_categories: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          icon_key: string | null
+          id: string
+          is_shared: boolean
+          name: string
+          trip_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          is_shared?: boolean
+          name: string
+          trip_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          icon_key?: string | null
+          id?: string
+          is_shared?: boolean
+          name?: string
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todo_categories_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_item_assignees: {
+        Row: {
+          created_at: string | null
+          id: string
+          member_id: string
+          todo_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          member_id: string
+          todo_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          member_id?: string
+          todo_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_item_assignees_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "trip_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todo_item_assignees_todo_item_id_fkey"
+            columns: ["todo_item_id"]
+            isOneToOne: false
+            referencedRelation: "todo_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_items: {
+        Row: {
+          category_id: string
+          checked_by: string | null
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          due_date: string | null
+          id: string
+          is_checked: boolean | null
+          name: string
+          notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_id: string
+          checked_by?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          due_date?: string | null
+          id?: string
+          is_checked?: boolean | null
+          name: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_id?: string
+          checked_by?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          due_date?: string | null
+          id?: string
+          is_checked?: boolean | null
+          name?: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "todo_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todo_items_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todo_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_expenses: {
         Row: {
           amount: number
