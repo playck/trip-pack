@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
-import { LogOut, UserX } from "lucide-react";
+import { LogOut, UserX, Shield, FileText, Info } from "lucide-react";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { LEGAL_URLS } from "@/shared/constants/app";
+import { openUrl } from "@/shared/utils/nativeMessage";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import type { DialogConfig, DialogType } from "../type";
 import MenuItem from "./MenuItem";
+import AboutSheet from "./AboutSheet";
 
 export default function AccountSection() {
   const { logout, deleteAccount } = useAuth();
@@ -12,6 +15,7 @@ export default function AccountSection() {
     isOpen: false,
     type: null,
   });
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const openDialog = (type: DialogType) => {
     setDialogConfig({ isOpen: true, type });
@@ -30,8 +34,46 @@ export default function AccountSection() {
     closeDialog();
   };
 
+  const handleOpenUrl = (url: string) => {
+    if (window.ReactNativeWebView) {
+      openUrl(url);
+    } else {
+      window.open(url, "_blank");
+    }
+  };
+
   return (
     <>
+      <Box>
+        <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
+          앱 정보
+        </Text>
+        <VStack
+          gap={0}
+          bg="white"
+          borderRadius="xl"
+          px={4}
+          borderWidth="1px"
+          borderColor="gray.200"
+        >
+          <MenuItem
+            icon={Shield}
+            label="개인정보 처리방침"
+            onClick={() => handleOpenUrl(LEGAL_URLS.PRIVACY_POLICY)}
+          />
+          <MenuItem
+            icon={FileText}
+            label="이용약관"
+            onClick={() => handleOpenUrl(LEGAL_URLS.TERMS_OF_SERVICE)}
+          />
+          <MenuItem
+            icon={Info}
+            label="앱 정보"
+            onClick={() => setIsAboutOpen(true)}
+          />
+        </VStack>
+      </Box>
+
       <Box>
         <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
           계정 관리
@@ -57,6 +99,11 @@ export default function AccountSection() {
           />
         </VStack>
       </Box>
+
+      <AboutSheet
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
+      />
 
       <ConfirmDialog
         isOpen={dialogConfig.isOpen}
