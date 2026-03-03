@@ -17,6 +17,8 @@ import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors, statusColors } from "@/shared/constants/colors";
+import { LEGAL_URLS } from "@/shared/constants/app";
+import { openUrl } from "@/shared/utils/nativeMessage";
 import {
   validateLoginForm,
   handleLoginError,
@@ -335,6 +337,38 @@ export default function LoginPage() {
                   >
                     회원가입하기
                   </Text>
+                </Text>
+              </Box>
+
+              <Box textAlign="center" mt={1}>
+                <Text fontSize="xs" color="gray.400">
+                  가입 시{" "}
+                  <Text
+                    as="button"
+                    color="gray.500"
+                    textDecoration="underline"
+                    onClick={() =>
+                      window.ReactNativeWebView
+                        ? openUrl(LEGAL_URLS.TERMS_OF_SERVICE)
+                        : window.open(LEGAL_URLS.TERMS_OF_SERVICE, "_blank")
+                    }
+                  >
+                    이용약관
+                  </Text>
+                  {" 및 "}
+                  <Text
+                    as="button"
+                    color="gray.500"
+                    textDecoration="underline"
+                    onClick={() =>
+                      window.ReactNativeWebView
+                        ? openUrl(LEGAL_URLS.PRIVACY_POLICY)
+                        : window.open(LEGAL_URLS.PRIVACY_POLICY, "_blank")
+                    }
+                  >
+                    개인정보 처리방침
+                  </Text>
+                  에 동의하게 됩니다.
                 </Text>
               </Box>
             </Stack>
