@@ -3,9 +3,9 @@ import { useDebounceCallback } from "usehooks-ts";
 import { useAtom } from "jotai";
 
 import { Combobox, Portal, createListCollection } from "@chakra-ui/react";
-import { regionsList, type Region } from "@/shared/data/regions";
+import { type Region } from "@/shared/data/regions";
+import { popularRegions } from "@/shared/data/popularRegions";
 import { packingCreateAtom } from "../store/packingCreateAtom";
-
 import { searchRegions } from "../hooks/useSearchRegions";
 import RegionOptionRow from "./RegionOptionRow";
 
@@ -22,8 +22,6 @@ export interface SearchRegionComboBoxProps {
   variant?: Combobox.RootProps["variant"];
   contentMaxHeight?: string | number;
 }
-
-const DEFAULT_MAX_RESULTS = 100;
 
 export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
   const {
@@ -43,17 +41,13 @@ export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
 
   const items: RegionItem[] = useMemo(() => {
     const query = inputValue.trim();
-    const matchedRegions = query ? searchRegions(query) : regionsList;
-    const limitedRegions = query
-      ? matchedRegions
-      : matchedRegions.slice(0, DEFAULT_MAX_RESULTS);
-
-    return limitedRegions.map(toRegionItem);
+    const regions = query ? searchRegions(query) : popularRegions;
+    return regions.map(toRegionItem);
   }, [inputValue]);
 
   const collection = useMemo(
     () => createListCollection<RegionItem>({ items }),
-    [items]
+    [items],
   );
 
   const handleValueChange = useCallback(
@@ -67,14 +61,14 @@ export default function SearchRegionComboBox(props: SearchRegionComboBoxProps) {
         region: nextRegion,
       }));
     },
-    [items, setPackingState]
+    [items, setPackingState],
   );
 
   const handleInputValueChange = useCallback(
     (e: Combobox.InputValueChangeDetails) => {
       setInputValueDebounced(e.inputValue);
     },
-    [setInputValueDebounced]
+    [setInputValueDebounced],
   );
 
   return (
