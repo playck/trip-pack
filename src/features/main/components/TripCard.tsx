@@ -3,14 +3,10 @@ import dayjs from "dayjs";
 import { CalendarDays, DollarSign } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
+import { getTripBackgroundImage } from "@/shared/utiles/tripImage";
+import { colorCombinations, colors } from "@/shared/constants/colors";
+import { formatTripDateRange } from "@/shared/utiles/date";
 import type { Trip } from "../types";
-import { colorCombinations, colors } from "../../../shared/constants/colors";
-import { formatTripDateRange } from "../../../shared/utiles/date";
-import {
-  countryImages,
-  DEFAULT_BACKGROUND_IMAGES,
-} from "../../../shared/data/countryImages";
-import { regionsList } from "../../../shared/data/regions";
 
 interface TripCardProps {
   trip: Trip;
@@ -20,36 +16,16 @@ interface TripCardProps {
 export default function TripCard({ trip, onClick }: TripCardProps) {
   const navigate = useNavigate();
 
-  const getBackgroundImage = (trip: Trip) => {
-    const getIndexFromId = (id: string, length: number) => {
-      const seed = id
-        .split("")
-        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      return seed % length;
-    };
-
-    const region = regionsList.find((r) => r.name === trip.region_name);
-    if (!region) {
-      return DEFAULT_BACKGROUND_IMAGES[
-        getIndexFromId(trip.id, DEFAULT_BACKGROUND_IMAGES.length)
-      ];
-    }
-
-    const images = countryImages[region.countryCode];
-    if (!images || images.length === 0) {
-      return DEFAULT_BACKGROUND_IMAGES[
-        getIndexFromId(trip.id, DEFAULT_BACKGROUND_IMAGES.length)
-      ];
-    }
-
-    return images[getIndexFromId(trip.id, images.length)];
-  };
-
-  const backgroundImage = getBackgroundImage(trip);
+  const backgroundImage = getTripBackgroundImage({
+    id: trip.id,
+    regionName: trip.region_name,
+    countryCode: trip.country_code,
+    imageUrl: trip.image_url,
+  });
 
   const getTripStatus = (
     startDate: string,
-    endDate: string | null
+    endDate: string | null,
   ): string | null => {
     const today = dayjs().startOf("day");
     const tripStartDate = dayjs(startDate);

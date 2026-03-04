@@ -1,10 +1,13 @@
+import { useRef } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { useHistoryBack } from "@/shared/hooks";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { TripSettingsDrawer } from "@/shared/components/trip-settings";
 import { TripEditModal } from "@/shared/components/trip-action/TripEditModal";
 import { TripDateEditModal } from "@/shared/components/trip-action/TripDateEditModal";
 import { DeleteTripModal } from "@/shared/components/trip-action/DeleteTripModal";
 import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
+import { useUpdateTripImage } from "@/shared/service/trip/useUpdateTripImage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import InviteSheet from "@/features/trip-members/components/InviteSheet";
@@ -23,10 +26,14 @@ export default function TripSettingsPanel({
 }: TripSettingsPanelProps) {
   useHistoryBack(isOpen, onClose);
 
+  const { user } = useAuth();
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: members } = useTripMembers(tripId);
   const { mutate: deleteTripMutate, isPending: isDeletePending } =
     useDeleteTrip();
+  const { mutate: updateImageMutate, isPending: isImageUploading } =
+    useUpdateTripImage();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editTitle = useDisclosure();
   const editDate = useDisclosure();
@@ -36,6 +43,24 @@ export default function TripSettingsPanel({
 
   const handleDeleteTrip = () => {
     deleteTripMutate(tripId);
+  };
+
+  const handleChangeImage = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    updateImageMutate({
+      tripId,
+      userId: user.id,
+      file,
+      currentImageUrl: tripInfo?.imageUrl,
+    });
+
+    e.target.value = "";
   };
 
   return (
@@ -48,17 +73,30 @@ export default function TripSettingsPanel({
         onOpenEditTitle={editTitle.onOpen}
         onOpenEditDate={editDate.onOpen}
         onOpenDeleteTrip={deleteTrip.onOpen}
+        onChangeImage={handleChangeImage}
+        isUploadingImage={isImageUploading}
         tripInfo={
           tripInfo
             ? {
+                id: tripId,
                 title: tripInfo.title || "여행",
                 regionName: tripInfo.regionName,
+                countryCode: tripInfo.countryCode,
                 startDate: tripInfo.startDate,
                 endDate: tripInfo.endDate,
+                imageUrl: tripInfo.imageUrl,
               }
             : undefined
         }
         memberCount={members?.length ?? 0}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileSelected}
       />
 
       <TripEditModal
