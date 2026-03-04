@@ -9,5 +9,6 @@ export const useTripInfo = (tripId: string | undefined) => {
       return getTripInfo(tripId);
     },
     staleTime: 1000 * 60 * 5,
+    meta: { persist: true },
   });
 };

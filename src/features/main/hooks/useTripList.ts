@@ -17,6 +17,7 @@ export function useTripList(): UseTripListReturn {
     queryKey: ["tripList"],
     queryFn: getTripList,
     retry: false,
+    meta: { persist: true },
   });
 
   const noTripList =

@@ -3,15 +3,23 @@ import { Plus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { colors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
+import { useNetworkStatus } from "@/shared/hooks/useNetworkStatus";
 
 export default function IntroBanner() {
   const { user } = useAuth();
+  const { isOnline } = useNetworkStatus();
 
   return (
     <Link
       to="/packing/create"
       preload="intent"
-      style={{ display: "block", width: "100%", textDecoration: "none" }}
+      disabled={!isOnline}
+      style={{
+        display: "block",
+        width: "100%",
+        textDecoration: "none",
+        opacity: isOnline ? 1 : 0.5,
+      }}
     >
       <Box
         py={3}

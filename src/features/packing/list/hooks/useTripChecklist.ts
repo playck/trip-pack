@@ -34,6 +34,7 @@ export function useTripChecklist(
       }
       return getTripChecklist(tripId);
     },
+    meta: { persist: true },
   });
 
   const progress = calculateChecklistProgress(categories);
