@@ -47,3 +47,16 @@ export const TRIP_TYPE_OPTIONS: TripTypeOption[] = [
   "운동",
   "수영",
 ];
+
+export const TRIP_TYPE_ICONS: Record<TripTypeOption, string> = {
+  미식: "🍽️",
+  자연: "🌿",
+  관광: "📸",
+  출장: "💼",
+  액티비티: "🏄",
+  휴양: "🏖️",
+  문화: "🎭",
+  쇼핑: "🛍️",
+  운동: "💪",
+  수영: "🏊",
+};

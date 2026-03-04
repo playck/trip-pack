@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Container } from "@chakra-ui/react";
 import { useAtomValue, useSetAtom } from "jotai";
 
+import { MapPin, Calendar, Users, Luggage } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import {
   packingCreateValidationAtom,
@@ -21,6 +22,13 @@ import {
 import { Step, type StepValue, LAST_STEP } from "./constants";
 
 const TOTAL_STEPS = 4;
+
+const STEP_ICONS = [
+  <MapPin size={18} />,
+  <Calendar size={18} />,
+  <Users size={18} />,
+  <Luggage size={18} />,
+];
 
 const STEP_TITLES = {
   [Step.REGION]: "어디로 떠나시나요?",
@@ -109,6 +117,7 @@ export default function PackingCreatePage() {
         <StepIndicator
           count={TOTAL_STEPS}
           currentStep={step === Step.LOADING ? TOTAL_STEPS : step}
+          icons={STEP_ICONS}
           completedContent={step === Step.LOADING ? <LastStep /> : undefined}
           renderContent={renderContent}
         />

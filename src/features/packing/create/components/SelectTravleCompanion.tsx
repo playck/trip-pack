@@ -51,7 +51,7 @@ export default function TravelCompanion() {
           flex={1}
           onClick={() => handleCompanionChange("alone")}
         >
-          혼자 떠나요!
+          🧑 혼자 떠나요!
         </Button>
         <Button
           variant={companion === "withCompanion" ? "solid" : "outline"}
@@ -65,7 +65,7 @@ export default function TravelCompanion() {
           flex={1}
           onClick={() => handleCompanionChange("withCompanion")}
         >
-          일행이 있어요!
+          👥 일행이 있어요!
         </Button>
       </HStack>
 

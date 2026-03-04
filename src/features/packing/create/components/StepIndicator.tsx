@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 interface StepIndicatorProps {
   count?: number;
   currentStep?: number;
+  icons?: ReactNode[];
   renderContent?: (index: number) => ReactNode;
   completedContent?: ReactNode;
 }
@@ -12,6 +13,7 @@ interface StepIndicatorProps {
 export default function StepIndicator({
   count = 1,
   currentStep = 0,
+  icons,
   renderContent,
   completedContent,
 }: StepIndicatorProps) {
@@ -27,7 +29,7 @@ export default function StepIndicator({
             colorPalette={colors.primary.palette}
             gap={0}
           >
-            <Steps.Indicator />
+            <Steps.Indicator>{icons?.[index]}</Steps.Indicator>
             <Steps.Separator />
           </Steps.Item>
         ))}

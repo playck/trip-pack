@@ -1,7 +1,11 @@
 import { Button, VStack, Wrap, WrapItem } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import { componentColors } from "@/shared/constants/colors";
-import { type TripTypeOption, TRIP_TYPE_OPTIONS } from "../data/data";
+import {
+  type TripTypeOption,
+  TRIP_TYPE_OPTIONS,
+  TRIP_TYPE_ICONS,
+} from "../data/data";
 import { packingCreateAtom } from "../store/packingCreateAtom";
 
 export default function SelectTripType() {
@@ -38,7 +42,7 @@ export default function SelectTripType() {
               size="sm"
               onClick={() => handleTripTypeToggle(type)}
             >
-              {type}
+              {TRIP_TYPE_ICONS[type]} {type}
             </Button>
           </WrapItem>
         ))}

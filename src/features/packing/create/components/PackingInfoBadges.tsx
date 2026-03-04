@@ -31,9 +31,11 @@ export default function PackingInfoBadges() {
         ? "솔로 여행"
         : state.companionTypes.join(", ");
 
+    const companionEmoji = state.companion === "alone" ? "🧑" : "👥";
+
     badges.push(
       <Badge key="companion" variant="outline" size="sm">
-        👥 {companionText}
+        {companionEmoji} {companionText}
       </Badge>
     );
   }
