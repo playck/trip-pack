@@ -8,6 +8,7 @@ import DatePicker, {
 } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { colors } from "@/shared/constants/colors";
+import { isKoreanHoliday } from "@/shared/utiles/holiday";
 
 export interface TravelDates {
   startDate: Date | null;
@@ -147,10 +148,17 @@ export default function Calendar({
       const isSunday = new Date(date).getDay() === 0;
       const isSatday = new Date(date).getDay() === 6;
       const isAfterDate = dayjs(currentDate).isBefore(date, "month");
+      const holiday = isKoreanHoliday(date);
       const isShowStartCss =
         startDate &&
         dayjs(date).isSame(dayjs(startDate).format("YYYY-MM-DD")) &&
         !endDate;
+
+      const dayTextClass = holiday || isSunday
+        ? "day-text-sun"
+        : isSatday
+          ? "day-text-sat"
+          : "";
 
       return (
         <div
@@ -159,9 +167,7 @@ export default function Calendar({
           }`}
         >
           <div
-            className={`day-text  ${isSunday ? "day-text-sun" : ""} ${
-              isSatday ? "day-text-sat" : ""
-            } ${isAfterDate ? "day-text-after-month" : ""}`}
+            className={`day-text ${dayTextClass} ${isAfterDate ? "day-text-after-month" : ""}`}
             style={{ zIndex: 10 }}
           >
             {dayOfMonth}
@@ -295,10 +301,10 @@ const CalendarStyle = (selectedDateColor: string) => css`
       }
 
       .is-sunday {
-        color: var(--chakra-colors-red-fg);
+        color: var(--chakra-colors-red-solid);
       }
       .is-satday {
-        color: var(--chakra-colors-blue-fg);
+        color: var(--chakra-colors-blue-solid);
       }
     }
   }
@@ -347,10 +353,10 @@ const CalendarStyle = (selectedDateColor: string) => css`
         }
 
         .day-text-sun {
-          color: var(--chakra-colors-red-fg);
+          color: var(--chakra-colors-red-solid);
         }
         .day-text-sat {
-          color: var(--chakra-colors-blue-fg);
+          color: var(--chakra-colors-blue-solid);
         }
         .day-text-after-month {
           display: none;

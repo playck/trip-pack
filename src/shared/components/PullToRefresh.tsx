@@ -82,6 +82,7 @@ export default function PullToRefresh({
       onTouchEnd={handleTouchEnd}
     >
       <MotionBox
+        initial={false}
         animate={{ height: pullDistance > 0 || isRefreshing ? "auto" : 0 }}
         transition={{ duration: 0.2 }}
         overflow="hidden"
