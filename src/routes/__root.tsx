@@ -1,6 +1,7 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 
 import Header from "../shared/components/layout/Header";
+import OfflineBanner from "../shared/components/OfflineBanner";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -17,6 +18,7 @@ function RootComponent() {
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
+      <OfflineBanner />
       <Header />
       <Outlet />
     </div>
