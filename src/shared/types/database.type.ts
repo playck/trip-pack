@@ -718,6 +718,7 @@ export type Database = {
           created_at: string
           end_date: string | null
           id: string
+          image_url: string | null
           region_id: string | null
           region_name: string | null
           start_date: string
@@ -733,6 +734,7 @@ export type Database = {
           created_at?: string
           end_date?: string | null
           id?: string
+          image_url?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date: string
@@ -748,6 +750,7 @@ export type Database = {
           created_at?: string
           end_date?: string | null
           id?: string
+          image_url?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date?: string

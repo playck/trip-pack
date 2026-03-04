@@ -6,6 +6,7 @@ export interface Trip {
   region_name: string | null;
   budget: number | null;
   country_code: string | null;
+  image_url: string | null;
 }
 
 export interface TripListData {

@@ -263,3 +263,18 @@ export const deleteTrip = async (tripId: string): Promise<void> => {
     throw new Error(`여행 삭제 실패: ${error.message}`);
   }
 };
+
+// 여행 이미지 URL 업데이트 API
+export const updateTripImageUrl = async (
+  tripId: string,
+  imageUrl: string | null
+): Promise<void> => {
+  const { error } = await supabase
+    .from("trips")
+    .update({ image_url: imageUrl })
+    .eq("id", tripId);
+
+  if (error) {
+    throw new Error(`이미지 URL 업데이트 실패: ${error.message}`);
+  }
+};

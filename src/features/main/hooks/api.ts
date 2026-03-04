@@ -45,7 +45,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: currentTrips, error: currentError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
     )
     .in("id", tripIds)
     .lte("start_date", today)
@@ -62,7 +62,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: futureTrips, error: futureError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
     )
     .in("id", tripIds)
     .gt("start_date", today)
@@ -78,7 +78,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: pastTrips, error: pastError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
     )
     .in("id", tripIds)
     .or(`end_date.lt.${today},and(start_date.lt.${today},end_date.is.null)`)
@@ -99,6 +99,7 @@ export const getTripList = async (): Promise<TripListData> => {
     region_name: trip.region_name,
     budget: trip.budget,
     country_code: trip.country_code,
+    image_url: trip.image_url,
   });
 
   const mappedCurrentTrips = (currentTrips || []).map(allTrip);
@@ -118,7 +119,7 @@ export const getTripDetail = async (tripId: string): Promise<Trip> => {
   const { data, error } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
     )
     .eq("id", tripId)
     .single();
@@ -135,5 +136,6 @@ export const getTripDetail = async (tripId: string): Promise<Trip> => {
     region_name: data.region_name,
     budget: data.budget,
     country_code: data.country_code,
+    image_url: data.image_url,
   };
 };
