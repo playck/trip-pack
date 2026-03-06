@@ -12,6 +12,7 @@ import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import InviteSheet from "@/features/trip-members/components/InviteSheet";
 import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
+import FlightSheet from "@/features/flight/FlightSheet";
 
 interface TripSettingsPanelProps {
   isOpen: boolean;
@@ -40,9 +41,14 @@ export default function TripSettingsPanel({
   const deleteTrip = useDisclosure();
   const membersSheet = useDisclosure();
   const invite = useDisclosure();
+  const flightSheet = useDisclosure();
 
   const handleDeleteTrip = () => {
     deleteTripMutate(tripId);
+  };
+
+  const handleOpenFlight = () => {
+    flightSheet.onOpen();
   };
 
   const handleChangeImage = () => {
@@ -73,6 +79,7 @@ export default function TripSettingsPanel({
         onOpenEditTitle={editTitle.onOpen}
         onOpenEditDate={editDate.onOpen}
         onOpenDeleteTrip={deleteTrip.onOpen}
+        onOpenFlight={handleOpenFlight}
         onChangeImage={handleChangeImage}
         isUploadingImage={isImageUploading}
         tripInfo={
@@ -133,6 +140,14 @@ export default function TripSettingsPanel({
         isOpen={membersSheet.open}
         onClose={membersSheet.onClose}
         tripId={tripId}
+      />
+
+      <FlightSheet
+        isOpen={flightSheet.open}
+        onClose={flightSheet.onClose}
+        tripId={tripId}
+        startDate={tripInfo?.startDate || ""}
+        endDate={tripInfo?.endDate || ""}
       />
     </>
   );

@@ -14,6 +14,7 @@ import {
   Edit3,
   CalendarDays,
   ImagePlus,
+  Plane,
   Trash2,
   X,
 } from "lucide-react";
@@ -28,6 +29,7 @@ interface TripSettingsDrawerProps {
   onOpenEditTitle: () => void;
   onOpenEditDate: () => void;
   onOpenDeleteTrip: () => void;
+  onOpenFlight?: () => void;
   onChangeImage?: () => void;
   isUploadingImage?: boolean;
   tripInfo?: {
@@ -50,6 +52,7 @@ export default function TripSettingsDrawer({
   onOpenEditTitle,
   onOpenEditDate,
   onOpenDeleteTrip,
+  onOpenFlight,
   onChangeImage,
   isUploadingImage,
   tripInfo,
@@ -134,6 +137,13 @@ export default function TripSettingsDrawer({
                     icon={<ImagePlus size={18} />}
                     label="여행 이미지 변경"
                     onClick={() => handleAction(onChangeImage)}
+                  />
+                )}
+                {onOpenFlight && (
+                  <MenuItemRow
+                    icon={<Plane size={18} />}
+                    label="항공편 현황"
+                    onClick={() => handleAction(onOpenFlight)}
                   />
                 )}
 
