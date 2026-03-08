@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { ArrowLeftRight, Link2 } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
@@ -9,6 +9,7 @@ import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import SelectScheduleSheet from "./SelectScheduleSheet";
+import AmountCalculator from "./calculator/AmountCalculator";
 
 interface AddExpenseSheetProps {
   isOpen: boolean;
@@ -40,13 +41,12 @@ export default function AddExpenseSheet({
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
 
   const {
-    amount,
-    handleAmountChange,
     isValidAmount,
     currencyType,
     toggleCurrencyType,
     estimatedKrw,
     toKrwAmount,
+    setAmountFromNumber,
     reset: resetAmount,
   } = useAmountInput({
     exchangeRate,
@@ -54,7 +54,15 @@ export default function AddExpenseSheet({
       isForeignCurrency && showLocalCurrency ? "LOCAL" : "KRW",
   });
 
+  const handleAmountFromCalculator = useCallback(
+    (value: number) => {
+      setAmountFromNumber(value);
+    },
+    [setAmountFromNumber],
+  );
+
   const [name, setName] = useState("");
+  const [isCalculating, setIsCalculating] = useState(false);
   const [selectedSchedule, setSelectedSchedule] =
     useState<SelectedScheduleInfo | null>(
       scheduleId && scheduleName
@@ -62,16 +70,6 @@ export default function AddExpenseSheet({
         : null,
     );
   const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        nameInputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   const handleSave = () => {
     const parsedName = name.trim();
@@ -96,7 +94,7 @@ export default function AddExpenseSheet({
     });
   };
 
-  const isCanSaveExpense = name.trim() && isValidAmount;
+  const isCanSaveExpense = name.trim() && isValidAmount && !isCalculating;
 
   return (
     <>
@@ -104,6 +102,7 @@ export default function AddExpenseSheet({
         isOpen={isOpen}
         onClose={handleClose}
         title="경비 추가"
+        adjustForKeyboard
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,
@@ -169,7 +168,6 @@ export default function AddExpenseSheet({
             </HStack>
 
             <Input
-              ref={nameInputRef}
               placeholder="예) 조식"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -178,76 +176,15 @@ export default function AddExpenseSheet({
             />
           </VStack>
 
-          <VStack gap={2} w="full">
-            <HStack w="full" justify="space-between" align="center">
-              <HStack gap={2} align="center">
-                <Text fontSize="md" fontWeight="medium">
-                  금액
-                </Text>
-                {estimatedKrw && (
-                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                    ≈ {estimatedKrw}원
-                  </Text>
-                )}
-              </HStack>
-              {isForeignCurrency && (
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  colorPalette="teal"
-                  h="24px"
-                  px={2}
-                  pb={0}
-                  onClick={toggleCurrencyType}
-                >
-                  <HStack gap={1}>
-                    <ArrowLeftRight size={12} />
-                    <Text fontSize="xs">
-                      {currencyType === "KRW"
-                        ? "현지화로 입력하기"
-                        : "원화로 입력하기"}
-                    </Text>
-                  </HStack>
-                </Button>
-              )}
-            </HStack>
-
-            <Box w="full" position="relative">
-              <Input
-                placeholder="0"
-                value={amount}
-                onChange={handleAmountChange}
-                inputMode="numeric"
-                size="lg"
-                borderRadius="xl"
-                pl={currencyType === "LOCAL" ? "2rem" : "1rem"}
-                pr="2.5rem"
-              />
-
-              {currencyType === "LOCAL" && (
-                <Text
-                  position="absolute"
-                  left="1rem"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  color="gray.500"
-                  fontWeight="medium"
-                >
-                  {currencySymbol}
-                </Text>
-              )}
-              <Text
-                position="absolute"
-                right="1rem"
-                top="50%"
-                transform="translateY(-50%)"
-                color="gray.500"
-                fontWeight="medium"
-              >
-                {currencyType === "KRW" ? "원" : ""}
-              </Text>
-            </Box>
-          </VStack>
+          <AmountCalculator
+            onAmountChange={handleAmountFromCalculator}
+            onCalculatingChange={setIsCalculating}
+            currencySymbol={currencySymbol}
+            currencyType={currencyType}
+            estimatedKrw={estimatedKrw}
+            isForeignCurrency={isForeignCurrency}
+            onToggleCurrency={toggleCurrencyType}
+          />
         </VStack>
       </BottomSheet>
 

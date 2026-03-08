@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link2 } from "lucide-react";
 import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
@@ -7,6 +7,7 @@ import { useTripSchedules } from "@/features/schedule/services/useTripSchedules"
 import type { Schedule } from "@/features/schedule/types";
 import { useAmountInput } from "../hooks/useAmountInput";
 import SelectScheduleSheet from "./SelectScheduleSheet";
+import AmountCalculator from "./calculator/AmountCalculator";
 
 interface EditExpenseSheetProps {
   isOpen: boolean;
@@ -34,8 +35,17 @@ export default function EditExpenseSheet({
   selectedDate,
 }: EditExpenseSheetProps) {
   const [name, setName] = useState("");
-  const { amount, setAmount, handleAmountChange, isValidAmount } =
+  const { parsedAmount, isValidAmount, setAmountFromNumber } =
     useAmountInput();
+  const [calculatorInitialValue, setCalculatorInitialValue] = useState(0);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  const handleAmountFromCalculator = useCallback(
+    (value: number) => {
+      setAmountFromNumber(value);
+    },
+    [setAmountFromNumber],
+  );
   const [selectedSchedule, setSelectedSchedule] = useState<{
     id: string;
     name: string;
@@ -47,7 +57,7 @@ export default function EditExpenseSheet({
   useEffect(() => {
     if (isOpen) {
       setName(initialName);
-      setAmount(initialAmount.toLocaleString());
+      setCalculatorInitialValue(initialAmount);
 
       if (initialScheduleId) {
         const scheduleName = schedules?.find(
@@ -61,12 +71,12 @@ export default function EditExpenseSheet({
         setSelectedSchedule(null);
       }
     }
-  }, [isOpen, initialName, initialAmount, initialScheduleId, schedules, setAmount]);
+  }, [isOpen, initialName, initialAmount, initialScheduleId, schedules]);
 
   const handleSave = () => {
     const trimmedName = name.trim();
     if (trimmedName && isValidAmount) {
-      onSaveExpense(trimmedName, parseInt(amount.replace(/,/g, ""), 10), selectedSchedule?.id ?? null);
+      onSaveExpense(trimmedName, parsedAmount, selectedSchedule?.id ?? null);
     }
   };
 
@@ -77,7 +87,7 @@ export default function EditExpenseSheet({
     });
   };
 
-  const isCanSaveExpense = name.trim() && isValidAmount;
+  const isCanSaveExpense = name.trim() && isValidAmount && !isCalculating;
 
   return (
     <>
@@ -85,6 +95,7 @@ export default function EditExpenseSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="경비 수정"
+        adjustForKeyboard
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,
@@ -155,23 +166,14 @@ export default function EditExpenseSheet({
               onChange={(e) => setName(e.target.value)}
               size="lg"
               borderRadius="xl"
-              autoFocus
             />
           </VStack>
 
-          <VStack gap={2} w="full">
-            <Text fontSize="md" fontWeight="medium" alignSelf="start">
-              금액
-            </Text>
-            <Input
-              placeholder="0"
-              value={amount}
-              onChange={handleAmountChange}
-              inputMode="numeric"
-              size="lg"
-              borderRadius="xl"
-            />
-          </VStack>
+          <AmountCalculator
+            onAmountChange={handleAmountFromCalculator}
+            onCalculatingChange={setIsCalculating}
+            initialValue={calculatorInitialValue}
+          />
         </VStack>
       </BottomSheet>
 
