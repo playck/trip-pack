@@ -209,6 +209,7 @@ function SchedulePageContent() {
               startDate={tripInfo.startDate}
               endDate={tripInfo.endDate}
               isMapCollapsed={isMapCollapsed}
+              regionName={tripInfo.regionName ?? undefined}
               onAddSchedule={handleAddSchedule}
               onAddMemo={handleAddMemo}
             />
