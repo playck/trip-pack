@@ -23,6 +23,9 @@ export default function FlightSheet({
   endDate,
 }: FlightSheetProps) {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [addFlightType, setAddFlightType] = useState<
+    "departure" | "return" | undefined
+  >();
 
   const { data: flights = [], isLoading } = useTripFlights(tripId);
   const deleteFlight = useDeleteFlight(tripId);
@@ -40,7 +43,7 @@ export default function FlightSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="항공편 현황"
-        minHeight="95vh"
+        minHeight="85vh"
       >
         <VStack px={4} gap={3} align="stretch">
           {/* 안내 문구 */}
@@ -79,7 +82,10 @@ export default function FlightSheet({
                 <Button
                   colorPalette={colors.primary.palette}
                   size="md"
-                  onClick={() => setIsAddOpen(true)}
+                  onClick={() => {
+                    setAddFlightType(undefined);
+                    setIsAddOpen(true);
+                  }}
                 >
                   <Plus size={16} />
                   <Text>항공편 등록</Text>
@@ -118,7 +124,11 @@ export default function FlightSheet({
               borderColor="gray.300"
               cursor="pointer"
               _hover={{ borderColor: colors.primary.muted, bg: "gray.50" }}
-              onClick={() => setIsAddOpen(true)}
+              onClick={() => {
+                const type = !departureFlight ? "departure" : "return";
+                setAddFlightType(type);
+                setIsAddOpen(true);
+              }}
             >
               <HStack justify="center" gap={2} color="gray.400">
                 <Plus size={18} />
@@ -137,6 +147,7 @@ export default function FlightSheet({
         tripId={tripId}
         startDate={startDate}
         endDate={endDate}
+        defaultFlightType={addFlightType}
       />
     </>
   );

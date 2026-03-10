@@ -26,7 +26,7 @@ export const useFlightStatus = (flight: TripFlight | undefined) => {
 };
 
 // 항공편 등록
-export const useCreateFlight = (tripId: string) => {
+export const useCreateFlight = (tripId: string, isEdit = false) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -34,13 +34,15 @@ export const useCreateFlight = (tripId: string) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tripFlights", tripId] });
       toaster.create({
-        title: "항공편이 등록되었습니다",
+        title: isEdit
+          ? "항공편이 수정되었습니다"
+          : "항공편이 등록되었습니다",
         type: "success",
       });
     },
     onError: (error: Error) => {
       toaster.create({
-        title: "항공편 등록 실패",
+        title: isEdit ? "항공편 수정 실패" : "항공편 등록 실패",
         description: error.message,
         type: "error",
       });

@@ -1,13 +1,29 @@
-import { useState } from "react";
-import { Box, VStack, HStack, Text, Input, Button } from "@chakra-ui/react";
-import { Search, Plane, PlaneLanding } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import {
+  VStack,
+  HStack,
+  Text,
+  Input,
+  Button,
+  Wrap,
+  SegmentGroup,
+} from "@chakra-ui/react";
+import { Plane, PlaneLanding } from "lucide-react";
 import BottomSheet from "@/shared/components/BottomSheet";
-import { colors, hexColors } from "@/shared/constants/colors";
-import { searchFlightsBoth } from "../services/flightApi";
-import type { FlightSearchResult } from "../services/flightApi";
+import { colors } from "@/shared/constants/colors";
 import { useCreateFlight } from "../services/useFlightQueries";
-import { formatFlightTime } from "../utils";
-import type { TripFlightInsert } from "../types";
+import type { TripFlightInsert, TripFlight } from "../types";
+
+const POPULAR_AIRLINES = [
+  { code: "KE", name: "대한항공" },
+  { code: "OZ", name: "아시아나" },
+  { code: "TW", name: "티웨이" },
+  { code: "LJ", name: "진에어" },
+  { code: "7C", name: "제주항공" },
+  { code: "BX", name: "에어부산" },
+  { code: "RS", name: "에어서울" },
+  { code: "4V", name: "에어로케이" },
+];
 
 interface AddFlightSheetProps {
   isOpen: boolean;
@@ -15,6 +31,8 @@ interface AddFlightSheetProps {
   tripId: string;
   startDate: string;
   endDate: string;
+  defaultFlightType?: "departure" | "return";
+  initialFlight?: TripFlight;
 }
 
 export default function AddFlightSheet({
@@ -23,76 +41,50 @@ export default function AddFlightSheet({
   tripId,
   startDate,
   endDate,
+  defaultFlightType,
+  initialFlight,
 }: AddFlightSheetProps) {
-  const [flightId, setFlightId] = useState("");
-  const [manualType, setManualType] = useState<"departure" | "return">(
-    "departure",
+  const isEditMode = !!initialFlight;
+  const [flightId, setFlightId] = useState(initialFlight?.flight_id || "");
+  const [flightType, setFlightType] = useState<"departure" | "return">(
+    initialFlight?.flight_type || defaultFlightType || "departure",
   );
-  const [searchResults, setSearchResults] = useState<FlightSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const createFlight = useCreateFlight(tripId);
-
-  const handleSearch = async () => {
-    if (!flightId.trim()) return;
-    setIsSearching(true);
-    setSearchError("");
-    setSearchResults([]);
-
-    try {
-      const results = await searchFlightsBoth(flightId.trim());
-      if (results.length === 0) {
-        setSearchError("검색 결과가 없습니다. 편명을 확인해주세요.");
-      } else {
-        setSearchResults(results);
-      }
-    } catch {
-      setSearchError("항공편 검색에 실패했습니다. 잠시 후 다시 시도해주세요.");
-    } finally {
-      setIsSearching(false);
+  useEffect(() => {
+    if (initialFlight) {
+      setFlightId(initialFlight.flight_id);
+      setFlightType(initialFlight.flight_type);
+    } else if (defaultFlightType) {
+      setFlightType(defaultFlightType);
     }
+  }, [defaultFlightType, initialFlight]);
+
+  const createFlight = useCreateFlight(tripId, isEditMode);
+
+  const handleAirlineSelect = (code: string) => {
+    setFlightId(code);
+    setTimeout(() => {
+      const input = inputRef.current;
+      if (input) {
+        input.focus();
+        input.setSelectionRange(code.length, code.length);
+      }
+    }, 0);
   };
 
-  const handleSelect = (item: FlightSearchResult) => {
-    const scheduleTime =
-      item.scheduleDateTime.length >= 4
-        ? formatFlightTime(item.scheduleDateTime)
-        : null;
-
-    const type = item._flightType;
-    const autoDate = type === "departure" ? startDate : endDate;
-
-    const flight: TripFlightInsert = {
-      trip_id: tripId,
-      flight_id: item.flightId,
-      airline: item.airline,
-      departure_airport: type === "departure" ? "ICN" : item.airport,
-      arrival_airport: type === "departure" ? item.airport : "ICN",
-      scheduled_date: autoDate,
-      scheduled_time: scheduleTime,
-      flight_type: type,
-    };
-
-    createFlight.mutate(flight, {
-      onSuccess: () => {
-        handleClose();
-      },
-    });
-  };
-
-  const handleManualRegister = () => {
+  const handleRegister = () => {
     if (!flightId.trim()) return;
 
     const flight: TripFlightInsert = {
       trip_id: tripId,
       flight_id: flightId.trim().toUpperCase(),
       airline: "",
-      departure_airport: manualType === "departure" ? "ICN" : "",
-      arrival_airport: manualType === "departure" ? "" : "ICN",
-      scheduled_date: manualType === "departure" ? startDate : endDate,
+      departure_airport: flightType === "departure" ? "ICN" : "",
+      arrival_airport: flightType === "departure" ? "" : "ICN",
+      scheduled_date: flightType === "departure" ? startDate : endDate,
       scheduled_time: null,
-      flight_type: manualType,
+      flight_type: flightType,
     };
 
     createFlight.mutate(flight, {
@@ -104,10 +96,7 @@ export default function AddFlightSheet({
 
   const handleClose = () => {
     setFlightId("");
-    setManualType("departure");
-    setSearchResults([]);
-    setSearchError("");
-    setIsSearching(false);
+    setFlightType("departure");
     onClose();
   };
 
@@ -115,171 +104,137 @@ export default function AddFlightSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={handleClose}
-      title="항공편 등록"
-      minHeight="95vh"
+      title={isEditMode ? "항공편 수정" : "항공편 등록"}
+      minHeight="85vh"
+      primaryButton={{
+        text: isEditMode ? "수정하기" : "등록하기",
+        onClick: handleRegister,
+        isLoading: createFlight.isPending,
+        disabled: !flightId.trim(),
+      }}
     >
-      <VStack px={4} pb={6} gap={4} align="stretch">
-        {/* 편명 검색 */}
+      <VStack px={4} pb={6} gap={5} align="stretch">
+        {/* 출발/리턴 선택 */}
+        <VStack align="stretch" gap={1}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600">
+            구분
+          </Text>
+          <SegmentGroup.Root
+            size="md"
+            w="full"
+            value={flightType}
+            onValueChange={(details) => {
+              if (details.value && !isEditMode && !defaultFlightType) {
+                setFlightType(details.value as "departure" | "return");
+              }
+            }}
+            css={
+              isEditMode || defaultFlightType
+                ? { pointerEvents: "none" }
+                : undefined
+            }
+          >
+            <SegmentGroup.Indicator />
+            <SegmentGroup.Items
+              w="full"
+              items={[
+                {
+                  value: "departure",
+                  label: (
+                    <HStack gap={1.5}>
+                      <Plane
+                        size={14}
+                        color={
+                          flightType === "departure"
+                            ? colors.primary.hex[500]
+                            : "currentColor"
+                        }
+                      />
+                      <Text
+                        fontWeight={flightType === "departure" ? "semibold" : "normal"}
+                        color={flightType === "departure" ? colors.primary.hex[500] : "currentColor"}
+                      >
+                        출발편
+                      </Text>
+                    </HStack>
+                  ),
+                },
+                {
+                  value: "return",
+                  label: (
+                    <HStack gap={1.5}>
+                      <PlaneLanding
+                        size={14}
+                        color={
+                          flightType === "return"
+                            ? colors.primary.hex[500]
+                            : "currentColor"
+                        }
+                      />
+                      <Text
+                        fontWeight={flightType === "return" ? "semibold" : "normal"}
+                        color={flightType === "return" ? colors.primary.hex[500] : "currentColor"}
+                      >
+                        리턴편
+                      </Text>
+                    </HStack>
+                  ),
+                },
+              ]}
+            />
+          </SegmentGroup.Root>
+        </VStack>
+
+        {/* 항공사 바로가기 */}
+        <VStack align="stretch" gap={1}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600">
+            주요 항공사
+          </Text>
+          <Wrap gap={2}>
+            {POPULAR_AIRLINES.map((airline) => (
+              <Button
+                key={airline.code}
+                size="sm"
+                variant={
+                  flightId.startsWith(airline.code) ? "solid" : "outline"
+                }
+                colorPalette={
+                  flightId.startsWith(airline.code)
+                    ? colors.primary.palette
+                    : "gray"
+                }
+                onClick={() => handleAirlineSelect(airline.code)}
+              >
+                <Text fontSize="xs">
+                  {airline.name}({airline.code})
+                </Text>
+              </Button>
+            ))}
+          </Wrap>
+        </VStack>
+
+        {/* 편명 입력 */}
         <VStack align="stretch" gap={1}>
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             편명 (예: KE123, OZ101)
           </Text>
-          <HStack gap={2}>
-            <Input
-              placeholder="편명을 입력하세요"
-              value={flightId}
-              onChange={(e) => setFlightId(e.target.value.trim().toUpperCase())}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              size="md"
-              flex={1}
-              inputMode="text"
-              autoCapitalize="characters"
-              autoCorrect="off"
-              autoComplete="off"
-              lang="en"
-            />
-            <Button
-              colorPalette={colors.primary.palette}
-              size="md"
-              onClick={handleSearch}
-              loading={isSearching}
-              disabled={!flightId.trim()}
-            >
-              <Search size={16} />
-            </Button>
-          </HStack>
+          <Input
+            ref={inputRef}
+            placeholder="편명을 입력하세요"
+            value={flightId}
+            onChange={(e) => setFlightId(e.target.value.trim().toUpperCase())}
+            onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+            size="md"
+            inputMode="text"
+            autoCapitalize="characters"
+            autoCorrect="off"
+            autoComplete="off"
+            lang="en"
+          />
+          <Text fontSize="xs" color="gray.400">
+            출발 당일에 실시간 운항 정보가 자동으로 표시됩니다.
+          </Text>
         </VStack>
-
-        {/* 검색 결과 */}
-        {searchError && (
-          <VStack gap={4} align="center">
-            <Text fontSize="sm" color="gray.500" textAlign="center">
-              {searchError}
-            </Text>
-            <VStack gap={3} w="80%">
-              <HStack gap={2} w="full">
-                <Button
-                  flex={1}
-                  size="md"
-                  variant={manualType === "departure" ? "solid" : "outline"}
-                  colorPalette={
-                    manualType === "departure" ? colors.primary.palette : "gray"
-                  }
-                  onClick={() => setManualType("departure")}
-                >
-                  <Plane size={16} />
-                  <Text ml={1}>출발편</Text>
-                </Button>
-                <Button
-                  flex={1}
-                  size="md"
-                  variant={manualType === "return" ? "solid" : "outline"}
-                  colorPalette={
-                    manualType === "return" ? colors.primary.palette : "gray"
-                  }
-                  onClick={() => setManualType("return")}
-                >
-                  <PlaneLanding size={16} />
-                  <Text ml={1}>리턴편</Text>
-                </Button>
-              </HStack>
-              <Button
-                variant="outline"
-                size="lg"
-                w="full"
-                colorPalette="gray"
-                onClick={handleManualRegister}
-                loading={createFlight.isPending}
-              >
-                편명으로 직접 등록
-              </Button>
-            </VStack>
-          </VStack>
-        )}
-
-        {searchResults.length > 0 && (
-          <VStack align="stretch" gap={2}>
-            <Text fontSize="xs" color="gray.500" fontWeight="medium">
-              검색 결과 ({searchResults.length}건) - 탭하여 등록
-            </Text>
-            {searchResults.map((item, idx) => (
-              <Box
-                key={`${item.flightId}-${idx}`}
-                as="button"
-                w="full"
-                p={3}
-                bg="gray.50"
-                borderRadius="lg"
-                borderWidth="1px"
-                borderColor="gray.200"
-                opacity={createFlight.isPending ? 0.5 : 1}
-                pointerEvents={createFlight.isPending ? "none" : "auto"}
-                textAlign="left"
-                cursor="pointer"
-                _hover={{ bg: "gray.100", borderColor: colors.primary.muted }}
-                onClick={() => handleSelect(item)}
-              >
-                <HStack justify="space-between" align="start">
-                  <VStack align="start" gap={0.5}>
-                    <HStack gap={2}>
-                      <Text fontSize="sm" fontWeight="bold">
-                        {item.flightId}
-                      </Text>
-                      <Text
-                        fontSize="2xs"
-                        px={1.5}
-                        py={0.5}
-                        borderRadius="sm"
-                        bg={
-                          item._flightType === "departure"
-                            ? colors.primary.subtle
-                            : colors.primary.subtle
-                        }
-                        color={
-                          item._flightType === "departure"
-                            ? colors.primary.fg
-                            : colors.primary.fg
-                        }
-                        fontWeight="medium"
-                      >
-                        {item._flightType === "departure" ? "출발" : "도착"}
-                      </Text>
-                      <Text fontSize="xs" color="gray.500">
-                        {item.airline}
-                      </Text>
-                    </HStack>
-                    <HStack gap={1}>
-                      <Text fontSize="xs" color="gray.600">
-                        {item._flightType === "departure"
-                          ? "인천"
-                          : item.airport}
-                      </Text>
-                      <Plane size={12} color={hexColors.gray[400]} />
-                      <Text fontSize="xs" color="gray.600">
-                        {item._flightType === "departure"
-                          ? item.airport
-                          : "인천"}
-                      </Text>
-                    </HStack>
-                  </VStack>
-                  <VStack align="end" gap={0}>
-                    <Text fontSize="xs" color="gray.500">
-                      {formatFlightTime(item.scheduleDateTime)}
-                    </Text>
-                    {item.remark && (
-                      <Text
-                        fontSize="xs"
-                        color={item.remark === "결항" ? "red.500" : "gray.500"}
-                      >
-                        {item.remark}
-                      </Text>
-                    )}
-                  </VStack>
-                </HStack>
-              </Box>
-            ))}
-          </VStack>
-        )}
       </VStack>
     </BottomSheet>
   );
