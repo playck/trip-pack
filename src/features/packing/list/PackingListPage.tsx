@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Container,
   Text,
@@ -27,6 +27,7 @@ import {
   Checkbox,
   ErrorMessage,
   FloatingAddButton,
+  Info,
   ScrollToTopButton,
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
@@ -38,6 +39,8 @@ import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { TripSettingsPanel } from "@/features/trip-settings";
+import { useTripFlights } from "@/features/flight/services/useFlightQueries";
+import { BAGGAGE_POLICY_BY_AIR } from "@/shared/data/baggagePolicyByAir";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import {
   useShoppingChecklist,
@@ -114,6 +117,25 @@ export default function PackingListPage() {
   const { data: tripMembers = [] } = useTripMembers(tripId);
   const currentMemberId = tripMembers.find((m) => m.user_id === user?.id)?.id;
   const [showOnlyMine, setShowOnlyMine] = useState(false);
+
+  // 항공편 수하물 규정
+  const { data: tripFlights = [] } = useTripFlights(tripId);
+  const matchedBaggagePolicies = useMemo(() => {
+    const seen = new Set<string>();
+    return tripFlights
+      .map((flight) => {
+        const iataCode = flight.flight_id.slice(0, 2).toUpperCase();
+        if (seen.has(iataCode)) return null;
+        seen.add(iataCode);
+
+        const policy = BAGGAGE_POLICY_BY_AIR.find(
+          (p) => p.iataCode === iataCode,
+        );
+        if (!policy) return null;
+        return policy;
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+  }, [tripFlights]);
 
   // 할일
   const {
@@ -301,22 +323,56 @@ export default function PackingListPage() {
                 />
               )}
 
-              {/* 툴바: 수하물 규정 + 리스트뷰 컨트롤 */}
-              <HStack justify="space-between" align="center">
-                <HStack
+              {/* 수하물 규정 인라인 카드 */}
+              {matchedBaggagePolicies.length > 0 && (
+                <Info
                   as="button"
-                  gap={1}
+                  textAlign="left"
                   cursor="pointer"
                   onClick={sheets.baggage.onOpen}
-                  _hover={{ opacity: 0.7 }}
                 >
-                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                    항공사별 수하물 규정
-                  </Text>
-                  <Box color="gray.400">
-                    <ChevronRight size={14} />
-                  </Box>
-                </HStack>
+                  <VStack gap={1} align="stretch">
+                    {matchedBaggagePolicies.map((policy) => (
+                      <HStack key={policy.iataCode} justify="space-between">
+                        <HStack gap={1.5}>
+                          <Text
+                            fontSize="xs"
+                            fontWeight="semibold"
+                            color="blue.700"
+                          >
+                            {policy.airline} {policy.iataCode}
+                          </Text>
+                          <Text fontSize="2xs" color="blue.500">
+                            기내 {policy.cabinBaggage} · 위탁{" "}
+                            {policy.checkedBaggage}
+                          </Text>
+                        </HStack>
+                        <Box color="blue.300">
+                          <ChevronRight size={14} />
+                        </Box>
+                      </HStack>
+                    ))}
+                  </VStack>
+                </Info>
+              )}
+
+              {/* 툴바: 수하물 규정 버튼 + 리스트뷰 컨트롤 */}
+              <HStack justify="space-between" align="center">
+                {matchedBaggagePolicies.length === 0 && (
+                  <HStack
+                    as="button"
+                    gap={1}
+                    cursor="pointer"
+                    onClick={sheets.baggage.onOpen}
+                  >
+                    <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                      항공사별 수하물 규정
+                    </Text>
+                    <Box color="gray.400">
+                      <ChevronRight size={14} />
+                    </Box>
+                  </HStack>
+                )}
 
                 {viewMode === "일렬형식" && (
                   <HStack gap={2}>
