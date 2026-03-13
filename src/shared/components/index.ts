@@ -4,6 +4,7 @@ export { default as Checkbox } from "./Checkbox";
 export { default as ConfirmDialog } from "./ConfirmDialog";
 export { default as ErrorMessage } from "./ErrorMessage";
 export { default as FloatingAddButton } from "./FloatingAddButton";
+export { default as Info } from "./Info";
 export { default as FloatingMenuList } from "./FloatingMenuList";
 export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as Modal } from "./Modal";
