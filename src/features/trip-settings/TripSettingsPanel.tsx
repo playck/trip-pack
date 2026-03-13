@@ -9,6 +9,7 @@ import { DeleteTripModal } from "@/shared/components/trip-action/DeleteTripModal
 import { useDeleteTrip } from "@/shared/service/trip/useDeleteTrip";
 import { useUpdateTripImage } from "@/shared/service/trip/useUpdateTripImage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import TripMemoSheet from "@/shared/components/trip-settings/TripMemoSheet";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import InviteSheet from "@/features/trip-members/components/InviteSheet";
 import MemberListSheet from "@/features/trip-members/components/MemberListSheet";
@@ -42,6 +43,7 @@ export default function TripSettingsPanel({
   const membersSheet = useDisclosure();
   const invite = useDisclosure();
   const flightSheet = useDisclosure();
+  const memoSheet = useDisclosure();
 
   const handleDeleteTrip = () => {
     deleteTripMutate(tripId);
@@ -80,6 +82,7 @@ export default function TripSettingsPanel({
         onOpenEditDate={editDate.onOpen}
         onOpenDeleteTrip={deleteTrip.onOpen}
         onOpenFlight={handleOpenFlight}
+        onOpenMemo={memoSheet.onOpen}
         onChangeImage={handleChangeImage}
         isUploadingImage={isImageUploading}
         tripInfo={
@@ -148,6 +151,13 @@ export default function TripSettingsPanel({
         tripId={tripId}
         startDate={tripInfo?.startDate || ""}
         endDate={tripInfo?.endDate || ""}
+      />
+
+      <TripMemoSheet
+        isOpen={memoSheet.open}
+        onClose={memoSheet.onClose}
+        tripId={tripId}
+        currentMemo={tripInfo?.memo ?? null}
       />
     </>
   );

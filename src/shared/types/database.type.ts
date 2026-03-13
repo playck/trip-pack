@@ -766,6 +766,7 @@ export type Database = {
           end_date: string | null
           id: string
           image_url: string | null
+          memo: string | null
           region_id: string | null
           region_name: string | null
           start_date: string
@@ -782,6 +783,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           image_url?: string | null
+          memo?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date: string
@@ -798,6 +800,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           image_url?: string | null
+          memo?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date?: string

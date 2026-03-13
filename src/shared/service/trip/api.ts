@@ -11,7 +11,7 @@ export interface OutOfRangeSchedule {
 // 범위 밖 일정 조회
 export const getSchedulesOutOfRange = async (
   tripId: string,
-  maxDayNumber: number
+  maxDayNumber: number,
 ): Promise<OutOfRangeSchedule[]> => {
   const { data, error } = await supabase
     .from("trip_schedules")
@@ -29,7 +29,7 @@ export const getSchedulesOutOfRange = async (
 // 일정 날짜 일괄 업데이트
 export const updateScheduleDates = async (
   tripId: string,
-  newStartDate: string
+  newStartDate: string,
 ): Promise<void> => {
   // 해당 여행의 모든 일정 조회
   const { data: schedules, error: fetchError } = await supabase
@@ -62,7 +62,7 @@ export const updateScheduleDates = async (
 
   if (errors.length > 0) {
     throw new Error(
-      `일정 날짜 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`
+      `일정 날짜 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`,
     );
   }
 };
@@ -70,7 +70,7 @@ export const updateScheduleDates = async (
 // 범위 밖 경비 삭제 (일정에 연결되지 않은 경비)
 export const deleteExpensesOutOfRange = async (
   tripId: string,
-  maxDayNumber: number
+  maxDayNumber: number,
 ): Promise<number> => {
   // 범위 밖이면서 일정에 연결되지 않은 경비 조회
   const { data: expenses, error: fetchError } = await supabase
@@ -104,7 +104,7 @@ export const deleteExpensesOutOfRange = async (
 // 경비 날짜 일괄 업데이트 (expense_date 재배치)
 export const updateExpenseDates = async (
   tripId: string,
-  newStartDate: string
+  newStartDate: string,
 ): Promise<void> => {
   // 해당 여행의 모든 경비 조회
   const { data: expenses, error: fetchError } = await supabase
@@ -137,7 +137,7 @@ export const updateExpenseDates = async (
 
   if (errors.length > 0) {
     throw new Error(
-      `경비 날짜 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`
+      `경비 날짜 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`,
     );
   }
 };
@@ -159,7 +159,7 @@ export const updateTripDatesWithSchedules = async (params: {
   if (deleteOutOfRangeSchedules) {
     const outOfRangeSchedules = await getSchedulesOutOfRange(
       tripId,
-      newDuration
+      newDuration,
     );
 
     if (outOfRangeSchedules.length > 0) {
@@ -210,7 +210,7 @@ export const updateTripDatesWithSchedules = async (params: {
 // 여행명을 수정하는 API
 export const updateTripTitle = async (
   tripId: string,
-  newTitle: string
+  newTitle: string,
 ): Promise<void> => {
   const title = newTitle.trim();
   if (!title) {
@@ -237,7 +237,7 @@ export const updateTripTitle = async (
 export const updateTripDates = async (
   tripId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
 ): Promise<void> => {
   if (!startDate || !endDate) {
     throw new Error("여행 시작일과 종료일을 모두 선택해주세요.");
@@ -267,7 +267,7 @@ export const deleteTrip = async (tripId: string): Promise<void> => {
 // 여행 이미지 URL 업데이트 API
 export const updateTripImageUrl = async (
   tripId: string,
-  imageUrl: string | null
+  imageUrl: string | null,
 ): Promise<void> => {
   const { error } = await supabase
     .from("trips")
@@ -276,5 +276,20 @@ export const updateTripImageUrl = async (
 
   if (error) {
     throw new Error(`이미지 URL 업데이트 실패: ${error.message}`);
+  }
+};
+
+// 여행 메모 업데이트 API
+export const updateTripMemo = async (
+  tripId: string,
+  memo: string | null,
+): Promise<void> => {
+  const { error } = await supabase
+    .from("trips")
+    .update({ memo })
+    .eq("id", tripId);
+
+  if (error) {
+    throw new Error(`메모 저장 실패: ${error.message}`);
   }
 };
