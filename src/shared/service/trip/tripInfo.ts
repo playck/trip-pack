@@ -13,6 +13,7 @@ export interface TripInfo {
   tripTypes: string[] | null;
   budget: number | null;
   imageUrl: string | null;
+  memo: string | null;
 }
 
 // 여행 정보 조회 API
@@ -33,7 +34,8 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
         companion_types,
         trip_types,
         budget,
-        image_url
+        image_url,
+        memo
       `
       )
       .eq("id", tripId)
@@ -61,6 +63,7 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
       tripTypes: data.trip_types as string[] | null,
       budget: data.budget,
       imageUrl: data.image_url,
+      memo: data.memo ?? null,
     };
   } catch (error) {
     console.error("여행 정보 조회 실패:", error);

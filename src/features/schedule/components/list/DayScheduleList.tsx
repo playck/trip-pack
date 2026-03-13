@@ -14,15 +14,19 @@ interface DayScheduleListProps {
   startDate: string;
   endDate: string;
   isMapCollapsed?: boolean;
+  regionName?: string;
   onAddSchedule?: (dayNumber: number, date: string) => void;
   onAddMemo?: (dayNumber: number, date: string) => void;
 }
+
+const FIRST_DAY = 1;
 
 export default function DayScheduleList({
   tripId,
   startDate,
   endDate,
   isMapCollapsed = false,
+  regionName,
   onAddSchedule,
   onAddMemo,
 }: DayScheduleListProps) {
@@ -63,6 +67,10 @@ export default function DayScheduleList({
               cardStickyTop={dayScheduleCardStickyTop}
               onAddSchedule={() => onAddSchedule?.(dayNumber, date)}
               onAddMemo={() => onAddMemo?.(dayNumber, date)}
+              startDate={dayNumber === FIRST_DAY ? startDate : undefined}
+              endDate={dayNumber === tripDays ? endDate : undefined}
+              isLastDay={dayNumber === tripDays}
+              regionName={regionName}
             />
           </Box>
         );

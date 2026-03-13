@@ -560,6 +560,53 @@ export type Database = {
           },
         ]
       }
+      trip_flights: {
+        Row: {
+          airline: string
+          arrival_airport: string
+          created_at: string | null
+          departure_airport: string
+          flight_id: string
+          flight_type: string
+          id: string
+          scheduled_date: string
+          scheduled_time: string | null
+          trip_id: string
+        }
+        Insert: {
+          airline?: string
+          arrival_airport?: string
+          created_at?: string | null
+          departure_airport?: string
+          flight_id: string
+          flight_type: string
+          id?: string
+          scheduled_date: string
+          scheduled_time?: string | null
+          trip_id: string
+        }
+        Update: {
+          airline?: string
+          arrival_airport?: string
+          created_at?: string | null
+          departure_airport?: string
+          flight_id?: string
+          flight_type?: string
+          id?: string
+          scheduled_date?: string
+          scheduled_time?: string | null
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_flights_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_invitations: {
         Row: {
           created_at: string | null
@@ -719,6 +766,7 @@ export type Database = {
           end_date: string | null
           id: string
           image_url: string | null
+          memo: string | null
           region_id: string | null
           region_name: string | null
           start_date: string
@@ -735,6 +783,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           image_url?: string | null
+          memo?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date: string
@@ -751,6 +800,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           image_url?: string | null
+          memo?: string | null
           region_id?: string | null
           region_name?: string | null
           start_date?: string

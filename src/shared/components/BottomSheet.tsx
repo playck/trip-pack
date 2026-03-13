@@ -25,6 +25,7 @@ interface BottomSheetProps {
   title?: string;
   children: React.ReactNode;
   minHeight?: string | number;
+  maxHeight?: string | number;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
   primaryButton?: BottomSheetAction;
@@ -38,6 +39,7 @@ export default function BottomSheet({
   title,
   children,
   minHeight,
+  maxHeight = "90vh",
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
   primaryButton,
@@ -61,7 +63,7 @@ export default function BottomSheet({
             borderTopRadius="xl"
             borderBottomRadius="none"
             minHeight={minHeight}
-            maxHeight="85vh"
+            maxHeight={maxHeight}
             overscrollBehavior="contain"
             style={{
               transform:
@@ -106,9 +108,15 @@ export default function BottomSheet({
                 </IconButton>
               </Drawer.CloseTrigger>
             </Drawer.Header>
-            <Drawer.Body p={0} display="flex" flexDirection="column">{children}</Drawer.Body>
+            <Drawer.Body p={0} display="flex" flexDirection="column">
+              {children}
+            </Drawer.Body>
             {(primaryButton || secondaryButton) && (
-              <Drawer.Footer p={3.5} pb="calc(14px + env(safe-area-inset-bottom))" bg="white">
+              <Drawer.Footer
+                p={3.5}
+                pb="calc(14px + env(safe-area-inset-bottom))"
+                bg="white"
+              >
                 <HStack gap={3} w="full">
                   {secondaryButton && (
                     <Button
