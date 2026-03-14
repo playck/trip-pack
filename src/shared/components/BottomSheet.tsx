@@ -25,6 +25,7 @@ interface BottomSheetProps {
   title?: string;
   children: React.ReactNode;
   minHeight?: string | number;
+  maxHeight?: string | number;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
   primaryButton?: BottomSheetAction;
@@ -38,6 +39,7 @@ export default function BottomSheet({
   title,
   children,
   minHeight,
+  maxHeight = "85vh",
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
   primaryButton,
@@ -61,7 +63,7 @@ export default function BottomSheet({
             borderTopRadius="xl"
             borderBottomRadius="none"
             minHeight={minHeight}
-            maxHeight="85vh"
+            maxHeight={maxHeight}
             overscrollBehavior="contain"
             style={{
               transform:

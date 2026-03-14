@@ -5,6 +5,10 @@ export interface ExpenseItemData {
   amount: number;
   scheduleId?: string | null;
   scheduleName?: string | null;
+  isShared: boolean;
+  paidByUserId?: string | null;
+  paidByUsername?: string | null;
+  splitMemberIds: string[];
 }
 
 /** 날짜별 경비 그룹 */

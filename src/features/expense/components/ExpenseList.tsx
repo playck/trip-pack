@@ -11,12 +11,14 @@ interface ExpenseListProps {
   expenses: ExpenseItemData[];
   tripId: string;
   selectedDate?: string;
+  totalMemberCount?: number;
 }
 
 export default function ExpenseList({
   expenses,
   tripId,
   selectedDate,
+  totalMemberCount = 0,
 }: ExpenseListProps) {
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
@@ -94,6 +96,7 @@ export default function ExpenseList({
                   isForeignCurrency,
                 }}
                 selectedDate={selectedDate}
+                totalMemberCount={totalMemberCount}
               />
             ))}
           </Box>

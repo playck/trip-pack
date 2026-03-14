@@ -6,21 +6,25 @@ import ExpenseDaySection from "./ExpenseDaySection";
 interface ExpenseAllContentProps {
   dayExpenses: DayExpense[];
   tripId: string;
+  totalMemberCount?: number;
 }
 
 export default function ExpenseAllContent({
   dayExpenses,
   tripId,
+  totalMemberCount = 0,
 }: ExpenseAllContentProps) {
   const totalAmount = dayExpenses.reduce(
     (sum, day) =>
       sum +
       day.expenses.reduce((daySum, expense) => daySum + expense.amount, 0),
-    0
+    0,
   );
 
   const averagePerDay =
-    dayExpenses.length > 0 ? Math.round(totalAmount / dayExpenses.length) : 0;
+    dayExpenses.length > 0
+      ? Math.round(totalAmount / dayExpenses.length)
+      : 0;
 
   const dayAmounts = dayExpenses.map((day) => ({
     date: day.label,
@@ -29,7 +33,7 @@ export default function ExpenseAllContent({
 
   const maxDay = dayAmounts.reduce(
     (max, day) => (day.amount > max.amount ? day : max),
-    { date: "", amount: 0 }
+    { date: "", amount: 0 },
   );
 
   return (
@@ -56,6 +60,7 @@ export default function ExpenseAllContent({
             expenses={day.expenses}
             tripId={tripId}
             readOnly
+            totalMemberCount={totalMemberCount}
           />
         </Box>
       ))}

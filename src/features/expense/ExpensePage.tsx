@@ -13,9 +13,14 @@ import { useScrollToTop } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
+import {
+  useTripMembers,
+  useMemberProfileMap,
+} from "@/features/trip-members/hooks/useTripMembers";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
 import { useShareExpense } from "./hooks";
+import type { ExpenseSaveOptions } from "./components/AddExpenseSheet";
 
 const ALL_TAB_VALUE = "all";
 
@@ -24,6 +29,7 @@ export default function ExpensePage() {
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses } = useTripExpenses(tripId);
   const { data: schedules } = useTripSchedules(tripId);
+  const { data: members = [] } = useTripMembers(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });
@@ -32,6 +38,8 @@ export default function ExpensePage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { showScrollTop, scrollToTop } = useScrollToTop();
   const settingsDrawer = useDisclosure();
+
+  const memberProfileMap = useMemberProfileMap(tripId);
 
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
@@ -63,11 +71,10 @@ export default function ExpensePage() {
   // 날짜별 경비 데이터 생성
   const dayExpenses = useMemo(() => {
     return dateList.map((dateItem) => {
-      // 해당 날짜의 경비만 필터링
       const dayExpenseItems = (expenses || [])
         .filter(
           (expense) =>
-            dayjs(expense.expense_date).format("YYYY-MM-DD") === dateItem.date
+            dayjs(expense.expense_date).format("YYYY-MM-DD") === dateItem.date,
         )
         .map((expense) => ({
           id: expense.id,
@@ -77,6 +84,12 @@ export default function ExpensePage() {
           scheduleName: expense.schedule_id
             ? (scheduleMap.get(expense.schedule_id) ?? null)
             : null,
+          isShared: expense.is_shared,
+          paidByUserId: expense.paid_by,
+          paidByUsername: expense.paid_by
+            ? (memberProfileMap.get(expense.paid_by) ?? null)
+            : null,
+          splitMemberIds: expense.splitMemberIds,
         }));
 
       return {
@@ -86,7 +99,7 @@ export default function ExpensePage() {
         expenses: dayExpenseItems,
       };
     });
-  }, [dateList, expenses, scheduleMap]);
+  }, [dateList, expenses, scheduleMap, memberProfileMap]);
 
   const { handleShareExpense } = useShareExpense({ tripInfo, dayExpenses });
 
@@ -97,7 +110,8 @@ export default function ExpensePage() {
   const handleSaveExpense = (
     name: string,
     amount: number,
-    scheduleId?: string
+    scheduleId?: string,
+    options?: ExpenseSaveOptions,
   ) => {
     if (!tripId) return;
 
@@ -111,6 +125,9 @@ export default function ExpensePage() {
       category: name,
       amount,
       scheduleId,
+      isShared: options?.isShared,
+      paidBy: options?.paidBy,
+      splitMemberIds: options?.splitMemberIds,
     });
   };
 
@@ -158,6 +175,7 @@ export default function ExpensePage() {
             dayExpenses={dayExpenses}
             isAllTab={selectedDate === ALL_TAB_VALUE}
             tripId={tripId}
+            totalMemberCount={members.length}
           />
         </>
       ) : (
