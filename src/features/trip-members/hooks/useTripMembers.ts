@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 import { getTripMembers, removeMember } from "../services/api";
@@ -12,6 +13,21 @@ export function useTripMembers(tripId: string) {
     queryFn: () => getTripMembers(tripId),
     enabled: !!tripId,
   });
+}
+
+export function useMemberProfileMap(tripId: string) {
+  const { data: members = [] } = useTripMembers(tripId);
+
+  return useMemo(() => {
+    const map = new Map<string, string>();
+    members.forEach((m) => {
+      map.set(
+        m.user_id,
+        m.profiles?.username || m.profiles?.email || "알 수 없음",
+      );
+    });
+    return map;
+  }, [members]);
 }
 
 export function useRemoveMember(tripId: string) {
