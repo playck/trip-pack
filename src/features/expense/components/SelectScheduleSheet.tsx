@@ -60,7 +60,6 @@ export default function SelectScheduleSheet({
       isOpen={isOpen}
       onClose={onClose}
       title="일정 선택"
-      minHeight="60vh"
     >
       <VStack align="stretch" gap={6} px={4} pt={2} pb={8}>
         {schedulesByDay.length === 0 ? (

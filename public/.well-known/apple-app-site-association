@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "H69GA85USX.com.trippack.app",
+        "paths": [
+          "/invite/*",
+          "/packing/list/*",
+          "/schedule/*",
+          "/expense/*"
+        ]
+      }
+    ]
+  }
+}

@@ -1,19 +1,34 @@
-import { useState, useRef, useEffect } from "react";
-import { ArrowLeftRight, Link2 } from "lucide-react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { Link2, ChevronDown } from "lucide-react";
 import { useAtomValue } from "jotai";
-import { VStack, HStack, Input, Button, Text, Box } from "@chakra-ui/react";
+import { VStack, HStack, Input, Button, Text, Box, Switch } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
+import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import type { Schedule } from "@/features/schedule/types";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import SelectScheduleSheet from "./SelectScheduleSheet";
+import AmountCalculator from "./calculator/AmountCalculator";
+
+export interface ExpenseSaveOptions {
+  isShared: boolean;
+  paidBy: string | null;
+  splitMemberIds: string[];
+}
 
 interface AddExpenseSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveExpense: (name: string, amount: number, scheduleId?: string) => void;
+  onSaveExpense: (
+    name: string,
+    amount: number,
+    scheduleId?: string,
+    options?: ExpenseSaveOptions,
+  ) => void;
   scheduleName?: string;
   scheduleId?: string;
   date?: string;
@@ -38,15 +53,23 @@ export default function AddExpenseSheet({
     useTripCurrency(tripId);
 
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
+  const { user } = useAuth();
+  const { data: members = [] } = useTripMembers(tripId);
+
+  const hasMultipleMembers = members.length >= 2;
+
+  const currentMember = useMemo(
+    () => members.find((m) => m.user_id === user?.id),
+    [members, user?.id],
+  );
 
   const {
-    amount,
-    handleAmountChange,
     isValidAmount,
     currencyType,
     toggleCurrencyType,
     estimatedKrw,
     toKrwAmount,
+    setAmountFromNumber,
     reset: resetAmount,
   } = useAmountInput({
     exchangeRate,
@@ -54,7 +77,15 @@ export default function AddExpenseSheet({
       isForeignCurrency && showLocalCurrency ? "LOCAL" : "KRW",
   });
 
+  const handleAmountFromCalculator = useCallback(
+    (value: number) => {
+      setAmountFromNumber(value);
+    },
+    [setAmountFromNumber],
+  );
+
   const [name, setName] = useState("");
+  const [isCalculating, setIsCalculating] = useState(false);
   const [selectedSchedule, setSelectedSchedule] =
     useState<SelectedScheduleInfo | null>(
       scheduleId && scheduleName
@@ -62,21 +93,36 @@ export default function AddExpenseSheet({
         : null,
     );
   const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // 공유 관련 상태
+  const [isShared, setIsShared] = useState(true);
+  const [paidByUserId, setPaidByUserId] = useState<string | null>(null);
+  const [selectedSplitMemberIds, setSelectedSplitMemberIds] = useState<
+    string[]
+  >([]);
+  const [isSplitSelectOpen, setIsSplitSelectOpen] = useState(false);
+
+  // 시트가 열릴 때 공유 상태 초기화
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => {
-        nameInputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+      setIsShared(true);
+      setPaidByUserId(user?.id ?? null);
+      setSelectedSplitMemberIds(members.map((m) => m.id));
+      setIsSplitSelectOpen(false);
     }
-  }, [isOpen]);
+  }, [isOpen, user?.id, members]);
 
   const handleSave = () => {
     const parsedName = name.trim();
     if (parsedName && isValidAmount) {
-      onSaveExpense(parsedName, toKrwAmount(), selectedSchedule?.id);
+      const options: ExpenseSaveOptions = {
+        isShared: hasMultipleMembers ? isShared : false,
+        paidBy:
+          hasMultipleMembers && isShared ? paidByUserId : (user?.id ?? null),
+        splitMemberIds:
+          hasMultipleMembers && isShared ? selectedSplitMemberIds : [],
+      };
+      onSaveExpense(parsedName, toKrwAmount(), selectedSchedule?.id, options);
       setName("");
       resetAmount();
       onClose();
@@ -96,7 +142,36 @@ export default function AddExpenseSheet({
     });
   };
 
-  const isCanSaveExpense = name.trim() && isValidAmount;
+  const handleToggleSplitMember = (memberId: string) => {
+    setSelectedSplitMemberIds((prev) => {
+      if (prev.includes(memberId)) {
+        if (prev.length <= 1) return prev;
+        return prev.filter((id) => id !== memberId);
+      }
+      return [...prev, memberId];
+    });
+  };
+
+  const getMemberDisplayName = (member: (typeof members)[0]) =>
+    member.user_id === user?.id
+      ? "나"
+      : (member.profiles?.username || member.profiles?.email || "알 수 없음");
+
+  const splitSelectLabel = useMemo(() => {
+    if (selectedSplitMemberIds.length === members.length) return "전체";
+    if (selectedSplitMemberIds.length === 0) return "선택 없음";
+    const selectedNames = members
+      .filter((m) => selectedSplitMemberIds.includes(m.id))
+      .map(getMemberDisplayName);
+    return selectedNames.join(", ");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSplitMemberIds, members, user?.id]);
+
+  const isCanSaveExpense =
+    name.trim() &&
+    isValidAmount &&
+    !isCalculating &&
+    (!hasMultipleMembers || !isShared || selectedSplitMemberIds.length > 0);
 
   return (
     <>
@@ -104,6 +179,8 @@ export default function AddExpenseSheet({
         isOpen={isOpen}
         onClose={handleClose}
         title="경비 추가"
+        maxHeight="90vh"
+        adjustForKeyboard
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,
@@ -169,7 +246,6 @@ export default function AddExpenseSheet({
             </HStack>
 
             <Input
-              ref={nameInputRef}
               placeholder="예) 조식"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -178,76 +254,173 @@ export default function AddExpenseSheet({
             />
           </VStack>
 
-          <VStack gap={2} w="full">
-            <HStack w="full" justify="space-between" align="center">
-              <HStack gap={2} align="center">
+          {/* 공유 설정 (멤버 2명 이상일 때만) */}
+          {hasMultipleMembers && (
+            <VStack gap={3} w="full" pt={1}>
+              {/* 공유 토글 */}
+              <HStack justify="space-between" w="full" py={1}>
                 <Text fontSize="md" fontWeight="medium">
-                  금액
+                  일행과 공유
                 </Text>
-                {estimatedKrw && (
-                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                    ≈ {estimatedKrw}원
-                  </Text>
-                )}
-              </HStack>
-              {isForeignCurrency && (
-                <Button
-                  size="xs"
-                  variant="ghost"
+                <Switch.Root
+                  checked={isShared}
+                  onCheckedChange={(e) => setIsShared(e.checked)}
                   colorPalette="teal"
-                  h="24px"
-                  px={2}
-                  pb={0}
-                  onClick={toggleCurrencyType}
                 >
-                  <HStack gap={1}>
-                    <ArrowLeftRight size={12} />
-                    <Text fontSize="xs">
-                      {currencyType === "KRW"
-                        ? "현지화로 입력하기"
-                        : "원화로 입력하기"}
+                  <Switch.HiddenInput />
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch.Root>
+              </HStack>
+
+              {isShared && (
+                <>
+                  {/* 결제자 선택 */}
+                  <VStack gap={2} w="full" align="start">
+                    <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                      결제자
                     </Text>
-                  </HStack>
-                </Button>
-              )}
-            </HStack>
+                    <HStack gap={2} flexWrap="wrap" w="full">
+                      {members.map((member) => {
+                        const isSelected = member.user_id === paidByUserId;
+                        return (
+                          <Box
+                            key={member.id}
+                            as="button"
+                            px={3}
+                            py={1.5}
+                            bg={
+                              isSelected
+                                ? `${colors.primary.palette}.500`
+                                : "gray.100"
+                            }
+                            color={isSelected ? "white" : "gray.600"}
+                            borderRadius="full"
+                            fontSize="sm"
+                            fontWeight="medium"
+                            cursor="pointer"
+                            transition="all 0.2s"
+                            onClick={() => setPaidByUserId(member.user_id)}
+                          >
+                            {getMemberDisplayName(member)}
+                          </Box>
+                        );
+                      })}
+                    </HStack>
+                  </VStack>
 
-            <Box w="full" position="relative">
-              <Input
-                placeholder="0"
-                value={amount}
-                onChange={handleAmountChange}
-                inputMode="numeric"
-                size="lg"
-                borderRadius="xl"
-                pl={currencyType === "LOCAL" ? "2rem" : "1rem"}
-                pr="2.5rem"
-              />
-
-              {currencyType === "LOCAL" && (
-                <Text
-                  position="absolute"
-                  left="1rem"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  color="gray.500"
-                  fontWeight="medium"
-                >
-                  {currencySymbol}
-                </Text>
+                  {/* 정산 대상자 Select */}
+                  <VStack gap={2} w="full" align="start">
+                    <Text fontSize="sm" fontWeight="medium" color="gray.600">
+                      정산 대상 ({selectedSplitMemberIds.length}/{members.length}
+                      명)
+                    </Text>
+                    <Box
+                      as="button"
+                      w="full"
+                      px={3}
+                      py={2}
+                      bg="gray.50"
+                      border="1px solid"
+                      borderColor={isSplitSelectOpen ? `${colors.primary.palette}.300` : "gray.200"}
+                      borderRadius="lg"
+                      cursor="pointer"
+                      onClick={() => setIsSplitSelectOpen(!isSplitSelectOpen)}
+                      transition="all 0.2s"
+                    >
+                      <HStack justify="space-between" align="center">
+                        <Text fontSize="sm" color="gray.700">
+                          {splitSelectLabel}
+                        </Text>
+                        <Box
+                          transition="transform 0.2s"
+                          transform={
+                            isSplitSelectOpen ? "rotate(180deg)" : undefined
+                          }
+                        >
+                          <ChevronDown size={16} color="gray" />
+                        </Box>
+                      </HStack>
+                    </Box>
+                    {isSplitSelectOpen && (
+                      <Box
+                        w="full"
+                        bg="white"
+                        border="1px solid"
+                        borderColor="gray.200"
+                        borderRadius="lg"
+                        overflow="hidden"
+                        px={2}
+                        py={1}
+                      >
+                        <Box display="flex" flexWrap="wrap" gap={1}>
+                          {members.map((member) => (
+                            <Checkbox
+                              key={member.id}
+                              isChecked={selectedSplitMemberIds.includes(
+                                member.id,
+                              )}
+                              onChange={() => handleToggleSplitMember(member.id)}
+                              label={getMemberDisplayName(member)}
+                            />
+                          ))}
+                        </Box>
+                        <HStack
+                          gap={2}
+                          w="full"
+                          justify="flex-end"
+                          px={2}
+                          py={1}
+                          borderTop="1px solid"
+                          borderColor="gray.100"
+                        >
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            color="gray.500"
+                            h="24px"
+                            px={2}
+                            onClick={() =>
+                              setSelectedSplitMemberIds(
+                                members.map((m) => m.id),
+                              )
+                            }
+                          >
+                            전체 선택
+                          </Button>
+                          <Button
+                            size="xs"
+                            variant="ghost"
+                            color="gray.500"
+                            h="24px"
+                            px={2}
+                            onClick={() => {
+                              if (currentMember) {
+                                setSelectedSplitMemberIds([currentMember.id]);
+                              }
+                            }}
+                          >
+                            전체 해제
+                          </Button>
+                        </HStack>
+                      </Box>
+                    )}
+                  </VStack>
+                </>
               )}
-              <Text
-                position="absolute"
-                right="1rem"
-                top="50%"
-                transform="translateY(-50%)"
-                color="gray.500"
-                fontWeight="medium"
-              >
-                {currencyType === "KRW" ? "원" : ""}
-              </Text>
-            </Box>
-          </VStack>
+            </VStack>
+          )}
+
+          <AmountCalculator
+            onAmountChange={handleAmountFromCalculator}
+            onCalculatingChange={setIsCalculating}
+            currencySymbol={currencySymbol}
+            currencyType={currencyType}
+            estimatedKrw={estimatedKrw}
+            isForeignCurrency={isForeignCurrency}
+            onToggleCurrency={toggleCurrencyType}
+          />
         </VStack>
       </BottomSheet>
 

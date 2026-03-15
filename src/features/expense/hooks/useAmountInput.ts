@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, useCallback, type ChangeEvent } from "react";
 
 export type CurrencyType = "KRW" | "LOCAL";
 
@@ -47,6 +47,11 @@ export function useAmountInput(options: UseAmountInputOptions = {}) {
     return parsedAmount;
   };
 
+  /** 숫자값으로 금액 직접 설정 (계산기 연동용) */
+  const setAmountFromNumber = useCallback((value: number) => {
+    setAmount(value > 0 ? value.toLocaleString() : "");
+  }, []);
+
   /** 금액 및 통화 타입 초기화 */
   const reset = (newAmount = "") => {
     setAmount(newAmount);
@@ -63,6 +68,7 @@ export function useAmountInput(options: UseAmountInputOptions = {}) {
     toggleCurrencyType,
     estimatedKrw,
     toKrwAmount,
+    setAmountFromNumber,
     reset,
   };
 }
