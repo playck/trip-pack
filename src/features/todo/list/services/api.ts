@@ -14,7 +14,7 @@ export const getTodoChecklist = async (
 
   const { data: categories, error: categoriesError } = await supabase
     .from("todo_categories")
-    .select("*")
+    .select("*, todo_items(*)")
     .eq("trip_id", tripId)
     .order("display_order", { ascending: true });
 
@@ -26,19 +26,8 @@ export const getTodoChecklist = async (
 
   if (!categories || categories.length === 0) return [];
 
-  const categoryIds = categories.map((cat) => cat.id);
-
-  const { data: items, error: itemsError } = await supabase
-    .from("todo_items")
-    .select("*")
-    .in("category_id", categoryIds)
-    .order("display_order", { ascending: true });
-
-  if (itemsError) {
-    throw new Error(`할일 아이템을 불러올 수 없습니다: ${itemsError.message}`);
-  }
-
-  const itemIds = items?.map((item) => item.id) ?? [];
+  const allItems = categories.flatMap((cat) => cat.todo_items ?? []);
+  const itemIds = allItems.map((item) => item.id);
 
   const assigneesMap: Record<
     string,
@@ -73,16 +62,19 @@ export const getTodoChecklist = async (
     }
   }
 
-  return categories.map((category) => ({
-    ...category,
-    items:
-      items
-        ?.filter((item) => item.category_id === category.id)
-        .map((item) => ({
-          ...item,
-          assignees: assigneesMap[item.id] ?? [],
-        })) ?? [],
-  }));
+  return categories.map((category) => {
+    const items = (category.todo_items ?? [])
+      .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+      .map((item) => ({
+        ...item,
+        assignees: assigneesMap[item.id] ?? [],
+      }));
+    return {
+      ...category,
+      todo_items: undefined,
+      items,
+    };
+  }) as TodoCategoryWithItems[];
 };
 
 export const createTodoCategory = async (
@@ -295,19 +287,16 @@ const syncTodoItemAssignees = async (
 const verifyMembershipByItemId = async (itemId: string): Promise<void> => {
   const { data: item } = await supabase
     .from("todo_items")
-    .select("category_id")
+    .select("todo_categories(trip_id)")
     .eq("id", itemId)
     .single();
-  if (!item) throw new Error("아이템을 찾을 수 없습니다.");
 
-  const { data: cat } = await supabase
-    .from("todo_categories")
-    .select("trip_id")
-    .eq("id", item.category_id)
-    .single();
-  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+  const tripId = (
+    item?.todo_categories as unknown as { trip_id: string } | null
+  )?.trip_id;
+  if (!tripId) throw new Error("아이템을 찾을 수 없습니다.");
 
-  await verifyTripMembership(cat.trip_id);
+  await verifyTripMembership(tripId);
 };
 
 export const updateTodoItemChecked = async (

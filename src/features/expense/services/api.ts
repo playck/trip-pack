@@ -108,7 +108,7 @@ export async function getExpensesByTrip(
 ): Promise<ExpenseWithSplitMembers[]> {
   const { data, error } = await supabase
     .from("trip_expenses")
-    .select("*")
+    .select("*, expense_split_members(member_id)")
     .eq("trip_id", tripId)
     .order("expense_date", { ascending: true })
     .order("created_at", { ascending: true });
@@ -117,28 +117,15 @@ export async function getExpensesByTrip(
     throw new Error(error.message);
   }
 
-  const expenses = data || [];
-  if (expenses.length === 0) return [];
+  if (!data || data.length === 0) return [];
 
-  // 정산 대상자 일괄 조회
-  const expenseIds = expenses.map((e) => e.id);
-  const { data: splitMembers } = await supabase
-    .from("expense_split_members")
-    .select("expense_id, member_id")
-    .in("expense_id", expenseIds);
-
-  // 경비별 정산 대상자 매핑
-  const splitMap = new Map<string, string[]>();
-  (splitMembers || []).forEach((sm) => {
-    const existing = splitMap.get(sm.expense_id) || [];
-    existing.push(sm.member_id);
-    splitMap.set(sm.expense_id, existing);
-  });
-
-  return expenses.map((expense) => ({
+  return data.map((expense) => ({
     ...expense,
-    splitMemberIds: splitMap.get(expense.id) || [],
-  }));
+    expense_split_members: undefined,
+    splitMemberIds: (expense.expense_split_members ?? []).map(
+      (sm) => sm.member_id,
+    ),
+  })) as ExpenseWithSplitMembers[];
 }
 
 // 경비 수정

@@ -72,33 +72,18 @@ export const deleteExpensesOutOfRange = async (
   tripId: string,
   maxDayNumber: number,
 ): Promise<number> => {
-  // 범위 밖이면서 일정에 연결되지 않은 경비 조회
-  const { data: expenses, error: fetchError } = await supabase
+  const { count, error } = await supabase
     .from("trip_expenses")
-    .select("id")
+    .delete({ count: "exact" })
     .eq("trip_id", tripId)
     .gt("day_number", maxDayNumber)
     .is("schedule_id", null);
 
-  if (fetchError) {
-    throw new Error(`범위 밖 경비 조회 실패: ${fetchError.message}`);
+  if (error) {
+    throw new Error(`범위 밖 경비 삭제 실패: ${error.message}`);
   }
 
-  if (!expenses || expenses.length === 0) {
-    return 0;
-  }
-
-  const expenseIds = expenses.map((e) => e.id);
-  const { error: deleteError } = await supabase
-    .from("trip_expenses")
-    .delete()
-    .in("id", expenseIds);
-
-  if (deleteError) {
-    throw new Error(`범위 밖 경비 삭제 실패: ${deleteError.message}`);
-  }
-
-  return expenses.length;
+  return count ?? 0;
 };
 
 // 경비 날짜 일괄 업데이트 (expense_date 재배치)
@@ -185,11 +170,11 @@ export const updateTripDatesWithSchedules = async (params: {
     await deleteExpensesOutOfRange(tripId, newDuration);
   }
 
-  // 2. 남은 일정의 schedule_date 재계산
-  await updateScheduleDates(tripId, startDate);
-
-  // 3. 남은 경비의 expense_date 재계산
-  await updateExpenseDates(tripId, startDate);
+  // 2+3. 남은 일정/경비의 날짜 병렬 재계산
+  await Promise.all([
+    updateScheduleDates(tripId, startDate),
+    updateExpenseDates(tripId, startDate),
+  ]);
 
   // 4. trips 테이블 업데이트
   const { error: updateError } = await supabase

@@ -150,20 +150,16 @@ export const acceptInvitation = async (inviteCode: string): Promise<string> => {
 
 /** 멤버 제거 (owner만 가능) */
 export const removeMember = async (memberId: string): Promise<void> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [authResult, memberResult] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("trip_members").select("trip_id").eq("id", memberId).single(),
+  ]);
 
+  const user = authResult.data.user;
   if (!user) throw new Error("로그인이 필요합니다.");
 
-  // 삭제 대상 멤버를 조회하여 trip_id 확보
-  const { data: targetMember, error: memberError } = await supabase
-    .from("trip_members")
-    .select("trip_id")
-    .eq("id", memberId)
-    .single();
-
-  if (memberError || !targetMember) {
+  const targetMember = memberResult.data;
+  if (memberResult.error || !targetMember) {
     throw new Error("삭제 대상 멤버를 찾을 수 없습니다.");
   }
 

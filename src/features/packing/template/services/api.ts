@@ -28,7 +28,7 @@ export const getChecklistTemplate = async () => {
 };
 
 export const createChecklistTemplate = async (
-  template: TablesInsert<"checklist_templates">
+  template: TablesInsert<"checklist_templates">,
 ) => {
   const { data, error } = await supabase
     .from("checklist_templates")
@@ -91,7 +91,7 @@ export const addTemplateCategory = async (
   templateId: string,
   name: string,
   iconKey: string,
-  displayOrder: number
+  displayOrder: number,
 ) => {
   const { data, error } = await supabase
     .from("template_categories")
@@ -128,7 +128,7 @@ export const addTemplateItem = async (
   categoryId: string,
   name: string,
   notes?: string,
-  displayOrder?: number
+  displayOrder?: number,
 ) => {
   const { data, error } = await supabase
     .from("template_items")
@@ -152,7 +152,7 @@ export const addTemplateItem = async (
 export const updateTemplateItem = async (
   itemId: string,
   name: string,
-  notes?: string
+  notes?: string,
 ) => {
   const { error } = await supabase
     .from("template_items")
@@ -204,8 +204,17 @@ interface BulkCategoryInput {
 
 export const createTemplateCategoriesWithItems = async (
   templateId: string,
-  categories: BulkCategoryInput[]
+  categories: BulkCategoryInput[],
 ) => {
+  // 카테고리 순차 생성 후 아이템 배치 INSERT
+  const allItems: {
+    category_id: string;
+    name: string;
+    notes: string | null;
+    is_required: boolean;
+    display_order: number;
+  }[] = [];
+
   for (const cat of categories) {
     const { data: newCat, error: catError } = await supabase
       .from("template_categories")
@@ -222,27 +231,29 @@ export const createTemplateCategoriesWithItems = async (
       throw new Error(`카테고리 생성 실패: ${catError.message}`);
     }
 
-    if (cat.items.length > 0) {
-      const itemsToInsert = cat.items.map((item) => ({
+    for (const item of cat.items) {
+      allItems.push({
         category_id: newCat.id,
         name: item.name,
         notes: item.notes,
         is_required: item.is_required ?? false,
         display_order: item.display_order,
-      }));
+      });
+    }
+  }
 
-      const { error: itemsError } = await supabase
-        .from("template_items")
-        .insert(itemsToInsert);
+  if (allItems.length > 0) {
+    const { error: itemsError } = await supabase
+      .from("template_items")
+      .insert(allItems);
 
-      if (itemsError) {
-        throw new Error(`아이템 생성 실패: ${itemsError.message}`);
-      }
+    if (itemsError) {
+      throw new Error(`아이템 생성 실패: ${itemsError.message}`);
     }
   }
 };
 
-// 템플릿 카테고리 가져오기
+// 템플릿 카테고리 가져오기 — 아이템 배치 INSERT
 export const getTemplateCategories = async (
   templateId: string,
   sourceCategories: {
@@ -255,8 +266,16 @@ export const getTemplateCategories = async (
       display_order: number | null;
     }[];
   }[],
-  startOrder: number
+  startOrder: number,
 ) => {
+  const allItems: {
+    category_id: string;
+    name: string;
+    notes: string | null;
+    is_required: boolean;
+    display_order: number;
+  }[] = [];
+
   for (let i = 0; i < sourceCategories.length; i++) {
     const cat = sourceCategories[i];
 
@@ -275,22 +294,24 @@ export const getTemplateCategories = async (
       throw new Error(`카테고리 가져오기 실패: ${catError.message}`);
     }
 
-    if (cat.template_items.length > 0) {
-      const itemsToInsert = cat.template_items.map((item) => ({
+    for (const item of cat.template_items) {
+      allItems.push({
         category_id: newCat.id,
         name: item.name,
         notes: item.notes,
         is_required: item.is_required ?? false,
         display_order: item.display_order ?? 0,
-      }));
+      });
+    }
+  }
 
-      const { error: itemsError } = await supabase
-        .from("template_items")
-        .insert(itemsToInsert);
+  if (allItems.length > 0) {
+    const { error: itemsError } = await supabase
+      .from("template_items")
+      .insert(allItems);
 
-      if (itemsError) {
-        throw new Error(`아이템 가져오기 실패: ${itemsError.message}`);
-      }
+    if (itemsError) {
+      throw new Error(`아이템 가져오기 실패: ${itemsError.message}`);
     }
   }
 };

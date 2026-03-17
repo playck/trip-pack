@@ -8,46 +8,33 @@ import type {
 } from "../../type";
 
 export const getShoppingChecklist = async (
-  tripId: string
+  tripId: string,
 ): Promise<ShoppingCategoryWithItems[]> => {
   await verifyTripMembership(tripId);
 
-  const { data: categories, error: categoriesError } = await supabase
+  const { data, error } = await supabase
     .from("shopping_categories")
-    .select("*")
+    .select("*, shopping_items(*)")
     .eq("trip_id", tripId)
     .order("display_order", { ascending: true });
 
-  if (categoriesError) {
-    throw new Error(
-      `쇼핑 카테고리를 불러올 수 없습니다: ${categoriesError.message}`
-    );
+  if (error) {
+    throw new Error(`쇼핑 리스트를 불러올 수 없습니다: ${error.message}`);
   }
 
-  if (!categories || categories.length === 0) return [];
+  if (!data || data.length === 0) return [];
 
-  const categoryIds = categories.map((cat) => cat.id);
-
-  const { data: items, error: itemsError } = await supabase
-    .from("shopping_items")
-    .select("*")
-    .in("category_id", categoryIds)
-    .order("display_order", { ascending: true });
-
-  if (itemsError) {
-    throw new Error(
-      `쇼핑 아이템을 불러올 수 없습니다: ${itemsError.message}`
-    );
-  }
-
-  return categories.map((category) => ({
+  return data.map((category) => ({
     ...category,
-    items: items?.filter((item) => item.category_id === category.id) ?? [],
-  }));
+    items: (category.shopping_items ?? []).sort(
+      (a, b) => (a.display_order ?? 0) - (b.display_order ?? 0),
+    ),
+    shopping_items: undefined,
+  })) as ShoppingCategoryWithItems[];
 };
 
 export const createShoppingCategory = async (
-  params: UseCreateShoppingCategoryParams
+  params: UseCreateShoppingCategoryParams,
 ): Promise<{ id: string }> => {
   await verifyTripMembership(params.tripId);
 
@@ -116,7 +103,7 @@ export const updateShoppingCategory = async (params: {
 };
 
 export const deleteShoppingCategory = async (
-  categoryId: string
+  categoryId: string,
 ): Promise<void> => {
   const { data: cat } = await supabase
     .from("shopping_categories")
@@ -142,14 +129,14 @@ export const deleteShoppingCategory = async (
   if (error) {
     console.error(
       `카테고리 삭제 실패 (아이템은 이미 삭제됨, categoryId: ${categoryId}):`,
-      error.message
+      error.message,
     );
     throw new Error(`카테고리 삭제 실패: ${error.message}`);
   }
 };
 
 export const createShoppingItem = async (
-  params: UseCreateShoppingItemParams
+  params: UseCreateShoppingItemParams,
 ): Promise<{ id: string }> => {
   const { data: cat } = await supabase
     .from("shopping_categories")
@@ -193,7 +180,7 @@ export const createShoppingItem = async (
 };
 
 export const updateShoppingItem = async (
-  params: UseUpdateShoppingItemParams
+  params: UseUpdateShoppingItemParams,
 ): Promise<void> => {
   await verifyMembershipByItemId(params.itemId);
 
@@ -214,28 +201,25 @@ export const updateShoppingItem = async (
   if (error) throw new Error(`아이템 수정 실패: ${error.message}`);
 };
 
-/** 아이템 ID로 trip_id를 조회하여 멤버십 검증 */
+/** 아이템 ID로 trip_id를 조회하여 멤버십 검증*/
 const verifyMembershipByItemId = async (itemId: string): Promise<void> => {
   const { data: item } = await supabase
     .from("shopping_items")
-    .select("category_id")
+    .select("shopping_categories(trip_id)")
     .eq("id", itemId)
     .single();
-  if (!item) throw new Error("아이템을 찾을 수 없습니다.");
 
-  const { data: cat } = await supabase
-    .from("shopping_categories")
-    .select("trip_id")
-    .eq("id", item.category_id)
-    .single();
-  if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
+  const tripId = (
+    item?.shopping_categories as unknown as { trip_id: string } | null
+  )?.trip_id;
+  if (!tripId) throw new Error("아이템을 찾을 수 없습니다.");
 
-  await verifyTripMembership(cat.trip_id);
+  await verifyTripMembership(tripId);
 };
 
 export const updateShoppingItemChecked = async (
   itemId: string,
-  isChecked: boolean
+  isChecked: boolean,
 ): Promise<void> => {
   await verifyMembershipByItemId(itemId);
 
@@ -250,9 +234,7 @@ export const updateShoppingItemChecked = async (
   if (error) throw new Error(`체크 상태 변경 실패: ${error.message}`);
 };
 
-export const deleteShoppingItems = async (
-  itemIds: string[]
-): Promise<void> => {
+export const deleteShoppingItems = async (itemIds: string[]): Promise<void> => {
   if (itemIds.length === 0) return;
 
   await verifyMembershipByItemId(itemIds[0]);
