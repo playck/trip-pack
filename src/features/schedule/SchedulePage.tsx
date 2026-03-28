@@ -34,6 +34,7 @@ import {
 } from "./hooks";
 import { useScheduleDetailActions } from "./hooks/useScheduleDetailActions";
 import { useScheduleMap } from "./hooks/useScheduleMap";
+import { useHidePastSchedule } from "./hooks/useHidePastSchedule";
 import { ScheduleProvider } from "./context";
 
 function SchedulePageContent() {
@@ -122,6 +123,14 @@ function SchedulePageContent() {
 
   const { showScrollTop, scrollToTop } = useScrollToTop();
 
+  // 지난 일정 숨기기
+  const {
+    hidePast,
+    toggleHidePast,
+    todayDayNumber,
+    showToggle: showHidePastToggle,
+  } = useHidePastSchedule(tripId, tripInfo?.startDate, tripInfo?.endDate);
+
   // 공유
   const { handleScheduleShare } = useShareSchedule();
 
@@ -198,6 +207,10 @@ function SchedulePageContent() {
               <MapCollapseButton
                 isCollapsed={isMapCollapsed}
                 onToggle={handleToggleCollapse}
+                hidePast={hidePast}
+                onToggleHidePast={
+                  showHidePastToggle ? toggleHidePast : undefined
+                }
               />
             )}
           </MapWrapper>
@@ -210,6 +223,9 @@ function SchedulePageContent() {
               endDate={tripInfo.endDate}
               isMapCollapsed={isMapCollapsed}
               regionName={tripInfo.regionName ?? undefined}
+              hidePastDayNumber={
+                showHidePastToggle && hidePast ? todayDayNumber : undefined
+              }
               onAddSchedule={handleAddSchedule}
               onAddMemo={handleAddMemo}
             />

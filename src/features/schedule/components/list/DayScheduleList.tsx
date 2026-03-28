@@ -15,6 +15,7 @@ interface DayScheduleListProps {
   endDate: string;
   isMapCollapsed?: boolean;
   regionName?: string;
+  hidePastDayNumber?: number;
   onAddSchedule?: (dayNumber: number, date: string) => void;
   onAddMemo?: (dayNumber: number, date: string) => void;
 }
@@ -27,6 +28,7 @@ export default function DayScheduleList({
   endDate,
   isMapCollapsed = false,
   regionName,
+  hidePastDayNumber,
   onAddSchedule,
   onAddMemo,
 }: DayScheduleListProps) {
@@ -48,6 +50,8 @@ export default function DayScheduleList({
     <VStack align="stretch" gap={3}>
       {Array.from({ length: tripDays }, (_, index) => {
         const dayNumber = index + 1;
+        if (hidePastDayNumber && dayNumber < hidePastDayNumber) return null;
+
         const date = getDayDate(startDate, dayNumber);
         const formattedDate = dayjs(date).locale("ko").format("M월 D일 (ddd)");
 

@@ -1,44 +1,81 @@
-import { Box, Text } from "@chakra-ui/react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { Box, HStack, Text } from "@chakra-ui/react";
+import { ChevronUp, ChevronDown, EyeOff, Eye } from "lucide-react";
 import { colors } from "@/shared/constants/colors";
 
 interface MapCollapseButtonProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  hidePast?: boolean;
+  onToggleHidePast?: () => void;
 }
 
 export default function MapCollapseButton({
   isCollapsed,
   onToggle,
+  hidePast,
+  onToggleHidePast,
 }: MapCollapseButtonProps) {
   return (
     <Box position="relative" zIndex={20}>
       <Box display="flex" justifyContent="center" w="full" mt="2px">
-        <Box
-          as="button"
+        <HStack
           bg="white"
           w="full"
           py={1}
           boxShadow="sm"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          gap={1}
           position="relative"
           zIndex={20}
-          cursor="pointer"
-          _active={{ bg: "gray.50" }}
-          onClick={onToggle}
+          gap={0}
         >
-          <Text fontSize="xs" color="gray.500" fontWeight="medium">
-            {isCollapsed ? "지도 보기" : "지도 숨기기"}
-          </Text>
-          {isCollapsed ? (
-            <ChevronDown size={14} color={colors.neutral.hex[500]} />
-          ) : (
-            <ChevronUp size={14} color={colors.neutral.hex[500]} />
+          {/* 지도 숨기기 버튼 */}
+          <Box
+            as="button"
+            flex={1}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap={1}
+            cursor="pointer"
+            _active={{ bg: "gray.50" }}
+            onClick={onToggle}
+          >
+            <Text fontSize="xs" color="gray.500" fontWeight="medium">
+              {isCollapsed ? "지도 보기" : "지도 숨기기"}
+            </Text>
+            {isCollapsed ? (
+              <ChevronDown size={14} color={colors.neutral.hex[500]} />
+            ) : (
+              <ChevronUp size={14} color={colors.neutral.hex[500]} />
+            )}
+          </Box>
+
+          {/* 지난 일정 숨기기 버튼 */}
+          {onToggleHidePast && (
+            <>
+              <Box w="1px" h="12px" bg="gray.200" />
+              <Box
+                as="button"
+                flex={1}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                gap={1}
+                cursor="pointer"
+                _active={{ bg: "gray.50" }}
+                onClick={onToggleHidePast}
+              >
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  {hidePast ? "지난 일정 보기" : "지난 일정 숨기기"}
+                </Text>
+                {hidePast ? (
+                  <Eye size={14} color={colors.neutral.hex[500]} />
+                ) : (
+                  <EyeOff size={14} color={colors.neutral.hex[500]} />
+                )}
+              </Box>
+            </>
           )}
-        </Box>
+        </HStack>
       </Box>
       {/* 가림막 엘리먼트 */}
       <Box
