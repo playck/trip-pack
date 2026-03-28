@@ -152,10 +152,12 @@ export default function PackingListPage() {
   });
 
   const menuItems: FloatingMenuItem[] = FLOATING_MENU_CONFIG.map(
-    ({ label, icon: Icon, sheetKey }) => ({
+    ({ label, icon: Icon, sheetKey, group, groupLabel }) => ({
       label,
       icon: <Icon size={18} />,
       onClick: () => sheets[sheetKey].onOpen(),
+      group,
+      groupLabel,
     }),
   );
 
