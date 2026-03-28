@@ -104,6 +104,8 @@ export default function Modal({
                       size="md"
                       color="gray.500"
                       onClick={onClose}
+                      _focus={{ outline: "none", boxShadow: "none" }}
+                      _focusVisible={{ outline: "none", boxShadow: "none" }}
                     >
                       <X size={24} />
                     </IconButton>

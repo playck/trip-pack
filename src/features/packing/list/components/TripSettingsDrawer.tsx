@@ -56,11 +56,6 @@ function MenuItemRow({ icon, label, onClick }: MenuItem) {
       cursor="pointer"
       borderRadius="lg"
       _hover={{ bg: "gray.50" }}
-      _focusVisible={{
-        outline: "2px solid",
-        outlineColor: "teal.400",
-        outlineOffset: "-2px",
-      }}
       onClick={onClick}
       css={{ touchAction: "manipulation" }}
     >
@@ -220,11 +215,6 @@ export default function TripSettingsDrawer({
                   bg={customPalette.rose[50]}
                   color={statusColors.error.text}
                   _hover={{ bg: customPalette.rose[100] }}
-                  _focusVisible={{
-                    outline: "2px solid",
-                    outlineColor: customPalette.rose[400],
-                    outlineOffset: "-2px",
-                  }}
                   onClick={() => handleAction(onOpenDeleteTrip)}
                   css={{ touchAction: "manipulation" }}
                 >

@@ -53,7 +53,6 @@ export default function ItemSearch({
           h="auto"
           minH="auto"
           _focus={{ boxShadow: "none", outline: "none" }}
-          _focusVisible={{ boxShadow: "none", outline: "none" }}
           _placeholder={{ color: "gray.400" }}
         />
         {searchQuery && (

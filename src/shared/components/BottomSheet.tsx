@@ -103,6 +103,8 @@ export default function BottomSheet({
                   position="absolute"
                   right={4}
                   onClick={onClose}
+                  _focus={{ outline: "none", boxShadow: "none" }}
+                  _focusVisible={{ outline: "none", boxShadow: "none" }}
                 >
                   <X size={20} />
                 </IconButton>
