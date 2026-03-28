@@ -16,6 +16,7 @@ const router = createRouter({
   routeTree,
   defaultPendingComponent: () => <LoadingSpinner fullScreen centered />,
   defaultErrorComponent: (props) => <GlobalErrorFallback {...props} />,
+  scrollRestoration: true,
 });
 
 const rootElement = document.getElementById("root")!;
