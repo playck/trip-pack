@@ -465,12 +465,30 @@ const processSectionCategories = async (
   categories: CategoryWithType[],
   startOrder: number,
   userId: string | null,
-): Promise<{ success: number; failed: string[] }> => {
+): Promise<{ success: number; failed: string[]; skipped: string[] }> => {
+  // 기존 카테고리 이름 조회 (중복 방지용)
+  const { data: existingCategories } = await supabase
+    .from(CATEGORY_TABLE_MAP[type])
+    .select("name")
+    .eq("trip_id", tripId);
+
+  const existingNames = new Set(
+    (existingCategories ?? []).map((c) => c.name.toLowerCase()),
+  );
+
   let order = startOrder;
   let success = 0;
   const failed: string[] = [];
+  const skipped: string[] = [];
 
   for (const category of categories) {
+    const name = category.name.trim();
+
+    if (existingNames.has(name.toLowerCase())) {
+      skipped.push(name);
+      continue;
+    }
+
     let ok = false;
     try {
       if (type === "shopping") {
@@ -487,12 +505,13 @@ const processSectionCategories = async (
     if (ok) {
       success++;
       order++;
+      existingNames.add(name.toLowerCase());
     } else {
-      failed.push(category.name.trim());
+      failed.push(name);
     }
   }
 
-  return { success, failed };
+  return { success, failed, skipped };
 };
 
 // 체크리스트 템플릿에서 여러 카테고리와 아이템을 한 번에 추가하는 API
@@ -503,6 +522,7 @@ export const createCategoriesFromCheckList = async (
   successCount: number;
   totalCount: number;
   failedCategories: string[];
+  skippedCategories: string[];
 }> => {
   // 1. 여행 존재 여부 확인 + 유저 조회 병렬 실행
   const [tripResult, userResult] = await Promise.all([
@@ -560,10 +580,12 @@ export const createCategoriesFromCheckList = async (
 
   const successCount = sectionResults.reduce((s, r) => s + r.success, 0);
   const failedCategories = sectionResults.flatMap((r) => r.failed);
+  const skippedCategories = sectionResults.flatMap((r) => r.skipped);
 
   return {
     successCount,
     totalCount: categories.length,
     failedCategories,
+    skippedCategories,
   };
 };
