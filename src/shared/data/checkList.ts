@@ -35,9 +35,9 @@ export const ESSENTIAL_ITEMS: PackItem[] = [
     cabin: "allowed",
   },
   {
-    name: "여행자보험 ",
+    name: "여행자보험",
     required: true,
-    notes: "",
+    notes: "출국 전 가입, 보장 범위·현지 병원 청구 절차 확인",
     cabin: "allowed",
   },
   {
@@ -51,6 +51,11 @@ export const ESSENTIAL_ITEMS: PackItem[] = [
     name: "eSIM/현지 유심 정보",
     required: true,
     notes: "개통 방법/QR 코드 사전 저장",
+    cabin: "allowed",
+  },
+  {
+    name: "국제운전면허증",
+    notes: "렌터카 이용 시 필수, 출국 전 발급",
     cabin: "allowed",
   },
 ];
@@ -68,72 +73,53 @@ export const DOMESTIC_ESSENTIAL_ITEMS: PackItem[] = [
   },
   { name: "현금", notes: "시장·소규모 가게 카드 미지원 대비" },
   { name: "렌터카 예약 확인서", notes: "면허증 필수 지참" },
+  { name: "충전기/보조배터리", notes: "장거리 이동 대비" },
 ];
 
 export const ELECTRONICS_ITEMS: PackItem[] = [
   {
     name: "이어폰/헤드폰",
-    notes: "",
     cabin: "allowed",
   },
   {
     name: "충전 케이블(USB-C/Lightning 등)",
-    notes: "",
     cabin: "allowed",
   },
   {
     name: "충전기(벽충전 어댑터)",
-    notes: "",
     cabin: "allowed",
   },
   {
     name: "멀티 플러그(국가별 어댑터)",
-    notes: "콘센트 규격/전압 확인",
+    notes: "콘센트 규격/전압 확인, 숙소 개수 부족 대비 멀티탭 고려",
     cabin: "allowed",
   },
   {
     name: "보조배터리",
-    notes: "외출 시 필수 전원 보강",
     cabin: "allowed",
     cabinNotes:
-      "기내만 허용, 위탁 금지. 보통 ≤100Wh 자유, 100~160Wh 항공사 승인",
+      "기내만 허용, 위탁 금지. ≤100Wh 자유, 100~160Wh 항공사 승인, 160Wh 초과 반입 금지",
   },
 ];
 
 export const CLOTHING_ITEMS: PackItem[] = [
-  {
-    name: "슬리퍼",
-    notes: "",
-    cabin: "allowed",
-  },
-  {
-    name: "선글라스",
-    notes: "",
-    cabin: "allowed",
-  },
+  { name: "슬리퍼", cabin: "allowed" },
+  { name: "선글라스", cabin: "allowed" },
   {
     name: "신발",
-    notes: "",
+    notes: "일정에 맞는 편한 신발, 새 신발 피하기",
     cabin: "allowed",
   },
-  { name: "모자", notes: "", cabin: "allowed" },
-  {
-    name: "양말",
-    notes: "",
-    cabin: "allowed",
-  },
-  { name: "잠옷", notes: "", cabin: "allowed" },
-  { name: "수면안대", notes: "", cabin: "allowed" },
-  { name: "속옷", notes: "", cabin: "allowed" },
-  {
-    name: "상의",
-    notes: "",
-    cabin: "allowed",
-  },
-  { name: "하의", notes: "", cabin: "allowed" },
+  { name: "모자", cabin: "allowed" },
+  { name: "양말", cabin: "allowed" },
+  { name: "잠옷", cabin: "allowed" },
+  { name: "수면안대", cabin: "allowed" },
+  { name: "속옷", cabin: "allowed" },
+  { name: "상의", cabin: "allowed" },
+  { name: "하의", cabin: "allowed" },
   {
     name: "겉옷",
-    notes: "",
+    notes: "현지 기온·실내 냉방 확인",
     cabin: "allowed",
   },
 ];
@@ -141,12 +127,10 @@ export const CLOTHING_ITEMS: PackItem[] = [
 export const TOILETRIES_ITEMS: PackItem[] = [
   {
     name: "칫솔",
-    notes: "휴대 케이스 있으면 위생적",
     cabin: "allowed",
   },
   {
     name: "치약",
-    notes: "",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정, 1L 지퍼백",
   },
@@ -158,7 +142,6 @@ export const TOILETRIES_ITEMS: PackItem[] = [
   },
   {
     name: "클렌징 폼",
-    notes: "",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정, 1L 지퍼백",
   },
@@ -170,7 +153,6 @@ export const TOILETRIES_ITEMS: PackItem[] = [
   },
   {
     name: "린스/트리트먼트",
-    notes: "",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정",
   },
@@ -188,11 +170,15 @@ export const TOILETRIES_ITEMS: PackItem[] = [
   },
   {
     name: "로션/크림",
-    notes: "",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정",
   },
   { name: "면봉/화장솜", notes: "지퍼백 포장", cabin: "allowed" },
+  {
+    name: "수건(여행용 속건타월)",
+    notes: "숙소 미비치 대비",
+    cabin: "allowed",
+  },
 ];
 
 export const COSMETICS_ITEMS: PackItem[] = [
@@ -205,7 +191,6 @@ export const COSMETICS_ITEMS: PackItem[] = [
   },
   {
     name: "립밤",
-    notes: "보습 필수, 색조/무색 선택",
     cabin: "restricted",
     cabinNotes: "겔/크림류로 100ml 규정",
   },
@@ -261,7 +246,13 @@ export const EMERGENCY_MED_ITEMS: PackItem[] = [
     cabin: "restricted",
     cabinNotes: "겔 100ml 규정",
   },
-  { name: "마스크", notes: "혼잡 장소 대비", cabin: "allowed" },
+  { name: "마스크", notes: "감염 예방·미세먼지 대비", cabin: "allowed" },
+  {
+    name: "개인 처방약",
+    required: true,
+    notes: "처방전 영문 사본 지참, 충분한 수량",
+    cabin: "allowed",
+  },
 ];
 
 export const MISC_OPTIONAL_ITEMS: PackItem[] = [
@@ -271,16 +262,13 @@ export const MISC_OPTIONAL_ITEMS: PackItem[] = [
     notes: "액체 누수 방지/소분/서류 보호",
     cabin: "allowed",
   },
-  { name: "세탁망", notes: "세탁소/코인런드리 이용 시", cabin: "allowed" },
-  { name: "목베게", notes: "장거리 비행/버스", cabin: "allowed" },
-  { name: "물티슈", notes: "만능 아이템", cabin: "allowed" },
+  { name: "목베개", notes: "장거리 비행/버스", cabin: "allowed" },
+  { name: "물티슈", cabin: "allowed" },
   {
-    name: "미니가위",
-    notes: "포장/실 제거",
-    cabin: "restricted",
-    cabinNotes: "칼날 길이 규정 주의(6cm 이하 등)",
+    name: "자물쇠(TSA)",
+    notes: "위탁 수하물 잠금용",
+    cabin: "allowed",
   },
-  { name: "볼펜/메모지", notes: "입국 카드/메모", cabin: "allowed" },
 ];
 
 export const BABY_ITEMS: PackItem[] = [
@@ -388,7 +376,6 @@ export const PET_TRAVEL_ITEMS: PackItem[] = [
 export const FITNESS_GYM_ITEMS: PackItem[] = [
   {
     name: "운동복(상의/하의)",
-    notes: "",
     cabin: "allowed",
   },
   { name: "운동화", notes: "워킹/러닝 겸용", cabin: "allowed" },
@@ -398,7 +385,7 @@ export const FITNESS_GYM_ITEMS: PackItem[] = [
 ];
 
 export const SWIM_WATER_ITEMS: PackItem[] = [
-  { name: "수영복", notes: "몸에 맞는 핏", cabin: "allowed" },
+  { name: "수영복", cabin: "allowed" },
   { name: "수영모자", notes: "풀장 필수인 곳 많음", cabin: "allowed" },
   { name: "물안경", notes: "김서림 방지 확인", cabin: "allowed" },
   {
@@ -431,7 +418,7 @@ export const KOREAN_FOOD_ITEMS: PackItem[] = [
     cabin: "restricted",
     cabinNotes: "액체/반액체 취급 가능(기내 100ml 규정)",
   },
-  { name: "스낵", notes: "", cabin: "allowed" },
+  { name: "스낵", cabin: "allowed" },
   {
     name: "고추장류(소포장/튜브)",
     notes: "비빔/양념 보완",
@@ -439,16 +426,8 @@ export const KOREAN_FOOD_ITEMS: PackItem[] = [
     cabinNotes: "겔/액체 100ml 규정",
   },
   { name: "커피 믹스류/티백", notes: "숙소 포트 활용", cabin: "allowed" },
-  {
-    name: "일회용 수저류",
-    notes: "",
-    cabin: "allowed",
-  },
-  {
-    name: "지퍼백/밀폐용기",
-    notes: "",
-    cabin: "allowed",
-  },
+  { name: "일회용 수저류", cabin: "allowed" },
+  { name: "지퍼백/밀폐용기", cabin: "allowed" },
 ];
 
 // ── 여행 유형별 아이템 ──
@@ -537,19 +516,16 @@ export const ACTIVITY_ITEMS: PackItem[] = [
 export const RESORT_ITEMS: PackItem[] = [
   {
     name: "리조트웨어/비치원피스",
-    notes: "편안한 리조트 룩",
     cabin: "allowed",
   },
-  { name: "킨들/책", notes: "풀사이드·비치 독서용", cabin: "allowed" },
   {
     name: "눈가리개/귀마개",
-    notes: "숙면 필수템",
     cabin: "allowed",
   },
   { name: "양산", notes: "자외선 차단 겸 비 대비", cabin: "allowed" },
   {
     name: "아로마 오일/미스트",
-    notes: "휴식 분위기 조성",
+    notes: "",
     cabin: "restricted",
     cabinNotes: "액체 100ml 규정",
   },
@@ -635,11 +611,10 @@ export const SUMMER_ITEMS: PackItem[] = [
 ];
 
 export const WINTER_ITEMS: PackItem[] = [
-  { name: "핫팩", notes: "붙이는 타입 + 손난로 타입", cabin: "allowed" },
+  { name: "핫팩", notes: "", cabin: "allowed" },
   { name: "내복/히트텍", notes: "얇은 발열 내의 1~2세트", cabin: "allowed" },
   { name: "장갑", notes: "터치스크린 가능 장갑 권장", cabin: "allowed" },
   { name: "목도리", notes: "방한 필수", cabin: "allowed" },
-  { name: "귀마개", notes: "찬바람 대비", cabin: "allowed" },
   {
     name: "보습 핸드크림",
     notes: "건조한 겨울 필수",
@@ -652,7 +627,6 @@ export const WINTER_ITEMS: PackItem[] = [
 export const RAINY_ITEMS: PackItem[] = [
   { name: "우산(접이식)", notes: "휴대 간편한 접이식", cabin: "allowed" },
   { name: "우비/방수 재킷", notes: "야외 활동 시 필수", cabin: "allowed" },
-  { name: "방수 신발커버", notes: "신발 젖음 방지", cabin: "allowed" },
   {
     name: "방수 파우치",
     notes: "전자기기·서류 보호",
@@ -660,7 +634,7 @@ export const RAINY_ITEMS: PackItem[] = [
   },
   {
     name: "여분 수건",
-    notes: "",
+    notes: "속건 타월 권장",
     cabin: "allowed",
   },
 ];
