@@ -46,18 +46,18 @@ export const useTemplateEditor = (templateId: string) => {
   // ===== 아이템 CRUD =====
 
   const handleAddItem = useCallback(
-    async (name: string, notes?: string) => {
+    async (name: string, notes?: string, extra?: { price?: number; quantity?: number }) => {
       if (!selectedCategoryId) return;
       const itemCount = selectedCategory?.template_items.length || 0;
-      await addTemplateItem(selectedCategoryId, name, notes, itemCount);
+      await addTemplateItem(selectedCategoryId, name, notes, itemCount, extra);
       invalidate();
     },
     [selectedCategoryId, selectedCategory, invalidate],
   );
 
   const handleUpdateItem = useCallback(
-    async (itemId: string, name: string, notes?: string) => {
-      await updateTemplateItem(itemId, name, notes);
+    async (itemId: string, name: string, notes?: string, extra?: { price?: number; quantity?: number }) => {
+      await updateTemplateItem(itemId, name, notes, extra);
       invalidate();
     },
     [invalidate],
@@ -82,8 +82,8 @@ export const useTemplateEditor = (templateId: string) => {
   // ===== 카테고리 CRUD =====
 
   const handleAddCategory = useCallback(
-    async (name: string, iconKey: string) => {
-      await addTemplateCategory(templateId, name, iconKey, categories.length);
+    async (name: string, iconKey: string, categoryType: string = "packing") => {
+      await addTemplateCategory(templateId, name, iconKey, categories.length, categoryType);
       invalidate();
     },
     [templateId, categories.length, invalidate],

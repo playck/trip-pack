@@ -51,59 +51,62 @@ export default function TodoSection({
     toggleAllCategories: listControls.toggleAllCategories,
   }));
 
-  if (categories.length === 0) return null;
-
   return (
     <>
-      <HStack gap={2} align="center" mt={4} mb={2}>
-        <Box flex={1} h="1px" bg="gray.300" />
-        <HStack gap={1.5}>
-          <ClipboardList size={16} color={colors.primary.hex[500]} />
-          <Text fontSize="sm" fontWeight="semibold" color="gray.600">
-            할일
-          </Text>
-          <Text
-            fontSize="sm"
-            fontWeight="semibold"
-            color={colors.primary.fg}
-          >
-            {progress.checkedItems}/{progress.totalItems}
-          </Text>
-        </HStack>
-        <Box flex={1} h="1px" bg="gray.300" />
-      </HStack>
+      {categories.length > 0 && (
+        <>
+          <HStack gap={2} align="center" mt={4} mb={2}>
+            <Box flex={1} h="1px" bg="gray.300" />
+            <HStack gap={1.5}>
+              <ClipboardList size={16} color={colors.primary.hex[500]} />
+              <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+                할일
+              </Text>
+              <Text
+                fontSize="sm"
+                fontWeight="semibold"
+                color={colors.primary.fg}
+              >
+                {progress.checkedItems}/{progress.totalItems}
+              </Text>
+            </HStack>
+            <Box flex={1} h="1px" bg="gray.300" />
+          </HStack>
 
-      {viewMode === "일렬형식" && tripMembers.length > 1 && (
-        <HStack justify="flex-end">
-          <Checkbox
-            isChecked={showOnlyMine}
-            onChange={() => setShowOnlyMine((prev) => !prev)}
-            label="내 할일만 보기"
-            size="md"
-          />
-        </HStack>
-      )}
+          {viewMode === "일렬형식" && tripMembers.length > 1 && (
+            <HStack justify="flex-end">
+              <Checkbox
+                isChecked={showOnlyMine}
+                onChange={() => setShowOnlyMine((prev) => !prev)}
+                label="내 할일만 보기"
+                size="md"
+              />
+            </HStack>
+          )}
 
-      {viewMode === "그리드" ? (
-        <TodoGridView categories={categories} tripId={tripId} />
-      ) : (
-        <TodoListView
-          categories={categories}
-          tripId={tripId}
-          onToggleItem={(itemId, isChecked) =>
-            updateItemStatus.mutate({ itemId, isChecked })
-          }
-          showUncheckedOnly={showUncheckedOnly}
-          showOnlyMine={showOnlyMine}
-          currentMemberId={currentMemberId}
-          expandedCategories={listControls.expandedCategories}
-          toggleCategory={listControls.toggleCategory}
-        />
+          {viewMode === "그리드" ? (
+            <TodoGridView categories={categories} tripId={tripId} />
+          ) : (
+            <TodoListView
+              categories={categories}
+              tripId={tripId}
+              onToggleItem={(itemId, isChecked) =>
+                updateItemStatus.mutate({ itemId, isChecked })
+              }
+              showUncheckedOnly={showUncheckedOnly}
+              showOnlyMine={showOnlyMine}
+              currentMemberId={currentMemberId}
+              expandedCategories={listControls.expandedCategories}
+              toggleCategory={listControls.toggleCategory}
+            />
+          )}
+        </>
       )}
 
       <AddCategorySheet
         isOpen={categorySheet.isOpen}
         isLoading={createCategoryMutation.isPending}
+        title="할일 카테고리 추가"
         showSharedToggle
         onSave={(categoryName, iconKey, isShared) =>
           createCategoryMutation.mutate({ categoryName, iconKey, isShared })

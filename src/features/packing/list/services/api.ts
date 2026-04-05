@@ -331,95 +331,235 @@ export const deleteChecklistCategory = async (
   }
 };
 
+type SectionType = "packing" | "shopping" | "todo";
+type CategoryWithType = CategoryWithItems & { category_type?: string };
+
+// 준비물 카테고리 + 아이템 생성
+const insertPackingCategory = async (
+  tripId: string,
+  category: CategoryWithType,
+  order: number,
+): Promise<boolean> => {
+  const { data: newCat, error: catError } = await supabase
+    .from("checklist_categories")
+    .insert({
+      trip_id: tripId,
+      name: category.name.trim(),
+      icon_key: category.icon_key || null,
+      display_order: order,
+    })
+    .select("id")
+    .single();
+
+  if (catError || !newCat?.id) return false;
+  if (category.items.length === 0) return true;
+
+  const items = category.items.map((item, idx) => ({
+    category_id: newCat.id,
+    name: item.name.trim(),
+    notes: item.notes?.trim() || null,
+    is_required: item.is_required || false,
+    is_checked: false,
+    cabin_policy: item.cabin_policy || "allowed",
+    cabin_notes: item.cabin_notes || null,
+    display_order: idx + 1,
+  }));
+
+  const { error } = await supabase.from("checklist_items").insert(items);
+  if (error) {
+    await supabase.from("checklist_categories").delete().eq("id", newCat.id);
+    return false;
+  }
+  return true;
+};
+
+// 쇼핑 카테고리 + 아이템 생성
+const insertShoppingCategory = async (
+  tripId: string,
+  category: CategoryWithType,
+  order: number,
+  userId: string | null,
+): Promise<boolean> => {
+  const { data: newCat, error: catError } = await supabase
+    .from("shopping_categories")
+    .insert({
+      trip_id: tripId,
+      name: category.name.trim(),
+      icon_key: category.icon_key || null,
+      display_order: order,
+      created_by: userId,
+      is_shared: false,
+    })
+    .select("id")
+    .single();
+
+  if (catError || !newCat?.id) return false;
+  if (category.items.length === 0) return true;
+
+  const items = category.items.map((item, idx) => ({
+    category_id: newCat.id,
+    name: item.name.trim(),
+    notes: item.notes?.trim() || null,
+    is_checked: false,
+    display_order: idx + 1,
+  }));
+
+  const { error } = await supabase.from("shopping_items").insert(items);
+  if (error) {
+    await supabase.from("shopping_categories").delete().eq("id", newCat.id);
+    return false;
+  }
+  return true;
+};
+
+// 할일 카테고리 + 아이템 생성
+const insertTodoCategory = async (
+  tripId: string,
+  category: CategoryWithType,
+  order: number,
+  userId: string | null,
+): Promise<boolean> => {
+  const { data: newCat, error: catError } = await supabase
+    .from("todo_categories")
+    .insert({
+      trip_id: tripId,
+      name: category.name.trim(),
+      icon_key: category.icon_key || null,
+      display_order: order,
+      created_by: userId,
+      is_shared: false,
+    })
+    .select("id")
+    .single();
+
+  if (catError || !newCat?.id) return false;
+  if (category.items.length === 0) return true;
+
+  const items = category.items.map((item, idx) => ({
+    category_id: newCat.id,
+    name: item.name.trim(),
+    notes: item.notes?.trim() || null,
+    is_checked: false,
+    display_order: idx + 1,
+    created_by: userId,
+  }));
+
+  const { error } = await supabase.from("todo_items").insert(items);
+  if (error) {
+    await supabase.from("todo_categories").delete().eq("id", newCat.id);
+    return false;
+  }
+  return true;
+};
+
+const CATEGORY_TABLE_MAP: Record<SectionType, "checklist_categories" | "shopping_categories" | "todo_categories"> = {
+  packing: "checklist_categories",
+  shopping: "shopping_categories",
+  todo: "todo_categories",
+};
+
+// 섹션별 카테고리 목록을 순차 생성하고 결과를 반환하는 헬퍼
+const processSectionCategories = async (
+  tripId: string,
+  type: SectionType,
+  categories: CategoryWithType[],
+  startOrder: number,
+  userId: string | null,
+): Promise<{ success: number; failed: string[] }> => {
+  let order = startOrder;
+  let success = 0;
+  const failed: string[] = [];
+
+  for (const category of categories) {
+    let ok = false;
+    try {
+      if (type === "shopping") {
+        ok = await insertShoppingCategory(tripId, category, order, userId);
+      } else if (type === "todo") {
+        ok = await insertTodoCategory(tripId, category, order, userId);
+      } else {
+        ok = await insertPackingCategory(tripId, category, order);
+      }
+    } catch {
+      // insert 실패
+    }
+
+    if (ok) {
+      success++;
+      order++;
+    } else {
+      failed.push(category.name.trim());
+    }
+  }
+
+  return { success, failed };
+};
+
 // 체크리스트 템플릿에서 여러 카테고리와 아이템을 한 번에 추가하는 API
 export const createCategoriesFromCheckList = async (
   tripId: string,
-  categories: CategoryWithItems[],
+  categories: CategoryWithType[],
 ): Promise<{
   successCount: number;
   totalCount: number;
   failedCategories: string[];
 }> => {
-  // 1. 여행 존재 여부 및 권한 확인
-  const { data: trip, error: tripError } = await supabase
-    .from("trips")
-    .select("id")
-    .eq("id", tripId)
-    .single();
+  // 1. 여행 존재 여부 확인 + 유저 조회 병렬 실행
+  const [tripResult, userResult] = await Promise.all([
+    supabase.from("trips").select("id").eq("id", tripId).single(),
+    supabase.auth.getUser(),
+  ]);
 
-  if (tripError || !trip) {
+  if (tripResult.error || !tripResult.data) {
     throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
   }
 
-  // 2. 마지막 카테고리 아이템 조회
-  const { data: lastCategory } = await supabase
-    .from("checklist_categories")
-    .select("display_order")
-    .eq("trip_id", tripId)
-    .order("display_order", { ascending: false })
-    .limit(1)
-    .single();
+  const userId = userResult.data.user?.id ?? null;
 
-  let nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
+  // 2. 섹션별로 분류
+  const grouped: Record<SectionType, CategoryWithType[]> = {
+    packing: [],
+    shopping: [],
+    todo: [],
+  };
 
-  // 3. 카테고리와 아이템 생성
-  let successCount = 0;
-  const failedCategories: string[] = [];
-
-  for (const category of categories) {
-    try {
-      const categoryName = category.name.trim();
-
-      // 카테고리 생성
-      const { data: newCategory, error: categoryError } = await supabase
-        .from("checklist_categories")
-        .insert({
-          trip_id: tripId,
-          name: categoryName,
-          icon_key: category.icon_key || null,
-          display_order: nextDisplayOrder,
-        })
-        .select("id")
-        .single();
-
-      if (categoryError || !newCategory?.id) {
-        failedCategories.push(categoryName);
-        continue;
-      }
-
-      // 아이템 생성
-      if (category.items && category.items.length > 0) {
-        const item = category.items.map((item, index) => ({
-          category_id: newCategory.id,
-          name: item.name.trim(),
-          notes: item.notes?.trim() || null,
-          is_required: item.is_required || false,
-          is_checked: false,
-          cabin_policy: item.cabin_policy || "allowed",
-          cabin_notes: item.cabin_notes || null,
-          display_order: index + 1,
-        }));
-
-        const { error: itemsError } = await supabase
-          .from("checklist_items")
-          .insert(item);
-
-        if (itemsError) {
-          await supabase
-            .from("checklist_categories")
-            .delete()
-            .eq("id", newCategory.id);
-          failedCategories.push(categoryName);
-          continue;
-        }
-      }
-
-      successCount++;
-      nextDisplayOrder++;
-    } catch {
-      failedCategories.push(category.name);
-    }
+  for (const cat of categories) {
+    const type = (cat.category_type || "packing") as SectionType;
+    (grouped[type] ?? grouped.packing).push(cat);
   }
+
+  // 3. 사용되는 섹션만 필터 + display_order 병렬 조회
+  const activeTypes = (Object.keys(grouped) as SectionType[]).filter(
+    (t) => grouped[t].length > 0,
+  );
+
+  const orderResults = await Promise.all(
+    activeTypes.map((type) =>
+      supabase
+        .from(CATEGORY_TABLE_MAP[type])
+        .select("display_order")
+        .eq("trip_id", tripId)
+        .order("display_order", { ascending: false })
+        .limit(1)
+        .single()
+        .then((res) => ({ type, order: (res.data?.display_order || 0) + 1 })),
+    ),
+  );
+
+  const nextOrders: Record<string, number> = {};
+  for (const { type, order } of orderResults) {
+    nextOrders[type] = order;
+  }
+
+  // 4. 섹션별로 병렬 생성
+  const sectionResults = await Promise.all(
+    activeTypes.map((type) =>
+      processSectionCategories(tripId, type, grouped[type], nextOrders[type], userId),
+    ),
+  );
+
+  const successCount = sectionResults.reduce((s, r) => s + r.success, 0);
+  const failedCategories = sectionResults.flatMap((r) => r.failed);
 
   return {
     successCount,

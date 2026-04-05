@@ -2,9 +2,9 @@ import { useState } from "react";
 import { VStack, Text, Button, Box, Skeleton } from "@chakra-ui/react";
 import { useChecklistTemplate } from "@/features/packing/template/hooks";
 import { BottomSheet, ErrorMessage } from "@/shared/components";
-import type { CategoryWithItems } from "@/features/packing/type";
 import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import CheckListBottomSheet from "./CheckListBottomSheet";
+import type { CategoryWithType } from "./CheckListBottomSheet";
 
 interface TemplateListSheetProps {
   isOpen: boolean;
@@ -13,8 +13,8 @@ interface TemplateListSheetProps {
 }
 
 const convertToCategories = (
-  templateCategories: TemplateCategoryWithItems[]
-): CategoryWithItems[] =>
+  templateCategories: TemplateCategoryWithItems[],
+): CategoryWithType[] =>
   templateCategories
     .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
     .map((tc) => ({
@@ -24,6 +24,7 @@ const convertToCategories = (
       display_order: tc.display_order,
       created_at: tc.created_at,
       trip_id: null,
+      category_type: tc.category_type,
       items: tc.template_items
         .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
         .map((ti) => ({
@@ -50,7 +51,7 @@ export default function TemplateListSheet({
   const [isCheckListOpen, setIsCheckListOpen] = useState(false);
   const [selectedCheckList, setSelectedCheckList] = useState<{
     title: string;
-    categories: CategoryWithItems[];
+    categories: CategoryWithType[];
   } | null>(null);
 
   const handleSelectTemplate = (
@@ -70,6 +71,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
+        minHeight="80vh"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4} maxH="600px">
@@ -100,6 +102,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
+        minHeight="80vh"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -119,6 +122,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
+        minHeight="80vh"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -137,6 +141,7 @@ export default function TemplateListSheet({
       isOpen={isOpen}
       onClose={onClose}
       title="체크리스트 모음"
+      minHeight="80vh"
       secondaryButton={{
         text: "닫기",
         onClick: onClose,
@@ -186,6 +191,7 @@ export default function TemplateListSheet({
           <CheckListBottomSheet
             isOpen={isCheckListOpen}
             onClose={() => setIsCheckListOpen(false)}
+            onSuccess={onClose}
             title={selectedCheckList.title}
             categories={selectedCheckList.categories}
             tripId={tripId}

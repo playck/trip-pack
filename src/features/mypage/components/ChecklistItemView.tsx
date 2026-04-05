@@ -17,9 +17,10 @@ import { TemplateItemList } from "./my-checklists";
 
 interface ChecklistItemViewProps {
   category: TemplateCategoryWithItems;
+  categoryType?: string;
   onBack: () => void;
-  onAddItem: (name: string, notes?: string) => void;
-  onUpdateItem: (itemId: string, name: string, notes?: string) => void;
+  onAddItem: (name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
+  onUpdateItem: (itemId: string, name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
   onDeleteItem: (itemId: string) => void;
   onDeleteItems: (itemIds: string[]) => void;
   onDeleteCategory: (categoryId: string) => void;
@@ -27,6 +28,7 @@ interface ChecklistItemViewProps {
 
 export default function ChecklistItemView({
   category,
+  categoryType,
   onBack,
   onAddItem,
   onUpdateItem,
@@ -108,6 +110,7 @@ export default function ChecklistItemView({
       <Box pb={5}>
         <TemplateItemList
           items={category.template_items}
+          categoryType={categoryType}
           searchQuery={searchQuery}
           isEditMode={isEditMode}
           onAddItem={onAddItem}

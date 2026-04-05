@@ -12,19 +12,22 @@ import { FloatingAddButton, Checkbox, ConfirmDialog } from "@/shared/components"
 import { colors, statusColors } from "@/shared/constants/colors";
 import TemplateItem from "./TemplateItem";
 import TemplateEditItemSheet from "./TemplateEditItemSheet";
+import TemplateShoppingItemSheet from "./TemplateShoppingItemSheet";
 
 interface TemplateItemListProps {
   items: TemplateItemType[];
+  categoryType?: string;
   searchQuery?: string;
   isEditMode?: boolean;
-  onAddItem: (name: string, notes?: string) => void;
-  onUpdateItem: (itemId: string, name: string, notes?: string) => void;
+  onAddItem: (name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
+  onUpdateItem: (itemId: string, name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
   onDeleteItem: (itemId: string) => void;
   onDeleteItems?: (itemIds: string[]) => void;
 }
 
 export default function TemplateItemList({
   items,
+  categoryType,
   searchQuery = "",
   isEditMode = false,
   onAddItem,
@@ -44,6 +47,8 @@ export default function TemplateItemList({
   } = useDisclosure();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  const isShopping = categoryType === "shopping";
+
   // 검색 필터링
   const filteredItems = useMemo(() => {
     if (!searchQuery.trim()) return items;
@@ -62,8 +67,12 @@ export default function TemplateItemList({
     }
   }, [isEditMode]);
 
-  const handleAddItem = (name: string, notes?: string) => {
-    onAddItem(name, notes);
+  const handleAddItem = (
+    name: string,
+    notes?: string,
+    extra?: { price?: number; quantity?: number },
+  ) => {
+    onAddItem(name, notes, extra);
     onAddClose();
   };
 
@@ -131,6 +140,7 @@ export default function TemplateItemList({
             <TemplateItem
               key={item.id || `${item.name}-${idx}`}
               item={item}
+              categoryType={categoryType}
               isEditMode={isEditMode}
               isSelected={item.id ? selectedIds.has(item.id) : false}
               onSelect={handleSelect}
@@ -181,11 +191,20 @@ export default function TemplateItemList({
         <FloatingAddButton onClick={onAddOpen} ariaLabel="새 아이템 추가" />
       )}
 
-      <TemplateEditItemSheet
-        isOpen={isAddOpen}
-        onSave={handleAddItem}
-        onClose={onAddClose}
-      />
+      {isShopping ? (
+        <TemplateShoppingItemSheet
+          isOpen={isAddOpen}
+          onSave={handleAddItem}
+          onClose={onAddClose}
+        />
+      ) : (
+        <TemplateEditItemSheet
+          isOpen={isAddOpen}
+          addTitle={categoryType === "todo" ? "할 일 추가" : "아이템 추가"}
+          onSave={handleAddItem}
+          onClose={onAddClose}
+        />
+      )}
     </Box>
   );
 }

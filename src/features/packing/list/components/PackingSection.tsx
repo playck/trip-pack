@@ -181,6 +181,7 @@ export default function PackingSection({
       <AddCategorySheet
         isOpen={categorySheet.isOpen}
         isLoading={createCategoryMutation.isPending}
+        title="준비물 카테고리 추가"
         onSave={(categoryName, iconKey) =>
           createCategoryMutation.mutate({ categoryName, iconKey })
         }

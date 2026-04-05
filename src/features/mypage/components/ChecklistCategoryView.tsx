@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Box, HStack, Text, VStack, useDisclosure } from "@chakra-ui/react";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  FolderPlus,
+  ShoppingCart,
+  ClipboardList,
+} from "lucide-react";
 import { FloatingAddButton, AddCategorySheet } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
@@ -18,7 +23,7 @@ interface ChecklistCategoryViewProps {
   currentTemplateId: string;
   onBack: () => void;
   onCategoryClick: (category: TemplateCategoryWithItems) => void;
-  onAddCategory: (name: string, iconKey: string) => void;
+  onAddCategory: (name: string, iconKey: string, categoryType?: string) => void;
   onDeleteCategories: (categoryIds: string[]) => void;
   onImportCategories: (categories: TemplateCategoryWithItems[]) => void;
   onUpdateInfo: (title: string, description: string | null) => void;
@@ -43,6 +48,16 @@ export default function ChecklistCategoryView({
     onClose: onAddCategoryClose,
   } = useDisclosure();
   const {
+    open: isAddShoppingCategoryOpen,
+    onOpen: onAddShoppingCategoryOpen,
+    onClose: onAddShoppingCategoryClose,
+  } = useDisclosure();
+  const {
+    open: isAddTodoCategoryOpen,
+    onOpen: onAddTodoCategoryOpen,
+    onClose: onAddTodoCategoryClose,
+  } = useDisclosure();
+  const {
     open: isEditInfoOpen,
     onOpen: onEditInfoOpen,
     onClose: onEditInfoClose,
@@ -56,8 +71,18 @@ export default function ChecklistCategoryView({
   const hasContent = categories.length > 0;
 
   const handleSaveCategory = (name: string, iconKey: string) => {
-    onAddCategory(name, iconKey);
+    onAddCategory(name, iconKey, "packing");
     onAddCategoryClose();
+  };
+
+  const handleSaveShoppingCategory = (name: string, iconKey: string) => {
+    onAddCategory(name, iconKey, "shopping");
+    onAddShoppingCategoryClose();
+  };
+
+  const handleSaveTodoCategory = (name: string, iconKey: string) => {
+    onAddCategory(name, iconKey, "todo");
+    onAddTodoCategoryClose();
   };
 
   const handleImportCategories = (imported: TemplateCategoryWithItems[]) => {
@@ -72,7 +97,25 @@ export default function ChecklistCategoryView({
 
   const floatingMenuItems: FloatingMenuItem[] = [
     { label: "체크리스트 가져오기", onClick: onImportOpen },
-    { label: "카테고리 추가", onClick: onAddCategoryOpen },
+    {
+      label: "준비물",
+      icon: <FolderPlus size={18} />,
+      onClick: onAddCategoryOpen,
+      group: "category",
+      groupLabel: "카테고리 추가",
+    },
+    {
+      label: "쇼핑",
+      icon: <ShoppingCart size={18} />,
+      onClick: onAddShoppingCategoryOpen,
+      group: "category",
+    },
+    {
+      label: "할일",
+      icon: <ClipboardList size={18} />,
+      onClick: onAddTodoCategoryOpen,
+      group: "category",
+    },
     { label: "템플릿 정보 수정", onClick: onEditInfoOpen },
   ];
 
@@ -131,8 +174,23 @@ export default function ChecklistCategoryView({
 
           <AddCategorySheet
             isOpen={isAddCategoryOpen}
+            title="새 준비물 카테고리 추가"
             onSave={handleSaveCategory}
             onClose={onAddCategoryClose}
+          />
+
+          <AddCategorySheet
+            isOpen={isAddShoppingCategoryOpen}
+            title="새 쇼핑 카테고리 추가"
+            onSave={handleSaveShoppingCategory}
+            onClose={onAddShoppingCategoryClose}
+          />
+
+          <AddCategorySheet
+            isOpen={isAddTodoCategoryOpen}
+            title="새 할일 카테고리 추가"
+            onSave={handleSaveTodoCategory}
+            onClose={onAddTodoCategoryClose}
           />
 
           <TemplateInfoEditSheet

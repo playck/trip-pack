@@ -7,6 +7,7 @@ interface AddCategorySheetProps {
   isOpen: boolean;
   isLoading?: boolean;
   showSharedToggle?: boolean;
+  title?: string;
   onSave: (categoryName: string, iconKey: string, isShared?: boolean) => void;
   onClose: () => void;
 }
@@ -15,6 +16,7 @@ export default function AddCategorySheet({
   isOpen,
   isLoading = false,
   showSharedToggle = false,
+  title = "새 카테고리 추가",
   onSave,
   onClose,
 }: AddCategorySheetProps) {
@@ -83,7 +85,7 @@ export default function AddCategorySheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={handleClose}
-      title="새 카테고리 추가"
+      title={title}
       primaryButton={{
         text: "저장",
         onClick: handleSave,

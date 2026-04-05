@@ -20,6 +20,8 @@ import { formatTripDateRange } from "@/shared/utiles/date";
 import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
+import { useTodoChecklist } from "@/features/todo/list/hooks/useTodoChecklist";
+import { useShoppingChecklist } from "@/features/shopping/list/hooks/useShoppingChecklist";
 
 import { FLOATING_MENU_CONFIG } from "./constants/floatingMenu";
 import { useTripChecklist } from "./hooks/useTripChecklist";
@@ -49,6 +51,8 @@ export default function PackingListPage() {
 
   // 준비물 (progress 표시용)
   const { categories, error, progress } = useTripChecklist(tripId);
+  const { categories: todoCategories } = useTodoChecklist(tripId);
+  const { categories: shoppingCategories } = useShoppingChecklist(tripId);
   const { data: tripInfo } = useTripInfo(tripId);
 
   const packingRef = useRef<SectionHandle>(null);
@@ -248,7 +252,9 @@ export default function PackingListPage() {
         <ChecklistSaveSheet
           isOpen={sheets.save.isOpen}
           onClose={sheets.save.onClose}
-          categories={categories}
+          packingCategories={categories}
+          shoppingCategories={shoppingCategories}
+          todoCategories={todoCategories}
           tripInfo={tripInfo}
         />
 

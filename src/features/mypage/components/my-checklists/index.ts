@@ -4,5 +4,6 @@ export { default as TemplateItemList } from "./TemplateItemList";
 export { default as TemplateItem } from "./TemplateItem";
 export { default as TemplateItemActionsSheet } from "./TemplateItemActionsSheet";
 export { default as TemplateEditItemSheet } from "./TemplateEditItemSheet";
+export { default as TemplateShoppingItemSheet } from "./TemplateShoppingItemSheet";
 export { default as TemplateInfoEditSheet } from "./TemplateInfoEditSheet";
 export { default as TemplateImportSheet } from "./TemplateImportSheet";

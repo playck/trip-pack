@@ -311,6 +311,7 @@ export type Database = {
       }
       template_categories: {
         Row: {
+          category_type: string
           created_at: string | null
           display_order: number | null
           icon_key: string | null
@@ -319,6 +320,7 @@ export type Database = {
           template_id: string
         }
         Insert: {
+          category_type?: string
           created_at?: string | null
           display_order?: number | null
           icon_key?: string | null
@@ -327,6 +329,7 @@ export type Database = {
           template_id: string
         }
         Update: {
+          category_type?: string
           created_at?: string | null
           display_order?: number | null
           icon_key?: string | null
@@ -353,6 +356,8 @@ export type Database = {
           is_required: boolean | null
           name: string
           notes: string | null
+          price: number | null
+          quantity: number | null
         }
         Insert: {
           category_id: string
@@ -362,6 +367,8 @@ export type Database = {
           is_required?: boolean | null
           name: string
           notes?: string | null
+          price?: number | null
+          quantity?: number | null
         }
         Update: {
           category_id?: string
@@ -371,6 +378,8 @@ export type Database = {
           is_required?: boolean | null
           name?: string
           notes?: string | null
+          price?: number | null
+          quantity?: number | null
         }
         Relationships: [
           {

@@ -12,11 +12,14 @@ interface CreateTemplateWithCategoriesParams {
     name: string;
     icon_key: string | null;
     display_order: number;
+    category_type?: string;
     items: {
       name: string;
       notes: string | null;
       is_required: boolean | null;
       display_order: number;
+      price?: number | null;
+      quantity?: number | null;
     }[];
   }[];
 }

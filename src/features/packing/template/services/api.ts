@@ -92,6 +92,7 @@ export const addTemplateCategory = async (
   name: string,
   iconKey: string,
   displayOrder: number,
+  categoryType: string = "packing",
 ) => {
   const { data, error } = await supabase
     .from("template_categories")
@@ -100,6 +101,7 @@ export const addTemplateCategory = async (
       name,
       icon_key: iconKey,
       display_order: displayOrder,
+      category_type: categoryType,
     })
     .select("id")
     .single();
@@ -129,6 +131,7 @@ export const addTemplateItem = async (
   name: string,
   notes?: string,
   displayOrder?: number,
+  extra?: { price?: number; quantity?: number },
 ) => {
   const { data, error } = await supabase
     .from("template_items")
@@ -137,6 +140,8 @@ export const addTemplateItem = async (
       name,
       notes: notes || null,
       display_order: displayOrder ?? 0,
+      price: extra?.price ?? null,
+      quantity: extra?.quantity ?? null,
     })
     .select("id")
     .single();
@@ -153,10 +158,16 @@ export const updateTemplateItem = async (
   itemId: string,
   name: string,
   notes?: string,
+  extra?: { price?: number; quantity?: number },
 ) => {
   const { error } = await supabase
     .from("template_items")
-    .update({ name, notes: notes || null })
+    .update({
+      name,
+      notes: notes || null,
+      price: extra?.price ?? null,
+      quantity: extra?.quantity ?? null,
+    })
     .eq("id", itemId);
 
   if (error) {
@@ -194,11 +205,14 @@ interface BulkCategoryInput {
   name: string;
   icon_key: string | null;
   display_order: number;
+  category_type?: string;
   items: {
     name: string;
     notes: string | null;
     is_required: boolean | null;
     display_order: number;
+    price?: number | null;
+    quantity?: number | null;
   }[];
 }
 
@@ -213,6 +227,8 @@ export const createTemplateCategoriesWithItems = async (
     notes: string | null;
     is_required: boolean;
     display_order: number;
+    price: number | null;
+    quantity: number | null;
   }[] = [];
 
   for (const cat of categories) {
@@ -223,6 +239,7 @@ export const createTemplateCategoriesWithItems = async (
         name: cat.name,
         icon_key: cat.icon_key,
         display_order: cat.display_order,
+        category_type: cat.category_type ?? "packing",
       })
       .select("id")
       .single();
@@ -238,6 +255,8 @@ export const createTemplateCategoriesWithItems = async (
         notes: item.notes,
         is_required: item.is_required ?? false,
         display_order: item.display_order,
+        price: item.price ?? null,
+        quantity: item.quantity ?? null,
       });
     }
   }
@@ -259,6 +278,7 @@ export const getTemplateCategories = async (
   sourceCategories: {
     name: string;
     icon_key: string | null;
+    category_type?: string;
     template_items: {
       name: string;
       notes: string | null;
@@ -286,6 +306,7 @@ export const getTemplateCategories = async (
         name: cat.name,
         icon_key: cat.icon_key,
         display_order: startOrder + i,
+        category_type: cat.category_type ?? "packing",
       })
       .select("id")
       .single();

@@ -1,7 +1,13 @@
 import { useAuth } from "@/shared/hooks/useAuth";
 import type { TripInfo } from "@/shared/service/trip/tripInfo";
 import { useCreateChecklistTemplate } from "@/features/packing/template/services";
-import type { CategoryWithItems } from "../../type";
+
+interface SaveableCategory {
+  name: string;
+  icon_key: string | null;
+  category_type?: string;
+  items: { name: string; notes: string | null; is_required?: boolean | null; price?: number | null; quantity?: number | null }[];
+}
 
 export const useSaveAsTemplate = () => {
   const createTemplateMutation = useCreateChecklistTemplate();
@@ -9,8 +15,8 @@ export const useSaveAsTemplate = () => {
 
   const handleSaveAsTemplate = (
     tripInfo: TripInfo | null | undefined,
-    categories: CategoryWithItems[],
-    customTitle?: string
+    categories: SaveableCategory[],
+    customTitle?: string,
   ) => {
     if (!tripInfo || !user) return;
 
@@ -23,11 +29,14 @@ export const useSaveAsTemplate = () => {
       name: cat.name,
       icon_key: cat.icon_key,
       display_order: idx,
+      category_type: cat.category_type ?? "packing",
       items: cat.items.map((item, itemIdx) => ({
         name: item.name,
         notes: item.notes,
-        is_required: item.is_required,
+        is_required: item.is_required ?? null,
         display_order: itemIdx,
+        price: item.price ?? null,
+        quantity: item.quantity ?? null,
       })),
     }));
 

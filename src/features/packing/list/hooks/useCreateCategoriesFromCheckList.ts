@@ -19,12 +19,18 @@ export const useCreateCategoriesFromCheckList = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (categories: CategoryWithItems[]) => {
+    mutationFn: (categories: (CategoryWithItems & { category_type?: string })[]) => {
       return createCategoriesFromCheckList(tripId, categories);
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({
         queryKey: ["tripChecklist", tripId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["shoppingChecklist", tripId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["todoChecklist", tripId],
       });
 
       const { successCount, totalCount, failedCategories } = result;

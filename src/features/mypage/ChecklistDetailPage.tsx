@@ -57,6 +57,7 @@ export default function ChecklistDetailPage() {
         {selectedCategory ? (
           <ChecklistItemView
             category={selectedCategory}
+            categoryType={selectedCategory.category_type}
             onBack={clearSelectedCategory}
             onAddItem={addItem}
             onUpdateItem={updateItem}

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { HStack, Text, Box, Button, useDisclosure } from "@chakra-ui/react";
+import { useState, useEffect, useMemo } from "react";
+import { HStack, Text, Box, Button, VStack, useDisclosure } from "@chakra-ui/react";
+import { ShoppingCart, ClipboardList } from "lucide-react";
 import type { TemplateCategoryWithItems } from "@/features/packing/type";
 import {
   Checkbox,
@@ -70,6 +71,35 @@ export default function TemplateCategoryGrid({
   const isAllSelected =
     categories.length > 0 && selectedIds.size === categories.length;
 
+  const packingCategories = useMemo(
+    () => categories.filter((c) => !c.category_type || c.category_type === "packing"),
+    [categories],
+  );
+  const shoppingCategories = useMemo(
+    () => categories.filter((c) => c.category_type === "shopping"),
+    [categories],
+  );
+  const todoCategories = useMemo(
+    () => categories.filter((c) => c.category_type === "todo"),
+    [categories],
+  );
+
+  const sectionDivider = (icon: React.ReactNode, label: string, count: number) => (
+    <HStack gap={2} align="center" mt={4} mb={2}>
+      <Box flex={1} h="1px" bg="gray.300" />
+      <HStack gap={1.5}>
+        {icon}
+        <Text fontSize="sm" fontWeight="semibold" color="gray.600">
+          {label}
+        </Text>
+        <Text fontSize="sm" fontWeight="semibold" color={colors.primary.fg}>
+          {count}
+        </Text>
+      </HStack>
+      <Box flex={1} h="1px" bg="gray.300" />
+    </HStack>
+  );
+
   return (
     <Box>
       {isEditMode && categories.length > 0 && (
@@ -87,12 +117,48 @@ export default function TemplateCategoryGrid({
       )}
 
       <Box pb="80px">
-        <SelectableCategoryGrid
-          categories={categories}
-          selectedIds={selectedIds}
-          onToggle={handleToggle}
-          subText={(c) => `${c.template_items.length}개 아이템`}
-        />
+        <VStack align="stretch" gap={0}>
+          {packingCategories.length > 0 && (
+            <SelectableCategoryGrid
+              categories={packingCategories}
+              selectedIds={selectedIds}
+              onToggle={handleToggle}
+              subText={(c) => `${c.template_items.length}개 아이템`}
+            />
+          )}
+
+          {shoppingCategories.length > 0 && (
+            <>
+              {sectionDivider(
+                <ShoppingCart size={16} color={colors.primary.hex[500]} />,
+                "쇼핑",
+                shoppingCategories.length,
+              )}
+              <SelectableCategoryGrid
+                categories={shoppingCategories}
+                selectedIds={selectedIds}
+                onToggle={handleToggle}
+                subText={(c) => `${c.template_items.length}개 아이템`}
+              />
+            </>
+          )}
+
+          {todoCategories.length > 0 && (
+            <>
+              {sectionDivider(
+                <ClipboardList size={16} color={colors.primary.hex[500]} />,
+                "할일",
+                todoCategories.length,
+              )}
+              <SelectableCategoryGrid
+                categories={todoCategories}
+                selectedIds={selectedIds}
+                onToggle={handleToggle}
+                subText={(c) => `${c.template_items.length}개 아이템`}
+              />
+            </>
+          )}
+        </VStack>
       </Box>
 
       {isEditMode && selectedIds.size > 0 && (

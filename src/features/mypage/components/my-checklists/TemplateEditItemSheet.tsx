@@ -7,13 +7,15 @@ import type { TemplateItem } from "@/features/packing/type";
 interface TemplateEditItemSheetProps {
   isOpen: boolean;
   item?: TemplateItem;
-  onSave: (name: string, notes?: string) => void;
+  addTitle?: string;
+  onSave: (name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
   onClose: () => void;
 }
 
 export default function TemplateEditItemSheet({
   isOpen,
   item,
+  addTitle = "아이템 추가",
   onSave,
   onClose,
 }: TemplateEditItemSheetProps) {
@@ -53,7 +55,7 @@ export default function TemplateEditItemSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={handleCancel}
-      title={isEditMode ? "수정하기" : "아이템 추가"}
+      title={isEditMode ? "수정하기" : addTitle}
       primaryButton={{
         onClick: handleSave,
         disabled: !itemName.trim(),

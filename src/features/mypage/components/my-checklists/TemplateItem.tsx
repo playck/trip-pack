@@ -5,18 +5,21 @@ import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import TemplateItemActionsSheet from "./TemplateItemActionsSheet";
 import TemplateEditItemSheet from "./TemplateEditItemSheet";
+import TemplateShoppingItemSheet from "./TemplateShoppingItemSheet";
 
 interface TemplateItemProps {
   item: TemplateItemType;
+  categoryType?: string;
   isEditMode?: boolean;
   isSelected?: boolean;
   onSelect?: (itemId: string) => void;
-  onUpdate: (itemId: string, name: string, notes?: string) => void;
+  onUpdate: (itemId: string, name: string, notes?: string, extra?: { price?: number; quantity?: number }) => void;
   onDelete: (itemId: string) => void;
 }
 
 export default function TemplateItem({
   item,
+  categoryType,
   isEditMode = false,
   isSelected = false,
   onSelect,
@@ -46,12 +49,18 @@ export default function TemplateItem({
     onActionsClose();
   };
 
-  const handleUpdate = (name: string, notes?: string) => {
+  const handleUpdate = (
+    name: string,
+    notes?: string,
+    extra?: { price?: number; quantity?: number },
+  ) => {
     if (item.id) {
-      onUpdate(item.id, name, notes);
+      onUpdate(item.id, name, notes, extra);
     }
     onEditClose();
   };
+
+  const isShopping = categoryType === "shopping";
 
   const handleCheckboxChange = () => {
     if (item.id && onSelect) {
@@ -75,6 +84,13 @@ export default function TemplateItem({
           <Text fontWeight="medium" color="gray.800">
             {item.name}
           </Text>
+          {isShopping && (item.price || item.quantity) && (
+            <Text fontSize="sm" color={colors.primary.fg} mt={1}>
+              {item.price ? `${item.price.toLocaleString()}원` : ""}
+              {item.price && item.quantity ? " · " : ""}
+              {item.quantity ? `${item.quantity}개` : ""}
+            </Text>
+          )}
           {item.notes && (
             <Text fontSize="sm" color="gray.500" mt={1}>
               {item.notes}
@@ -105,12 +121,21 @@ export default function TemplateItem({
         onClose={onActionsClose}
       />
 
-      <TemplateEditItemSheet
-        isOpen={isEditOpen}
-        item={item}
-        onSave={handleUpdate}
-        onClose={onEditClose}
-      />
+      {isShopping ? (
+        <TemplateShoppingItemSheet
+          isOpen={isEditOpen}
+          item={item}
+          onSave={handleUpdate}
+          onClose={onEditClose}
+        />
+      ) : (
+        <TemplateEditItemSheet
+          isOpen={isEditOpen}
+          item={item}
+          onSave={handleUpdate}
+          onClose={onEditClose}
+        />
+      )}
     </Box>
   );
 }
