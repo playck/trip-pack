@@ -1,5 +1,6 @@
 import type { Region } from "@/shared/data/regions";
 import { regionsList } from "@/shared/data/regions";
+import { isRegionRestricted } from "@/shared/data/travelAlert";
 
 const searchIndex = {
   byName: new Map<string, Region>(),
@@ -72,10 +73,12 @@ export function searchRegions(query: string): Region[] {
     }
   });
 
-  return Array.from(results);
+  return Array.from(results).filter((r) => !isRegionRestricted(r));
 }
 
 export function searchByCountry(countryName: string): Region[] {
   initializeRegionsSearchIndex();
-  return searchIndex.byCountry.get(countryName.toLowerCase()) || [];
+  return (searchIndex.byCountry.get(countryName.toLowerCase()) || []).filter(
+    (r) => !isRegionRestricted(r),
+  );
 }

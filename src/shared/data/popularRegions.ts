@@ -1,4 +1,5 @@
 import { regionsList, type Region } from "@/shared/data/regions";
+import { isRegionRestricted } from "@/shared/data/travelAlert";
 
 const POPULAR_REGION_IDS: string[] = [
   // 한국
@@ -28,4 +29,6 @@ const POPULAR_REGION_IDS: string[] = [
 
 export const popularRegions: Region[] = POPULAR_REGION_IDS.map((id) =>
   regionsList.find((r) => r.id === id),
-).filter((r): r is Region => r !== undefined);
+)
+  .filter((r): r is Region => r !== undefined)
+  .filter((r) => !isRegionRestricted(r));
