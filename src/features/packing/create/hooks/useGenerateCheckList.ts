@@ -17,6 +17,7 @@ import {
 import type { PackItem } from "@/shared/data/checkList";
 
 import type { PackingCreateState } from "../store/packingCreateAtom";
+import { getPlugNote } from "@/shared/data/plugStandards";
 import { checkVisaRequirement } from "../utils/visaRules";
 import { getSeason, isRainySeason, getTripDays } from "../utils/climateRules";
 import { TRIP_TYPE_CATEGORY_MAP } from "../utils/tripTypeMap";
@@ -54,8 +55,18 @@ export default function useGenerateCheckList(state: PackingCreateState) {
     }
 
     // ── 2. 기본 카테고리 ──
+    const electronicsItems = isOverseasTrip
+      ? ELECTRONICS_ITEMS.map((item) => {
+          if (item.name === "멀티 플러그(국가별 어댑터)") {
+            const plugNote = getPlugNote(countryCode);
+            return plugNote ? { ...item, notes: plugNote } : item;
+          }
+          return item;
+        })
+      : ELECTRONICS_ITEMS;
+
     result.push(
-      { categoryName: "전자제품", items: ELECTRONICS_ITEMS },
+      { categoryName: "전자제품", items: electronicsItems },
       { categoryName: "의류", items: CLOTHING_ITEMS },
       { categoryName: "세면용품", items: TOILETRIES_ITEMS },
       { categoryName: "화장품", items: COSMETICS_ITEMS },
