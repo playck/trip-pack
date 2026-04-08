@@ -97,6 +97,7 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
       />
 
       {/* 일정 버튼 */}
+      {import.meta.env.DEV && (
       <Flex position="absolute" top={3} right={3} zIndex={2} gap={2}>
         <IconButton
           size="sm"
@@ -119,6 +120,7 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
           <CalendarDays size={16} />
         </IconButton>
       </Flex>
+      )}
 
       <VStack
         h="full"
