@@ -15,6 +15,7 @@ import { Mail, Lock, User } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { supabase } from "@/shared/service/supabase/cilent";
+import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors, statusColors } from "@/shared/constants/colors";
 import { LEGAL_URLS } from "@/shared/constants/app";
@@ -95,8 +96,27 @@ export default function SignupPage() {
         return;
       }
 
-      alert("회원가입이 완료되었습니다! 바로 로그인해주세요.");
-      navigate({ to: "/auth/login" });
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signInError) {
+        toaster.create({
+          title: "회원가입 완료! 로그인해주세요.",
+          type: "success",
+          duration: 3000,
+        });
+        navigate({ to: "/auth/login" });
+        return;
+      }
+
+      toaster.create({
+        title: "회원가입이 완료되었습니다!",
+        type: "success",
+        duration: 3000,
+      });
+      navigate({ to: "/main" });
     } catch {
       setErrors({
         general: "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
