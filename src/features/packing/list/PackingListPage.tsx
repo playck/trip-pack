@@ -11,6 +11,7 @@ import {
   Checkbox,
   ErrorMessage,
   FloatingAddButton,
+  LoadingSpinner,
   ScrollToTopButton,
 } from "@/shared/components";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
@@ -108,7 +109,11 @@ export default function PackingListPage() {
   }
 
   if (!tripId || !tripInfo) {
-    return null;
+    return (
+      <PageLayout>
+        <LoadingSpinner fullScreen centered />
+      </PageLayout>
+    );
   }
 
   return (

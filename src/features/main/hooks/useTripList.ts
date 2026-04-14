@@ -21,9 +21,9 @@ export function useTripList(): UseTripListReturn {
   });
 
   const noTripList =
-    data.currentTrips?.length === 0 &&
-    data.futureTrips.length === 0 &&
-    data.pastTrips.length === 0;
+    !data.currentTrips?.length &&
+    !data.futureTrips?.length &&
+    !data.pastTrips?.length;
 
   return {
     currentTrips: data.currentTrips || [],
