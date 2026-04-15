@@ -18,7 +18,7 @@ import type { PackItem } from "@/shared/data/checkList";
 
 import type { PackingCreateState } from "../store/packingCreateAtom";
 import { getPlugNote } from "@/shared/data/plugStandards";
-import { checkVisaRequirement } from "../utils/visaRules";
+import { getVisaNote, getVisaRule } from "../utils/visaRules";
 import { getSeason, isRainySeason, getTripDays } from "../utils/climateRules";
 import { TRIP_TYPE_CATEGORY_MAP } from "../utils/tripTypeMap";
 
@@ -32,20 +32,20 @@ export default function useGenerateCheckList(state: PackingCreateState) {
     const result: GeneratedCheckList[] = [];
     const countryCode = state.region?.countryCode ?? "KR";
     const isOverseasTrip = countryCode !== "KR";
-    const isNeedVisa = checkVisaRequirement(countryCode, state.region?.id);
-
-    const visaItem: PackItem = {
-      name: "비자",
-      required: true,
-      notes: "전자비자/도착비자 규정 확인",
-    };
+    const visaRule = getVisaRule(countryCode, state.region?.id);
 
     // ── 1. 필수 준비물 ──
     if (isOverseasTrip) {
       const essentialItems = [...ESSENTIAL_ITEMS];
-      if (isNeedVisa) {
-        essentialItems.push(visaItem);
-      }
+      const passportIndex = essentialItems.findIndex(
+        (item) => item.name === "여권"
+      );
+      const insertAt = passportIndex >= 0 ? passportIndex + 1 : 0;
+      essentialItems.splice(insertAt, 0, {
+        name: visaRule.required ? "비자" : "비자 정보 확인",
+        required: visaRule.required,
+        notes: getVisaNote(visaRule),
+      });
       result.push({ categoryName: "필수 준비물", items: essentialItems });
     } else {
       result.push({

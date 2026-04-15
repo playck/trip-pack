@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen:types": "npx supabase gen types typescript --project-id usishveqgtrglwxlezch > src/shared/types/database.type.ts"
+    "gen:types": "npx supabase gen types typescript --project-id usishveqgtrglwxlezch > src/shared/types/database.type.ts",
+    "update:visa": "node --env-file=.env scripts/update-visa-data.mjs"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.23.0",

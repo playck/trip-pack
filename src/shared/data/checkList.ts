@@ -41,13 +41,6 @@ export const ESSENTIAL_ITEMS: PackItem[] = [
     cabin: "allowed",
   },
   {
-    name: "비자(필요 국가)",
-    required: true,
-    notes: "전자비자/도착비자 규정 확인",
-    cabin: "allowed",
-  },
-
-  {
     name: "eSIM/현지 유심 정보",
     required: true,
     notes: "개통 방법/QR 코드 사전 저장",

@@ -1,6 +1,6 @@
 import type { FlightApiResponse, FlightStatusItem } from "../types";
 
-const API_KEY = import.meta.env.VITE_AIRPORT_API_KEY || "";
+const API_KEY = import.meta.env.VITE_DATA_GO_KR_API_KEY || "";
 const FLIGHT_BASE_URL =
   "https://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp";
 
@@ -83,7 +83,7 @@ async function fetchFlightStatus(
 ): Promise<FlightStatusItem[]> {
   if (!API_KEY) {
     throw new Error(
-      "인천공항 API 키가 설정되지 않았습니다. VITE_AIRPORT_API_KEY를 확인해주세요.",
+      "인천공항 API 키가 설정되지 않았습니다. VITE_DATA_GO_KR_API_KEY를 확인해주세요.",
     );
   }
 
