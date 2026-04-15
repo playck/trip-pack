@@ -7,13 +7,20 @@ interface EmptyTripStateProps {
   username?: string;
   isOnline: boolean;
   onCreateTrip: () => void;
+  hasPastTrips?: boolean;
 }
 
 export default function EmptyTripState({
   username,
   isOnline,
   onCreateTrip,
+  hasPastTrips = false,
 }: EmptyTripStateProps) {
+  const title = hasPastTrips
+    ? "다음 여행은\n어디로 떠나시나요?"
+    : `${username || "여행자"}님,\n어디로 떠나시나요?`;
+  const buttonLabel = hasPastTrips ? "새로운 여행 준비" : "여행 준비 시작";
+
   return (
     <Center h="75vh">
       <VStack gap={10}>
@@ -57,10 +64,9 @@ export default function EmptyTripState({
           color="gray.800"
           textAlign="center"
           letterSpacing="-0.5px"
+          whiteSpace="pre-line"
         >
-          {username || "여행자"}님,
-          <br />
-          어디로 떠나시나요?
+          {title}
         </Text>
 
         <Button
@@ -77,7 +83,7 @@ export default function EmptyTripState({
           <HStack gap={2}>
             <Plus size={22} strokeWidth={3} />
             <Text fontSize="md" fontWeight="bold">
-              여행 준비 시작
+              {buttonLabel}
             </Text>
           </HStack>
         </Button>

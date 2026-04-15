@@ -15,7 +15,7 @@ import { useTripList } from "./hooks/useTripList";
 export default function MainPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { noTripList } = useTripList();
+  const { noActiveTripList, hasPastTrips } = useTripList();
   const { isOnline } = useNetworkStatus();
   const queryClient = useQueryClient();
 
@@ -27,13 +27,14 @@ export default function MainPage() {
     navigate({ to: "/packing/create" });
   };
 
-  if (noTripList) {
+  if (noActiveTripList) {
     return (
       <PageLayout>
         <EmptyTripState
           username={user?.user_metadata?.username}
           isOnline={isOnline}
           onCreateTrip={handleCreateTrip}
+          hasPastTrips={hasPastTrips}
         />
       </PageLayout>
     );
