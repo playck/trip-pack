@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "H69GA85USX.com.trippack.app",
+        "appID": "H69GA85USX.io.trippack.app",
         "paths": [
           "/invite/*",
           "/packing/list/*",
