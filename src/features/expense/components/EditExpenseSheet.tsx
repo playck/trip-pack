@@ -192,7 +192,6 @@ export default function EditExpenseSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="경비 수정"
-        maxHeight="90vh"
         adjustForKeyboard
         primaryButton={{
           onClick: handleSave,

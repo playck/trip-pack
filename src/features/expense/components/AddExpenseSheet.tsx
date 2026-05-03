@@ -179,7 +179,6 @@ export default function AddExpenseSheet({
         isOpen={isOpen}
         onClose={handleClose}
         title="경비 추가"
-        maxHeight="90vh"
         adjustForKeyboard
         primaryButton={{
           onClick: handleSave,

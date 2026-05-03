@@ -49,7 +49,7 @@ export default function MemberListSheet({
 
   return (
     <>
-      <BottomSheet isOpen={isOpen} onClose={onClose} title="일행 목록" minHeight="40vh">
+      <BottomSheet isOpen={isOpen} onClose={onClose} title="일행 목록">
         <VStack gap={0} px={4} pb={4} align="stretch">
           {isLoading ? (
             <Text fontSize="sm" color="gray.400" textAlign="center" py={6}>

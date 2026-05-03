@@ -86,7 +86,7 @@ export default function AddScheduleSheet({
       isOpen={isOpen}
       onClose={onClose}
       title={`${dayNumber}일차 일정 추가`}
-      minHeight="85vh"
+      expanded
       adjustForKeyboard={false}
     >
       <VStack align="stretch" gap={0} px={4} pb={4}>

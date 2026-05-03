@@ -10,6 +10,10 @@ import {
 } from "@chakra-ui/react";
 import { useKeyboardOffset } from "@/shared/hooks";
 import { colors } from "@/shared/constants/colors";
+import {
+  BOTTOM_SHEET_HEIGHT,
+  BOTTOM_SHEET_MIN_HEIGHT,
+} from "@/shared/constants/bottomSheet";
 
 interface BottomSheetAction {
   text?: string;
@@ -24,8 +28,7 @@ interface BottomSheetProps {
   onBack?: () => void;
   title?: string;
   children: React.ReactNode;
-  minHeight?: string | number;
-  maxHeight?: string | number;
+  expanded?: boolean;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
   primaryButton?: BottomSheetAction;
@@ -38,13 +41,13 @@ export default function BottomSheet({
   onBack,
   title,
   children,
-  minHeight,
-  maxHeight = "90vh",
+  expanded = false,
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
   primaryButton,
   secondaryButton,
 }: BottomSheetProps) {
+  const minHeight = expanded ? BOTTOM_SHEET_HEIGHT : BOTTOM_SHEET_MIN_HEIGHT;
   const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
 
   return (
@@ -63,7 +66,7 @@ export default function BottomSheet({
             borderTopRadius="xl"
             borderBottomRadius="none"
             minHeight={minHeight}
-            maxHeight={maxHeight}
+            maxHeight={BOTTOM_SHEET_HEIGHT}
             overscrollBehavior="contain"
             style={{
               transform:

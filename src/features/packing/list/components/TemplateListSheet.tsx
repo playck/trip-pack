@@ -71,7 +71,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        minHeight="80vh"
+        expanded
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4} maxH="600px">
@@ -102,7 +102,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        minHeight="80vh"
+        expanded
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -122,7 +122,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        minHeight="80vh"
+        expanded
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -141,7 +141,7 @@ export default function TemplateListSheet({
       isOpen={isOpen}
       onClose={onClose}
       title="체크리스트 모음"
-      minHeight="80vh"
+      expanded
       secondaryButton={{
         text: "닫기",
         onClick: onClose,

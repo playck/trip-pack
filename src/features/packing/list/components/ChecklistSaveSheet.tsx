@@ -191,7 +191,7 @@ export default function ChecklistSaveSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title="체크리스트 템플릿 저장"
-      minHeight="90vh"
+      expanded
       primaryButton={{
         text: "저장",
         onClick: handleSave,

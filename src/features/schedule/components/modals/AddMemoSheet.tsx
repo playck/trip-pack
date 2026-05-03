@@ -41,7 +41,6 @@ export default function AddMemoSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={`${dayNumber}일차 메모 ${isEditMode ? "수정" : "추가"}`}
-      minHeight="35vh"
       primaryButton={{
         onClick: handleMemoSave,
         disabled: !memoText.trim(),

@@ -43,7 +43,7 @@ export default function FlightSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="항공편 현황"
-        minHeight="85vh"
+        expanded
       >
         <VStack px={4} gap={3} align="stretch">
           {/* 안내 문구 */}
