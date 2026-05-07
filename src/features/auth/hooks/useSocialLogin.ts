@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Provider } from "@supabase/supabase-js";
+import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/shared/service/supabase/cilent";
 
 const PROVIDER_LABEL: Partial<Record<Provider, string>> = {
@@ -9,6 +10,18 @@ const PROVIDER_LABEL: Partial<Record<Provider, string>> = {
 
 export const useSocialLogin = (returnTo?: string) => {
   const [socialError, setSocialError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" || !session) return;
+      const safeReturnTo = sanitizeReturnTo(returnTo);
+      navigate({ to: safeReturnTo ?? "/main" });
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate, returnTo]);
 
   const handleSocialLogin = async (provider: Provider) => {
     try {
