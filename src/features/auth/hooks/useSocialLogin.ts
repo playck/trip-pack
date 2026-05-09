@@ -13,14 +13,28 @@ export const useSocialLogin = (returnTo?: string) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== "SIGNED_IN" || !session) return;
+    let cancelled = false;
+
+    const navigateIfSignedIn = () => {
       const safeReturnTo = sanitizeReturnTo(returnTo);
       navigate({ to: safeReturnTo ?? "/main" });
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!cancelled && session) navigateIfSignedIn();
     });
-    return () => subscription.unsubscribe();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
+      if (!session) return;
+      navigateIfSignedIn();
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, [navigate, returnTo]);
 
   const handleSocialLogin = async (provider: Provider) => {
