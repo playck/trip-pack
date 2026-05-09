@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -24,6 +24,7 @@ import {
   handleLoginError,
   type LoginFormErrors,
 } from "../validation";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { useSocialLogin } from "../hooks/useSocialLogin";
 
 interface LoginForm {
@@ -37,6 +38,16 @@ export default function LoginPage() {
   const { handleKakaoLogin, handleAppleLogin, socialError } = useSocialLogin(
     returnTo
   );
+  const { user: authUser, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (authLoading || !authUser) return;
+    const safeReturnTo =
+      returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+        ? returnTo
+        : "/main";
+    navigate({ to: safeReturnTo });
+  }, [authUser, authLoading, navigate, returnTo]);
 
   const [formData, setFormData] = useState<LoginForm>({
     email: "",

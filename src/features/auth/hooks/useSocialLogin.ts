@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import type { Provider } from "@supabase/supabase-js";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/shared/service/supabase/cilent";
+import {
+  isReactNativeWebView,
+  requestAppleSignIn,
+} from "@/shared/utils/nativeMessage";
 
 const PROVIDER_LABEL: Partial<Record<Provider, string>> = {
   kakao: "카카오",
@@ -56,9 +60,28 @@ export const useSocialLogin = (returnTo?: string) => {
     }
   };
 
+  const handleAppleLoginNative = async () => {
+    try {
+      setSocialError(null);
+      const result = await requestAppleSignIn();
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "apple",
+        token: result.identityToken,
+      });
+      if (error) throw error;
+    } catch {
+      setSocialError(`${PROVIDER_LABEL.apple} 로그인 중 오류가 발생했습니다.`);
+    }
+  };
+
+  const handleAppleLogin = () =>
+    isReactNativeWebView()
+      ? handleAppleLoginNative()
+      : handleSocialLogin("apple");
+
   return {
     handleKakaoLogin: () => handleSocialLogin("kakao"),
-    handleAppleLogin: () => handleSocialLogin("apple"),
+    handleAppleLogin,
     socialError,
   };
 };

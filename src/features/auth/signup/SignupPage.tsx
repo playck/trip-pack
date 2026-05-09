@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -24,6 +24,7 @@ import {
   handleSignupError,
   type SignupFormErrors,
 } from "../validation";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { useSocialLogin } from "../hooks/useSocialLogin";
 
 interface SignupForm {
@@ -35,6 +36,12 @@ interface SignupForm {
 export default function SignupPage() {
   const navigate = useNavigate();
   const { handleKakaoLogin, handleAppleLogin, socialError } = useSocialLogin();
+  const { user: authUser, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (authLoading || !authUser) return;
+    navigate({ to: "/main" });
+  }, [authUser, authLoading, navigate]);
 
   const [formData, setFormData] = useState<SignupForm>({
     email: "",
