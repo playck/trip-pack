@@ -44,14 +44,14 @@ export default function LastStep() {
   const hasExecutedRef = useRef(false);
   const messageIndexRef = useRef(0);
 
-  const completePackingState = useMemo(() => {
-    const generatedCheckList = handleSetUpCheckList();
-    return {
+  const completePackingState = useMemo(
+    () => ({
       ...packingCreateState,
-      generatedCheckList,
+      generatedCheckList: handleSetUpCheckList(),
       tripTitle: packingCreateState.region?.name ?? "",
-    };
-  }, [packingCreateState, handleSetUpCheckList]);
+    }),
+    [packingCreateState, handleSetUpCheckList],
+  );
 
   const totalItemCount = useMemo(() => {
     const list = completePackingState.generatedCheckList;

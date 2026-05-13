@@ -1,6 +1,6 @@
 import { useImperativeHandle, useMemo } from "react";
 import type { Ref } from "react";
-import { Text, VStack, Box, HStack } from "@chakra-ui/react";
+import { Text, VStack, Box, HStack, useDisclosure } from "@chakra-ui/react";
 import { ChevronRight } from "lucide-react";
 
 import { AddCategorySheet, Info } from "@/shared/components";
@@ -17,6 +17,7 @@ import { useListViewControls } from "../hooks/useListViewControls";
 import GridView from "./GridView";
 import ListView from "./ListView";
 import AirlineBaggagePolicySheet from "./AirlineBaggagePolicySheet";
+import ImportTextSheet from "./ImportTextSheet";
 
 export interface SectionHandle {
   toggleAllCategories: () => void;
@@ -50,6 +51,7 @@ export default function PackingSection({
   const { categories, progress } = useTripChecklist(tripId);
   const listControls = useListViewControls(categories);
   const updateItemStatus = useUpdateItemCheckedStatus(tripId);
+  const textImport = useDisclosure();
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => categorySheet.onClose(),
   });
@@ -186,6 +188,19 @@ export default function PackingSection({
           createCategoryMutation.mutate({ categoryName, iconKey })
         }
         onClose={categorySheet.onClose}
+        onTextImport={() => {
+          categorySheet.onClose();
+          // Drawer 닫힘 애니메이션이 끝난 뒤 다음 시트를 열어야
+          // backdrop/포커스 트랩 충돌로 autoFocus가 꺼지는 것을 방지
+          setTimeout(() => textImport.onOpen(), 250);
+        }}
+      />
+
+      <ImportTextSheet
+        isOpen={textImport.open}
+        onClose={textImport.onClose}
+        tripId={tripId}
+        defaultType="packing"
       />
 
       <AirlineBaggagePolicySheet

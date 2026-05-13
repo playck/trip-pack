@@ -11,5 +11,6 @@ export { default as CabinPolicyModal } from "./CabinPolicyModal";
 export { default as CheckList } from "./CheckList";
 export { default as CheckListBottomSheet } from "./CheckListBottomSheet";
 export { default as TemplateListSheet } from "./TemplateListSheet";
+export { default as ImportTextSheet } from "./ImportTextSheet";
 export { default as AirlineBaggagePolicySheet } from "./AirlineBaggagePolicySheet";
 export * from "./types";

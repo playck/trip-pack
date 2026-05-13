@@ -1,6 +1,6 @@
 import { useImperativeHandle } from "react";
 import type { Ref } from "react";
-import { Text, Box, HStack } from "@chakra-ui/react";
+import { Text, Box, HStack, useDisclosure } from "@chakra-ui/react";
 import { ShoppingCart } from "lucide-react";
 
 import { AddCategorySheet } from "@/shared/components";
@@ -15,6 +15,7 @@ import { useCreateShoppingCategory } from "@/features/shopping/list/hooks/useSho
 import { useShoppingListViewControls } from "@/features/shopping/list/hooks/useShoppingListViewControls";
 
 import type { SectionHandle } from "./PackingSection";
+import ImportTextSheet from "./ImportTextSheet";
 
 interface ShoppingSectionProps {
   ref?: Ref<SectionHandle>;
@@ -34,6 +35,7 @@ export default function ShoppingSection({
   const { categories, progress } = useShoppingChecklist(tripId);
   const listControls = useShoppingListViewControls(categories);
   const updateItemStatus = useUpdateShoppingItemChecked(tripId);
+  const textImport = useDisclosure();
   const createCategoryMutation = useCreateShoppingCategory(tripId, {
     onSuccess: () => categorySheet.onClose(),
   });
@@ -90,6 +92,17 @@ export default function ShoppingSection({
           createCategoryMutation.mutate({ categoryName, iconKey, isShared })
         }
         onClose={categorySheet.onClose}
+        onTextImport={() => {
+          categorySheet.onClose();
+          setTimeout(() => textImport.onOpen(), 250);
+        }}
+      />
+
+      <ImportTextSheet
+        isOpen={textImport.open}
+        onClose={textImport.onClose}
+        tripId={tripId}
+        defaultType="shopping"
       />
     </>
   );

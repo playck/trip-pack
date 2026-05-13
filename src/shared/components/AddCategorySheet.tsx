@@ -10,6 +10,7 @@ interface AddCategorySheetProps {
   title?: string;
   onSave: (categoryName: string, iconKey: string, isShared?: boolean) => void;
   onClose: () => void;
+  onTextImport?: () => void;
 }
 
 export default function AddCategorySheet({
@@ -19,6 +20,7 @@ export default function AddCategorySheet({
   title = "새 카테고리 추가",
   onSave,
   onClose,
+  onTextImport,
 }: AddCategorySheetProps) {
   const [categoryName, setCategoryName] = useState("");
   const [selectedIconKey, setSelectedIconKey] = useState("");
@@ -105,6 +107,7 @@ export default function AddCategorySheet({
         showSharedToggle={showSharedToggle}
         isShared={isShared}
         onSharedChange={setIsShared}
+        onTextImport={onTextImport}
       />
     </BottomSheet>
   );

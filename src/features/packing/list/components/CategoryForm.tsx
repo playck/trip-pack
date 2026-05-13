@@ -8,6 +8,7 @@ import {
   HStack,
   Switch,
 } from "@chakra-ui/react";
+import { ClipboardPaste } from "lucide-react";
 import { colors } from "@/shared/constants/colors";
 import { CATEGORY_ICONS } from "../constants/category";
 
@@ -20,6 +21,7 @@ interface CategoryFormProps {
   showSharedToggle?: boolean;
   isShared?: boolean;
   onSharedChange?: (value: boolean) => void;
+  onTextImport?: () => void;
 }
 
 export default function CategoryForm({
@@ -31,6 +33,7 @@ export default function CategoryForm({
   showSharedToggle = false,
   isShared = false,
   onSharedChange,
+  onTextImport,
 }: CategoryFormProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,9 +52,26 @@ export default function CategoryForm({
         <VStack gap={6} w="full">
           {/* 카테고리명 입력 */}
           <VStack gap={2} w="full">
-            <Text fontSize="md" fontWeight="medium" alignSelf="start">
-              카테고리명
-            </Text>
+            <HStack w="full" justify="space-between" align="baseline">
+              <Text fontSize="md" fontWeight="medium">
+                카테고리명
+              </Text>
+              {onTextImport && (
+                <HStack
+                  as="button"
+                  onClick={onTextImport}
+                  gap={1}
+                  align="baseline"
+                  color="teal.600"
+                  cursor="pointer"
+                >
+                  <ClipboardPaste size={12} />
+                  <Text fontSize="xs" fontWeight="medium" lineHeight="1">
+                    텍스트로 가져오기
+                  </Text>
+                </HStack>
+              )}
+            </HStack>
             <Input
               ref={inputRef}
               placeholder="카테고리 이름을 입력하세요 (최대 20자)"

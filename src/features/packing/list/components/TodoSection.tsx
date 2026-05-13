@@ -1,9 +1,10 @@
 import { useImperativeHandle, useState } from "react";
 import type { Ref } from "react";
-import { Text, Box, HStack } from "@chakra-ui/react";
+import { Text, Box, HStack, useDisclosure } from "@chakra-ui/react";
 import { ClipboardList } from "lucide-react";
 
 import { AddCategorySheet, Checkbox } from "@/shared/components";
+import ImportTextSheet from "./ImportTextSheet";
 import { colors } from "@/shared/constants/colors";
 import { useAuth } from "@/shared/hooks/useAuth";
 import TodoGridView from "@/features/todo/list/components/TodoGridView";
@@ -36,15 +37,14 @@ export default function TodoSection({
   const { categories, progress } = useTodoChecklist(tripId);
   const listControls = useTodoListViewControls(categories);
   const updateItemStatus = useUpdateTodoItemChecked(tripId);
+  const textImport = useDisclosure();
   const createCategoryMutation = useCreateTodoCategory(tripId, {
     onSuccess: () => categorySheet.onClose(),
   });
 
   const { user } = useAuth();
   const { data: tripMembers = [] } = useTripMembers(tripId);
-  const currentMemberId = tripMembers.find(
-    (m) => m.user_id === user?.id,
-  )?.id;
+  const currentMemberId = tripMembers.find((m) => m.user_id === user?.id)?.id;
   const [showOnlyMine, setShowOnlyMine] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -112,6 +112,17 @@ export default function TodoSection({
           createCategoryMutation.mutate({ categoryName, iconKey, isShared })
         }
         onClose={categorySheet.onClose}
+        onTextImport={() => {
+          categorySheet.onClose();
+          setTimeout(() => textImport.onOpen(), 250);
+        }}
+      />
+
+      <ImportTextSheet
+        isOpen={textImport.open}
+        onClose={textImport.onClose}
+        tripId={tripId}
+        defaultType="todo"
       />
     </>
   );
