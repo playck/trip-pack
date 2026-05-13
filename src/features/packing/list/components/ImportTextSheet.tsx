@@ -176,7 +176,7 @@ export default function ImportTextSheet({
         onClose={handleClose}
         onBack={handleBack}
         title={`${sectionLabel} 추가 - 변환 결과`}
-        maxHeight="85vh"
+        expanded
         primaryButton={{
           text: "이 목록으로 추가하기",
           onClick: handleConfirm,
@@ -268,8 +268,7 @@ export default function ImportTextSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={`${sectionLabel} 추가`}
-      minHeight="80vh"
-      maxHeight="90vh"
+      expanded
       adjustForKeyboard={true}
       closeOnInteractOutside={!showExamples}
       primaryButton={{
