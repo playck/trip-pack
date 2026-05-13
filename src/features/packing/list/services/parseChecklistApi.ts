@@ -1,3 +1,5 @@
+// FUTURE: Gemini 기반 LLM 파싱 폴백용 Edge Function 래퍼. 현재 미사용.
+// 활성화 시 ParseChecklistResponse → ParsedCategory[] 어댑터 필요 (utils/parseChecklistText 타입).
 import { supabase } from "@/shared/service/supabase/cilent";
 
 export interface ParsedChecklistItem {
