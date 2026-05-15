@@ -63,6 +63,12 @@ export default function BottomSheet({
           }
         : { minHeight: undefined, maxHeight: BOTTOM_SHEET_MAX_HEIGHT };
   const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
+  // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡 → translateY로 위로 옮겨도 상단이 안 잘리고 푸터도 키보드 위에 안착
+  const visibleAreaCap =
+    keyboardOffset > 0 ? `calc(100vh - ${keyboardOffset}px)` : undefined;
+  const effectiveMaxHeight = visibleAreaCap ?? maxHeight;
+  const effectiveMinHeight =
+    visibleAreaCap && minHeight ? visibleAreaCap : minHeight;
 
   // 글로벌 stack 에 본인을 등록. 최상단이 아니면 시각적으로 숨김.
   const [myId, setMyId] = useState<number | null>(null);
@@ -93,8 +99,8 @@ export default function BottomSheet({
           <Drawer.Content
             borderTopRadius="xl"
             borderBottomRadius="none"
-            minHeight={minHeight}
-            maxHeight={maxHeight}
+            minHeight={effectiveMinHeight}
+            maxHeight={effectiveMaxHeight}
             overflowY="auto"
             overscrollBehavior="contain"
             style={{

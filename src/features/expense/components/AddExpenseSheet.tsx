@@ -193,7 +193,6 @@ export default function AddExpenseSheet({
         onClose={handleClose}
         title="경비 추가"
         size="max"
-        adjustForKeyboard
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,

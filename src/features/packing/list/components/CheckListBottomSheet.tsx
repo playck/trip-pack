@@ -102,7 +102,6 @@ export default function CheckListBottomSheet({
       onClose={handleClose}
       title={title}
       size="max"
-      adjustForKeyboard={false}
       secondaryButton={{
         text: "취소",
         onClick: handleClose,

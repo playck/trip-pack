@@ -46,7 +46,6 @@ export default function BaggageRuleSearchSheet({
       onClose={handleClose}
       title="수하물 규정 검색"
       size="max"
-      adjustForKeyboard={false}
     >
       <VStack align="stretch" px={4} pb={6} pt={1} gap={3}>
         <Box position="relative">

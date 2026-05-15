@@ -269,7 +269,6 @@ export default function ImportTextSheet({
       onClose={handleClose}
       title={`${sectionLabel} 추가`}
       size="max"
-      adjustForKeyboard={true}
       closeOnInteractOutside={!showExamples}
       primaryButton={{
         text: "변환하기",
