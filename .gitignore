@@ -29,3 +29,4 @@ dist-ssr
 .agents/
 .claude/
 CLAUDE.md
+.tmp-screenshots/

@@ -41,7 +41,7 @@ export default function TripMemoSheet({
       isOpen={isOpen}
       onClose={onClose}
       title="여행 메모"
-      expanded
+      size="max"
       adjustForKeyboard
       primaryButton={{
         text: "저장",

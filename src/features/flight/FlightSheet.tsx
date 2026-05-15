@@ -43,7 +43,7 @@ export default function FlightSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="항공편 현황"
-        expanded
+        size="max"
       >
         <VStack px={4} gap={3} align="stretch">
           {/* 안내 문구 */}

@@ -3,6 +3,7 @@ import { Link2, ChevronDown } from "lucide-react";
 import {
   VStack,
   HStack,
+  Flex,
   Input,
   Button,
   Text,
@@ -18,7 +19,11 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useAmountInput } from "../hooks/useAmountInput";
 import SelectScheduleSheet from "./SelectScheduleSheet";
-import AmountCalculator from "./calculator/AmountCalculator";
+import {
+  AmountCalculatorProvider,
+  AmountCalculatorDisplay,
+  AmountCalculatorKeypad,
+} from "./calculator/AmountCalculator";
 import type { ExpenseSaveOptions } from "./AddExpenseSheet";
 
 interface EditExpenseSheetProps {
@@ -201,8 +206,14 @@ export default function EditExpenseSheet({
           onClick: onClose,
         }}
       >
-        <VStack gap={4} w="full" p={4}>
-          {/* 일정 정보 표시 */}
+        <AmountCalculatorProvider
+          onAmountChange={handleAmountFromCalculator}
+          onCalculatingChange={setIsCalculating}
+          initialValue={calculatorInitialValue}
+        >
+          <Flex direction="column" flex={1} w="full" minH={0}>
+            <VStack gap={4} flex={1} overflowY="auto" w="full" p={4} minH={0}>
+              {/* 일정 정보 표시 */}
           {selectedSchedule && (
             <Box
               w="full"
@@ -431,12 +442,13 @@ export default function EditExpenseSheet({
             </VStack>
           )}
 
-          <AmountCalculator
-            onAmountChange={handleAmountFromCalculator}
-            onCalculatingChange={setIsCalculating}
-            initialValue={calculatorInitialValue}
-          />
-        </VStack>
+              <AmountCalculatorDisplay />
+            </VStack>
+            <Box w="full" px={4} pt={2}>
+              <AmountCalculatorKeypad />
+            </Box>
+          </Flex>
+        </AmountCalculatorProvider>
       </BottomSheet>
 
       <SelectScheduleSheet

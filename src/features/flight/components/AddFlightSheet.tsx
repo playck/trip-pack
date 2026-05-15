@@ -105,7 +105,7 @@ export default function AddFlightSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={isEditMode ? "항공편 수정" : "항공편 등록"}
-      expanded
+      size="max"
       primaryButton={{
         text: isEditMode ? "수정하기" : "등록하기",
         onClick: handleRegister,

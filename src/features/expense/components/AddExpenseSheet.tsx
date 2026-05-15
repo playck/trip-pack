@@ -1,7 +1,16 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link2, ChevronDown } from "lucide-react";
 import { useAtomValue } from "jotai";
-import { VStack, HStack, Input, Button, Text, Box, Switch } from "@chakra-ui/react";
+import {
+  VStack,
+  HStack,
+  Flex,
+  Input,
+  Button,
+  Text,
+  Box,
+  Switch,
+} from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
@@ -12,7 +21,11 @@ import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import SelectScheduleSheet from "./SelectScheduleSheet";
-import AmountCalculator from "./calculator/AmountCalculator";
+import {
+  AmountCalculatorProvider,
+  AmountCalculatorDisplay,
+  AmountCalculatorKeypad,
+} from "./calculator/AmountCalculator";
 
 export interface ExpenseSaveOptions {
   isShared: boolean;
@@ -155,7 +168,7 @@ export default function AddExpenseSheet({
   const getMemberDisplayName = (member: (typeof members)[0]) =>
     member.user_id === user?.id
       ? "나"
-      : (member.profiles?.username || member.profiles?.email || "알 수 없음");
+      : member.profiles?.username || member.profiles?.email || "알 수 없음";
 
   const splitSelectLabel = useMemo(() => {
     if (selectedSplitMemberIds.length === members.length) return "전체";
@@ -179,6 +192,7 @@ export default function AddExpenseSheet({
         isOpen={isOpen}
         onClose={handleClose}
         title="경비 추가"
+        size="max"
         adjustForKeyboard
         primaryButton={{
           onClick: handleSave,
@@ -188,8 +202,18 @@ export default function AddExpenseSheet({
           onClick: handleClose,
         }}
       >
-        <VStack gap={3} w="full" px={4}>
-          {/* 일정 정보 표시 */}
+        <AmountCalculatorProvider
+          onAmountChange={handleAmountFromCalculator}
+          onCalculatingChange={setIsCalculating}
+          currencySymbol={currencySymbol}
+          currencyType={currencyType}
+          estimatedKrw={estimatedKrw}
+          isForeignCurrency={isForeignCurrency}
+          onToggleCurrency={toggleCurrencyType}
+        >
+          <Flex direction="column" flex={1} w="full" minH={0}>
+            <VStack gap={3} flex={1} overflowY="auto" w="full" px={4} minH={0}>
+              {/* 일정 정보 표시 */}
           {selectedSchedule && (
             <Box
               w="full"
@@ -312,7 +336,8 @@ export default function AddExpenseSheet({
                   {/* 정산 대상자 Select */}
                   <VStack gap={2} w="full" align="start">
                     <Text fontSize="sm" fontWeight="medium" color="gray.600">
-                      정산 대상 ({selectedSplitMemberIds.length}/{members.length}
+                      정산 대상 ({selectedSplitMemberIds.length}/
+                      {members.length}
                       명)
                     </Text>
                     <Box
@@ -322,7 +347,11 @@ export default function AddExpenseSheet({
                       py={2}
                       bg="gray.50"
                       border="1px solid"
-                      borderColor={isSplitSelectOpen ? `${colors.primary.palette}.300` : "gray.200"}
+                      borderColor={
+                        isSplitSelectOpen
+                          ? `${colors.primary.palette}.300`
+                          : "gray.200"
+                      }
                       borderRadius="lg"
                       cursor="pointer"
                       onClick={() => setIsSplitSelectOpen(!isSplitSelectOpen)}
@@ -360,7 +389,9 @@ export default function AddExpenseSheet({
                               isChecked={selectedSplitMemberIds.includes(
                                 member.id,
                               )}
-                              onChange={() => handleToggleSplitMember(member.id)}
+                              onChange={() =>
+                                handleToggleSplitMember(member.id)
+                              }
                               label={getMemberDisplayName(member)}
                             />
                           ))}
@@ -411,16 +442,13 @@ export default function AddExpenseSheet({
             </VStack>
           )}
 
-          <AmountCalculator
-            onAmountChange={handleAmountFromCalculator}
-            onCalculatingChange={setIsCalculating}
-            currencySymbol={currencySymbol}
-            currencyType={currencyType}
-            estimatedKrw={estimatedKrw}
-            isForeignCurrency={isForeignCurrency}
-            onToggleCurrency={toggleCurrencyType}
-          />
-        </VStack>
+              <AmountCalculatorDisplay />
+            </VStack>
+            <Box w="full" px={4} pt={2}>
+              <AmountCalculatorKeypad />
+            </Box>
+          </Flex>
+        </AmountCalculatorProvider>
       </BottomSheet>
 
       <SelectScheduleSheet

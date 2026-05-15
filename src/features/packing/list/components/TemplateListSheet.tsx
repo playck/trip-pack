@@ -56,7 +56,7 @@ export default function TemplateListSheet({
 
   const handleSelectTemplate = (
     templateTitle: string,
-    templateCategories: TemplateCategoryWithItems[]
+    templateCategories: TemplateCategoryWithItems[],
   ) => {
     setSelectedCheckList({
       title: templateTitle,
@@ -71,7 +71,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        expanded
+        size="content"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4} maxH="600px">
@@ -102,7 +102,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        expanded
+        size="max"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -122,7 +122,7 @@ export default function TemplateListSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="체크리스트 모음"
-        expanded
+        size="max"
         secondaryButton={{ text: "닫기", onClick: onClose }}
       >
         <VStack gap={4} align="stretch" p={4}>
@@ -141,7 +141,7 @@ export default function TemplateListSheet({
       isOpen={isOpen}
       onClose={onClose}
       title="체크리스트 모음"
-      expanded
+      size="max"
       secondaryButton={{
         text: "닫기",
         onClick: onClose,
@@ -163,7 +163,7 @@ export default function TemplateListSheet({
                 onClick={() => {
                   handleSelectTemplate(
                     template.title,
-                    template.template_categories ?? []
+                    template.template_categories ?? [],
                   );
                 }}
               >

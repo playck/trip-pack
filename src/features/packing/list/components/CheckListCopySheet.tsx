@@ -57,7 +57,7 @@ export default function CheckListCopySheet({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} expanded>
+    <BottomSheet isOpen={isOpen} onClose={onClose} size="max">
       <VStack gap={3} align="stretch" pt={4.5} pb={3} px={3} flex={1}>
         <HStack justify="space-between" align="center">
           <Text fontSize="lg" fontWeight="semibold" color="gray.800">

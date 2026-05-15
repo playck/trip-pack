@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
 import {
   Drawer,
@@ -11,9 +11,10 @@ import {
 import { useKeyboardOffset } from "@/shared/hooks";
 import { colors } from "@/shared/constants/colors";
 import {
-  BOTTOM_SHEET_HEIGHT,
+  BOTTOM_SHEET_MAX_HEIGHT,
   BOTTOM_SHEET_MIN_HEIGHT,
 } from "@/shared/constants/bottomSheet";
+import { pushSheet, popSheet, useTopSheetId } from "./bottomSheetStack";
 
 interface BottomSheetAction {
   text?: string;
@@ -22,13 +23,15 @@ interface BottomSheetAction {
   disabled?: boolean;
 }
 
+export type BottomSheetSize = "content" | "min" | "max";
+
 interface BottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onBack?: () => void;
   title?: string;
   children: React.ReactNode;
-  expanded?: boolean;
+  size?: BottomSheetSize;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
   primaryButton?: BottomSheetAction;
@@ -41,14 +44,39 @@ export default function BottomSheet({
   onBack,
   title,
   children,
-  expanded = false,
+  size = "content",
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
   primaryButton,
   secondaryButton,
 }: BottomSheetProps) {
-  const minHeight = expanded ? BOTTOM_SHEET_HEIGHT : BOTTOM_SHEET_MIN_HEIGHT;
+  const { minHeight, maxHeight } =
+    size === "min"
+      ? {
+          minHeight: BOTTOM_SHEET_MIN_HEIGHT,
+          maxHeight: BOTTOM_SHEET_MAX_HEIGHT,
+        }
+      : size === "max"
+        ? {
+            minHeight: BOTTOM_SHEET_MAX_HEIGHT,
+            maxHeight: BOTTOM_SHEET_MAX_HEIGHT,
+          }
+        : { minHeight: undefined, maxHeight: BOTTOM_SHEET_MAX_HEIGHT };
   const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
+
+  // 글로벌 stack 에 본인을 등록. 최상단이 아니면 시각적으로 숨김.
+  const [myId, setMyId] = useState<number | null>(null);
+  const topId = useTopSheetId();
+  useEffect(() => {
+    if (!isOpen) return;
+    const id = pushSheet();
+    setMyId(id);
+    return () => {
+      popSheet(id);
+      setMyId(null);
+    };
+  }, [isOpen]);
+  const isHidden = myId !== null && topId !== null && myId !== topId;
 
   return (
     <Drawer.Root
@@ -60,20 +88,23 @@ export default function BottomSheet({
       unmountOnExit
     >
       <Portal>
-        <Drawer.Backdrop />
+        <Drawer.Backdrop bg="blackAlpha.600" />
         <Drawer.Positioner>
           <Drawer.Content
             borderTopRadius="xl"
             borderBottomRadius="none"
             minHeight={minHeight}
-            maxHeight={BOTTOM_SHEET_HEIGHT}
+            maxHeight={maxHeight}
+            overflowY="auto"
             overscrollBehavior="contain"
             style={{
+              opacity: isHidden ? 0.7 : 1,
+              pointerEvents: isHidden ? "none" : "auto",
               transform:
                 keyboardOffset > 0
                   ? `translateY(-${keyboardOffset}px)`
                   : undefined,
-              transition: "transform 0.1s ease-out",
+              transition: "opacity 0.15s ease-out, transform 0.1s ease-out",
             }}
           >
             <Drawer.Header

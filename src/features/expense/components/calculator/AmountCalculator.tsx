@@ -1,4 +1,10 @@
-import { useEffect, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import { VStack } from "@chakra-ui/react";
 import { useCalculator } from "../../hooks/useCalculator";
 import CalculatorDisplay from "./CalculatorDisplay";
@@ -16,7 +22,25 @@ interface AmountCalculatorProps {
   onToggleCurrency?: () => void;
 }
 
-export default function AmountCalculator({
+interface AmountCalculatorContextValue {
+  display: ReactNode;
+  keypad: ReactNode;
+}
+
+const AmountCalculatorContext =
+  createContext<AmountCalculatorContextValue | null>(null);
+
+function useAmountCalculatorContext(): AmountCalculatorContextValue {
+  const ctx = useContext(AmountCalculatorContext);
+  if (!ctx) {
+    throw new Error(
+      "AmountCalculator subcomponents must be used within AmountCalculatorProvider",
+    );
+  }
+  return ctx;
+}
+
+export function AmountCalculatorProvider({
   onAmountChange,
   onCalculatingChange,
   initialValue,
@@ -25,7 +49,8 @@ export default function AmountCalculator({
   estimatedKrw,
   isForeignCurrency,
   onToggleCurrency,
-}: AmountCalculatorProps) {
+  children,
+}: AmountCalculatorProps & { children: ReactNode }) {
   const {
     displayValue,
     expression,
@@ -59,8 +84,8 @@ export default function AmountCalculator({
     onCalculatingChange?.(hasExpression);
   }, [hasExpression, onCalculatingChange]);
 
-  return (
-    <VStack gap={2} w="full">
+  const value: AmountCalculatorContextValue = {
+    display: (
       <CalculatorDisplay
         displayValue={displayValue}
         expression={expression}
@@ -71,6 +96,8 @@ export default function AmountCalculator({
         isForeignCurrency={isForeignCurrency}
         onToggleCurrency={onToggleCurrency}
       />
+    ),
+    keypad: (
       <CalculatorKeypad
         onDigit={inputDigit}
         onOperator={inputOperator}
@@ -79,6 +106,32 @@ export default function AmountCalculator({
         onDelete={deleteLast}
         activeOperator={activeOperator}
       />
-    </VStack>
+    ),
+  };
+
+  return (
+    <AmountCalculatorContext.Provider value={value}>
+      {children}
+    </AmountCalculatorContext.Provider>
+  );
+}
+
+export function AmountCalculatorDisplay() {
+  return <>{useAmountCalculatorContext().display}</>;
+}
+
+export function AmountCalculatorKeypad() {
+  return <>{useAmountCalculatorContext().keypad}</>;
+}
+
+// 기존 합본 컴포넌트 — Display + Keypad 같은 위치에 렌더하고 싶을 때
+export default function AmountCalculator(props: AmountCalculatorProps) {
+  return (
+    <AmountCalculatorProvider {...props}>
+      <VStack gap={2} w="full">
+        <AmountCalculatorDisplay />
+        <AmountCalculatorKeypad />
+      </VStack>
+    </AmountCalculatorProvider>
   );
 }

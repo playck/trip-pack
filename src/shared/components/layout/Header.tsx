@@ -1,6 +1,6 @@
 import { Box, Flex, Text, IconButton } from "@chakra-ui/react";
 import { ChevronLeft, User } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -15,6 +15,8 @@ export default function Header({
   onBackClick,
 }: HeaderProps) {
   const { user } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isMainPage = pathname === "/" || pathname === "/main";
 
   return (
     <Box
@@ -49,7 +51,7 @@ export default function Header({
           )}
         </Flex>
 
-        {user ? (
+        {user && !isMainPage ? (
           <Link to="/">
             <Text
               fontSize="lg"
@@ -59,7 +61,7 @@ export default function Header({
               lineHeight="1"
               truncate
             >
-              Trip Pack
+              TRIP PACK
             </Text>
           </Link>
         ) : (
@@ -71,7 +73,7 @@ export default function Header({
             lineHeight="1"
             truncate
           >
-            Trip Pack
+            TRIP PACK
           </Text>
         )}
 

@@ -196,7 +196,7 @@ export default function ExchangeRateSheet({
       onClose={handleClose}
       onBack={selectedCurrency ? handleBack : undefined}
       title={title}
-      expanded
+      size="max"
     >
       {rateDate && !isLoading && (
         <Text fontSize="xs" color="gray.400" textAlign="right" px={5} py={1}>

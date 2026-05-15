@@ -101,6 +101,7 @@ export default function CheckListBottomSheet({
       isOpen={isOpen}
       onClose={handleClose}
       title={title}
+      size="max"
       adjustForKeyboard={false}
       secondaryButton={{
         text: "취소",
@@ -113,7 +114,7 @@ export default function CheckListBottomSheet({
         isLoading: createCategories.isPending,
       }}
     >
-      <Flex flexDirection="column" h="100%" minHeight="70vh">
+      <Flex flexDirection="column" h="100%">
         <HStack justify="space-between" align="center" px={4} pt={3}>
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             카테고리 선택 ({selectedIds.size}/{categories.length})
