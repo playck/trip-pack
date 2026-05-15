@@ -97,7 +97,9 @@ export default function BottomSheet({
         <Drawer.Backdrop bg="blackAlpha.600" />
         <Drawer.Positioner>
           <Drawer.Content
-            borderTopRadius="xl"
+            borderTopRadius={
+              keyboardOffset > 0 && size !== "content" ? "none" : "xl"
+            }
             borderBottomRadius="none"
             minHeight={effectiveMinHeight}
             maxHeight={effectiveMaxHeight}
