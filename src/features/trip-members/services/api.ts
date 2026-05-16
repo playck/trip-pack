@@ -92,60 +92,34 @@ export const createInvitation = async (
   return data;
 };
 
-/** 초대 코드로 초대 정보 조회 */
-export const getInvitationByCode = async (
+/** 초대 수락: SECURITY DEFINER RPC로 코드 검증 + 멤버 추가를 한 번에 처리 */
+export const acceptInvitation = async (
   inviteCode: string,
-): Promise<TripInvitation & { trips: { title: string } | null }> => {
-  const { data, error } = await supabase
-    .from("trip_invitations")
-    .select("*, trips(title)")
-    .eq("invite_code", inviteCode)
-    .eq("is_active", true)
-    .or(`expires_at.gt.${new Date().toISOString()},expires_at.is.null`)
-    .single();
+): Promise<{ tripId: string; tripTitle: string }> => {
+  // RPC는 생성된 타입에 아직 반영되지 않았을 수 있어 함수명 타입 회피
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: { p_code: string },
+    ) => Promise<{
+      data: Array<{ out_trip_id: string; out_trip_title: string }> | null;
+      error: { message: string } | null;
+    }>
+  )("accept_invitation", { p_code: inviteCode });
 
   if (error) {
-    throw new Error(`초대 정보 조회 실패: ${error.message}`);
-  }
-
-  return data as TripInvitation & { trips: { title: string } | null };
-};
-
-/** 초대 수락 (멤버로 참가) */
-export const acceptInvitation = async (inviteCode: string): Promise<string> => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) throw new Error("로그인이 필요합니다.");
-
-  // 1. 초대 정보 조회
-  const invitation = await getInvitationByCode(inviteCode);
-
-  // 2. 이미 멤버인지 확인
-  const { data: existing } = await supabase
-    .from("trip_members")
-    .select("id")
-    .eq("trip_id", invitation.trip_id)
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (existing) {
-    return invitation.trip_id;
-  }
-
-  // 3. 멤버로 추가
-  const { error } = await supabase.from("trip_members").insert({
-    trip_id: invitation.trip_id,
-    user_id: user.id,
-    role: "member",
-  });
-
-  if (error) {
+    if (error.message.includes("invalid_or_expired_invitation")) {
+      throw new Error("유효하지 않거나 만료된 초대 링크입니다.");
+    }
     throw new Error(`여행 참가 실패: ${error.message}`);
   }
 
-  return invitation.trip_id;
+  const row = data?.[0];
+  if (!row) {
+    throw new Error("유효하지 않거나 만료된 초대 링크입니다.");
+  }
+
+  return { tripId: row.out_trip_id, tripTitle: row.out_trip_title };
 };
 
 /** 멤버 제거 (owner만 가능) */

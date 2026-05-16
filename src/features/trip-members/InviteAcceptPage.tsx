@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VStack, Text, Spinner } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { ErrorMessage } from "@/shared/components";
-import { useInvitationInfo, useAcceptInvitation } from "./hooks/useInvitation";
+import { useAcceptInvitation } from "./hooks/useInvitation";
 
 const SAFE_PATH_REGEX = /^[a-zA-Z0-9-]+$/;
 
@@ -12,12 +12,7 @@ export default function InviteAcceptPage() {
   const { inviteCode } = useParams({ from: "/invite/$inviteCode" });
   const { user, loading: authLoading } = useAuth();
   const hasAccepted = useRef(false);
-
-  const {
-    data: invitation,
-    isLoading: inviteLoading,
-    error: inviteError,
-  } = useInvitationInfo(inviteCode);
+  const [tripTitle, setTripTitle] = useState<string | null>(null);
 
   const acceptMutation = useAcceptInvitation();
   const acceptMutationRef = useRef(acceptMutation);
@@ -38,11 +33,12 @@ export default function InviteAcceptPage() {
       return;
     }
 
-    if (!invitation || hasAccepted.current) return;
+    if (hasAccepted.current) return;
     hasAccepted.current = true;
 
     acceptMutationRef.current.mutate(inviteCode, {
-      onSuccess: (tripId) => {
+      onSuccess: ({ tripId, tripTitle: title }) => {
+        setTripTitle(title);
         if (!SAFE_PATH_REGEX.test(tripId)) {
           navigate({ to: "/main" });
           return;
@@ -52,14 +48,11 @@ export default function InviteAcceptPage() {
           params: { tripId },
         });
       },
-      onError: () => {
-        setTimeout(() => navigate({ to: "/main" }), 2000);
-      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user, invitation, inviteCode]);
+  }, [authLoading, user, inviteCode]);
 
-  if (authLoading || inviteLoading) {
+  if (authLoading) {
     return (
       <VStack justify="center" h="60vh" gap={4}>
         <Spinner size="lg" />
@@ -68,24 +61,12 @@ export default function InviteAcceptPage() {
     );
   }
 
-  if (inviteError) {
-    return (
-      <VStack justify="center" h="60vh">
-        <ErrorMessage
-          title="초대 링크 오류"
-          message="유효하지 않거나 만료된 초대 링크입니다."
-          centered
-        />
-      </VStack>
-    );
-  }
-
   if (acceptMutation.isError) {
     return (
       <VStack justify="center" h="60vh">
         <ErrorMessage
-          title="참가 실패"
-          message="여행에 참가할 수 없습니다. 잠시 후 다시 시도해주세요."
+          title="초대 링크 오류"
+          message={acceptMutation.error.message}
           centered
         />
       </VStack>
@@ -96,7 +77,7 @@ export default function InviteAcceptPage() {
     <VStack justify="center" h="60vh" gap={4}>
       <Spinner size="lg" />
       <Text color="gray.600" fontWeight="medium">
-        {invitation?.trips?.title ?? "여행"}에 참가하고 있어요...
+        {tripTitle ?? "여행"}에 참가하고 있어요...
       </Text>
     </VStack>
   );

@@ -1,10 +1,6 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import {
-  createInvitation,
-  acceptInvitation,
-  getInvitationByCode,
-} from "../services/api";
+import { createInvitation, acceptInvitation } from "../services/api";
 
 export function useCreateInvitation() {
   return useMutation({
@@ -31,14 +27,5 @@ export function useAcceptInvitation() {
         duration: 3000,
       });
     },
-  });
-}
-
-export function useInvitationInfo(inviteCode: string) {
-  return useQuery({
-    queryKey: ["invitation", inviteCode],
-    queryFn: () => getInvitationByCode(inviteCode),
-    enabled: !!inviteCode,
-    retry: false,
   });
 }
