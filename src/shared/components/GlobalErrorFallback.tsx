@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Box, Button, VStack, Text, Container } from "@chakra-ui/react";
 import { useRouter } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
+import * as Sentry from "@sentry/react";
 import LoadingSpinner from "./LoadingSpinner";
 
 interface ErrorLayoutProps {
@@ -36,8 +37,12 @@ export default function GlobalErrorFallback({
   useEffect(() => {
     if (isAuthError) {
       goToLogin();
+      return;
     }
-  }, [isAuthError]);
+    if (error) {
+      Sentry.captureException(error);
+    }
+  }, [isAuthError, error]);
 
   const handleRetry = () => {
     reset();
