@@ -24,6 +24,7 @@ export function useTodoChecklist(tripId: string | undefined) {
       if (!tripId) throw new Error("Trip ID가 필요합니다.");
       return getTodoChecklist(tripId);
     },
+    refetchOnWindowFocus: true,
   });
 
   const totalItems = categories.reduce(

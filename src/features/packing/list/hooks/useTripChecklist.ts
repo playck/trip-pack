@@ -34,6 +34,7 @@ export function useTripChecklist(
       }
       return getTripChecklist(tripId);
     },
+    refetchOnWindowFocus: true,
     meta: { persist: true },
   });
 

@@ -24,6 +24,7 @@ export function useShoppingChecklist(tripId: string | undefined) {
       if (!tripId) throw new Error("Trip ID가 필요합니다.");
       return getShoppingChecklist(tripId);
     },
+    refetchOnWindowFocus: true,
   });
 
   const totalItems = categories.reduce(
