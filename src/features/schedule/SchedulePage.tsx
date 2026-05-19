@@ -117,6 +117,10 @@ function SchedulePageContent() {
     mapZoom,
     scheduleMarkers,
     routesByDay,
+    availableDays,
+    selectedDay: selectedMapDay,
+    setSelectedDay: setSelectedMapDay,
+    dayColorMap,
     setIsMapFullScreen,
     handleScheduleClick,
     handleToggleCollapse,
@@ -202,6 +206,12 @@ function SchedulePageContent() {
                 height="200px"
                 markers={scheduleMarkers}
                 routes={routesByDay}
+                dayFilter={{
+                  availableDays,
+                  selectedDay: selectedMapDay,
+                  dayColorMap,
+                  onSelectDay: setSelectedMapDay,
+                }}
                 onFullScreenChange={setIsMapFullScreen}
               />
             </Box>

@@ -4,6 +4,7 @@ import { Map, useMap } from "@vis.gl/react-google-maps";
 import { Maximize2, Minimize2 } from "lucide-react";
 import Marker from "./Marker";
 import RouteLine from "./RouteLine";
+import DayFilterChips from "./DayFilterChips";
 
 interface Location {
   lat: number;
@@ -24,6 +25,13 @@ type DayRoute = {
   path: Location[];
 };
 
+interface DayFilter {
+  availableDays: number[];
+  selectedDay: number | null;
+  dayColorMap: Map<number, string>;
+  onSelectDay: (day: number | null) => void;
+}
+
 interface GoogleMapViewProps {
   center?: Location;
   zoom?: number;
@@ -31,6 +39,7 @@ interface GoogleMapViewProps {
   routes?: DayRoute[];
   height?: string;
   showRoute?: boolean;
+  dayFilter?: DayFilter;
   onMarkerClick?: (markerId: string) => void;
   onFullScreenChange?: (isFullScreen: boolean) => void;
 }
@@ -46,6 +55,7 @@ export default function GoogleMapView({
   routes = DEFAULT_ROUTES,
   height = "200px",
   showRoute = true,
+  dayFilter,
   onMarkerClick,
   onFullScreenChange,
 }: GoogleMapViewProps) {
@@ -142,6 +152,16 @@ export default function GoogleMapView({
           <Maximize2 size={16} color="#4A5568" />
         )}
       </Box>
+
+      {/* 일차 필터 칩 */}
+      {dayFilter && (
+        <DayFilterChips
+          availableDays={dayFilter.availableDays}
+          selectedDay={dayFilter.selectedDay}
+          dayColorMap={dayFilter.dayColorMap}
+          onSelectDay={dayFilter.onSelectDay}
+        />
+      )}
     </Box>
   );
 }

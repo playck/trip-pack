@@ -42,15 +42,16 @@ export function useScheduleMap(
   );
   const [isMapFullScreen, setIsMapFullScreen] = useState(false);
   const [isMapCollapsed, setIsMapCollapsed] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const mapCenter = focusedLocation || regionCoordinates || DEFAULT_MAP_CENTER;
   const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
 
-  const { scheduleMarkers, routesByDay } = useMemo(() => {
+  const { allMarkers, allRoutes } = useMemo(() => {
     if (!allSchedules || allSchedules.length === 0) {
       return {
-        scheduleMarkers: [] as MapMarkerData[],
-        routesByDay: [] as DayRouteData[],
+        allMarkers: [] as MapMarkerData[],
+        allRoutes: [] as DayRouteData[],
       };
     }
 
@@ -102,8 +103,31 @@ export function useScheduleMap(
       }
     }
 
-    return { scheduleMarkers: markers, routesByDay: routes };
+    return { allMarkers: markers, allRoutes: routes };
   }, [allSchedules]);
+
+  const availableDays = useMemo(() => {
+    const days = new Set(allMarkers.map((m) => m.dayNumber));
+    return Array.from(days).sort((a, b) => a - b);
+  }, [allMarkers]);
+
+  const dayColorMap = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const day of availableDays) {
+      map.set(day, getDayColor(day));
+    }
+    return map;
+  }, [availableDays]);
+
+  const { scheduleMarkers, routesByDay } = useMemo(() => {
+    if (selectedDay === null) {
+      return { scheduleMarkers: allMarkers, routesByDay: allRoutes };
+    }
+    return {
+      scheduleMarkers: allMarkers.filter((m) => m.dayNumber === selectedDay),
+      routesByDay: allRoutes.filter((r) => r.dayNumber === selectedDay),
+    };
+  }, [allMarkers, allRoutes, selectedDay]);
 
   const handleScheduleClick = (schedule: Schedule) => {
     if (!schedule.latitude || !schedule.longitude) return;
@@ -125,6 +149,10 @@ export function useScheduleMap(
     mapZoom,
     scheduleMarkers,
     routesByDay,
+    availableDays,
+    selectedDay,
+    setSelectedDay,
+    dayColorMap,
     setIsMapFullScreen,
     handleScheduleClick,
     handleToggleCollapse,
