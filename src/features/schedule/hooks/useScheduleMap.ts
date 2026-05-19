@@ -135,6 +135,7 @@ export function useScheduleMap(
       lat: schedule.latitude,
       lng: schedule.longitude,
     });
+    setSelectedDay(schedule.day_number);
   };
 
   const handleToggleCollapse = () => {
