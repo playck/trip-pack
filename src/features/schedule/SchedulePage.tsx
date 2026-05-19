@@ -116,6 +116,7 @@ function SchedulePageContent() {
     mapCenter,
     mapZoom,
     scheduleMarkers,
+    routesByDay,
     setIsMapFullScreen,
     handleScheduleClick,
     handleToggleCollapse,
@@ -200,6 +201,7 @@ function SchedulePageContent() {
                 zoom={mapZoom}
                 height="200px"
                 markers={scheduleMarkers}
+                routes={routesByDay}
                 onFullScreenChange={setIsMapFullScreen}
               />
             </Box>

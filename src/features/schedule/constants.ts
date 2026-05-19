@@ -29,3 +29,22 @@ export const LAYOUT_HEIGHTS = {
   TRIP_INFO_HEADER: TRIP_INFO_HEADER_HEIGHT, // 여행 정보 헤더 (40px)
   MAP: 200, // 지도 높이 (200px)
 } as const;
+
+/**
+ * 일차별 마커/라우트 색상 팔레트 (8일차 이후 순환)
+ */
+export const DAY_COLOR_PALETTE = [
+  "#14B8A6", // 1일차 teal
+  "#F97316", // 2일차 orange
+  "#8B5CF6", // 3일차 purple
+  "#EC4899", // 4일차 pink
+  "#3B82F6", // 5일차 blue
+  "#10B981", // 6일차 emerald
+  "#06B6D4", // 7일차 cyan
+  "#EF4444", // 8일차 red
+] as const;
+
+export function getDayColor(dayNumber: number): string {
+  if (dayNumber < 1) return DAY_COLOR_PALETTE[0];
+  return DAY_COLOR_PALETTE[(dayNumber - 1) % DAY_COLOR_PALETTE.length];
+}

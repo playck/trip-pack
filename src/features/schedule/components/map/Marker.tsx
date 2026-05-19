@@ -8,6 +8,7 @@ interface Location {
 interface MarkerProps {
   position: Location;
   label: string | number;
+  color?: string;
   title?: string;
   onClick?: () => void;
 }
@@ -15,6 +16,7 @@ interface MarkerProps {
 export default function Marker({
   position,
   label,
+  color = "#3B82F6",
   title,
   onClick,
 }: MarkerProps) {
@@ -25,7 +27,7 @@ export default function Marker({
           width: "36px",
           height: "36px",
           borderRadius: "50%",
-          backgroundColor: "#3B82F6",
+          backgroundColor: color,
           color: "white",
           display: "flex",
           alignItems: "center",

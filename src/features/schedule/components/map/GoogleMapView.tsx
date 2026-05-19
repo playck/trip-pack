@@ -15,12 +15,20 @@ type MapMarker = {
   position: Location;
   title?: string;
   label?: string | number;
+  color?: string;
+};
+
+type DayRoute = {
+  dayNumber: number;
+  color: string;
+  path: Location[];
 };
 
 interface GoogleMapViewProps {
   center?: Location;
   zoom?: number;
   markers?: MapMarker[];
+  routes?: DayRoute[];
   height?: string;
   showRoute?: boolean;
   onMarkerClick?: (markerId: string) => void;
@@ -29,11 +37,13 @@ interface GoogleMapViewProps {
 
 const DEFAULT_CENTER: Location = { lat: 37.5665, lng: 126.978 };
 const DEFAULT_MARKERS: MapMarker[] = [];
+const DEFAULT_ROUTES: DayRoute[] = [];
 
 export default function GoogleMapView({
   center = DEFAULT_CENTER,
   zoom = 12,
   markers = DEFAULT_MARKERS,
+  routes = DEFAULT_ROUTES,
   height = "200px",
   showRoute = true,
   onMarkerClick,
@@ -41,8 +51,6 @@ export default function GoogleMapView({
 }: GoogleMapViewProps) {
   const map = useMap("schedule-map");
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const routePath = markers?.map((marker) => marker.position);
-  const isHasRoutePath = showRoute && routePath.length > 1;
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
@@ -84,7 +92,16 @@ export default function GoogleMapView({
         clickableIcons={false}
         mapId="schedule-map"
       >
-        {isHasRoutePath && <RouteLine path={routePath} />}
+        {showRoute &&
+          routes.map((route) =>
+            route.path.length > 1 ? (
+              <RouteLine
+                key={route.dayNumber}
+                path={route.path}
+                strokeColor={route.color}
+              />
+            ) : null
+          )}
 
         {markers.map((marker) =>
           marker.label ? (
@@ -92,6 +109,7 @@ export default function GoogleMapView({
               key={marker.id}
               position={marker.position}
               label={marker.label}
+              color={marker.color}
               title={marker.title}
               onClick={() => onMarkerClick?.(marker.id)}
             />
