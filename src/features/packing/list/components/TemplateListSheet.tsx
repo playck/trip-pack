@@ -24,6 +24,7 @@ const convertToCategories = (
       display_order: tc.display_order,
       created_at: tc.created_at,
       trip_id: null,
+      created_by: "",
       category_type: tc.category_type,
       items: tc.template_items
         .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))

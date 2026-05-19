@@ -8,14 +8,21 @@ import type {
   UseCreateCategoryParams,
 } from "../../type";
 
-// 여행의 체크리스트 카테고리와 아이템을 가져오는 API
+// 여행의 체크리스트 카테고리와 아이템을 가져오는 API (본인 것만)
 export const getTripChecklist = async (
   tripId: string,
 ): Promise<CategoryWithItems[]> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("로그인이 필요합니다.");
+
   const { data, error } = await supabase
     .from("checklist_categories")
     .select("*, checklist_items(*)")
     .eq("trip_id", tripId)
+    .eq("created_by", user.id)
     .order("display_order", { ascending: true });
 
   if (error) {
@@ -225,16 +232,18 @@ export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
 export const createChecklistCategory = async (
   params: UseCreateCategoryParams,
 ): Promise<{ id: string }> => {
-  // 1. 여행 존재 여부 및 권한 확인
-  const { data: trip, error: tripError } = await supabase
-    .from("trips")
-    .select("id")
-    .eq("id", params.tripId)
-    .single();
+  // 1. 여행 존재 여부 및 권한 확인 + 유저 조회
+  const [tripResult, userResult] = await Promise.all([
+    supabase.from("trips").select("id").eq("id", params.tripId).single(),
+    supabase.auth.getUser(),
+  ]);
 
-  if (tripError || !trip) {
+  if (tripResult.error || !tripResult.data) {
     throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
   }
+
+  const user = userResult.data.user;
+  if (!user) throw new Error("로그인이 필요합니다.");
 
   // 2. 카테고리명 유효성 검사
   const name = params.categoryName.trim();
@@ -246,14 +255,15 @@ export const createChecklistCategory = async (
     throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
   }
 
-  // 3. 마지막 display_order 조회
+  // 3. 마지막 display_order 조회 (본인 카테고리 기준)
   const { data: lastCategory } = await supabase
     .from("checklist_categories")
     .select("display_order")
     .eq("trip_id", params.tripId)
+    .eq("created_by", user.id)
     .order("display_order", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const nextDisplayOrder = (lastCategory?.display_order || 0) + 1;
 
@@ -265,6 +275,7 @@ export const createChecklistCategory = async (
       name: name,
       icon_key: params.iconKey,
       display_order: nextDisplayOrder,
+      created_by: user.id,
     })
     .select("id")
     .single();
@@ -339,6 +350,7 @@ const insertPackingCategory = async (
   tripId: string,
   category: CategoryWithType,
   order: number,
+  userId: string,
 ): Promise<boolean> => {
   const { data: newCat, error: catError } = await supabase
     .from("checklist_categories")
@@ -347,6 +359,7 @@ const insertPackingCategory = async (
       name: category.name.trim(),
       icon_key: category.icon_key || null,
       display_order: order,
+      created_by: userId,
     })
     .select("id")
     .single();
@@ -495,8 +508,8 @@ const processSectionCategories = async (
         ok = await insertShoppingCategory(tripId, category, order, userId);
       } else if (type === "todo") {
         ok = await insertTodoCategory(tripId, category, order, userId);
-      } else {
-        ok = await insertPackingCategory(tripId, category, order);
+      } else if (userId) {
+        ok = await insertPackingCategory(tripId, category, order, userId);
       }
     } catch {
       // insert 실패

@@ -102,6 +102,7 @@ function toCategoryWithType(
     display_order: 0,
     created_at: null,
     trip_id: null,
+    created_by: "",
     category_type: sectionType,
     items,
   };

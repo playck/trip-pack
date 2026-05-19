@@ -18,6 +18,7 @@ import GridView from "./GridView";
 import ListView from "./ListView";
 import AirlineBaggagePolicySheet from "./AirlineBaggagePolicySheet";
 import ImportTextSheet from "./ImportTextSheet";
+import EmptyPackingCTA from "./EmptyPackingCTA";
 
 export interface SectionHandle {
   toggleAllCategories: () => void;
@@ -147,8 +148,10 @@ export default function PackingSection({
         </HStack>
       )}
 
-      {/* 준비물 뷰 */}
-      {viewMode === "그리드" ? (
+      {/* 준비물 뷰 (본인 카테고리 0개면 빈 상태 CTA) */}
+      {categories.length === 0 ? (
+        <EmptyPackingCTA tripId={tripId} />
+      ) : viewMode === "그리드" ? (
         <GridView categories={categories} />
       ) : (
         <ListView

@@ -17,6 +17,7 @@ export type Database = {
       checklist_categories: {
         Row: {
           created_at: string | null
+          created_by: string
           display_order: number | null
           icon_key: string | null
           id: string
@@ -25,6 +26,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          created_by: string
           display_order?: number | null
           icon_key?: string | null
           id?: string
@@ -33,6 +35,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          created_by?: string
           display_order?: number | null
           icon_key?: string | null
           id?: string
@@ -40,6 +43,13 @@ export type Database = {
           trip_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "checklist_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "checklist_categories_trip_id_fkey"
             columns: ["trip_id"]
@@ -891,6 +901,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_invitation: {
+        Args: { p_code: string }
+        Returns: {
+          out_trip_id: string
+          out_trip_title: string
+        }[]
+      }
       create_trip_with_checklist: {
         Args: { p_categories: Json; p_items: Json; p_trip_data: Json }
         Returns: string

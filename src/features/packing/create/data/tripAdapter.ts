@@ -77,6 +77,7 @@ export default class TripAdapter {
         name: category.categoryName,
         display_order: categoryIndex + 1,
         trip_id: tripId,
+        created_by: this.userId,
       });
 
       category.items.forEach((item, itemIndex) => {

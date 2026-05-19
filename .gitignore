@@ -30,3 +30,8 @@ dist-ssr
 .claude/
 CLAUDE.md
 .tmp-screenshots/
+skills-lock.json
+docs/superpowers/
+
+# Supabase
+supabase/.temp/
