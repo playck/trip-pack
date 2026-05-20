@@ -1,5 +1,13 @@
 import { useMemo } from "react";
-import { VStack, Box, HStack, IconButton, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  HStack,
+  IconButton,
+  Text,
+  Skeleton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2, Settings } from "lucide-react";
@@ -105,10 +113,15 @@ function SchedulePageContent() {
   } = useScheduleDetailActions(tripId || "", handleEditMemo);
 
   // 지도
-  const { coordinates: regionCoordinates } = useGeocoding(
-    tripInfo?.regionName,
-    tripInfo?.regionId
-  );
+  const {
+    coordinates: regionCoordinates,
+    error: geocodingError,
+  } = useGeocoding(tripInfo?.regionName, tripInfo?.regionId);
+
+  const isMapReady =
+    !tripInfo?.regionId ||
+    regionCoordinates !== null ||
+    geocodingError !== null;
 
   const {
     isMapFullScreen,
@@ -200,20 +213,24 @@ function SchedulePageContent() {
               position="relative"
               zIndex={1}
             >
-              <GoogleMapView
-                center={mapCenter}
-                zoom={mapZoom}
-                height="200px"
-                markers={scheduleMarkers}
-                routes={routesByDay}
-                dayFilter={{
-                  availableDays,
-                  selectedDay: selectedMapDay,
-                  dayColorMap,
-                  onSelectDay: setSelectedMapDay,
-                }}
-                onFullScreenChange={setIsMapFullScreen}
-              />
+              {isMapReady ? (
+                <GoogleMapView
+                  center={mapCenter}
+                  zoom={mapZoom}
+                  height="200px"
+                  markers={scheduleMarkers}
+                  routes={routesByDay}
+                  dayFilter={{
+                    availableDays,
+                    selectedDay: selectedMapDay,
+                    dayColorMap,
+                    onSelectDay: setSelectedMapDay,
+                  }}
+                  onFullScreenChange={setIsMapFullScreen}
+                />
+              ) : (
+                <Skeleton w="full" h="200px" borderRadius="lg" />
+              )}
             </Box>
             {!isMapFullScreen && (
               <MapCollapseButton
