@@ -22,7 +22,6 @@ const POPULAR_AIRLINES = [
   { code: "7C", name: "제주항공" },
   { code: "BX", name: "에어부산" },
   { code: "RS", name: "에어서울" },
-  { code: "4V", name: "에어로케이" },
 ];
 
 interface AddFlightSheetProps {
@@ -119,70 +118,85 @@ export default function AddFlightSheet({
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
             구분
           </Text>
-          <SegmentGroup.Root
-            size="md"
-            w="full"
-            value={flightType}
-            onValueChange={(details) => {
-              if (details.value && !isEditMode && !defaultFlightType) {
-                setFlightType(details.value as "departure" | "return");
-              }
-            }}
-            css={
-              isEditMode || defaultFlightType
-                ? { pointerEvents: "none" }
-                : undefined
-            }
-          >
-            <SegmentGroup.Indicator />
-            <SegmentGroup.Items
+          {isEditMode || defaultFlightType ? (
+            <HStack gap={1.5} py={1}>
+              {flightType === "departure" ? (
+                <Plane size={16} color={colors.primary.hex[500]} />
+              ) : (
+                <PlaneLanding size={16} color={colors.primary.hex[500]} />
+              )}
+              <Text fontSize="md" fontWeight="semibold">
+                {flightType === "departure" ? "출발편" : "리턴편"}
+              </Text>
+            </HStack>
+          ) : (
+            <SegmentGroup.Root
+              size="md"
               w="full"
-              items={[
-                {
-                  value: "departure",
-                  label: (
-                    <HStack gap={1.5}>
-                      <Plane
-                        size={14}
-                        color={
-                          flightType === "departure"
-                            ? colors.primary.hex[500]
-                            : "currentColor"
-                        }
-                      />
-                      <Text
-                        fontWeight={flightType === "departure" ? "semibold" : "normal"}
-                        color={flightType === "departure" ? colors.primary.hex[500] : "currentColor"}
-                      >
-                        출발편
-                      </Text>
-                    </HStack>
-                  ),
-                },
-                {
-                  value: "return",
-                  label: (
-                    <HStack gap={1.5}>
-                      <PlaneLanding
-                        size={14}
-                        color={
-                          flightType === "return"
-                            ? colors.primary.hex[500]
-                            : "currentColor"
-                        }
-                      />
-                      <Text
-                        fontWeight={flightType === "return" ? "semibold" : "normal"}
-                        color={flightType === "return" ? colors.primary.hex[500] : "currentColor"}
-                      >
-                        리턴편
-                      </Text>
-                    </HStack>
-                  ),
-                },
-              ]}
-            />
-          </SegmentGroup.Root>
+              value={flightType}
+              onValueChange={(details) => {
+                if (details.value) {
+                  setFlightType(details.value as "departure" | "return");
+                }
+              }}
+            >
+              <SegmentGroup.Indicator />
+              <SegmentGroup.Items
+                w="full"
+                items={[
+                  {
+                    value: "departure",
+                    label: (
+                      <HStack gap={1.5}>
+                        <Plane
+                          size={14}
+                          color={
+                            flightType === "departure"
+                              ? colors.primary.hex[500]
+                              : "currentColor"
+                          }
+                        />
+                        <Text
+                          fontWeight={
+                            flightType === "departure" ? "semibold" : "normal"
+                          }
+                        >
+                          출발편
+                        </Text>
+                      </HStack>
+                    ),
+                  },
+                  {
+                    value: "return",
+                    label: (
+                      <HStack gap={1.5}>
+                        <PlaneLanding
+                          size={14}
+                          color={
+                            flightType === "return"
+                              ? colors.primary.hex[500]
+                              : "currentColor"
+                          }
+                        />
+                        <Text
+                          fontWeight={
+                            flightType === "return" ? "semibold" : "normal"
+                          }
+                          color={
+                            flightType === "return"
+                              ? colors.primary.hex[500]
+                              : "currentColor"
+                          }
+                        >
+                          리턴편
+                        </Text>
+                      </HStack>
+                    ),
+                  },
+                ]}
+              />
+            </SegmentGroup.Root>
+          )}
         </VStack>
 
         {/* 항공사 바로가기 */}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
 
-import { textColors, borderColors } from "@/shared/constants/colors";
+import { textColors } from "@/shared/constants/colors";
 import BottomSheet from "@/shared/components/BottomSheet";
 import {
   PlaceSearchInput,
@@ -45,7 +45,7 @@ export default function AddScheduleSheet({
         clearResults();
       }
     },
-    [searchPlaces, clearResults, selectedCategory]
+    [searchPlaces, clearResults, selectedCategory],
   );
 
   const handleCategorySelect = (category: string) => {
@@ -70,7 +70,7 @@ export default function AddScheduleSheet({
         onClose();
       }
     },
-    [getPlaceDetails, onSelectPlace, clearResults, onClose]
+    [getPlaceDetails, onSelectPlace, clearResults, onClose],
   );
 
   useEffect(() => {
@@ -89,8 +89,8 @@ export default function AddScheduleSheet({
       size="max"
     >
       <VStack align="stretch" gap={0} px={4} pb={4}>
-        <Box py={1.5} borderBottomWidth="1px" borderColor={borderColors.subtle}>
-          <Text fontSize="sm" color={textColors.primary} textAlign="center">
+        <Box py={0.5}>
+          <Text fontSize="sm" color={textColors.primary} textAlign="right">
             {date}
           </Text>
         </Box>

@@ -214,13 +214,14 @@ export default function DayScheduleCard({
         <Box p={3} pb={2} minH="80px" borderBottomRadius="lg">
           {/* 항공편 등록 버튼 */}
           {(canAddDeparture || canAddReturn) && (
-            <Box mb={2} display="flex" flexDirection="column" gap={2}>
+            <Box mb={2.5} display="flex" flexDirection="column" gap={2}>
               {canAddDeparture && (
                 <Button
                   w="full"
                   size="sm"
                   variant="outline"
-                  colorPalette={colors.primary.palette}
+                  borderColor={borderColors.emphasized}
+                  borderWidth="2px"
                   borderStyle="dashed"
                   onClick={() => handleOpenAddFlight("departure")}
                 >
@@ -235,7 +236,8 @@ export default function DayScheduleCard({
                   w="full"
                   size="sm"
                   variant="outline"
-                  colorPalette={colors.primary.palette}
+                  borderColor={borderColors.emphasized}
+                  borderWidth="2px"
                   borderStyle="dashed"
                   onClick={() => handleOpenAddFlight("return")}
                 >
