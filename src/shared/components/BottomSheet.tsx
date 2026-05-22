@@ -23,7 +23,7 @@ interface BottomSheetAction {
   disabled?: boolean;
 }
 
-export type BottomSheetSize = "content" | "min" | "max";
+export type BottomSheetSize = "content" | "min" | "max" | "fullscreen";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -50,6 +50,7 @@ export default function BottomSheet({
   primaryButton,
   secondaryButton,
 }: BottomSheetProps) {
+  const isFullscreen = size === "fullscreen";
   const { minHeight, maxHeight } =
     size === "min"
       ? {
@@ -61,8 +62,13 @@ export default function BottomSheet({
             minHeight: BOTTOM_SHEET_MAX_HEIGHT,
             maxHeight: BOTTOM_SHEET_MAX_HEIGHT,
           }
-        : { minHeight: undefined, maxHeight: BOTTOM_SHEET_MAX_HEIGHT };
-  const keyboardOffset = useKeyboardOffset(isOpen && adjustForKeyboard);
+        : isFullscreen
+          ? { minHeight: "100dvh", maxHeight: "100dvh" }
+          : { minHeight: undefined, maxHeight: BOTTOM_SHEET_MAX_HEIGHT };
+
+  const keyboardOffset = useKeyboardOffset(
+    isOpen && adjustForKeyboard && !isFullscreen,
+  );
   // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡 → translateY로 위로 옮겨도 상단이 안 잘리고 푸터도 키보드 위에 안착
   const visibleAreaCap =
     keyboardOffset > 0 ? `calc(100vh - ${keyboardOffset}px)` : undefined;
@@ -98,12 +104,14 @@ export default function BottomSheet({
         <Drawer.Positioner>
           <Drawer.Content
             borderTopRadius={
-              keyboardOffset > 0 && size !== "content" ? "none" : "xl"
+              isFullscreen || (keyboardOffset > 0 && size !== "content")
+                ? "none"
+                : "xl"
             }
             borderBottomRadius="none"
             minHeight={effectiveMinHeight}
             maxHeight={effectiveMaxHeight}
-            overflowY="auto"
+            overflowY={isFullscreen ? "hidden" : "auto"}
             overscrollBehavior="contain"
             style={{
               opacity: isHidden ? 0.7 : 1,
@@ -152,7 +160,14 @@ export default function BottomSheet({
                 </IconButton>
               </Drawer.CloseTrigger>
             </Drawer.Header>
-            <Drawer.Body p={0} display="flex" flexDirection="column">
+            <Drawer.Body
+              p={0}
+              display="flex"
+              flexDirection="column"
+              {...(isFullscreen
+                ? { flex: 1, minH: 0, overflowY: "auto" }
+                : {})}
+            >
               {children}
             </Drawer.Body>
             {(primaryButton || secondaryButton) && (
