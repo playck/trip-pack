@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Link2, ChevronDown } from "lucide-react";
 import { useAtomValue } from "jotai";
 import {
@@ -119,17 +119,22 @@ export default function AddExpenseSheet({
   >([]);
   const [isSplitSelectOpen, setIsSplitSelectOpen] = useState(false);
 
-  // 시트가 열릴 때 상태 초기화
+  const userIdRef = useRef(user?.id);
+  const membersRef = useRef(members);
+  userIdRef.current = user?.id;
+  membersRef.current = members;
+
+  // 시트가 열릴 때 한 번만 상태 초기화 (refetch로 인한 사용자 입력 손실 방지)
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(null);
       setMemo("");
       setIsShared(true);
-      setPaidByUserId(user?.id ?? null);
-      setSelectedSplitMemberIds(members.map((m) => m.id));
+      setPaidByUserId(userIdRef.current ?? null);
+      setSelectedSplitMemberIds(membersRef.current.map((m) => m.id));
       setIsSplitSelectOpen(false);
     }
-  }, [isOpen, user?.id, members]);
+  }, [isOpen]);
 
   const handleSave = () => {
     if (selectedCategory && isValidAmount) {
@@ -295,6 +300,12 @@ export default function AddExpenseSheet({
                   placeholder="메모 입력 (선택)"
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
+                  onFocus={(e) =>
+                    e.currentTarget.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    })
+                  }
                   size="md"
                   borderRadius="xl"
                 />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Link2, ChevronDown, MoreHorizontal } from "lucide-react";
 import {
   VStack,
@@ -103,17 +103,28 @@ export default function EditExpenseSheet({
 
   const { data: schedules } = useTripSchedules(tripId);
 
+  // 백그라운드 refetch로 인한 폼 입력 손실 방지: 외부 값은 ref로 추적
+  const schedulesRef = useRef(schedules);
+  const membersRef = useRef(members);
+  const userIdRef = useRef(user?.id);
+  schedulesRef.current = schedules;
+  membersRef.current = members;
+  userIdRef.current = user?.id;
+
+  const splitMembersKey = initialSplitMemberIds.join(",");
+
   useEffect(() => {
     if (isOpen) {
-      const matched = findCategoryByLabel(initialName);
+      const trimmedName = initialName.trim();
+      const matched = findCategoryByLabel(trimmedName);
       if (matched) {
         setSelectedCategory(matched);
         setLegacyLabel(null);
-      } else if (initialName) {
-        setLegacyLabel(initialName);
+      } else if (trimmedName) {
+        setLegacyLabel(trimmedName);
         setSelectedCategory({
-          id: "etc",
-          label: initialName,
+          id: "legacy",
+          label: trimmedName,
           icon: MoreHorizontal,
           color: "gray",
         });
@@ -125,7 +136,7 @@ export default function EditExpenseSheet({
       setCalculatorInitialValue(initialAmount);
 
       if (initialScheduleId) {
-        const scheduleName = schedules?.find(
+        const scheduleName = schedulesRef.current?.find(
           (s) => s.id === initialScheduleId,
         )?.place_name;
         setSelectedSchedule({
@@ -138,14 +149,17 @@ export default function EditExpenseSheet({
 
       // 공유 상태 초기화
       setIsShared(initialIsShared);
-      setPaidByUserId(initialPaidByUserId ?? user?.id ?? null);
+      setPaidByUserId(initialPaidByUserId ?? userIdRef.current ?? null);
       setSelectedSplitMemberIds(
         initialSplitMemberIds.length > 0
           ? initialSplitMemberIds
-          : members.map((m) => m.id),
+          : membersRef.current.map((m) => m.id),
       );
       setIsSplitSelectOpen(false);
     }
+    // initialSplitMemberIds는 splitMembersKey로 안정화하여 새 배열 ref 무시
+    // schedules, members, user는 ref로 처리하여 deps에서 제외
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isOpen,
     initialName,
@@ -154,10 +168,7 @@ export default function EditExpenseSheet({
     initialScheduleId,
     initialIsShared,
     initialPaidByUserId,
-    initialSplitMemberIds,
-    schedules,
-    user?.id,
-    members,
+    splitMembersKey,
   ]);
 
   const handleSave = () => {
@@ -177,7 +188,18 @@ export default function EditExpenseSheet({
         selectedSchedule?.id ?? null,
         options,
       );
+      setSelectedCategory(null);
+      setLegacyLabel(null);
+      setMemo("");
+      onClose();
     }
+  };
+
+  const handleClose = () => {
+    setSelectedCategory(null);
+    setLegacyLabel(null);
+    setMemo("");
+    onClose();
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -222,7 +244,7 @@ export default function EditExpenseSheet({
     <>
       <BottomSheet
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleClose}
         title="경비 수정"
         size="fullscreen"
         primaryButton={{
@@ -230,7 +252,7 @@ export default function EditExpenseSheet({
           disabled: !isCanSaveExpense,
         }}
         secondaryButton={{
-          onClick: onClose,
+          onClick: handleClose,
         }}
       >
         <AmountCalculatorProvider
@@ -306,6 +328,12 @@ export default function EditExpenseSheet({
                   placeholder="메모 입력 (선택)"
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
+                  onFocus={(e) =>
+                    e.currentTarget.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    })
+                  }
                   size="md"
                   borderRadius="xl"
                 />

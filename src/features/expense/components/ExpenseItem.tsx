@@ -101,7 +101,12 @@ export default function ExpenseItem({
   // 개인 경비 표시: 멤버 2명 이상이고 공유가 아닌 경우
   const showPersonalBadge = totalMemberCount >= 2 && !expense.isShared;
 
-  const displayName = expense.memo?.trim() || expense.name;
+  const trimmedMemo = expense.memo?.trim();
+  const displayName = trimmedMemo || expense.name;
+  // 액션시트/삭제 다이얼로그에서는 카테고리 컨텍스트도 함께 표시
+  const contextualName = trimmedMemo
+    ? `${expense.name} · ${trimmedMemo}`
+    : expense.name;
 
   return (
     <>
@@ -176,7 +181,7 @@ export default function ExpenseItem({
             onClose={() => setIsActionSheetOpen(false)}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
-            expenseName={displayName}
+            expenseName={contextualName}
           />
 
           <EditExpenseSheet
@@ -201,7 +206,7 @@ export default function ExpenseItem({
             children={
               <Text>
                 <Text as="span" fontWeight="bold">
-                  "{displayName}"
+                  "{contextualName}"
                 </Text>{" "}
                 경비를 삭제하시겠습니까?
                 <br />

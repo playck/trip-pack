@@ -22,7 +22,7 @@ export default function ExpenseCategoryChips({
 
   const legacyDef: ExpenseCategoryDef | null = showLegacy
     ? {
-        id: "etc",
+        id: "legacy",
         label: legacyLabel!,
         icon: MoreHorizontal,
         color: "gray",

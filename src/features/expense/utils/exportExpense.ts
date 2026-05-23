@@ -30,7 +30,9 @@ export function formatAllExpensesToText(
       text += ` - 지출 내역 없음\n`;
     } else {
       day.expenses.forEach((item) => {
-        text += ` • ${item.name}: ${item.amount.toLocaleString()}원\n`;
+        const memo = item.memo?.trim();
+        const label = memo ? `${item.name} · ${memo}` : item.name;
+        text += ` • ${label}: ${item.amount.toLocaleString()}원\n`;
       });
       text += ` (소계: ${dayTotal.toLocaleString()}원)\n`;
     }

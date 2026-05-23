@@ -20,7 +20,8 @@ export type ExpenseCategoryId =
   | "lodging"
   | "flight"
   | "ticket"
-  | "etc";
+  | "etc"
+  | "legacy";
 
 export interface ExpenseCategoryDef {
   id: ExpenseCategoryId;
