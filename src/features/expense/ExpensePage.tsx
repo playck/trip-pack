@@ -80,6 +80,7 @@ export default function ExpensePage() {
           id: expense.id,
           name: expense.expense_category,
           amount: expense.amount,
+          memo: expense.notes,
           scheduleId: expense.schedule_id,
           scheduleName: expense.schedule_id
             ? (scheduleMap.get(expense.schedule_id) ?? null)
@@ -124,6 +125,7 @@ export default function ExpensePage() {
       dayNumber: selectedDateItem.dayNumber,
       category: name,
       amount,
+      memo: options?.memo,
       scheduleId,
       isShared: options?.isShared,
       paidBy: options?.paidBy,

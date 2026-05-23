@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Link2, ChevronDown } from "lucide-react";
+import { Link2, ChevronDown, MoreHorizontal } from "lucide-react";
 import {
   VStack,
   HStack,
-  Flex,
   Input,
   Button,
   Text,
@@ -18,6 +17,11 @@ import type { Schedule } from "@/features/schedule/types";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useAmountInput } from "../hooks/useAmountInput";
+import {
+  findCategoryByLabel,
+  type ExpenseCategoryDef,
+} from "../constants/categories";
+import ExpenseCategoryChips from "./ExpenseCategoryChips";
 import SelectScheduleSheet from "./SelectScheduleSheet";
 import {
   AmountCalculatorProvider,
@@ -37,6 +41,7 @@ interface EditExpenseSheetProps {
   ) => void;
   initialName: string;
   initialAmount: number;
+  initialMemo?: string | null;
   initialScheduleId?: string | null;
   initialIsShared?: boolean;
   initialPaidByUserId?: string | null;
@@ -51,6 +56,7 @@ export default function EditExpenseSheet({
   onSaveExpense,
   initialName,
   initialAmount,
+  initialMemo,
   initialScheduleId,
   initialIsShared = true,
   initialPaidByUserId,
@@ -58,7 +64,10 @@ export default function EditExpenseSheet({
   tripId,
   selectedDate,
 }: EditExpenseSheetProps) {
-  const [name, setName] = useState("");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ExpenseCategoryDef | null>(null);
+  const [legacyLabel, setLegacyLabel] = useState<string | null>(null);
+  const [memo, setMemo] = useState("");
   const { parsedAmount, isValidAmount, setAmountFromNumber } = useAmountInput();
   const [calculatorInitialValue, setCalculatorInitialValue] = useState(0);
   const [isCalculating, setIsCalculating] = useState(false);
@@ -96,7 +105,23 @@ export default function EditExpenseSheet({
 
   useEffect(() => {
     if (isOpen) {
-      setName(initialName);
+      const matched = findCategoryByLabel(initialName);
+      if (matched) {
+        setSelectedCategory(matched);
+        setLegacyLabel(null);
+      } else if (initialName) {
+        setLegacyLabel(initialName);
+        setSelectedCategory({
+          id: "etc",
+          label: initialName,
+          icon: MoreHorizontal,
+          color: "gray",
+        });
+      } else {
+        setSelectedCategory(null);
+        setLegacyLabel(null);
+      }
+      setMemo(initialMemo ?? "");
       setCalculatorInitialValue(initialAmount);
 
       if (initialScheduleId) {
@@ -125,6 +150,7 @@ export default function EditExpenseSheet({
     isOpen,
     initialName,
     initialAmount,
+    initialMemo,
     initialScheduleId,
     initialIsShared,
     initialPaidByUserId,
@@ -135,17 +161,18 @@ export default function EditExpenseSheet({
   ]);
 
   const handleSave = () => {
-    const trimmedName = name.trim();
-    if (trimmedName && isValidAmount) {
+    if (selectedCategory && isValidAmount) {
+      const trimmedMemo = memo.trim();
       const options: ExpenseSaveOptions = {
         isShared: hasMultipleMembers ? isShared : false,
         paidBy:
           hasMultipleMembers && isShared ? paidByUserId : (user?.id ?? null),
         splitMemberIds:
           hasMultipleMembers && isShared ? selectedSplitMemberIds : [],
+        memo: trimmedMemo ? trimmedMemo : null,
       };
       onSaveExpense(
-        trimmedName,
+        selectedCategory.label,
         parsedAmount,
         selectedSchedule?.id ?? null,
         options,
@@ -186,7 +213,7 @@ export default function EditExpenseSheet({
   }, [selectedSplitMemberIds, members, user?.id]);
 
   const isCanSaveExpense =
-    name.trim() &&
+    !!selectedCategory &&
     isValidAmount &&
     !isCalculating &&
     (!hasMultipleMembers || !isShared || selectedSplitMemberIds.length > 0);
@@ -197,7 +224,7 @@ export default function EditExpenseSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="경비 수정"
-        adjustForKeyboard
+        size="fullscreen"
         primaryButton={{
           onClick: handleSave,
           disabled: !isCanSaveExpense,
@@ -211,71 +238,78 @@ export default function EditExpenseSheet({
           onCalculatingChange={setIsCalculating}
           initialValue={calculatorInitialValue}
         >
-          <Flex direction="column" flex={1} w="full" minH={0}>
-            <VStack gap={4} flex={1} overflowY="auto" w="full" p={4} minH={0}>
-              {/* 일정 정보 표시 */}
-          {selectedSchedule && (
-            <Box
-              w="full"
-              p={2}
-              bg={`${colors.primary.palette}.50`}
-              borderRadius="lg"
-              borderLeft="4px solid"
-              borderColor={colors.primary.palette}
-              cursor="pointer"
-              onClick={() => setIsSelectScheduleOpen(true)}
-            >
-              <HStack justify="space-between" align="center">
-                <HStack gap={2} flex={1} minW={0}>
-                  <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
-                    연결된 일정 -
-                  </Text>
-                  <Text
-                    fontSize="sm"
-                    fontWeight="medium"
-                    color="gray.800"
-                    lineClamp={1}
+          <VStack gap={3} w="full" px={4} pt={1} pb={4} align="stretch">
+              {/* 일정 연동 (우측 컴팩트 칩) */}
+              <HStack justify="flex-end" w="full">
+                {selectedSchedule ? (
+                  <Box
+                    as="button"
+                    bg={`${colors.primary.palette}.50`}
+                    border="1px solid"
+                    borderColor={`${colors.primary.palette}.200`}
+                    borderRadius="full"
+                    px={3}
+                    py={1.5}
+                    cursor="pointer"
+                    onClick={() => setIsSelectScheduleOpen(true)}
+                    maxW="full"
                   >
-                    {selectedSchedule.name}
-                  </Text>
-                </HStack>
-                <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                  변경
-                </Text>
+                    <HStack gap={1} minW={0}>
+                      <Link2
+                        size={12}
+                        color={`var(--chakra-colors-${colors.primary.palette}-600)`}
+                      />
+                      <Text
+                        fontSize="xs"
+                        fontWeight="semibold"
+                        color={`${colors.primary.palette}.700`}
+                        lineClamp={1}
+                      >
+                        {selectedSchedule.name}
+                      </Text>
+                    </HStack>
+                  </Box>
+                ) : (
+                  <Box
+                    as="button"
+                    bg="white"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    borderRadius="full"
+                    px={3}
+                    py={1.5}
+                    cursor="pointer"
+                    onClick={() => setIsSelectScheduleOpen(true)}
+                    _hover={{
+                      borderColor: `${colors.primary.palette}.400`,
+                      bg: `${colors.primary.palette}.50`,
+                    }}
+                    transition="all 0.15s"
+                  >
+                    <HStack gap={1}>
+                      <Link2 size={12} color="var(--chakra-colors-gray-500)" />
+                      <Text fontSize="xs" fontWeight="medium" color="gray.600">
+                        일정 연결하기
+                      </Text>
+                    </HStack>
+                  </Box>
+                )}
               </HStack>
-            </Box>
-          )}
 
-          <VStack gap={2} w="full">
-            <HStack justify="space-between" align="center" w="full">
-              <Text fontSize="md" fontWeight="medium">
-                내용
-              </Text>
-              {!selectedSchedule && (
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  color="gray.500"
-                  fontWeight="medium"
-                  h="24px"
-                  px={2}
-                  onClick={() => setIsSelectScheduleOpen(true)}
-                >
-                  <HStack gap={1}>
-                    <Link2 size={12} />
-                    <Text fontSize="xs">일정 연동</Text>
-                  </HStack>
-                </Button>
-              )}
-            </HStack>
-            <Input
-              placeholder="예) 조식"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              size="lg"
-              borderRadius="xl"
-            />
-          </VStack>
+              <VStack gap={3} w="full" align="stretch">
+                <ExpenseCategoryChips
+                  selectedLabel={selectedCategory?.label ?? null}
+                  onSelect={setSelectedCategory}
+                  legacyLabel={legacyLabel}
+                />
+                <Input
+                  placeholder="메모 입력 (선택)"
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  size="md"
+                  borderRadius="xl"
+                />
+              </VStack>
 
           {/* 공유 설정 (멤버 2명 이상일 때만) */}
           {hasMultipleMembers && (
@@ -442,12 +476,9 @@ export default function EditExpenseSheet({
             </VStack>
           )}
 
-              <AmountCalculatorDisplay />
-            </VStack>
-            <Box w="full" px={4} pt={2}>
-              <AmountCalculatorKeypad />
-            </Box>
-          </Flex>
+          <AmountCalculatorDisplay />
+          <AmountCalculatorKeypad />
+        </VStack>
         </AmountCalculatorProvider>
       </BottomSheet>
 

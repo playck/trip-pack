@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Box, Flex, Text, HStack, IconButton } from "@chakra-ui/react";
 import { MoreVertical, Link2 } from "lucide-react";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
-import { useAuth } from "@/shared/hooks/useAuth";
 import { useDeleteExpense, useUpdateExpense } from "../services";
 import EditExpenseSheet from "./EditExpenseSheet";
 import ExpenseActionSheet from "./ExpenseActionSheet";
@@ -39,7 +38,6 @@ export default function ExpenseItem({
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { user } = useAuth();
 
   const updateExpenseMutation = useUpdateExpense({
     tripId,
@@ -71,6 +69,7 @@ export default function ExpenseItem({
       expenseId: expense.id,
       category: name,
       amount,
+      memo: options?.memo,
       scheduleId,
       isShared: options?.isShared,
       paidBy: options?.paidBy,
@@ -102,19 +101,7 @@ export default function ExpenseItem({
   // 개인 경비 표시: 멤버 2명 이상이고 공유가 아닌 경우
   const showPersonalBadge = totalMemberCount >= 2 && !expense.isShared;
 
-  // 결제자 표시: 본인이 아닌 경우에만
-  const showPaidBy =
-    expense.isShared &&
-    expense.paidByUserId &&
-    expense.paidByUserId !== user?.id &&
-    expense.paidByUsername;
-
-  // 정산 인원 표시: 전체 멤버가 아닌 경우에만
-  const showSplitCount =
-    expense.isShared &&
-    expense.splitMemberIds.length > 0 &&
-    totalMemberCount > 0 &&
-    expense.splitMemberIds.length < totalMemberCount;
+  const displayName = expense.memo?.trim() || expense.name;
 
   return (
     <>
@@ -128,7 +115,7 @@ export default function ExpenseItem({
           <Box flex={1} minW={0}>
             <HStack gap={1} align="center">
               <Text fontSize="15px" color="gray.700">
-                {expense.name}
+                {displayName}
               </Text>
               {showPersonalBadge && (
                 <Text
@@ -145,27 +132,12 @@ export default function ExpenseItem({
                 </Text>
               )}
             </HStack>
-            {(expense.scheduleName || showPaidBy || showSplitCount) && (
-              <HStack gap={1} mt={0.5} flexWrap="wrap">
-                {expense.scheduleName && (
-                  <HStack gap={1}>
-                    <Link2 size={11} color="var(--chakra-colors-gray-400)" />
-                    <Text fontSize="xs" color="gray.400" lineClamp={1}>
-                      {expense.scheduleName}
-                    </Text>
-                  </HStack>
-                )}
-                {showPaidBy && (
-                  <Text fontSize="xs" color="gray.500">
-                    {expense.scheduleName && "·"} {expense.paidByUsername} 결제
-                  </Text>
-                )}
-                {showSplitCount && (
-                  <Text fontSize="xs" color="gray.500">
-                    {(expense.scheduleName || showPaidBy) && "·"}{" "}
-                    {expense.splitMemberIds.length}명 정산
-                  </Text>
-                )}
+            {expense.scheduleName && (
+              <HStack gap={1} mt={0.5}>
+                <Link2 size={11} color="var(--chakra-colors-gray-400)" />
+                <Text fontSize="xs" color="gray.400" lineClamp={1}>
+                  {expense.scheduleName}
+                </Text>
               </HStack>
             )}
           </Box>
@@ -204,7 +176,7 @@ export default function ExpenseItem({
             onClose={() => setIsActionSheetOpen(false)}
             onEdit={handleEditClick}
             onDelete={handleDeleteClick}
-            expenseName={expense.name}
+            expenseName={displayName}
           />
 
           <EditExpenseSheet
@@ -213,6 +185,7 @@ export default function ExpenseItem({
             onSaveExpense={handleEditSave}
             initialName={expense.name}
             initialAmount={expense.amount}
+            initialMemo={expense.memo}
             initialScheduleId={expense.scheduleId}
             initialIsShared={expense.isShared}
             initialPaidByUserId={expense.paidByUserId}
@@ -228,7 +201,7 @@ export default function ExpenseItem({
             children={
               <Text>
                 <Text as="span" fontWeight="bold">
-                  "{expense.name}"
+                  "{displayName}"
                 </Text>{" "}
                 경비를 삭제하시겠습니까?
                 <br />

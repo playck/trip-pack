@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { useDeleteSchedule } from "../services/useDeleteSchedule";
 import { useUpdateSchedule } from "../services/useUpdateSchedule";
 import { useCreateExpense } from "@/features/expense/services/useCreateExpense";
+import type { ExpenseSaveOptions } from "@/features/expense/components/AddExpenseSheet";
 import { isMemo } from "../utils/scheduleHelpers";
 import type { Schedule } from "../types";
 
@@ -133,7 +134,8 @@ export function useScheduleDetailActions(
   const handleSaveExpense = (
     name: string,
     amount: number,
-    scheduleId?: string
+    scheduleId?: string,
+    options?: ExpenseSaveOptions
   ) => {
     if (!tripId || !selectedScheduleForExpense) return;
 
@@ -145,7 +147,11 @@ export function useScheduleDetailActions(
       dayNumber: selectedScheduleForExpense.day_number,
       category: name,
       amount,
+      memo: options?.memo,
       scheduleId,
+      isShared: options?.isShared,
+      paidBy: options?.paidBy,
+      splitMemberIds: options?.splitMemberIds,
     });
   };
 

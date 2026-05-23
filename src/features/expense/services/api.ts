@@ -10,6 +10,7 @@ export interface CreateExpenseParams {
   dayNumber: number;
   category: string;
   amount: number;
+  memo?: string | null;
   scheduleId?: string;
   isShared?: boolean;
   paidBy?: string | null;
@@ -20,6 +21,7 @@ export interface UpdateExpenseParams {
   expenseId: string;
   category: string;
   amount: number;
+  memo?: string | null;
   scheduleId?: string | null;
   isShared?: boolean;
   paidBy?: string | null;
@@ -74,6 +76,7 @@ export async function createExpense(
     day_number: params.dayNumber,
     expense_category: params.category,
     amount: params.amount,
+    notes: params.memo ?? null,
     currency: "KRW",
     schedule_id: params.scheduleId || null,
     is_shared: params.isShared ?? true,
@@ -138,6 +141,10 @@ export async function updateExpense(
     expense_category: category,
     amount: amount,
   };
+
+  if (params.memo !== undefined) {
+    updateData.notes = params.memo;
+  }
 
   if (scheduleId !== undefined) {
     updateData.schedule_id = scheduleId;

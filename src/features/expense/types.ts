@@ -3,6 +3,7 @@ export interface ExpenseItemData {
   id: string;
   name: string;
   amount: number;
+  memo?: string | null;
   scheduleId?: string | null;
   scheduleName?: string | null;
   isShared: boolean;

@@ -19,6 +19,8 @@ import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
+import type { ExpenseCategoryDef } from "../constants/categories";
+import ExpenseCategoryChips from "./ExpenseCategoryChips";
 import SelectScheduleSheet from "./SelectScheduleSheet";
 import {
   AmountCalculatorProvider,
@@ -30,6 +32,7 @@ export interface ExpenseSaveOptions {
   isShared: boolean;
   paidBy: string | null;
   splitMemberIds: string[];
+  memo: string | null;
 }
 
 interface AddExpenseSheetProps {
@@ -96,7 +99,9 @@ export default function AddExpenseSheet({
     [setAmountFromNumber],
   );
 
-  const [name, setName] = useState("");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ExpenseCategoryDef | null>(null);
+  const [memo, setMemo] = useState("");
   const [isCalculating, setIsCalculating] = useState(false);
   const [selectedSchedule, setSelectedSchedule] =
     useState<SelectedScheduleInfo | null>(
@@ -114,9 +119,11 @@ export default function AddExpenseSheet({
   >([]);
   const [isSplitSelectOpen, setIsSplitSelectOpen] = useState(false);
 
-  // 시트가 열릴 때 공유 상태 초기화
+  // 시트가 열릴 때 상태 초기화
   useEffect(() => {
     if (isOpen) {
+      setSelectedCategory(null);
+      setMemo("");
       setIsShared(true);
       setPaidByUserId(user?.id ?? null);
       setSelectedSplitMemberIds(members.map((m) => m.id));
@@ -125,24 +132,32 @@ export default function AddExpenseSheet({
   }, [isOpen, user?.id, members]);
 
   const handleSave = () => {
-    const parsedName = name.trim();
-    if (parsedName && isValidAmount) {
+    if (selectedCategory && isValidAmount) {
+      const trimmedMemo = memo.trim();
       const options: ExpenseSaveOptions = {
         isShared: hasMultipleMembers ? isShared : false,
         paidBy:
           hasMultipleMembers && isShared ? paidByUserId : (user?.id ?? null),
         splitMemberIds:
           hasMultipleMembers && isShared ? selectedSplitMemberIds : [],
+        memo: trimmedMemo ? trimmedMemo : null,
       };
-      onSaveExpense(parsedName, toKrwAmount(), selectedSchedule?.id, options);
-      setName("");
+      onSaveExpense(
+        selectedCategory.label,
+        toKrwAmount(),
+        selectedSchedule?.id,
+        options,
+      );
+      setSelectedCategory(null);
+      setMemo("");
       resetAmount();
       onClose();
     }
   };
 
   const handleClose = () => {
-    setName("");
+    setSelectedCategory(null);
+    setMemo("");
     resetAmount();
     onClose();
   };
@@ -180,7 +195,7 @@ export default function AddExpenseSheet({
   }, [selectedSplitMemberIds, members, user?.id]);
 
   const isCanSaveExpense =
-    name.trim() &&
+    !!selectedCategory &&
     isValidAmount &&
     !isCalculating &&
     (!hasMultipleMembers || !isShared || selectedSplitMemberIds.length > 0);
@@ -210,66 +225,77 @@ export default function AddExpenseSheet({
           onToggleCurrency={toggleCurrencyType}
         >
           <VStack gap={3} w="full" px={4} pt={1} pb={4} align="stretch">
-              {/* 일정 정보 표시 */}
-              {selectedSchedule && (
-                <Box
-                  w="full"
-                  p={2}
-                  bg={`${colors.primary.palette}.50`}
-                  borderRadius="lg"
-                  borderLeft="4px solid"
-                  borderColor={colors.primary.palette}
-                  cursor={scheduleId ? "default" : "pointer"}
-                  onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
-                >
-                  <HStack justify="space-between" align="center">
-                    <HStack gap={2} flex={1} minW={0}>
-                      <Text fontSize="xs" color="gray.600" whiteSpace="nowrap">
-                        연결된 일정 -
-                      </Text>
+              {/* 일정 연동 (우측 컴팩트 칩) */}
+              <HStack justify="flex-end" w="full">
+                {selectedSchedule ? (
+                  <Box
+                    as="button"
+                    bg={`${colors.primary.palette}.50`}
+                    border="1px solid"
+                    borderColor={`${colors.primary.palette}.200`}
+                    borderRadius="full"
+                    px={3}
+                    py={1.5}
+                    cursor={scheduleId ? "default" : "pointer"}
+                    onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
+                    maxW="full"
+                  >
+                    <HStack gap={1} minW={0}>
+                      <Link2
+                        size={12}
+                        color={`var(--chakra-colors-${colors.primary.palette}-600)`}
+                      />
                       <Text
-                        fontSize="sm"
-                        fontWeight="medium"
-                        color="gray.800"
+                        fontSize="xs"
+                        fontWeight="semibold"
+                        color={`${colors.primary.palette}.700`}
                         lineClamp={1}
                       >
                         {selectedSchedule.name}
                       </Text>
                     </HStack>
-                    {!scheduleId && (
-                      <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                        변경
+                  </Box>
+                ) : (
+                  <Box
+                    as="button"
+                    bg="white"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    borderRadius="full"
+                    px={3}
+                    py={1.5}
+                    cursor="pointer"
+                    onClick={() => setIsSelectScheduleOpen(true)}
+                    _hover={{
+                      borderColor: `${colors.primary.palette}.400`,
+                      bg: `${colors.primary.palette}.50`,
+                    }}
+                    transition="all 0.15s"
+                  >
+                    <HStack gap={1}>
+                      <Link2
+                        size={12}
+                        color="var(--chakra-colors-gray-500)"
+                      />
+                      <Text fontSize="xs" fontWeight="medium" color="gray.600">
+                        일정 연결하기
                       </Text>
-                    )}
-                  </HStack>
-                </Box>
-              )}
+                    </HStack>
+                  </Box>
+                )}
+              </HStack>
 
-              <VStack gap={2} w="full">
-                <HStack justify="flex-end" align="center" w="full">
-                  {!selectedSchedule && (
-                    <Button
-                      size="xs"
-                      variant="ghost"
-                      color="gray.500"
-                      fontWeight="medium"
-                      h="24px"
-                      px={2}
-                      onClick={() => setIsSelectScheduleOpen(true)}
-                    >
-                      <HStack gap={1}>
-                        <Link2 size={12} />
-                        <Text fontSize="xs">일정 연동</Text>
-                      </HStack>
-                    </Button>
-                  )}
-                </HStack>
+              <VStack gap={3} w="full" align="stretch">
+                <ExpenseCategoryChips
+                  selectedLabel={selectedCategory?.label ?? null}
+                  onSelect={setSelectedCategory}
+                />
 
                 <Input
-                  placeholder="예) 조식"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  size="lg"
+                  placeholder="메모 입력 (선택)"
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  size="md"
                   borderRadius="xl"
                 />
               </VStack>
