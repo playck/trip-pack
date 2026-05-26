@@ -12,9 +12,7 @@ export interface CreateExpenseParams {
   amount: number;
   memo?: string | null;
   scheduleId?: string;
-  isShared?: boolean;
-  paidBy?: string | null;
-  splitMemberIds?: string[];
+  isPersonal?: boolean;
 }
 
 export interface UpdateExpenseParams {
@@ -23,44 +21,8 @@ export interface UpdateExpenseParams {
   amount: number;
   memo?: string | null;
   scheduleId?: string | null;
-  isShared?: boolean;
-  paidBy?: string | null;
-  splitMemberIds?: string[];
+  isPersonal?: boolean;
 }
-
-export interface ExpenseWithSplitMembers extends ExpenseRow {
-  splitMemberIds: string[];
-}
-
-// 정산 대상자 동기화
-const syncExpenseSplitMembers = async (
-  expenseId: string,
-  memberIds: string[],
-): Promise<void> => {
-  const { error: deleteError } = await supabase
-    .from("expense_split_members")
-    .delete()
-    .eq("expense_id", expenseId);
-
-  if (deleteError) {
-    console.error("기존 정산 대상자 삭제 실패:", deleteError.message);
-  }
-
-  if (memberIds.length === 0) return;
-
-  const rows = memberIds.map((memberId) => ({
-    expense_id: expenseId,
-    member_id: memberId,
-  }));
-
-  const { error: insertError } = await supabase
-    .from("expense_split_members")
-    .insert(rows);
-
-  if (insertError) {
-    console.error("정산 대상자 추가 실패:", insertError.message);
-  }
-};
 
 // 경비 추가
 export async function createExpense(
@@ -79,8 +41,7 @@ export async function createExpense(
     notes: params.memo ?? null,
     currency: "KRW",
     schedule_id: params.scheduleId || null,
-    is_shared: params.isShared ?? true,
-    paid_by: params.paidBy ?? user?.id ?? null,
+    is_personal: params.isPersonal ?? false,
     created_by: user?.id ?? null,
   };
 
@@ -98,20 +59,16 @@ export async function createExpense(
     throw new Error("경비 추가에 실패했습니다.");
   }
 
-  if (params.splitMemberIds && params.splitMemberIds.length > 0) {
-    await syncExpenseSplitMembers(data.id, params.splitMemberIds);
-  }
-
   return data;
 }
 
-// 여행별 경비 조회 (정산 대상자 포함)
+// 여행별 경비 조회
 export async function getExpensesByTrip(
   tripId: string,
-): Promise<ExpenseWithSplitMembers[]> {
+): Promise<ExpenseRow[]> {
   const { data, error } = await supabase
     .from("trip_expenses")
-    .select("*, expense_split_members(member_id)")
+    .select("*")
     .eq("trip_id", tripId)
     .order("expense_date", { ascending: true })
     .order("created_at", { ascending: true });
@@ -120,22 +77,14 @@ export async function getExpensesByTrip(
     throw new Error(error.message);
   }
 
-  if (!data || data.length === 0) return [];
-
-  return data.map((expense) => ({
-    ...expense,
-    expense_split_members: undefined,
-    splitMemberIds: (expense.expense_split_members ?? []).map(
-      (sm) => sm.member_id,
-    ),
-  })) as ExpenseWithSplitMembers[];
+  return data ?? [];
 }
 
 // 경비 수정
 export async function updateExpense(
   params: UpdateExpenseParams,
 ): Promise<ExpenseRow> {
-  const { expenseId, category, amount, scheduleId, isShared, paidBy } = params;
+  const { expenseId, category, amount, scheduleId } = params;
 
   const updateData: Record<string, unknown> = {
     expense_category: category,
@@ -150,12 +99,8 @@ export async function updateExpense(
     updateData.schedule_id = scheduleId;
   }
 
-  if (isShared !== undefined) {
-    updateData.is_shared = isShared;
-  }
-
-  if (paidBy !== undefined) {
-    updateData.paid_by = paidBy;
+  if (params.isPersonal !== undefined) {
+    updateData.is_personal = params.isPersonal;
   }
 
   const { data, error } = await supabase
@@ -171,10 +116,6 @@ export async function updateExpense(
 
   if (!data) {
     throw new Error("경비 수정에 실패했습니다.");
-  }
-
-  if (params.splitMemberIds !== undefined) {
-    await syncExpenseSplitMembers(expenseId, params.splitMemberIds);
   }
 
   return data;

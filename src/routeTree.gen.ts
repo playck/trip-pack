@@ -28,6 +28,7 @@ import { Route as ShoppingCategoryTripIdRouteImport } from './routes/shopping.ca
 import { Route as PackingListTripIdRouteImport } from './routes/packing.list.$tripId'
 import { Route as PackingCategoryTripIdRouteImport } from './routes/packing.category.$tripId'
 import { Route as MypageMyChecklistsTemplateIdRouteImport } from './routes/mypage/my-checklists/$templateId'
+import { Route as ExpenseSettlementTripIdRouteImport } from './routes/expense.settlement.$tripId'
 import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
 const MainRoute = MainRouteImport.update({
@@ -126,6 +127,11 @@ const MypageMyChecklistsTemplateIdRoute =
     path: '/mypage/my-checklists/$templateId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ExpenseSettlementTripIdRoute = ExpenseSettlementTripIdRouteImport.update({
+  id: '/expense/settlement/$tripId',
+  path: '/expense/settlement/$tripId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScheduleEditTripIdDayNumberRoute =
   ScheduleEditTripIdDayNumberRouteImport.update({
     id: '/schedule/edit/$tripId/$dayNumber',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage': typeof MypageIndexRoute
+  '/expense/settlement/$tripId': typeof ExpenseSettlementTripIdRoute
   '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage': typeof MypageIndexRoute
+  '/expense/settlement/$tripId': typeof ExpenseSettlementTripIdRoute
   '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/packing/template': typeof PackingTemplateRoute
   '/schedule/$tripId': typeof ScheduleTripIdRoute
   '/mypage/': typeof MypageIndexRoute
+  '/expense/settlement/$tripId': typeof ExpenseSettlementTripIdRoute
   '/mypage/my-checklists/$templateId': typeof MypageMyChecklistsTemplateIdRoute
   '/packing/category/$tripId': typeof PackingCategoryTripIdRoute
   '/packing/list/$tripId': typeof PackingListTripIdRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage'
+    | '/expense/settlement/$tripId'
     | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage'
+    | '/expense/settlement/$tripId'
     | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/packing/template'
     | '/schedule/$tripId'
     | '/mypage/'
+    | '/expense/settlement/$tripId'
     | '/mypage/my-checklists/$templateId'
     | '/packing/category/$tripId'
     | '/packing/list/$tripId'
@@ -281,6 +293,7 @@ export interface RootRouteChildren {
   PackingTemplateRoute: typeof PackingTemplateRoute
   ScheduleTripIdRoute: typeof ScheduleTripIdRoute
   MypageIndexRoute: typeof MypageIndexRoute
+  ExpenseSettlementTripIdRoute: typeof ExpenseSettlementTripIdRoute
   MypageMyChecklistsTemplateIdRoute: typeof MypageMyChecklistsTemplateIdRoute
   PackingCategoryTripIdRoute: typeof PackingCategoryTripIdRoute
   PackingListTripIdRoute: typeof PackingListTripIdRoute
@@ -427,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MypageMyChecklistsTemplateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/expense/settlement/$tripId': {
+      id: '/expense/settlement/$tripId'
+      path: '/expense/settlement/$tripId'
+      fullPath: '/expense/settlement/$tripId'
+      preLoaderRoute: typeof ExpenseSettlementTripIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schedule/edit/$tripId/$dayNumber': {
       id: '/schedule/edit/$tripId/$dayNumber'
       path: '/schedule/edit/$tripId/$dayNumber'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   PackingTemplateRoute: PackingTemplateRoute,
   ScheduleTripIdRoute: ScheduleTripIdRoute,
   MypageIndexRoute: MypageIndexRoute,
+  ExpenseSettlementTripIdRoute: ExpenseSettlementTripIdRoute,
   MypageMyChecklistsTemplateIdRoute: MypageMyChecklistsTemplateIdRoute,
   PackingCategoryTripIdRoute: PackingCategoryTripIdRoute,
   PackingListTripIdRoute: PackingListTripIdRoute,

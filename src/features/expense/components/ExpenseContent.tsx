@@ -8,7 +8,6 @@ interface ExpenseContentProps {
   dayExpenses: DayExpense[];
   isAllTab: boolean;
   tripId: string;
-  totalMemberCount?: number;
 }
 
 export default function ExpenseContent({
@@ -16,16 +15,11 @@ export default function ExpenseContent({
   dayExpenses,
   isAllTab,
   tripId,
-  totalMemberCount = 0,
 }: ExpenseContentProps) {
   return (
     <Container maxW="6xl" pt={3} pb={6} px={1}>
       {isAllTab ? (
-        <ExpenseAllContent
-          dayExpenses={dayExpenses}
-          tripId={tripId}
-          totalMemberCount={totalMemberCount}
-        />
+        <ExpenseAllContent dayExpenses={dayExpenses} tripId={tripId} />
       ) : (
         dayExpenses
           .filter((day) => day.date === selectedDate)
@@ -35,7 +29,6 @@ export default function ExpenseContent({
                 expenses={day.expenses}
                 tripId={tripId}
                 selectedDate={selectedDate}
-                totalMemberCount={totalMemberCount}
               />
             </Box>
           ))

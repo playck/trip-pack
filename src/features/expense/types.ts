@@ -6,10 +6,7 @@ export interface ExpenseItemData {
   memo?: string | null;
   scheduleId?: string | null;
   scheduleName?: string | null;
-  isShared: boolean;
-  paidByUserId?: string | null;
-  paidByUsername?: string | null;
-  splitMemberIds: string[];
+  isPersonal: boolean;
 }
 
 /** 날짜별 경비 그룹 */

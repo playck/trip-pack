@@ -149,9 +149,7 @@ export function useScheduleDetailActions(
       amount,
       memo: options?.memo,
       scheduleId,
-      isShared: options?.isShared,
-      paidBy: options?.paidBy,
-      splitMemberIds: options?.splitMemberIds,
+      isPersonal: options?.isPersonal,
     });
   };
 

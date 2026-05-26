@@ -69,7 +69,8 @@ export default function BottomSheet({
   const keyboardOffset = useKeyboardOffset(
     isOpen && adjustForKeyboard && !isFullscreen,
   );
-  // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡 → translateY로 위로 옮겨도 상단이 안 잘리고 푸터도 키보드 위에 안착
+
+  // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡
   const visibleAreaCap =
     keyboardOffset > 0 ? `calc(100vh - ${keyboardOffset}px)` : undefined;
   const effectiveMaxHeight = visibleAreaCap ?? maxHeight;
@@ -164,9 +165,7 @@ export default function BottomSheet({
               p={0}
               display="flex"
               flexDirection="column"
-              {...(isFullscreen
-                ? { flex: 1, minH: 0, overflowY: "auto" }
-                : {})}
+              {...(isFullscreen ? { flex: 1, minH: 0, overflowY: "auto" } : {})}
             >
               {children}
             </Drawer.Body>

@@ -147,42 +147,6 @@ export type Database = {
           },
         ]
       }
-      expense_split_members: {
-        Row: {
-          created_at: string | null
-          expense_id: string
-          id: string
-          member_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          expense_id: string
-          id?: string
-          member_id: string
-        }
-        Update: {
-          created_at?: string | null
-          expense_id?: string
-          id?: string
-          member_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "expense_split_members_expense_id_fkey"
-            columns: ["expense_id"]
-            isOneToOne: false
-            referencedRelation: "trip_expenses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "expense_split_members_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "trip_members"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           created_at: string
@@ -561,9 +525,8 @@ export type Database = {
           expense_category: string
           expense_date: string
           id: string
-          is_shared: boolean
+          is_personal: boolean
           notes: string | null
-          paid_by: string | null
           payment_method: string | null
           schedule_id: string | null
           trip_id: string
@@ -580,9 +543,8 @@ export type Database = {
           expense_category: string
           expense_date: string
           id?: string
-          is_shared?: boolean
+          is_personal?: boolean
           notes?: string | null
-          paid_by?: string | null
           payment_method?: string | null
           schedule_id?: string | null
           trip_id: string
@@ -599,9 +561,8 @@ export type Database = {
           expense_category?: string
           expense_date?: string
           id?: string
-          is_shared?: boolean
+          is_personal?: boolean
           notes?: string | null
-          paid_by?: string | null
           payment_method?: string | null
           schedule_id?: string | null
           trip_id?: string
@@ -611,13 +572,6 @@ export type Database = {
           {
             foreignKeyName: "trip_expenses_created_by_fkey"
             columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "trip_expenses_paid_by_fkey"
-            columns: ["paid_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

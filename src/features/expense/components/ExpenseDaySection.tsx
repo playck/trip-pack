@@ -14,7 +14,6 @@ interface ExpenseDaySectionProps {
   expenses: ExpenseItemData[];
   tripId: string;
   readOnly?: boolean;
-  totalMemberCount?: number;
 }
 
 const DATE_TAB_HEIGHT = 55;
@@ -25,7 +24,6 @@ export default function ExpenseDaySection({
   expenses,
   tripId,
   readOnly = false,
-  totalMemberCount = 0,
 }: ExpenseDaySectionProps) {
   const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
@@ -98,7 +96,6 @@ export default function ExpenseDaySection({
               }}
               selectedDate={date}
               readOnly={readOnly}
-              totalMemberCount={totalMemberCount}
             />
           ))}
         </VStack>

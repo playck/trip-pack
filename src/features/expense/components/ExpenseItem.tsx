@@ -23,7 +23,6 @@ interface ExpenseItemProps {
   exchangeInfo?: ExchangeInfo;
   selectedDate?: string;
   readOnly?: boolean;
-  totalMemberCount?: number;
 }
 
 export default function ExpenseItem({
@@ -33,7 +32,6 @@ export default function ExpenseItem({
   exchangeInfo,
   selectedDate,
   readOnly = false,
-  totalMemberCount = 0,
 }: ExpenseItemProps) {
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
@@ -71,9 +69,7 @@ export default function ExpenseItem({
       amount,
       memo: options?.memo,
       scheduleId,
-      isShared: options?.isShared,
-      paidBy: options?.paidBy,
-      splitMemberIds: options?.splitMemberIds,
+      isPersonal: options?.isPersonal,
     });
   };
 
@@ -98,8 +94,7 @@ export default function ExpenseItem({
         unit: "원",
       };
 
-  // 개인 경비 표시: 멤버 2명 이상이고 공유가 아닌 경우
-  const showPersonalBadge = totalMemberCount >= 2 && !expense.isShared;
+  const showPersonalBadge = expense.isPersonal;
 
   const trimmedMemo = expense.memo?.trim();
   const displayName = trimmedMemo || expense.name;
@@ -192,9 +187,7 @@ export default function ExpenseItem({
             initialAmount={expense.amount}
             initialMemo={expense.memo}
             initialScheduleId={expense.scheduleId}
-            initialIsShared={expense.isShared}
-            initialPaidByUserId={expense.paidByUserId}
-            initialSplitMemberIds={expense.splitMemberIds}
+            initialIsPersonal={expense.isPersonal}
             tripId={tripId}
             selectedDate={selectedDate}
           />

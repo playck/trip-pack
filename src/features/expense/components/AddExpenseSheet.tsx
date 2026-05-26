@@ -1,21 +1,17 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { Link2, ChevronDown } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import {
   VStack,
   HStack,
   Input,
-  Button,
   Text,
   Box,
   Switch,
 } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
-import { Checkbox } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import type { Schedule } from "@/features/schedule/types";
-import { useAuth } from "@/shared/hooks/useAuth";
-import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
@@ -29,9 +25,7 @@ import {
 } from "./calculator/AmountCalculator";
 
 export interface ExpenseSaveOptions {
-  isShared: boolean;
-  paidBy: string | null;
-  splitMemberIds: string[];
+  isPersonal: boolean;
   memo: string | null;
 }
 
@@ -68,15 +62,6 @@ export default function AddExpenseSheet({
     useTripCurrency(tripId);
 
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
-  const { user } = useAuth();
-  const { data: members = [] } = useTripMembers(tripId);
-
-  const hasMultipleMembers = members.length >= 2;
-
-  const currentMember = useMemo(
-    () => members.find((m) => m.user_id === user?.id),
-    [members, user?.id],
-  );
 
   const {
     isValidAmount,
@@ -102,6 +87,7 @@ export default function AddExpenseSheet({
   const [selectedCategory, setSelectedCategory] =
     useState<ExpenseCategoryDef | null>(null);
   const [memo, setMemo] = useState("");
+  const [isPersonal, setIsPersonal] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [selectedSchedule, setSelectedSchedule] =
     useState<SelectedScheduleInfo | null>(
@@ -111,28 +97,11 @@ export default function AddExpenseSheet({
     );
   const [isSelectScheduleOpen, setIsSelectScheduleOpen] = useState(false);
 
-  // 공유 관련 상태
-  const [isShared, setIsShared] = useState(true);
-  const [paidByUserId, setPaidByUserId] = useState<string | null>(null);
-  const [selectedSplitMemberIds, setSelectedSplitMemberIds] = useState<
-    string[]
-  >([]);
-  const [isSplitSelectOpen, setIsSplitSelectOpen] = useState(false);
-
-  const userIdRef = useRef(user?.id);
-  const membersRef = useRef(members);
-  userIdRef.current = user?.id;
-  membersRef.current = members;
-
-  // 시트가 열릴 때 한 번만 상태 초기화 (refetch로 인한 사용자 입력 손실 방지)
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(null);
       setMemo("");
-      setIsShared(true);
-      setPaidByUserId(userIdRef.current ?? null);
-      setSelectedSplitMemberIds(membersRef.current.map((m) => m.id));
-      setIsSplitSelectOpen(false);
+      setIsPersonal(false);
     }
   }, [isOpen]);
 
@@ -140,11 +109,7 @@ export default function AddExpenseSheet({
     if (selectedCategory && isValidAmount) {
       const trimmedMemo = memo.trim();
       const options: ExpenseSaveOptions = {
-        isShared: hasMultipleMembers ? isShared : false,
-        paidBy:
-          hasMultipleMembers && isShared ? paidByUserId : (user?.id ?? null),
-        splitMemberIds:
-          hasMultipleMembers && isShared ? selectedSplitMemberIds : [],
+        isPersonal,
         memo: trimmedMemo ? trimmedMemo : null,
       };
       onSaveExpense(
@@ -155,6 +120,7 @@ export default function AddExpenseSheet({
       );
       setSelectedCategory(null);
       setMemo("");
+      setIsPersonal(false);
       resetAmount();
       onClose();
     }
@@ -163,6 +129,7 @@ export default function AddExpenseSheet({
   const handleClose = () => {
     setSelectedCategory(null);
     setMemo("");
+    setIsPersonal(false);
     resetAmount();
     onClose();
   };
@@ -174,36 +141,8 @@ export default function AddExpenseSheet({
     });
   };
 
-  const handleToggleSplitMember = (memberId: string) => {
-    setSelectedSplitMemberIds((prev) => {
-      if (prev.includes(memberId)) {
-        if (prev.length <= 1) return prev;
-        return prev.filter((id) => id !== memberId);
-      }
-      return [...prev, memberId];
-    });
-  };
-
-  const getMemberDisplayName = (member: (typeof members)[0]) =>
-    member.user_id === user?.id
-      ? "나"
-      : member.profiles?.username || member.profiles?.email || "알 수 없음";
-
-  const splitSelectLabel = useMemo(() => {
-    if (selectedSplitMemberIds.length === members.length) return "전체";
-    if (selectedSplitMemberIds.length === 0) return "선택 없음";
-    const selectedNames = members
-      .filter((m) => selectedSplitMemberIds.includes(m.id))
-      .map(getMemberDisplayName);
-    return selectedNames.join(", ");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSplitMemberIds, members, user?.id]);
-
   const isCanSaveExpense =
-    !!selectedCategory &&
-    isValidAmount &&
-    !isCalculating &&
-    (!hasMultipleMembers || !isShared || selectedSplitMemberIds.length > 0);
+    !!selectedCategory && isValidAmount && !isCalculating;
 
   return (
     <>
@@ -230,266 +169,121 @@ export default function AddExpenseSheet({
           onToggleCurrency={toggleCurrencyType}
         >
           <VStack gap={3} w="full" px={4} pt={1} pb={4} align="stretch">
-              {/* 일정 연동 (우측 컴팩트 칩) */}
-              <HStack justify="flex-end" w="full">
-                {selectedSchedule ? (
-                  <Box
-                    as="button"
-                    bg={`${colors.primary.palette}.50`}
-                    border="1px solid"
-                    borderColor={`${colors.primary.palette}.200`}
-                    borderRadius="full"
-                    px={3}
-                    py={1.5}
-                    cursor={scheduleId ? "default" : "pointer"}
-                    onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
-                    maxW="full"
-                  >
-                    <HStack gap={1} minW={0}>
-                      <Link2
-                        size={12}
-                        color={`var(--chakra-colors-${colors.primary.palette}-600)`}
-                      />
-                      <Text
-                        fontSize="xs"
-                        fontWeight="semibold"
-                        color={`${colors.primary.palette}.700`}
-                        lineClamp={1}
-                      >
-                        {selectedSchedule.name}
-                      </Text>
-                    </HStack>
-                  </Box>
-                ) : (
-                  <Box
-                    as="button"
-                    bg="white"
-                    border="1px solid"
-                    borderColor="gray.300"
-                    borderRadius="full"
-                    px={3}
-                    py={1.5}
-                    cursor="pointer"
-                    onClick={() => setIsSelectScheduleOpen(true)}
-                    _hover={{
-                      borderColor: `${colors.primary.palette}.400`,
-                      bg: `${colors.primary.palette}.50`,
-                    }}
-                    transition="all 0.15s"
-                  >
-                    <HStack gap={1}>
-                      <Link2
-                        size={12}
-                        color="var(--chakra-colors-gray-500)"
-                      />
-                      <Text fontSize="xs" fontWeight="medium" color="gray.600">
-                        일정 연결하기
-                      </Text>
-                    </HStack>
-                  </Box>
-                )}
-              </HStack>
-
-              <VStack gap={3} w="full" align="stretch">
-                <ExpenseCategoryChips
-                  selectedLabel={selectedCategory?.label ?? null}
-                  onSelect={setSelectedCategory}
-                />
-
-                <Input
-                  placeholder="메모 입력 (선택)"
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  onFocus={(e) =>
-                    e.currentTarget.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
-                    })
-                  }
-                  size="md"
-                  borderRadius="xl"
-                />
-              </VStack>
-
-              {/* 공유 설정 (멤버 2명 이상일 때만) */}
-              {hasMultipleMembers && (
-                <VStack gap={3} w="full" pt={1}>
-                  {/* 공유 토글 */}
-                  <HStack justify="space-between" w="full" py={1}>
-                    <Text fontSize="md" fontWeight="medium">
-                      일행과 공유
-                    </Text>
-                    <Switch.Root
-                      checked={isShared}
-                      onCheckedChange={(e) => setIsShared(e.checked)}
-                      colorPalette="teal"
+            {/* 일정 연동 (우측 컴팩트 칩) */}
+            <HStack justify="flex-end" w="full">
+              {selectedSchedule ? (
+                <Box
+                  as="button"
+                  bg={`${colors.primary.palette}.50`}
+                  border="1px solid"
+                  borderColor={`${colors.primary.palette}.200`}
+                  borderRadius="full"
+                  px={3}
+                  py={1.5}
+                  cursor={scheduleId ? "default" : "pointer"}
+                  onClick={() => !scheduleId && setIsSelectScheduleOpen(true)}
+                  maxW="full"
+                >
+                  <HStack gap={1} minW={0}>
+                    <Link2
+                      size={12}
+                      color={`var(--chakra-colors-${colors.primary.palette}-600)`}
+                    />
+                    <Text
+                      fontSize="xs"
+                      fontWeight="semibold"
+                      color={`${colors.primary.palette}.700`}
+                      lineClamp={1}
                     >
-                      <Switch.HiddenInput />
-                      <Switch.Control>
-                        <Switch.Thumb />
-                      </Switch.Control>
-                    </Switch.Root>
+                      {selectedSchedule.name}
+                    </Text>
                   </HStack>
-
-                  {isShared && (
-                    <>
-                      {/* 결제자 선택 */}
-                      <VStack gap={2} w="full" align="start">
-                        <Text
-                          fontSize="sm"
-                          fontWeight="medium"
-                          color="gray.600"
-                        >
-                          결제자
-                        </Text>
-                        <HStack gap={2} flexWrap="wrap" w="full">
-                          {members.map((member) => {
-                            const isSelected = member.user_id === paidByUserId;
-                            return (
-                              <Box
-                                key={member.id}
-                                as="button"
-                                px={3}
-                                py={1.5}
-                                bg={
-                                  isSelected
-                                    ? `${colors.primary.palette}.500`
-                                    : "gray.100"
-                                }
-                                color={isSelected ? "white" : "gray.600"}
-                                borderRadius="full"
-                                fontSize="sm"
-                                fontWeight="medium"
-                                cursor="pointer"
-                                transition="all 0.2s"
-                                onClick={() => setPaidByUserId(member.user_id)}
-                              >
-                                {getMemberDisplayName(member)}
-                              </Box>
-                            );
-                          })}
-                        </HStack>
-                      </VStack>
-
-                      {/* 정산 대상자 Select */}
-                      <VStack gap={2} w="full" align="start">
-                        <Text
-                          fontSize="sm"
-                          fontWeight="medium"
-                          color="gray.600"
-                        >
-                          정산 대상 ({selectedSplitMemberIds.length}/
-                          {members.length}
-                          명)
-                        </Text>
-                        <Box
-                          as="button"
-                          w="full"
-                          px={3}
-                          py={2}
-                          bg="gray.50"
-                          border="1px solid"
-                          borderColor={
-                            isSplitSelectOpen
-                              ? `${colors.primary.palette}.300`
-                              : "gray.200"
-                          }
-                          borderRadius="lg"
-                          cursor="pointer"
-                          onClick={() =>
-                            setIsSplitSelectOpen(!isSplitSelectOpen)
-                          }
-                          transition="all 0.2s"
-                        >
-                          <HStack justify="space-between" align="center">
-                            <Text fontSize="sm" color="gray.700">
-                              {splitSelectLabel}
-                            </Text>
-                            <Box
-                              transition="transform 0.2s"
-                              transform={
-                                isSplitSelectOpen ? "rotate(180deg)" : undefined
-                              }
-                            >
-                              <ChevronDown size={16} color="gray" />
-                            </Box>
-                          </HStack>
-                        </Box>
-                        {isSplitSelectOpen && (
-                          <Box
-                            w="full"
-                            bg="white"
-                            border="1px solid"
-                            borderColor="gray.200"
-                            borderRadius="lg"
-                            overflow="hidden"
-                            px={2}
-                            py={1}
-                          >
-                            <Box display="flex" flexWrap="wrap" gap={1}>
-                              {members.map((member) => (
-                                <Checkbox
-                                  key={member.id}
-                                  isChecked={selectedSplitMemberIds.includes(
-                                    member.id,
-                                  )}
-                                  onChange={() =>
-                                    handleToggleSplitMember(member.id)
-                                  }
-                                  label={getMemberDisplayName(member)}
-                                />
-                              ))}
-                            </Box>
-                            <HStack
-                              gap={2}
-                              w="full"
-                              justify="flex-end"
-                              px={2}
-                              py={1}
-                              borderTop="1px solid"
-                              borderColor="gray.100"
-                            >
-                              <Button
-                                size="xs"
-                                variant="ghost"
-                                color="gray.500"
-                                h="24px"
-                                px={2}
-                                onClick={() =>
-                                  setSelectedSplitMemberIds(
-                                    members.map((m) => m.id),
-                                  )
-                                }
-                              >
-                                전체 선택
-                              </Button>
-                              <Button
-                                size="xs"
-                                variant="ghost"
-                                color="gray.500"
-                                h="24px"
-                                px={2}
-                                onClick={() => {
-                                  if (currentMember) {
-                                    setSelectedSplitMemberIds([
-                                      currentMember.id,
-                                    ]);
-                                  }
-                                }}
-                              >
-                                전체 해제
-                              </Button>
-                            </HStack>
-                          </Box>
-                        )}
-                      </VStack>
-                    </>
-                  )}
-                </VStack>
+                </Box>
+              ) : (
+                <Box
+                  as="button"
+                  bg="white"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  borderRadius="full"
+                  px={3}
+                  py={1.5}
+                  cursor="pointer"
+                  onClick={() => setIsSelectScheduleOpen(true)}
+                  _hover={{
+                    borderColor: `${colors.primary.palette}.400`,
+                    bg: `${colors.primary.palette}.50`,
+                  }}
+                  transition="all 0.15s"
+                >
+                  <HStack gap={1}>
+                    <Link2 size={12} color="var(--chakra-colors-gray-500)" />
+                    <Text fontSize="xs" fontWeight="medium" color="gray.600">
+                      일정 연결하기
+                    </Text>
+                  </HStack>
+                </Box>
               )}
-          <AmountCalculatorDisplay />
-          <AmountCalculatorKeypad />
-        </VStack>
+            </HStack>
+
+            <VStack gap={3} w="full" align="stretch">
+              <ExpenseCategoryChips
+                selectedLabel={selectedCategory?.label ?? null}
+                onSelect={setSelectedCategory}
+              />
+
+              <Input
+                placeholder="메모 입력 (선택)"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                onFocus={(e) =>
+                  e.currentTarget.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                  })
+                }
+                size="md"
+                borderRadius="xl"
+              />
+            </VStack>
+
+            {/* 내 개인 경비 토글 (항상 노출) */}
+            <Box
+              border="1px solid"
+              borderColor={
+                isPersonal ? `${colors.primary.palette}.200` : "gray.200"
+              }
+              bg={isPersonal ? `${colors.primary.palette}.50` : "white"}
+              borderRadius="xl"
+              px={3}
+              py={2}
+              transition="all 0.15s"
+            >
+              <HStack justify="space-between" w="full">
+                <VStack align="flex-start" gap={0}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.800">
+                    내 개인 경비
+                  </Text>
+                  <Text fontSize="2xs" color="gray.500">
+                    예산/정산 리포트에서 제외돼요
+                  </Text>
+                </VStack>
+                <Switch.Root
+                  checked={isPersonal}
+                  onCheckedChange={(e) => setIsPersonal(e.checked)}
+                  colorPalette={colors.primary.palette}
+                >
+                  <Switch.HiddenInput />
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch.Root>
+              </HStack>
+            </Box>
+
+            <AmountCalculatorDisplay />
+            <AmountCalculatorKeypad />
+          </VStack>
         </AmountCalculatorProvider>
       </BottomSheet>
 

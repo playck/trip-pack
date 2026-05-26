@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { Box, Text, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
-import { Share2, Settings } from "lucide-react";
+import { Share2, Settings, Calculator } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -13,10 +13,7 @@ import { useScrollToTop } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
-import {
-  useTripMembers,
-  useMemberProfileMap,
-} from "@/features/trip-members/hooks/useTripMembers";
+import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
 import { useShareExpense } from "./hooks";
@@ -26,10 +23,11 @@ const ALL_TAB_VALUE = "all";
 
 export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
+  const navigate = useNavigate();
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses } = useTripExpenses(tripId);
   const { data: schedules } = useTripSchedules(tripId);
-  const { data: members = [] } = useTripMembers(tripId);
+  useTripMembers(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });
@@ -38,8 +36,6 @@ export default function ExpensePage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { showScrollTop, scrollToTop } = useScrollToTop();
   const settingsDrawer = useDisclosure();
-
-  const memberProfileMap = useMemberProfileMap(tripId);
 
   const dateList = useMemo(() => {
     if (!tripInfo) return [];
@@ -85,12 +81,7 @@ export default function ExpensePage() {
           scheduleName: expense.schedule_id
             ? (scheduleMap.get(expense.schedule_id) ?? null)
             : null,
-          isShared: expense.is_shared,
-          paidByUserId: expense.paid_by,
-          paidByUsername: expense.paid_by
-            ? (memberProfileMap.get(expense.paid_by) ?? null)
-            : null,
-          splitMemberIds: expense.splitMemberIds,
+          isPersonal: expense.is_personal,
         }));
 
       return {
@@ -100,7 +91,7 @@ export default function ExpensePage() {
         expenses: dayExpenseItems,
       };
     });
-  }, [dateList, expenses, scheduleMap, memberProfileMap]);
+  }, [dateList, expenses, scheduleMap]);
 
   const { handleShareExpense } = useShareExpense({ tripInfo, dayExpenses });
 
@@ -127,9 +118,7 @@ export default function ExpensePage() {
       amount,
       memo: options?.memo,
       scheduleId,
-      isShared: options?.isShared,
-      paidBy: options?.paidBy,
-      splitMemberIds: options?.splitMemberIds,
+      isPersonal: options?.isPersonal,
     });
   };
 
@@ -142,6 +131,20 @@ export default function ExpensePage() {
         subTitle={formatTripDateRange(tripInfo.startDate, tripInfo.endDate)}
         rightAction={
           <HStack gap={0}>
+            <IconButton
+              aria-label="정산하기"
+              variant="ghost"
+              size="sm"
+              color="gray.600"
+              onClick={() =>
+                navigate({
+                  to: "/expense/settlement/$tripId",
+                  params: { tripId },
+                })
+              }
+            >
+              <Calculator size={20} />
+            </IconButton>
             <IconButton
               aria-label="공유하기"
               variant="ghost"
@@ -177,7 +180,6 @@ export default function ExpensePage() {
             dayExpenses={dayExpenses}
             isAllTab={selectedDate === ALL_TAB_VALUE}
             tripId={tripId}
-            totalMemberCount={members.length}
           />
         </>
       ) : (

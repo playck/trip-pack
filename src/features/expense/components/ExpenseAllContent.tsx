@@ -1,34 +1,40 @@
 import { Box, VStack } from "@chakra-ui/react";
-import type { DayExpense } from "../types";
+import type { DayExpense, ExpenseItemData } from "../types";
 import ExpenseSummaryCard from "./ExpenseSummaryCard";
 import ExpenseDaySection from "./ExpenseDaySection";
 
 interface ExpenseAllContentProps {
   dayExpenses: DayExpense[];
   tripId: string;
-  totalMemberCount?: number;
 }
+
+const isCommunal = (e: ExpenseItemData) => !e.isPersonal;
 
 export default function ExpenseAllContent({
   dayExpenses,
   tripId,
-  totalMemberCount = 0,
 }: ExpenseAllContentProps) {
   const totalAmount = dayExpenses.reduce(
     (sum, day) =>
       sum +
-      day.expenses.reduce((daySum, expense) => daySum + expense.amount, 0),
+      day.expenses
+        .filter(isCommunal)
+        .reduce((daySum, expense) => daySum + expense.amount, 0),
     0,
   );
 
+  const communalDayCount = dayExpenses.filter((day) =>
+    day.expenses.some(isCommunal),
+  ).length;
+
   const averagePerDay =
-    dayExpenses.length > 0
-      ? Math.round(totalAmount / dayExpenses.length)
-      : 0;
+    communalDayCount > 0 ? Math.round(totalAmount / communalDayCount) : 0;
 
   const dayAmounts = dayExpenses.map((day) => ({
     date: day.label,
-    amount: day.expenses.reduce((sum, expense) => sum + expense.amount, 0),
+    amount: day.expenses
+      .filter(isCommunal)
+      .reduce((sum, expense) => sum + expense.amount, 0),
   }));
 
   const maxDay = dayAmounts.reduce(
@@ -60,7 +66,6 @@ export default function ExpenseAllContent({
             expenses={day.expenses}
             tripId={tripId}
             readOnly
-            totalMemberCount={totalMemberCount}
           />
         </Box>
       ))}
