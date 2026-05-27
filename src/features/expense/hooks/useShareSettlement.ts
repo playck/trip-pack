@@ -7,6 +7,8 @@ interface UseShareSettlementParams {
   tripInfo: TripBasicInfo | null | undefined;
   totalAmount: number;
   memberCount: number;
+  myPersonalAmount: number;
+  myEstimatedTotal: number;
   exchangeRate?: number;
   currencySymbol?: string;
   showLocalCurrency?: boolean;
@@ -16,6 +18,8 @@ export function useShareSettlement({
   tripInfo,
   totalAmount,
   memberCount,
+  myPersonalAmount,
+  myEstimatedTotal,
   exchangeRate,
   currencySymbol,
   showLocalCurrency,
@@ -27,6 +31,8 @@ export function useShareSettlement({
       tripInfo,
       totalAmount,
       memberCount,
+      myPersonalAmount,
+      myEstimatedTotal,
       exchangeRate,
       currencySymbol,
       showLocalCurrency,
@@ -70,6 +76,8 @@ export function useShareSettlement({
     tripInfo,
     totalAmount,
     memberCount,
+    myPersonalAmount,
+    myEstimatedTotal,
     exchangeRate,
     currencySymbol,
     showLocalCurrency,

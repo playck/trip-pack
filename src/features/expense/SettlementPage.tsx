@@ -17,10 +17,13 @@ import {
   Users,
   Divide,
   ArrowLeftRight,
+  Bookmark,
+  Briefcase,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import { colors } from "@/shared/constants/colors";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 
@@ -34,6 +37,7 @@ export default function SettlementPage() {
   const { tripId } = useParams({ from: "/expense/settlement/$tripId" });
   const navigate = useNavigate();
 
+  const { user } = useAuth();
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses = [] } = useTripExpenses(tripId);
   const { data: members = [] } = useTripMembers(tripId);
@@ -61,10 +65,21 @@ export default function SettlementPage() {
   const memberCount = members.length;
   const perPerson = memberCount > 0 ? Math.round(totalAmount / memberCount) : 0;
 
+  const myPersonalAmount = useMemo(() => {
+    if (!user?.id) return 0;
+    return expenses
+      .filter((e) => e.is_personal && e.created_by === user.id)
+      .reduce((sum, e) => sum + e.amount, 0);
+  }, [expenses, user?.id]);
+
+  const myEstimatedTotal = perPerson + myPersonalAmount;
+
   const { handleShareSettlement } = useShareSettlement({
     tripInfo,
     totalAmount,
     memberCount,
+    myPersonalAmount,
+    myEstimatedTotal,
     exchangeRate,
     currencySymbol,
     showLocalCurrency,
@@ -257,6 +272,93 @@ export default function SettlementPage() {
                     </HStack>
                   );
                 })()}
+              </VStack>
+            </HStack>
+          </Flex>
+        </Box>
+
+        {/* 구분선 */}
+        <Box borderTop="1px dashed" borderColor="gray.200" my={1} />
+
+        {/* 내 개인 지출 */}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={4}
+        >
+          <Flex justify="space-between" align="center">
+            <HStack gap={3}>
+              <Box p={2} borderRadius="full" bg={`${colors.accent.palette}.50`}>
+                <Bookmark
+                  size={20}
+                  color={`var(--chakra-colors-${colors.accent.palette}-500)`}
+                />
+              </Box>
+              <VStack align="flex-start" gap={0}>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                  내 개인 지출
+                </Text>
+                {(() => {
+                  const { value, unit } = getFormatted(myPersonalAmount);
+                  return (
+                    <HStack gap={1} align="baseline">
+                      <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+                        {unit !== "원" && unit}
+                        {value}
+                      </Text>
+                      <Text
+                        fontSize="sm"
+                        fontWeight="medium"
+                        color="gray.500"
+                      >
+                        {unit === "원" ? "원" : ""}
+                      </Text>
+                    </HStack>
+                  );
+                })()}
+              </VStack>
+            </HStack>
+          </Flex>
+        </Box>
+
+        {/* 내 예상 총지출 */}
+        <Box
+          bg="gray.900"
+          borderRadius="xl"
+          p={4}
+        >
+          <Flex justify="space-between" align="center">
+            <HStack gap={3}>
+              <Box p={2} borderRadius="full" bg="whiteAlpha.200">
+                <Briefcase size={20} color="white" />
+              </Box>
+              <VStack align="flex-start" gap={0}>
+                <Text fontSize="xs" color="whiteAlpha.700" fontWeight="medium">
+                  내 예상 총지출
+                </Text>
+                {(() => {
+                  const { value, unit } = getFormatted(myEstimatedTotal);
+                  return (
+                    <HStack gap={1} align="baseline">
+                      <Text fontSize="2xl" fontWeight="bold" color="white">
+                        {unit !== "원" && unit}
+                        {value}
+                      </Text>
+                      <Text
+                        fontSize="sm"
+                        fontWeight="medium"
+                        color="whiteAlpha.800"
+                      >
+                        {unit === "원" ? "원" : ""}
+                      </Text>
+                    </HStack>
+                  );
+                })()}
+                <Text fontSize="2xs" color="whiteAlpha.600">
+                  1인당 평균 + 내 개인 지출
+                </Text>
               </VStack>
             </HStack>
           </Flex>

@@ -4,6 +4,8 @@ interface ExportSettlementParams {
   tripInfo: TripBasicInfo;
   totalAmount: number;
   memberCount: number;
+  myPersonalAmount: number;
+  myEstimatedTotal: number;
   exchangeRate?: number;
   currencySymbol?: string;
   showLocalCurrency?: boolean;
@@ -29,6 +31,8 @@ export function formatSettlementToText(
     tripInfo,
     totalAmount,
     memberCount,
+    myPersonalAmount,
+    myEstimatedTotal,
     exchangeRate = 0,
     currencySymbol = "",
     showLocalCurrency = false,
@@ -44,9 +48,13 @@ export function formatSettlementToText(
   let text = `💸 ${title} 정산 리포트\n`;
   text += `━━━━━━━━━━━━━━\n`;
   text += `💰 공동 경비 총액: ${fmt(totalAmount)}\n`;
-  text += `👥 분담 멤버: ${memberCount}명\n`;
   if (memberCount > 0) {
+    text += `👥 분담 멤버: ${memberCount}명\n`;
     text += `💸 1인당 평균: ${fmt(perPerson)}\n`;
+  }
+  if (myPersonalAmount > 0) {
+    text += `\n🔖 내 개인 지출: ${fmt(myPersonalAmount)}\n`;
+    text += `💼 내 예상 총지출: ${fmt(myEstimatedTotal)}\n`;
   }
 
   return text;
