@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 import { createExpense, type CreateExpenseParams } from "./api";
+import type { Database } from "@/shared/types/database.type";
+
+type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
 
 interface UseCreateExpenseOptions {
   onSuccess?: () => void;
@@ -17,7 +20,11 @@ export function useCreateExpense(
     mutationFn: (params: CreateExpenseParams) => {
       return createExpense(params);
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (newRow, variables) => {
+      queryClient.setQueryData<ExpenseRow[]>(
+        ["tripExpenses", tripId],
+        (prev) => (prev ? [...prev, newRow] : [newRow]),
+      );
       queryClient.invalidateQueries({
         queryKey: ["tripExpenses", tripId],
       });

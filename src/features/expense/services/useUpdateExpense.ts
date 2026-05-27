@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 import { updateExpense, type UpdateExpenseParams } from "./api";
+import type { Database } from "@/shared/types/database.type";
+
+type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
 
 interface UseUpdateExpenseOptions {
   tripId: string;
@@ -16,7 +19,16 @@ export function useUpdateExpense(options: UseUpdateExpenseOptions) {
     mutationFn: (params: UpdateExpenseParams) => {
       return updateExpense(params);
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (updatedRow, variables) => {
+      queryClient.setQueryData<ExpenseRow[]>(
+        ["tripExpenses", tripId],
+        (prev) =>
+          prev
+            ? prev.map((row) =>
+                row.id === updatedRow.id ? updatedRow : row,
+              )
+            : prev,
+      );
       queryClient.invalidateQueries({
         queryKey: ["tripExpenses", tripId],
       });

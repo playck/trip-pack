@@ -1,6 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 import { deleteExpense } from "./api";
+import type { Database } from "@/shared/types/database.type";
+
+type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
 
 interface UseDeleteExpenseOptions {
   tripId: string;
@@ -16,7 +19,11 @@ export function useDeleteExpense(options: UseDeleteExpenseOptions) {
     mutationFn: (expenseId: string) => {
       return deleteExpense(expenseId);
     },
-    onSuccess: () => {
+    onSuccess: (_data, expenseId) => {
+      queryClient.setQueryData<ExpenseRow[]>(
+        ["tripExpenses", tripId],
+        (prev) => (prev ? prev.filter((row) => row.id !== expenseId) : prev),
+      );
       queryClient.invalidateQueries({
         queryKey: ["tripExpenses", tripId],
       });
