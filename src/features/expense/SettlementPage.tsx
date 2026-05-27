@@ -19,6 +19,7 @@ import {
   ArrowLeftRight,
   Bookmark,
   Briefcase,
+  BarChart3,
 } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -32,6 +33,12 @@ import { useTripCurrency } from "./hooks/useTripCurrency";
 import { useShareSettlement } from "./hooks/useShareSettlement";
 import { showLocalCurrencyAtom } from "./store/currencyStore";
 import { formatAmount } from "./utils/helper";
+import {
+  aggregateByCategory,
+  aggregateByDay,
+} from "./utils/reportAggregations";
+import CategoryReportCard from "./components/CategoryReportCard";
+import DailyTrendCard from "./components/DailyTrendCard";
 
 export default function SettlementPage() {
   const { tripId } = useParams({ from: "/expense/settlement/$tripId" });
@@ -74,6 +81,20 @@ export default function SettlementPage() {
 
   const myEstimatedTotal = perPerson + myPersonalAmount;
 
+  const categoryBuckets = useMemo(
+    () => aggregateByCategory(expenses),
+    [expenses],
+  );
+
+  const dailyBuckets = useMemo(() => {
+    if (!tripInfo) return [];
+    return aggregateByDay(expenses, tripInfo.startDate, tripInfo.endDate);
+  }, [expenses, tripInfo]);
+
+  const hasReportData =
+    categoryBuckets.length > 0 ||
+    dailyBuckets.some((d) => d.amount > 0);
+
   const { handleShareSettlement } = useShareSettlement({
     tripInfo,
     totalAmount,
@@ -93,6 +114,11 @@ export default function SettlementPage() {
       targetCurrency,
       currencySymbol,
     });
+
+  const getFormattedParts = (amount: number) => {
+    const { value, unit } = getFormatted(amount);
+    return { value, unit };
+  };
 
   const handleBack = () => {
     navigate({ to: "/expense/$tripId", params: { tripId } });
@@ -363,6 +389,33 @@ export default function SettlementPage() {
             </HStack>
           </Flex>
         </Box>
+
+        {hasReportData && (
+          <>
+            <HStack gap={2} mt={2} px={1}>
+              <BarChart3 size={16} color={colors.primary.hex[600]} />
+              <Text
+                fontSize="sm"
+                fontWeight="semibold"
+                color="gray.700"
+              >
+                세부 리포트
+              </Text>
+            </HStack>
+            {categoryBuckets.length > 0 && (
+              <CategoryReportCard
+                buckets={categoryBuckets}
+                formatAmount={getFormattedParts}
+              />
+            )}
+            {dailyBuckets.some((d) => d.amount > 0) && (
+              <DailyTrendCard
+                buckets={dailyBuckets}
+                formatAmount={getFormattedParts}
+              />
+            )}
+          </>
+        )}
 
         <Text
           fontSize="2xs"
