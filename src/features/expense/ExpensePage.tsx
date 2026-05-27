@@ -13,7 +13,6 @@ import { useScrollToTop } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
-import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
 import { useShareExpense } from "./hooks";
@@ -27,7 +26,6 @@ export default function ExpensePage() {
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: expenses } = useTripExpenses(tripId);
   const { data: schedules } = useTripSchedules(tripId);
-  useTripMembers(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {
     onSuccess: () => setIsSheetOpen(false),
   });

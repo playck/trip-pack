@@ -23,12 +23,8 @@ export default function ExpenseAllContent({
     0,
   );
 
-  const communalDayCount = dayExpenses.filter((day) =>
-    day.expenses.some(isCommunal),
-  ).length;
-
   const averagePerDay =
-    communalDayCount > 0 ? Math.round(totalAmount / communalDayCount) : 0;
+    dayExpenses.length > 0 ? Math.round(totalAmount / dayExpenses.length) : 0;
 
   const dayAmounts = dayExpenses.map((day) => ({
     date: day.label,

@@ -269,7 +269,7 @@ export default function SettlementPage() {
           px={4}
           mt={2}
         >
-          공동 경비만 집계됩니다. 내 개인 경비(MY)는 제외돼요.
+          공동 경비만 집계됩니다. 개인 경비(MY 표시)는 제외돼요.
         </Text>
       </VStack>
     </PageLayout>

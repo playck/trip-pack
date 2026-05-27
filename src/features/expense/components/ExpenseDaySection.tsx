@@ -25,7 +25,9 @@ export default function ExpenseDaySection({
   tripId,
   readOnly = false,
 }: ExpenseDaySectionProps) {
-  const totalAmount = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalAmount = expenses
+    .filter((e) => !e.isPersonal)
+    .reduce((sum, item) => sum + item.amount, 0);
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
   const { targetCurrency, currencySymbol, isForeignCurrency, exchangeRate } =
     useTripCurrency(tripId);

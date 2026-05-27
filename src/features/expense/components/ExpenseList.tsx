@@ -18,7 +18,9 @@ export default function ExpenseList({
   tripId,
   selectedDate,
 }: ExpenseListProps) {
-  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const total = expenses
+    .filter((item) => !item.isPersonal)
+    .reduce((sum, item) => sum + item.amount, 0);
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
   const { targetCurrency, currencySymbol, isForeignCurrency, exchangeRate } =
     useTripCurrency(tripId);
