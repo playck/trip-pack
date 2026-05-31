@@ -80,6 +80,7 @@ export default function ExpensePage() {
             ? (scheduleMap.get(expense.schedule_id) ?? null)
             : null,
           isPersonal: expense.is_personal,
+          createdByUserId: expense.created_by,
         }));
 
       return {
@@ -96,6 +97,8 @@ export default function ExpensePage() {
   const handleAddExpense = () => {
     setIsSheetOpen(true);
   };
+
+  if (!tripInfo) return null;
 
   const handleSaveExpense = (
     name: string,
@@ -119,8 +122,6 @@ export default function ExpensePage() {
       isPersonal: options?.isPersonal,
     });
   };
-
-  if (!tripInfo) return null;
 
   return (
     <PageLayout style={{ paddingBottom: "60px" }}>

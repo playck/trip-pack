@@ -16,7 +16,6 @@ import {
   EditCategorySheet,
   ErrorMessage,
   FloatingAddButton,
-  LoadingSpinner,
 } from "@/shared/components";
 import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
@@ -57,7 +56,7 @@ export default function CategoryDetailPage() {
   const [isEditMode, setIsEditMode] = useState(false);
 
   const categoryParam = (search as { category?: string }).category || "";
-  const { categories, isLoading, error } = useTripChecklist(tripId || "");
+  const { categories, error } = useTripChecklist(tripId || "");
   const { trip } = useTripDetail(tripId || "");
   const createItemMutation = useCreateItem(tripId, {
     onSuccess: () => {
@@ -96,16 +95,6 @@ export default function CategoryDetailPage() {
     (cat: CategoryWithItems) => cat.name === categoryName,
   );
   const isEssentialCategory = category?.name === "필수 준비물";
-
-  if (isLoading) {
-    return (
-      <LoadingSpinner
-        message="체크리스트를 불러오고 있어요..."
-        centered
-        fullScreen
-      />
-    );
-  }
 
   if (error) {
     return (
