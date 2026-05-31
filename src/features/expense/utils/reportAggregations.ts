@@ -62,11 +62,15 @@ export function aggregateByDay(
 
   const sums = new Map<string, number>();
   communal.forEach((e) => {
-    const key = dayjs(e.expense_date).format("YYYY-MM-DD");
+    const parsed = dayjs(e.expense_date);
+    if (!parsed.isValid()) return;
+    const key = parsed.format("YYYY-MM-DD");
     sums.set(key, (sums.get(key) ?? 0) + e.amount);
   });
 
-  return Array.from({ length: Math.max(days, 0) }, (_, i) => {
+  if (!Number.isFinite(days) || days <= 0) return [];
+
+  return Array.from({ length: days }, (_, i) => {
     const d = start.add(i, "day");
     const date = d.format("YYYY-MM-DD");
     return {

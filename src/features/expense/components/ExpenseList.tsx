@@ -50,7 +50,7 @@ export default function ExpenseList({
         >
           <Flex justify="space-between" align="center" maxW="6xl" mx="auto">
             <Text fontSize="lg" fontWeight="bold" color="gray.800">
-              총 비용
+              지출 합계
             </Text>
             <HStack gap={0.5} align="baseline">
               <Text

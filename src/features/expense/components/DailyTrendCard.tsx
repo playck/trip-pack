@@ -8,18 +8,19 @@ interface DailyTrendCardProps {
 }
 
 const CHART_HEIGHT = 120;
-const BAR_MIN_WIDTH = 32;
+const BAR_MIN_WIDTH = 16;
 
 export default function DailyTrendCard({
   buckets,
   formatAmount,
 }: DailyTrendCardProps) {
-  const nonZeroBuckets = buckets.filter((b) => b.amount > 0);
-  if (nonZeroBuckets.length === 0) return null;
+  if (buckets.length === 0 || buckets.every((b) => b.amount === 0)) {
+    return null;
+  }
 
-  const max = Math.max(...buckets.map((b) => b.amount));
-  const totalSpent = nonZeroBuckets.reduce((sum, b) => sum + b.amount, 0);
-  const average = Math.round(totalSpent / nonZeroBuckets.length);
+  const max = buckets.reduce((m, b) => (b.amount > m ? b.amount : m), 0);
+  const totalSpent = buckets.reduce((sum, b) => sum + b.amount, 0);
+  const average = Math.round(totalSpent / buckets.length);
   const averagePercent = max > 0 ? (average / max) * 100 : 0;
   const primary = colors.primary.palette;
 
@@ -82,8 +83,7 @@ export default function DailyTrendCard({
             right={0}
           >
             {buckets.map((bucket) => {
-              const heightPercent =
-                max > 0 ? (bucket.amount / max) * 100 : 0;
+              const heightPercent = max > 0 ? (bucket.amount / max) * 100 : 0;
               const isMax = bucket.amount === max && bucket.amount > 0;
               const barColor = isMax ? `${primary}.500` : `${primary}.200`;
 
@@ -93,15 +93,17 @@ export default function DailyTrendCard({
                   gap={0}
                   minW={`${BAR_MIN_WIDTH}px`}
                   flex={1}
-                  align="stretch"
+                  align="center"
                   justify="flex-end"
                   h="full"
                 >
                   <Box
+                    w="50%"
                     h={`${heightPercent}%`}
                     minH={bucket.amount > 0 ? "2px" : "0"}
                     bg={barColor}
-                    borderRadius="md md 0 0"
+                    borderTopLeftRadius="md"
+                    borderTopRightRadius="md"
                     transition="height 0.3s ease"
                   />
                 </VStack>

@@ -28,7 +28,10 @@ export default function CategoryReportCard({
         {buckets.map((bucket) => {
           const Icon = bucket.def.icon;
           const { value, unit } = formatAmount(bucket.amount);
-          const percent = Math.round(bucket.ratio * 100);
+          const ratioPercent = bucket.ratio * 100;
+          const percentLabel =
+            ratioPercent < 1 ? "<1%" : `${Math.round(ratioPercent)}%`;
+          const barWidth = Math.min(Math.max(ratioPercent, 1), 100);
           const barColor = `${bucket.def.color}.400`;
           const iconBg = `${bucket.def.color}.50`;
           const iconColor = `var(--chakra-colors-${bucket.def.color}-500)`;
@@ -53,7 +56,7 @@ export default function CategoryReportCard({
                     {bucket.def.label}
                   </Text>
                   <Text fontSize="2xs" color="gray.400">
-                    {percent}%
+                    {percentLabel}
                   </Text>
                 </HStack>
                 <HStack gap={0.5} align="baseline">
@@ -69,7 +72,7 @@ export default function CategoryReportCard({
               <Box w="full" h="6px" bg="gray.100" borderRadius="full">
                 <Box
                   h="full"
-                  w={`${Math.max(percent, 2)}%`}
+                  w={`${barWidth}%`}
                   bg={barColor}
                   borderRadius="full"
                   transition="width 0.3s ease"
