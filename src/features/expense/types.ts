@@ -7,6 +7,7 @@ export interface ExpenseItemData {
   scheduleId?: string | null;
   scheduleName?: string | null;
   isPersonal: boolean;
+  createdByUserId?: string | null;
 }
 
 /** 날짜별 경비 그룹 */

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { formatAllExpensesToText } from "../utils/exportExpense";
 import { toaster } from "@/shared/components/ui/toaster";
+import { useAuth } from "@/shared/hooks/useAuth";
 import type { DayExpense, TripBasicInfo } from "../types";
 
 interface UseShareExpenseProps {
@@ -12,10 +13,12 @@ export function useShareExpense({
   tripInfo,
   dayExpenses,
 }: UseShareExpenseProps) {
+  const { user } = useAuth();
+
   const handleShareExpense = useCallback(async () => {
     if (!tripInfo) return;
 
-    const text = formatAllExpensesToText(tripInfo, dayExpenses);
+    const text = formatAllExpensesToText(tripInfo, dayExpenses, user?.id ?? null);
 
     try {
       if (navigator.share) {
@@ -53,7 +56,7 @@ export function useShareExpense({
         });
       }
     }
-  }, [tripInfo, dayExpenses]);
+  }, [tripInfo, dayExpenses, user?.id]);
 
   return { handleShareExpense };
 }
