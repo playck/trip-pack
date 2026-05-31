@@ -12,6 +12,7 @@ import {
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
 import type { Schedule } from "@/features/schedule/types";
+import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
 import { useAmountInput } from "../hooks/useAmountInput";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
@@ -60,6 +61,8 @@ export default function AddExpenseSheet({
 }: AddExpenseSheetProps) {
   const { currencySymbol, isForeignCurrency, exchangeRate } =
     useTripCurrency(tripId);
+  const { data: members = [] } = useTripMembers(tripId);
+  const hasMultipleMembers = members.length >= 2;
 
   const showLocalCurrency = useAtomValue(showLocalCurrencyAtom);
 
@@ -109,7 +112,7 @@ export default function AddExpenseSheet({
     if (selectedCategory && isValidAmount) {
       const trimmedMemo = memo.trim();
       const options: ExpenseSaveOptions = {
-        isPersonal,
+        isPersonal: hasMultipleMembers ? isPersonal : false,
         memo: trimmedMemo ? trimmedMemo : null,
       };
       onSaveExpense(
@@ -247,39 +250,41 @@ export default function AddExpenseSheet({
               />
             </VStack>
 
-            {/* 내 개인 경비 토글 (항상 노출) */}
-            <Box
-              border="1px solid"
-              borderColor={
-                isPersonal ? `${colors.primary.palette}.200` : "gray.200"
-              }
-              bg={isPersonal ? `${colors.primary.palette}.50` : "white"}
-              borderRadius="xl"
-              px={3}
-              py={2}
-              transition="all 0.15s"
-            >
-              <HStack justify="space-between" w="full">
-                <VStack align="flex-start" gap={0}>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.800">
-                    내 개인 경비
-                  </Text>
-                  <Text fontSize="2xs" color="gray.500">
-                    예산/정산 리포트에서 제외돼요
-                  </Text>
-                </VStack>
-                <Switch.Root
-                  checked={isPersonal}
-                  onCheckedChange={(e) => setIsPersonal(e.checked)}
-                  colorPalette={colors.primary.palette}
-                >
-                  <Switch.HiddenInput />
-                  <Switch.Control>
-                    <Switch.Thumb />
-                  </Switch.Control>
-                </Switch.Root>
-              </HStack>
-            </Box>
+            {/* 내 개인 경비 토글 (일행이 있을 때만) */}
+            {hasMultipleMembers && (
+              <Box
+                border="1px solid"
+                borderColor={
+                  isPersonal ? `${colors.primary.palette}.200` : "gray.200"
+                }
+                bg={isPersonal ? `${colors.primary.palette}.50` : "white"}
+                borderRadius="xl"
+                px={3}
+                py={2}
+                transition="all 0.15s"
+              >
+                <HStack justify="space-between" w="full">
+                  <VStack align="flex-start" gap={0}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.800">
+                      내 개인 경비
+                    </Text>
+                    <Text fontSize="2xs" color="gray.500">
+                      예산/정산 리포트에서 제외돼요
+                    </Text>
+                  </VStack>
+                  <Switch.Root
+                    checked={isPersonal}
+                    onCheckedChange={(e) => setIsPersonal(e.checked)}
+                    colorPalette={colors.primary.palette}
+                  >
+                    <Switch.HiddenInput />
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </Switch.Root>
+                </HStack>
+              </Box>
+            )}
 
             <AmountCalculatorDisplay />
             <AmountCalculatorKeypad />

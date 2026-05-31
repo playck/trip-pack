@@ -92,8 +92,7 @@ export default function SettlementPage() {
   }, [expenses, tripInfo]);
 
   const hasReportData =
-    categoryBuckets.length > 0 ||
-    dailyBuckets.some((d) => d.amount > 0);
+    categoryBuckets.length > 0 || dailyBuckets.some((d) => d.amount > 0);
 
   const { handleShareSettlement } = useShareSettlement({
     tripInfo,
@@ -151,9 +150,6 @@ export default function SettlementPage() {
             <Text fontSize="md" fontWeight="bold" color="gray.900">
               정산 리포트
             </Text>
-            <Text fontSize="xs" color="gray.500" lineClamp={1}>
-              {tripInfo?.title || "여행"}
-            </Text>
           </VStack>
         </HStack>
         <IconButton
@@ -190,11 +186,7 @@ export default function SettlementPage() {
                     const { value, unit } = getFormatted(totalAmount);
                     return (
                       <>
-                        <Text
-                          fontSize="2xl"
-                          fontWeight="bold"
-                          color="gray.800"
-                        >
+                        <Text fontSize="2xl" fontWeight="bold" color="gray.800">
                           {unit !== "원" && unit}
                           {value}
                         </Text>
@@ -303,102 +295,106 @@ export default function SettlementPage() {
           </Flex>
         </Box>
 
-        {/* 구분선 */}
-        <Box borderTop="1px dashed" borderColor="gray.200" my={1} />
+        {myPersonalAmount > 0 && (
+          <>
+            {/* 구분선 */}
+            <Box borderTop="1px dashed" borderColor="gray.200" my={1} />
 
-        {/* 내 개인 지출 */}
-        <Box
-          bg="white"
-          border="1px solid"
-          borderColor="gray.200"
-          borderRadius="xl"
-          p={4}
-        >
-          <Flex justify="space-between" align="center">
-            <HStack gap={3}>
-              <Box p={2} borderRadius="full" bg={`${colors.accent.palette}.50`}>
-                <Bookmark
-                  size={20}
-                  color={`var(--chakra-colors-${colors.accent.palette}-500)`}
-                />
-              </Box>
-              <VStack align="flex-start" gap={0}>
-                <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                  내 개인 지출
-                </Text>
-                {(() => {
-                  const { value, unit } = getFormatted(myPersonalAmount);
-                  return (
-                    <HStack gap={1} align="baseline">
-                      <Text fontSize="2xl" fontWeight="bold" color="gray.800">
-                        {unit !== "원" && unit}
-                        {value}
-                      </Text>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="medium"
-                        color="gray.500"
-                      >
-                        {unit === "원" ? "원" : ""}
-                      </Text>
-                    </HStack>
-                  );
-                })()}
-              </VStack>
-            </HStack>
-          </Flex>
-        </Box>
+            {/* 내 개인 지출 */}
+            <Box
+              bg="white"
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="xl"
+              p={4}
+            >
+              <Flex justify="space-between" align="center">
+                <HStack gap={3}>
+                  <Box
+                    p={2}
+                    borderRadius="full"
+                    bg={`${colors.accent.palette}.50`}
+                  >
+                    <Bookmark
+                      size={20}
+                      color={`var(--chakra-colors-${colors.accent.palette}-500)`}
+                    />
+                  </Box>
+                  <VStack align="flex-start" gap={0}>
+                    <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                      내 개인 지출
+                    </Text>
+                    {(() => {
+                      const { value, unit } = getFormatted(myPersonalAmount);
+                      return (
+                        <HStack gap={1} align="baseline">
+                          <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+                            {unit !== "원" && unit}
+                            {value}
+                          </Text>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="medium"
+                            color="gray.500"
+                          >
+                            {unit === "원" ? "원" : ""}
+                          </Text>
+                        </HStack>
+                      );
+                    })()}
+                  </VStack>
+                </HStack>
+              </Flex>
+            </Box>
 
-        {/* 내 예상 총지출 */}
-        <Box
-          bg="gray.900"
-          borderRadius="xl"
-          p={4}
-        >
-          <Flex justify="space-between" align="center">
-            <HStack gap={3}>
-              <Box p={2} borderRadius="full" bg="whiteAlpha.200">
-                <Briefcase size={20} color="white" />
-              </Box>
-              <VStack align="flex-start" gap={0}>
-                <Text fontSize="xs" color="whiteAlpha.700" fontWeight="medium">
-                  내 예상 총지출
-                </Text>
-                {(() => {
-                  const { value, unit } = getFormatted(myEstimatedTotal);
-                  return (
-                    <HStack gap={1} align="baseline">
-                      <Text fontSize="2xl" fontWeight="bold" color="white">
-                        {unit !== "원" && unit}
-                        {value}
-                      </Text>
-                      <Text
-                        fontSize="sm"
-                        fontWeight="medium"
-                        color="whiteAlpha.800"
-                      >
-                        {unit === "원" ? "원" : ""}
-                      </Text>
-                    </HStack>
-                  );
-                })()}
-                <Text fontSize="2xs" color="whiteAlpha.600">
-                  1인당 평균 + 내 개인 지출
-                </Text>
-              </VStack>
-            </HStack>
-          </Flex>
-        </Box>
+            {/* 내 예상 총지출 */}
+            <Box bg="gray.900" borderRadius="xl" p={4}>
+              <Flex justify="space-between" align="center">
+                <HStack gap={3}>
+                  <Box p={2} borderRadius="full" bg="whiteAlpha.200">
+                    <Briefcase size={20} color="white" />
+                  </Box>
+                  <VStack align="flex-start" gap={0}>
+                    <Text
+                      fontSize="xs"
+                      color="whiteAlpha.700"
+                      fontWeight="medium"
+                    >
+                      내 예상 총지출
+                    </Text>
+                    {(() => {
+                      const { value, unit } = getFormatted(myEstimatedTotal);
+                      return (
+                        <HStack gap={1} align="baseline">
+                          <Text fontSize="2xl" fontWeight="bold" color="white">
+                            {unit !== "원" && unit}
+                            {value}
+                          </Text>
+                          <Text
+                            fontSize="sm"
+                            fontWeight="medium"
+                            color="whiteAlpha.800"
+                          >
+                            {unit === "원" ? "원" : ""}
+                          </Text>
+                        </HStack>
+                      );
+                    })()}
+                    <Text fontSize="2xs" color="whiteAlpha.600">
+                      1인당 평균 + 내 개인 지출
+                    </Text>
+                  </VStack>
+                </HStack>
+              </Flex>
+            </Box>
+          </>
+        )}
 
         {hasReportData && (
           <>
             <HStack gap={2} mt={2} px={1}>
               <BarChart3 size={16} color={colors.primary.hex[600]} />
-              <Text
-                fontSize="sm"
-                fontWeight="semibold"
-                color="gray.700"
-              >
+              <Text fontSize="sm" fontWeight="semibold" color="gray.700">
                 세부 리포트
               </Text>
             </HStack>
@@ -417,13 +413,7 @@ export default function SettlementPage() {
           </>
         )}
 
-        <Text
-          fontSize="2xs"
-          color="gray.400"
-          textAlign="center"
-          px={4}
-          mt={2}
-        >
+        <Text fontSize="2xs" color="gray.400" textAlign="center" px={4} mt={2}>
           공동 경비만 집계됩니다. 개인 경비(MY 표시)는 제외돼요.
         </Text>
       </VStack>
