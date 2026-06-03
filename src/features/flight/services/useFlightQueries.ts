@@ -11,6 +11,7 @@ export const useTripFlights = (tripId: string) => {
     queryFn: () => getTripFlights(tripId),
     staleTime: 1000 * 60 * 5,
     enabled: !!tripId,
+    meta: { persist: true }, // 오프라인 읽기: 여행 윈도우 내 항공편 목록 persist
   });
 };
 

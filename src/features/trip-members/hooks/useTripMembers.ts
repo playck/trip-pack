@@ -12,6 +12,7 @@ export function useTripMembers(tripId: string) {
     queryKey: tripMemberKeys.members(tripId),
     queryFn: () => getTripMembers(tripId),
     enabled: !!tripId,
+    meta: { persist: true }, // 오프라인 읽기: 여행 윈도우 내 멤버 목록 persist
   });
 }
 

@@ -24,10 +24,6 @@ export function useDeleteExpense(options: UseDeleteExpenseOptions) {
         ["tripExpenses", tripId],
         (prev) => (prev ? prev.filter((row) => row.id !== expenseId) : prev),
       );
-      queryClient.invalidateQueries({
-        queryKey: ["tripExpenses", tripId],
-      });
-
       toaster.create({
         title: "경비가 삭제되었습니다",
         description: "경비가 성공적으로 삭제되었습니다.",

@@ -24,9 +24,13 @@ onlineManager.setEventListener((setOnline) => {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,
+      // 캐시를 5분간 "신선"으로 간주 → 화면 재진입/네비게이션마다 발생하던 불필요한 refetch 제거.
+      // 신선도는 staleTime 만료 후 refetchOnMount(화면 진입)·refetchOnReconnect(재연결)가
+      // staleTime을 존중하며 자동 갱신하므로 수동 새로고침 UX에 의존하지 않는다.
+      staleTime: 1000 * 60 * 5, // 5분
       gcTime: 1000 * 60 * 60 * 24, // 24시간 (persist 데이터가 GC로 사라지지 않도록)
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: false, // 웹뷰 포커스 노이즈 방지
+      refetchOnReconnect: true, // 재연결 시 stale 데이터 자동 갱신
       retry: (failureCount) => {
         if (!navigator.onLine) return false;
         return failureCount < 3;

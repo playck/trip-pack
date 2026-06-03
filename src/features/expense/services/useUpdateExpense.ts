@@ -29,10 +29,6 @@ export function useUpdateExpense(options: UseUpdateExpenseOptions) {
               )
             : prev,
       );
-      queryClient.invalidateQueries({
-        queryKey: ["tripExpenses", tripId],
-      });
-
       toaster.create({
         title: "경비가 수정되었습니다",
         description: `"${variables.category}" 경비가 성공적으로 수정되었습니다.`,

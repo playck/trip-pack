@@ -84,12 +84,7 @@ export function useUpdateItemCheckedStatus(tripId?: string) {
         );
       }
     },
-    onSettled: () => {
-      if (tripId) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tripChecklist(tripId),
-        });
-      }
-    },
+    // 토글은 옵티미스틱 boolean 값이 곧 서버 값 → onSettled 전체 재조회 불필요.
+    // 실패 시 onError 롤백으로 정확성 보장 (체크 1회당 nested 재조회 egress 제거).
   });
 }

@@ -25,6 +25,7 @@ export function useTodoChecklist(tripId: string | undefined) {
       return getTodoChecklist(tripId);
     },
     refetchOnWindowFocus: true,
+    meta: { persist: true }, // 오프라인 읽기: 여행 윈도우 내 체크리스트 persist
   });
 
   const totalItems = categories.reduce(
@@ -80,12 +81,7 @@ export function useUpdateTodoItemChecked(tripId?: string) {
         queryClient.setQueryData(todoKeys.checklist(tripId), ctx.prev);
       }
     },
-    onSettled: () => {
-      if (tripId) {
-        queryClient.invalidateQueries({
-          queryKey: todoKeys.checklist(tripId),
-        });
-      }
-    },
+    // 토글은 옵티미스틱 boolean 값이 곧 서버 값 → onSettled 전체 재조회 불필요.
+    // 실패 시 onError 롤백으로 정확성 보장 (체크 1회당 nested 재조회 egress 제거).
   });
 }
