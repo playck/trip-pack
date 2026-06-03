@@ -11,8 +11,9 @@ export interface TripMemberWithProfile extends TripMember {
 /** 현재 사용자가 해당 trip의 멤버인지 확인 */
 export const verifyTripMembership = async (tripId: string): Promise<void> => {
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
@@ -50,8 +51,9 @@ export const createInvitation = async (
   tripId: string,
 ): Promise<TripInvitation> => {
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
@@ -125,11 +127,11 @@ export const acceptInvitation = async (
 /** 멤버 제거 (owner만 가능) */
 export const removeMember = async (memberId: string): Promise<void> => {
   const [authResult, memberResult] = await Promise.all([
-    supabase.auth.getUser(),
+    supabase.auth.getSession(),
     supabase.from("trip_members").select("trip_id").eq("id", memberId).single(),
   ]);
 
-  const user = authResult.data.user;
+  const user = authResult.data.session?.user ?? null;
   if (!user) throw new Error("로그인이 필요합니다.");
 
   const targetMember = memberResult.data;

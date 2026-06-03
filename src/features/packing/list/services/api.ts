@@ -13,8 +13,9 @@ export const getTripChecklist = async (
   tripId: string,
 ): Promise<CategoryWithItems[]> => {
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
@@ -211,8 +212,9 @@ export const deleteChecklistItem = async (itemId: string): Promise<void> => {
 // 여행의 체크리스트 진행 상태를 가져오는 API (RPC)
 export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (!user) return [];
 
@@ -235,14 +237,14 @@ export const createChecklistCategory = async (
   // 1. 여행 존재 여부 및 권한 확인 + 유저 조회
   const [tripResult, userResult] = await Promise.all([
     supabase.from("trips").select("id").eq("id", params.tripId).single(),
-    supabase.auth.getUser(),
+    supabase.auth.getSession(),
   ]);
 
   if (tripResult.error || !tripResult.data) {
     throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
   }
 
-  const user = userResult.data.user;
+  const user = userResult.data.session?.user ?? null;
   if (!user) throw new Error("로그인이 필요합니다.");
 
   // 2. 카테고리명 유효성 검사
@@ -540,14 +542,14 @@ export const createCategoriesFromCheckList = async (
   // 1. 여행 존재 여부 확인 + 유저 조회 병렬 실행
   const [tripResult, userResult] = await Promise.all([
     supabase.from("trips").select("id").eq("id", tripId).single(),
-    supabase.auth.getUser(),
+    supabase.auth.getSession(),
   ]);
 
   if (tripResult.error || !tripResult.data) {
     throw new Error("존재하지 않거나 접근할 수 없는 여행입니다.");
   }
 
-  const userId = userResult.data.user?.id ?? null;
+  const userId = userResult.data.session?.user?.id ?? null;
 
   // 2. 섹션별로 분류
   const grouped: Record<SectionType, CategoryWithType[]> = {

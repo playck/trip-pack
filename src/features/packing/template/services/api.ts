@@ -3,9 +3,10 @@ import type { TablesInsert } from "@/shared/types/database.type";
 
 export const getChecklistTemplate = async () => {
   const {
-    data: { user },
+    data: { session },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (authError) {
     throw new Error(`인증 오류: ${authError.message}`);

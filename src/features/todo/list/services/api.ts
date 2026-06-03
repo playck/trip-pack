@@ -98,8 +98,9 @@ export const createTodoCategory = async (
   const nextOrder = (lastCategory?.display_order ?? 0) + 1;
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const { data, error } = await supabase
     .from("todo_categories")
@@ -202,8 +203,9 @@ export const createTodoItem = async (
   const nextOrder = (lastItem?.display_order ?? 0) + 1;
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const { data, error } = await supabase
     .from("todo_items")

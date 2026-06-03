@@ -5,9 +5,10 @@ import type { Trip, TripListData } from "../types";
 // 유저의 여행 목록을 가져오는 API
 export const getTripList = async (): Promise<TripListData> => {
   const {
-    data: { user },
+    data: { session },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   if (authError) {
     throw new Error(`인증 오류: ${authError.message}`);
