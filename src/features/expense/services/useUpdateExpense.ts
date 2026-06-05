@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { updateExpense, type UpdateExpenseParams } from "./api";
-import type { Database } from "@/shared/types/database.type";
-
-type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
+import {
+  updateExpense,
+  type UpdateExpenseParams,
+  type ExpenseRow,
+} from "./api";
 
 interface UseUpdateExpenseOptions {
   tripId: string;

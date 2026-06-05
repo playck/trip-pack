@@ -2,7 +2,26 @@ import { supabase } from "@/shared/service/supabase/cilent";
 import type { Database } from "@/shared/types/database.type";
 
 type ExpenseInsert = Database["public"]["Tables"]["trip_expenses"]["Insert"];
-type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
+
+// 조회 페이로드 절감: 화면/로직에서 실제 쓰는 컬럼만 선택
+// (amount_in_krw·exchange_rate·payment_method·currency·updated_at 은 미사용이라 제외)
+export type ExpenseRow = Pick<
+  Database["public"]["Tables"]["trip_expenses"]["Row"],
+  | "id"
+  | "trip_id"
+  | "expense_date"
+  | "day_number"
+  | "expense_category"
+  | "amount"
+  | "notes"
+  | "schedule_id"
+  | "is_personal"
+  | "created_by"
+  | "created_at"
+>;
+
+const EXPENSE_COLUMNS =
+  "id, trip_id, expense_date, day_number, expense_category, amount, notes, schedule_id, is_personal, created_by, created_at";
 
 export interface CreateExpenseParams {
   tripId: string;
@@ -69,7 +88,7 @@ export async function getExpensesByTrip(
 ): Promise<ExpenseRow[]> {
   const { data, error } = await supabase
     .from("trip_expenses")
-    .select("*")
+    .select(EXPENSE_COLUMNS)
     .eq("trip_id", tripId)
     .order("expense_date", { ascending: true })
     .order("created_at", { ascending: true });

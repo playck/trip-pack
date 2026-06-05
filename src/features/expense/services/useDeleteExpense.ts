@@ -1,9 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { deleteExpense } from "./api";
-import type { Database } from "@/shared/types/database.type";
-
-type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
+import { deleteExpense, type ExpenseRow } from "./api";
 
 interface UseDeleteExpenseOptions {
   tripId: string;

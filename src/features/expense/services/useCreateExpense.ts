@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
-import { createExpense, type CreateExpenseParams } from "./api";
-import type { Database } from "@/shared/types/database.type";
-
-type ExpenseRow = Database["public"]["Tables"]["trip_expenses"]["Row"];
+import {
+  createExpense,
+  type CreateExpenseParams,
+  type ExpenseRow,
+} from "./api";
 
 // getExpensesByTrip 정렬(expense_date asc, created_at asc)을 캐시에서도 유지하는 비교자.
 // setQueryData가 캐시를 정확히 재구성하므로 추가 invalidate(서버 재조회)가 불필요해진다.
