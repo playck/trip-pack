@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTripWithChecklist } from "./api";
 import type { PackingCreateState } from "../store/packingCreateAtom";
 import TripAdapter from "../data/tripAdapter";
@@ -16,13 +16,15 @@ export const useCreateTrip = ({
   onSuccess,
   onError,
 }: UseCreateTripProps) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async () => {
       const generatedCheckList = packingCreateState.generatedCheckList;
 
       if (!generatedCheckList || generatedCheckList.length === 0) {
         throw new Error(
-          "체크리스트 데이터가 없습니다. 체크리스트를 먼저 생성해주세요."
+          "체크리스트 데이터가 없습니다. 체크리스트를 먼저 생성해주세요.",
         );
       }
 
@@ -30,7 +32,7 @@ export const useCreateTrip = ({
       const tripData = tripAdapter.adaptTripData();
       const { categories, items } = tripAdapter.adaptCheckListData(
         generatedCheckList,
-        "placeholder"
+        "placeholder",
       );
 
       const tripId = await createTripWithChecklist(tripData, categories, items);
@@ -40,6 +42,7 @@ export const useCreateTrip = ({
 
     retry: false,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["tripList"] });
       onSuccess?.(data, data.tripId);
     },
     onError: (error) => {
