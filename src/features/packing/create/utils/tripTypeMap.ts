@@ -7,7 +7,6 @@ import {
   NATURE_ITEMS,
   ACTIVITY_ITEMS,
   RESORT_ITEMS,
-  CULTURE_ITEMS,
   SHOPPING_ITEMS,
 } from "@/shared/data/checkList";
 import type { PackItem } from "@/shared/data/checkList";
@@ -26,7 +25,6 @@ export const TRIP_TYPE_CATEGORY_MAP: Record<
   자연: { categoryName: "자연", items: NATURE_ITEMS },
   액티비티: { categoryName: "액티비티", items: ACTIVITY_ITEMS },
   휴양: { categoryName: "휴양", items: RESORT_ITEMS },
-  문화: { categoryName: "문화", items: CULTURE_ITEMS },
   쇼핑: { categoryName: "쇼핑", items: SHOPPING_ITEMS },
   미식: { categoryName: "한식", items: KOREAN_FOOD_ITEMS },
 };
