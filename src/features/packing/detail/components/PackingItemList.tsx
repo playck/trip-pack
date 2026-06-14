@@ -12,11 +12,15 @@ import { useParams } from "@tanstack/react-router";
 import { CircleCheck, Search, PackageOpen } from "lucide-react";
 import { Checkbox, ConfirmDialog } from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
+import { findCoupangDeal } from "@/shared/data/coupangDeals";
+import type { CoupangDeal } from "@/shared/data/coupangDeals";
 import PackingItem from "./PackingItem";
 import ItemActionsSheet from "./ItemActionsSheet";
 import EditItemSheet from "./EditItemSheet";
-import type { CategoryWithItems, ChecklistItem } from "../../type";
+import CoupangCollectRow from "../../list/components/CoupangCollectRow";
+import CoupangShoppingSheet from "../../list/components/CoupangShoppingSheet";
 import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
+import type { CategoryWithItems, ChecklistItem } from "../../type";
 
 interface PackingItemListProps {
   category: CategoryWithItems;
@@ -56,13 +60,34 @@ export default function PackingItemList({
     onOpen: onEditOpen,
     onClose: onEditClose,
   } = useDisclosure();
+  const shoppingSheet = useDisclosure();
+
+  // 이 카테고리의 안 챙긴(미체크) 꿀템 (중복 제거)
+  const categoryDeals = useMemo<CoupangDeal[]>(() => {
+    const map = new Map<string, CoupangDeal>();
+    category.items.forEach((item) => {
+      if (item.is_checked) return;
+      const deal = findCoupangDeal(item.name);
+      if (deal && !map.has(deal.itemName)) map.set(deal.itemName, deal);
+    });
+    return Array.from(map.values());
+  }, [category.items]);
+
+  // 이 카테고리에서 추천할 꿀템 하나(목록이 바뀔 때만 다시 뽑아 깜빡임 방지)
+  const suggestedDeal = useMemo(
+    () =>
+      categoryDeals.length === 0
+        ? null
+        : categoryDeals[Math.floor(Math.random() * categoryDeals.length)],
+    [categoryDeals],
+  );
 
   const filteredItems = useMemo(() => {
     let items = [...category.items];
 
     if (searchQuery.trim()) {
       items = items.filter((item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim()),
       );
     }
 
@@ -97,8 +122,8 @@ export default function PackingItemList({
     } else {
       setSelectedIds(
         new Set(
-          filteredItems.map((item) => item.id).filter(Boolean) as string[]
-        )
+          filteredItems.map((item) => item.id).filter(Boolean) as string[],
+        ),
       );
     }
   };
@@ -115,7 +140,7 @@ export default function PackingItemList({
     (itemId: string, isChecked: boolean) => {
       updateItemCheckedMutation.mutate({ itemId, isChecked });
     },
-    [updateItemCheckedMutation]
+    [updateItemCheckedMutation],
   );
 
   const handleOpenActions = useCallback(
@@ -123,7 +148,7 @@ export default function PackingItemList({
       setActiveItem(item);
       onActionsOpen();
     },
-    [onActionsOpen]
+    [onActionsOpen],
   );
 
   const handleEditFromActions = useCallback(() => {
@@ -204,6 +229,12 @@ export default function PackingItemList({
               onOpenActions={handleOpenActions}
             />
           ))}
+          {!isEditMode && !searchQuery.trim() && suggestedDeal && (
+            <CoupangCollectRow
+              deal={suggestedDeal}
+              onClick={shoppingSheet.onOpen}
+            />
+          )}
         </VStack>
       )}
 
@@ -263,6 +294,12 @@ export default function PackingItemList({
           </Text>
         </Text>
       </ConfirmDialog>
+
+      <CoupangShoppingSheet
+        isOpen={shoppingSheet.open}
+        onClose={shoppingSheet.onClose}
+        deals={categoryDeals}
+      />
     </Box>
   );
 }
