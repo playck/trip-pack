@@ -60,6 +60,79 @@ export const COUPANG_DEALS: CoupangDeal[] = [
     productName: "휴대용 세면도구 파우치",
     price: 11900,
   },
+
+  // ── 카테고리 확장 큐레이션 ──
+  // url·productName·price 는 모두 placeholder. 파트너스 단축링크 + 실제 상품으로 교체 필요.
+  {
+    itemName: "물티슈",
+    keywords: ["물티슈"],
+    url: searchUrl("여행용 휴대용 물티슈"),
+    productName: "휴대용 물티슈 소형 10팩",
+    price: 5900,
+  },
+  {
+    itemName: "마스크",
+    keywords: ["마스크"],
+    url: searchUrl("일회용 마스크 개별포장"),
+    productName: "개별포장 일회용 마스크",
+    price: 7900,
+  },
+  {
+    itemName: "멀미약",
+    keywords: ["멀미약"],
+    url: searchUrl("멀미약 패치"),
+    productName: "여행용 멀미약",
+    price: 4900,
+  },
+  {
+    itemName: "모기 퇴치제",
+    keywords: ["모기", "벌레 퇴치"],
+    url: searchUrl("휴대용 모기 퇴치제"),
+    productName: "휴대용 모기 퇴치 스프레이",
+    price: 6900,
+  },
+  {
+    itemName: "휴대용 선풍기",
+    keywords: ["휴대용 선풍기", "선풍기", "손선풍기"],
+    url: searchUrl("휴대용 미니 선풍기"),
+    productName: "USB 충전식 휴대용 선풍기",
+    price: 12900,
+  },
+  {
+    itemName: "핫팩",
+    keywords: ["핫팩"],
+    url: searchUrl("휴대용 핫팩 손난로"),
+    productName: "흔드는 손난로 핫팩 10개입",
+    price: 5900,
+  },
+  {
+    itemName: "우산",
+    keywords: ["우산"],
+    url: searchUrl("초경량 접이식 우산"),
+    productName: "초경량 접이식 우산",
+    price: 13900,
+  },
+  {
+    itemName: "방수팩",
+    keywords: ["방수팩", "방수 파우치"],
+    url: searchUrl("휴대폰 방수팩"),
+    productName: "스마트폰 방수팩",
+    price: 4900,
+  },
+  {
+    itemName: "헤드랜턴",
+    keywords: ["헤드랜턴", "손전등", "랜턴"],
+    url: searchUrl("LED 헤드랜턴 충전식"),
+    productName: "충전식 LED 헤드랜턴",
+    price: 14900,
+  },
+  {
+    itemName: "셀카봉",
+    keywords: ["셀카봉", "삼각대"],
+    url: searchUrl("블루투스 셀카봉 삼각대"),
+    productName: "블루투스 셀카봉 겸 삼각대",
+    price: 15900,
+  },
 ];
 
 const normalize = (s: string): string =>
