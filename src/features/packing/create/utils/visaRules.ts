@@ -4,8 +4,15 @@ import {
 } from "@/shared/data/visaRequirements";
 
 // 지역 단위 예외(국가는 비자 필요지만 특정 지역만 무비자 등).
-const REGION_EXCEPTIONS: Record<string, { requiredOverride: boolean }> = {
-  "cn-hainan": { requiredOverride: false },
+// note 를 지정하면 국가 레벨 안내 대신 이 지역 전용 문구를 노출한다.
+const REGION_EXCEPTIONS: Record<
+  string,
+  { requiredOverride: boolean; note?: string }
+> = {
+  "cn-hainan": {
+    requiredOverride: false,
+    note: "하이난 무사증 30일 (전담 여행사 통해 최소 48시간 전 신청)",
+  },
 };
 
 export interface VisaRuleResult {
@@ -13,6 +20,8 @@ export interface VisaRuleResult {
   info: VisaRequirement | null;
   /** API 데이터에 해당 국가가 없어 확정이 어려운 경우 true */
   isUnknown: boolean;
+  /** 지역 예외 전용 안내 문구. 있으면 국가 레벨 note 대신 우선 노출 */
+  overrideNote?: string;
 }
 
 const UNKNOWN_NOTE =
@@ -31,10 +40,12 @@ export const getVisaRule = (
   const info = VISA_REQUIREMENTS[code] ?? null;
 
   if (regionId && REGION_EXCEPTIONS[regionId]) {
+    const exception = REGION_EXCEPTIONS[regionId];
     return {
-      required: REGION_EXCEPTIONS[regionId].requiredOverride,
+      required: exception.requiredOverride,
       info,
       isUnknown: false,
+      overrideNote: exception.note,
     };
   }
 
@@ -50,6 +61,7 @@ export const getVisaRule = (
 };
 
 export const getVisaNote = (result: VisaRuleResult): string => {
+  if (result.overrideNote) return result.overrideNote;
   if (result.isUnknown) return UNKNOWN_NOTE;
 
   const info = result.info;

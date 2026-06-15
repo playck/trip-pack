@@ -18,6 +18,18 @@ const MANUAL_VISA_REQUIREMENTS: Record<string, VisaRequirement> = {
     rawText: "ETA(전자여행허가) 필요, 무사증 90일",
     note: "출국 전 ETA(Subclass 601) 사전 신청 필수",
   },
+  MN: {
+    required: false,
+    stayDays: 90,
+    rawText: "무사증 90일",
+    note: "관광 목적, 2026.12.31까지 한시 연장",
+  },
+  CN: {
+    required: true,
+    stayDays: null,
+    rawText: "관광 비자 사전 발급 필요",
+    note: null,
+  },
   CA: {
     required: true,
     stayDays: 180,
