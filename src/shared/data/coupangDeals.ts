@@ -4,134 +4,137 @@
 // 파트너스 단축링크로 연결한다. 패킹 물품명과 매칭되면 인라인 "구매" 라벨 +
 // "준비물 쇼핑" 모아보기에 노출된다.
 //
-// ⚠️ url 은 현재 추적이 없는 검색 URL(placeholder)이다.
-//    파트너스에서 생성한 단축링크(https://link.coupang.com/a/xxxx)로 교체해야
-//    수수료가 집계된다.
+// url 은 파트너스에서 수동 생성한 단축링크(link.coupang.com/a/xxxx)다.
+// 쿠팡 상품 이미지는 직접 핫링크 금지(정책·깨짐 위험)이므로, 가격과 함께
+// 표시하지 않고 물품별 lucide 아이콘으로 대체한다.
+
+import {
+  Plug,
+  BatteryCharging,
+  BedDouble,
+  Package,
+  Sparkles,
+  Pill,
+  Bug,
+  Fan,
+  Flame,
+  Umbrella,
+  Droplets,
+  Camera,
+  Cable,
+  Eye,
+  Backpack,
+  CupSoda,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export interface CoupangDeal {
   /** 매칭 키 — 체크리스트 물품명과 정규화 후 대조 */
   itemName: string;
   /** 매칭 보조 키워드 (표기 변형·동의어 흡수) */
   keywords?: string[];
-  /** 쿠팡 파트너스 단축링크 (현재는 검색 URL placeholder) */
+  /** 쿠팡 파트너스 단축링크 */
   url: string;
-  /** 모아보기/상세 표시용 (선택) */
-  productName?: string;
-  price?: number;
-  imageUrl?: string;
+  /** 모아보기/상세 표시 아이콘 (쿠팡 이미지 대체) */
+  icon: LucideIcon;
 }
-
-const searchUrl = (q: string) =>
-  `https://www.coupang.com/np/search?q=${encodeURIComponent(q)}`;
 
 export const COUPANG_DEALS: CoupangDeal[] = [
   {
     itemName: "멀티 어댑터",
     keywords: ["멀티 플러그", "어댑터", "변환 플러그", "멀티탭", "돼지코"],
-    url: searchUrl("여행용 멀티 어댑터"),
-    productName: "유니버설 멀티 어댑터 USB-C",
-    price: 12900,
+    url: "https://link.coupang.com/a/eJePTz0mzY",
+    icon: Plug,
   },
   {
     itemName: "보조배터리",
     keywords: ["보조 배터리", "파워뱅크", "휴대용 충전기"],
-    url: searchUrl("보조배터리 대용량"),
-    productName: "10000mAh 보조배터리",
-    price: 19900,
+    url: "https://link.coupang.com/a/eJeXaNdovA",
+    icon: BatteryCharging,
   },
   {
     itemName: "목베개",
     keywords: ["목 베개", "넥쿠션", "넥필로우", "여행 베개"],
-    url: searchUrl("여행용 목베개"),
-    productName: "메모리폼 여행 목베개",
-    price: 9900,
+    url: "https://link.coupang.com/a/eJe27AwkWO",
+    icon: BedDouble,
   },
   {
     itemName: "의류 압축팩",
     keywords: ["압축팩", "압축 파우치", "여행 파우치"],
-    url: searchUrl("여행 압축팩"),
-    productName: "여행용 의류 압축팩 세트",
-    price: 8900,
+    url: "https://link.coupang.com/a/eJfauR5HBk",
+    icon: Package,
   },
   {
     itemName: "여행용 세면도구",
     keywords: ["세면도구", "세면 세트", "트래블 키트", "여행 세트", "칫솔"],
-    url: searchUrl("여행용 세면도구 세트"),
-    productName: "휴대용 세면도구 파우치",
-    price: 11900,
-  },
-
-  // ── 카테고리 확장 큐레이션 ──
-  // url·productName·price 는 모두 placeholder. 파트너스 단축링크 + 실제 상품으로 교체 필요.
-  {
-    itemName: "물티슈",
-    keywords: ["물티슈"],
-    url: searchUrl("여행용 휴대용 물티슈"),
-    productName: "휴대용 물티슈 소형 10팩",
-    price: 5900,
-  },
-  {
-    itemName: "마스크",
-    keywords: ["마스크"],
-    url: searchUrl("일회용 마스크 개별포장"),
-    productName: "개별포장 일회용 마스크",
-    price: 7900,
+    url: "https://link.coupang.com/a/eJfYbvY28a",
+    icon: Sparkles,
   },
   {
     itemName: "멀미약",
     keywords: ["멀미약"],
-    url: searchUrl("멀미약 패치"),
-    productName: "여행용 멀미약",
-    price: 4900,
+    url: "https://link.coupang.com/a/eJgsdKNS2u",
+    icon: Pill,
   },
   {
     itemName: "모기 퇴치제",
     keywords: ["모기", "벌레 퇴치"],
-    url: searchUrl("휴대용 모기 퇴치제"),
-    productName: "휴대용 모기 퇴치 스프레이",
-    price: 6900,
+    url: "https://link.coupang.com/a/eJgABjPTl6",
+    icon: Bug,
   },
   {
     itemName: "휴대용 선풍기",
     keywords: ["휴대용 선풍기", "선풍기", "손선풍기"],
-    url: searchUrl("휴대용 미니 선풍기"),
-    productName: "USB 충전식 휴대용 선풍기",
-    price: 12900,
+    url: "https://link.coupang.com/a/eJgN9nTFim",
+    icon: Fan,
   },
   {
     itemName: "핫팩",
     keywords: ["핫팩"],
-    url: searchUrl("휴대용 핫팩 손난로"),
-    productName: "흔드는 손난로 핫팩 10개입",
-    price: 5900,
+    url: "https://link.coupang.com/a/eJgVPaJfQ4",
+    icon: Flame,
   },
   {
     itemName: "우산",
     keywords: ["우산"],
-    url: searchUrl("초경량 접이식 우산"),
-    productName: "초경량 접이식 우산",
-    price: 13900,
+    url: "https://link.coupang.com/a/eJg5RcXdsG",
+    icon: Umbrella,
   },
   {
     itemName: "방수팩",
     keywords: ["방수팩", "방수 파우치"],
-    url: searchUrl("휴대폰 방수팩"),
-    productName: "스마트폰 방수팩",
-    price: 4900,
-  },
-  {
-    itemName: "헤드랜턴",
-    keywords: ["헤드랜턴", "손전등", "랜턴"],
-    url: searchUrl("LED 헤드랜턴 충전식"),
-    productName: "충전식 LED 헤드랜턴",
-    price: 14900,
+    url: "https://link.coupang.com/a/eJg789H3LM",
+    icon: Droplets,
   },
   {
     itemName: "셀카봉",
     keywords: ["셀카봉", "삼각대"],
-    url: searchUrl("블루투스 셀카봉 삼각대"),
-    productName: "블루투스 셀카봉 겸 삼각대",
-    price: 15900,
+    url: "https://link.coupang.com/a/eJhwqUCjGC",
+    icon: Camera,
+  },
+  {
+    itemName: "충전 케이블",
+    keywords: ["충전 케이블", "충전케이블", "케이블"],
+    url: "https://link.coupang.com/a/eJinWrfDbM",
+    icon: Cable,
+  },
+  {
+    itemName: "수면안대",
+    keywords: ["수면안대", "안대"],
+    url: "https://link.coupang.com/a/eJiE8fd49I",
+    icon: Eye,
+  },
+  {
+    itemName: "여행용 크로스백",
+    keywords: ["크로스백", "미니 배낭", "보조 가방"],
+    url: "https://link.coupang.com/a/eJiJgQ6rTg",
+    icon: Backpack,
+  },
+  {
+    itemName: "보온 텀블러",
+    keywords: ["텀블러"],
+    url: "https://link.coupang.com/a/eJiMYPSAP6",
+    icon: CupSoda,
   },
 ];
 
