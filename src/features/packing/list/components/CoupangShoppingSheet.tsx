@@ -33,8 +33,8 @@ export default function CoupangShoppingSheet({
       title="이런 거 필요하지 않으세요?"
     >
       <VStack px={4} pb={4} gap={2.5} align="stretch">
-        <Text fontSize="xs" color="gray.500" px={1} textAlign="right">
-          아이템을 누르면 쿠팡으로 연결됩니다
+        <Text fontSize="xs" color="gray.500" px={1}>
+          아이템을 누르면 쿠팡으로 연결되며, 구매 시 일정 수수료를 받습니다.
         </Text>
         {deals.map((deal) => {
           const Icon = deal.icon;
@@ -76,10 +76,6 @@ export default function CoupangShoppingSheet({
             </HStack>
           );
         })}
-
-        <Text fontSize="11px" color="gray.400" textAlign="center" pt={2} pb={1}>
-          쿠팡 파트너스 활동의 일환으로 일정 수수료를 받습니다.
-        </Text>
       </VStack>
     </BottomSheet>
   );
