@@ -96,6 +96,19 @@ export function isReactNativeWebView(): boolean {
   return typeof window !== "undefined" && !!window.ReactNativeWebView;
 }
 
+/**
+ * 외부 URL을 연다.
+ * - RN 웹뷰: OPEN_URL 브릿지로 위임 → 네이티브가 외부 브라우저/앱(쿠팡 등)으로 전환
+ * - 순수 웹: 새 탭
+ */
+export function openExternalUrl(url: string) {
+  if (isReactNativeWebView()) {
+    openUrl(url);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+}
+
 const APPLE_SIGN_IN_TIMEOUT_MS = 60_000;
 
 export function requestAppleSignIn(): Promise<AppleSignInBridgeResult> {

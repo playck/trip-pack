@@ -203,7 +203,7 @@ export default function ListView({
                           }}
                         >
                           <HStack justify="space-between" align="center">
-                            <HStack gap={1} flex={1}>
+                            <HStack gap={1} flex={1} minW={0}>
                               <Checkbox
                                 isChecked={checked}
                                 size="md"

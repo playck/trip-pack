@@ -5,7 +5,11 @@ import { ChevronRight } from "lucide-react";
 
 import { AddCategorySheet, Info } from "@/shared/components";
 import WeatherCard from "@/shared/components/weather/weatherCard";
+import dayjs from "dayjs";
+
 import { BAGGAGE_POLICY_BY_AIR } from "@/shared/data/baggagePolicyByAir";
+import { findCoupangDeal } from "@/shared/data/coupangDeals";
+import type { CoupangDeal } from "@/shared/data/coupangDeals";
 import { useTripFlights } from "@/features/flight/services/useFlightQueries";
 
 import {
@@ -19,6 +23,8 @@ import ListView from "./ListView";
 import AirlineBaggagePolicySheet from "./AirlineBaggagePolicySheet";
 import ImportTextSheet from "./ImportTextSheet";
 import EmptyPackingCTA from "./EmptyPackingCTA";
+import CoupangPrepNudge from "./CoupangPrepNudge";
+import CoupangShoppingSheet from "./CoupangShoppingSheet";
 
 export interface SectionHandle {
   toggleAllCategories: () => void;
@@ -53,9 +59,34 @@ export default function PackingSection({
   const listControls = useListViewControls(categories);
   const updateItemStatus = useUpdateItemCheckedStatus(tripId);
   const textImport = useDisclosure();
+  const shoppingSheet = useDisclosure();
   const createCategoryMutation = useCreateCategory(tripId, {
     onSuccess: () => categorySheet.onClose(),
   });
+
+  // 안 챙긴(미체크) 꿀템 = 쿠팡 모아보기 대상 (중복 제거)
+  const coupangDeals = useMemo<CoupangDeal[]>(() => {
+    const map = new Map<string, CoupangDeal>();
+    categories.forEach((category) => {
+      category.items?.forEach((item) => {
+        if (item.is_checked) return;
+        const deal = findCoupangDeal(item.name);
+        if (deal && !map.has(deal.itemName)) map.set(deal.itemName, deal);
+      });
+    });
+    return Array.from(map.values());
+  }, [categories]);
+
+  const daysUntilTrip = useMemo(
+    () => dayjs(startDate).startOf("day").diff(dayjs().startOf("day"), "day"),
+    [startDate],
+  );
+
+  // 안 챙긴 꿀템 중 하나를 추천(목록이 바뀔 때만 다시 뽑아 깜빡임 방지)
+  const suggestedDeal = useMemo(() => {
+    if (coupangDeals.length === 0) return null;
+    return coupangDeals[Math.floor(Math.random() * coupangDeals.length)];
+  }, [coupangDeals]);
 
   useImperativeHandle(ref, () => ({
     toggleAllCategories: listControls.toggleAllCategories,
@@ -151,19 +182,26 @@ export default function PackingSection({
       {/* 준비물 뷰 (본인 카테고리 0개면 빈 상태 CTA) */}
       {categories.length === 0 ? (
         <EmptyPackingCTA tripId={tripId} />
-      ) : viewMode === "그리드" ? (
-        <GridView categories={categories} />
       ) : (
-        <ListView
-          categories={categories}
-          onToggleItem={(itemId, isChecked) =>
-            updateItemStatus.mutate({ itemId, isChecked })
-          }
-          countryCode={countryCode}
-          showUncheckedOnly={showUncheckedOnly}
-          expandedCategories={listControls.expandedCategories}
-          toggleCategory={listControls.toggleCategory}
-        />
+        <>
+          {viewMode === "그리드" ? (
+            <GridView categories={categories} />
+          ) : (
+            <ListView
+              categories={categories}
+              onToggleItem={(itemId, isChecked) =>
+                updateItemStatus.mutate({ itemId, isChecked })
+              }
+              countryCode={countryCode}
+              showUncheckedOnly={showUncheckedOnly}
+              expandedCategories={listControls.expandedCategories}
+              toggleCategory={listControls.toggleCategory}
+            />
+          )}
+          {suggestedDeal && daysUntilTrip >= 0 && (
+            <CoupangPrepNudge deal={suggestedDeal} onClick={shoppingSheet.onOpen} />
+          )}
+        </>
       )}
 
       {!isCanAddMoreCategories && (
@@ -209,6 +247,12 @@ export default function PackingSection({
       <AirlineBaggagePolicySheet
         isOpen={baggageSheet.isOpen}
         onClose={baggageSheet.onClose}
+      />
+
+      <CoupangShoppingSheet
+        isOpen={shoppingSheet.open}
+        onClose={shoppingSheet.onClose}
+        deals={coupangDeals}
       />
     </>
   );
