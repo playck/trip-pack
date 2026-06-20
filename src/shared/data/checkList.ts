@@ -230,6 +230,11 @@ export const MISC_OPTIONAL_ITEMS: PackItem[] = [
     cabin: "allowed",
   },
   { name: "목베개", cabin: "allowed" },
+  {
+    name: "미니 배낭/크로스백",
+    notes: "여권·현금 등 귀중품 휴대, 소매치기 방지 지퍼형 권장",
+    cabin: "allowed",
+  },
   { name: "물티슈", cabin: "allowed" },
 ];
 
@@ -400,11 +405,6 @@ export const SIGHTSEEING_ITEMS: PackItem[] = [
   { name: "카메라", notes: "메모리카드·배터리 여분", cabin: "allowed" },
   {
     name: "셀카봉/삼각대",
-    cabin: "allowed",
-  },
-  {
-    name: "미니 배낭/크로스백",
-    notes: "소매치기 방지 지퍼형 권장",
     cabin: "allowed",
   },
   { name: "편한 워킹화", cabin: "allowed" },
