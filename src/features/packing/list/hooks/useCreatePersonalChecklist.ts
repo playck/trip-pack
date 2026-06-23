@@ -34,6 +34,7 @@ export function useCreatePersonalChecklist(tripId: string) {
         companion: null,
         companionTypes: (tripInfo.companionTypes ?? []) as CompanionTypeOption[],
         tripTypes: (tripInfo.tripTypes ?? []) as TripTypeOption[],
+        startMode: "auto",
       };
 
       const generated = generateCheckList(state);

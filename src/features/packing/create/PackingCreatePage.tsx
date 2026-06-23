@@ -4,6 +4,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 
 import { MapPin, Calendar, Users, Luggage } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
+import { useChecklistTemplate } from "@/features/packing/template/hooks";
+import type { ChecklistTemplateWithCategories } from "@/features/packing/type";
 import {
   packingCreateValidationAtom,
   packingCreateAtom,
@@ -18,6 +20,7 @@ import {
   SelectTripType,
   StepContainer,
   LastStep,
+  CreateStartActions,
 } from "./components";
 import { Step, type StepValue, LAST_STEP } from "./constants";
 
@@ -41,10 +44,18 @@ export default function PackingCreatePage() {
   const [step, setStep] = useState<StepValue>(Step.REGION);
   const validation = useAtomValue(packingCreateValidationAtom);
   const setPackingState = useSetAtom(packingCreateAtom);
+  const { data: templates } = useChecklistTemplate();
+
+  // 저장된 템플릿이 있을 때만 마지막 단계에서 생성 방법(CTA)을 노출
+  const hasTemplates = (templates?.length ?? 0) > 0;
 
   useEffect(() => {
     setPackingState(INITIAL_PACKING_CREATE_STATE);
   }, [setPackingState]);
+
+  const handleStartLoading = useCallback(() => {
+    setStep(Step.LOADING);
+  }, []);
 
   const getIsNextBtnDisabled = useCallback(() => {
     switch (step) {
@@ -122,15 +133,22 @@ export default function PackingCreatePage() {
           renderContent={renderContent}
         />
 
-        {step !== Step.LOADING && (
-          <StepBtnContainer
-            currentStep={step}
-            totalSteps={TOTAL_STEPS}
-            onPrevious={handlePreviousStep}
-            onNext={handleNextStep}
-            isNextDisabled={getIsNextBtnDisabled()}
-          />
-        )}
+        {step !== Step.LOADING &&
+          (step === LAST_STEP && hasTemplates ? (
+            <CreateStartActions
+              templates={(templates ?? []) as ChecklistTemplateWithCategories[]}
+              onStart={handleStartLoading}
+              onPrevious={handlePreviousStep}
+            />
+          ) : (
+            <StepBtnContainer
+              currentStep={step}
+              totalSteps={TOTAL_STEPS}
+              onPrevious={handlePreviousStep}
+              onNext={handleNextStep}
+              isNextDisabled={getIsNextBtnDisabled()}
+            />
+          ))}
       </Container>
     </PageLayout>
   );

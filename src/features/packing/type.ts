@@ -18,6 +18,13 @@ export interface TemplateCategoryWithItems extends TemplateCategory {
   template_items: TemplateItem[];
 }
 
+export type ChecklistTemplate =
+  Database["public"]["Tables"]["checklist_templates"]["Row"];
+
+export interface ChecklistTemplateWithCategories extends ChecklistTemplate {
+  template_categories: TemplateCategoryWithItems[];
+}
+
 export interface UseTripChecklistReturn {
   categories: CategoryWithItems[];
   isLoading: boolean;

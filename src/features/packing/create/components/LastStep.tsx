@@ -11,14 +11,25 @@ import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import {
   packingCreateAtom,
   INITIAL_PACKING_CREATE_STATE,
+  type PackingCreateState,
 } from "../store/packingCreateAtom";
 import { useCreateTrip } from "../services/useCreateTrip";
 
 function buildLoadingMessages(
   regionName: string | undefined,
   tripTypes: string[],
+  startMode: PackingCreateState["startMode"],
 ): string[] {
   const destination = regionName ?? "여행";
+
+  if (startMode === "template") {
+    return [
+      `${destination} 체크리스트를 준비하고 있어요...`,
+      "저장해 둔 내 체크리스트를 불러올게요",
+      "여행 정보를 저장하고 있어요",
+    ];
+  }
+
   const messages = [`${destination} 체크리스트를 만들고 있어요...`];
 
   if (tripTypes.length > 0) {
@@ -47,7 +58,10 @@ export default function LastStep() {
   const completePackingState = useMemo(
     () => ({
       ...packingCreateState,
-      generatedCheckList: handleSetUpCheckList(),
+      generatedCheckList:
+        packingCreateState.startMode === "template"
+          ? packingCreateState.generatedCheckList
+          : handleSetUpCheckList(),
       tripTitle: packingCreateState.region?.name ?? "",
     }),
     [packingCreateState, handleSetUpCheckList],
@@ -64,8 +78,13 @@ export default function LastStep() {
       buildLoadingMessages(
         packingCreateState.region?.name,
         packingCreateState.tripTypes,
+        packingCreateState.startMode,
       ),
-    [packingCreateState.region?.name, packingCreateState.tripTypes],
+    [
+      packingCreateState.region?.name,
+      packingCreateState.tripTypes,
+      packingCreateState.startMode,
+    ],
   );
 
   // 초기 메시지 설정

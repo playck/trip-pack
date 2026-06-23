@@ -9,12 +9,16 @@ import type {
   TripTypeOption,
 } from "../data/data";
 
+/** 체크리스트 생성 방식: 조건 기반 자동 생성 vs 저장된 내 템플릿 적용 */
+export type PackingStartMode = "auto" | "template";
+
 export type PackingCreateState = {
   region: Region | null;
   dates: TravelDates;
   companion: CompanionType | null;
   companionTypes: CompanionTypeOption[];
   tripTypes: TripTypeOption[];
+  startMode: PackingStartMode;
   generatedCheckList?: GeneratedCheckList[];
 };
 
@@ -27,6 +31,7 @@ export const INITIAL_PACKING_CREATE_STATE: PackingCreateState = {
   companion: null,
   companionTypes: [],
   tripTypes: [],
+  startMode: "auto",
   generatedCheckList: undefined,
 };
 
