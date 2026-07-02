@@ -1,6 +1,6 @@
+import { fetchDataGoKr } from "@/shared/service/dataGoKr";
 import type { FlightApiResponse, FlightStatusItem } from "../types";
 
-const API_KEY = import.meta.env.VITE_DATA_GO_KR_API_KEY || "";
 const FLIGHT_BASE_URL =
   "https://apis.data.go.kr/B551177/StatusOfPassengerFlightsOdp";
 
@@ -81,39 +81,20 @@ async function fetchFlightStatus(
   endpoint: string,
   params: SearchParams,
 ): Promise<FlightStatusItem[]> {
-  if (!API_KEY) {
-    throw new Error(
-      "인천공항 API 키가 설정되지 않았습니다. VITE_DATA_GO_KR_API_KEY를 확인해주세요.",
-    );
-  }
+  const query: Record<string, string | number> = { numOfRows: 100 };
 
-  // serviceKey는 이미 URL 인코딩된 값이므로 직접 쿼리스트링을 조합
-  const queryParts = [`serviceKey=${API_KEY}`, `type=json`, `numOfRows=100`];
+  if (params.flightId) query.flight_id = params.flightId;
+  if (params.airline) query.airline = params.airline;
+  if (params.from_time) query.from_time = params.from_time;
+  if (params.to_time) query.to_time = params.to_time;
 
-  if (params.flightId)
-    queryParts.push(`flight_id=${encodeURIComponent(params.flightId)}`);
+  const body = await fetchDataGoKr<FlightApiResponse["response"]["body"]>(
+    `${FLIGHT_BASE_URL}/${endpoint}`,
+    query,
+    { label: "항공편" },
+  );
 
-  if (params.airline)
-    queryParts.push(`airline=${encodeURIComponent(params.airline)}`);
-
-  if (params.from_time) queryParts.push(`from_time=${params.from_time}`);
-  if (params.to_time) queryParts.push(`to_time=${params.to_time}`);
-
-  const url = `${FLIGHT_BASE_URL}/${endpoint}?${queryParts.join("&")}`;
-
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    throw new Error(`항공편 조회 실패: ${res.status}`);
-  }
-
-  const data: FlightApiResponse = await res.json();
-
-  if (data.response.header.resultCode !== "00") {
-    throw new Error(`API 오류: ${data.response.header.resultMsg}`);
-  }
-
-  const items = data.response.body.items;
+  const items = body.items;
 
   if (!Array.isArray(items)) {
     return items ? [items as unknown as FlightStatusItem] : [];

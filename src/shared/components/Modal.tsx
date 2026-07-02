@@ -54,6 +54,7 @@ export default function Modal({
       open={isOpen}
       onOpenChange={handleOpenChange}
       size={size}
+      placement="center"
       closeOnInteractOutside={closeOnOverlayClick}
       closeOnEscape={closeOnEsc}
       lazyMount
@@ -61,13 +62,9 @@ export default function Modal({
     >
       <Portal>
         <Dialog.Backdrop />
-        <Dialog.Positioner
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          position="fixed"
-          inset="0"
-        >
+        {/* placement="center"가 안전 중앙정렬(margin:auto)을 제공 —
+            콘텐츠가 뷰포트보다 커져도 상단이 잘리지 않고 스크롤 가능 */}
+        <Dialog.Positioner>
           <Dialog.Content
             borderRadius="xl"
             width={{ base: "90vw", sm: "100%" }}
@@ -98,12 +95,12 @@ export default function Modal({
                 )}
                 {!hideCloseButton && (
                   <Dialog.CloseTrigger asChild>
+                    {/* 닫기는 CloseTrigger→onOpenChange 경로가 처리 — onClick 중복 호출 금지 */}
                     <IconButton
                       aria-label="모달 닫기"
                       variant="ghost"
                       size="md"
                       color="gray.500"
-                      onClick={onClose}
                       _focus={{ outline: "none", boxShadow: "none" }}
                       _focusVisible={{ outline: "none", boxShadow: "none" }}
                     >

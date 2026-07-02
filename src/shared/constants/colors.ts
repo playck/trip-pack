@@ -129,6 +129,22 @@ export const hexColors = {
   },
 } as const;
 
+// 상태 배지용 hex 맵 (flight 운항 상태·주차 혼잡도 등 배지 계열에서 공용)
+export const badgePalette = {
+  positive: {
+    bg: hexColors.teal[50],
+    text: hexColors.teal[600],
+    bar: hexColors.teal[400],
+  },
+  info: { bg: "#EBF8FF", text: "#2B6CB0", bar: "#4299E1" },
+  caution: { bg: "#FFFBEB", text: "#D69E2E", bar: "#ED8936" },
+  critical: {
+    bg: customPalette.rose[50],
+    text: customPalette.rose[600],
+    bar: customPalette.rose[500],
+  },
+} as const;
+
 // 브랜드 색상 (프로젝트 고유) - Teal Primary 🟢
 export const colors = {
   primary: {

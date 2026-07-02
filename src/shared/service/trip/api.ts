@@ -127,6 +127,34 @@ export const updateExpenseDates = async (
   }
 };
 
+// 여행 기간 변경 시 항공편 예정일 동기화 (출발편=시작일, 리턴편=종료일 — 등록 규칙과 동일)
+const updateFlightDates = async (
+  tripId: string,
+  startDate: string,
+  endDate: string,
+): Promise<void> => {
+  const results = await Promise.all([
+    supabase
+      .from("trip_flights")
+      .update({ scheduled_date: startDate })
+      .eq("trip_id", tripId)
+      .eq("flight_type", "departure"),
+    supabase
+      .from("trip_flights")
+      .update({ scheduled_date: endDate })
+      .eq("trip_id", tripId)
+      .eq("flight_type", "return"),
+  ]);
+
+  const errors = results.filter((result) => result.error);
+
+  if (errors.length > 0) {
+    throw new Error(
+      `항공편 날짜 업데이트 실패: ${errors.map((e) => e.error?.message).join(", ")}`,
+    );
+  }
+};
+
 // 여행 기간 수정 + 일정 조정 통합 API
 export const updateTripDatesWithSchedules = async (params: {
   tripId: string;
@@ -170,10 +198,11 @@ export const updateTripDatesWithSchedules = async (params: {
     await deleteExpensesOutOfRange(tripId, newDuration);
   }
 
-  // 2+3. 남은 일정/경비의 날짜 병렬 재계산
+  // 2+3. 남은 일정/경비/항공편의 날짜 병렬 재계산
   await Promise.all([
     updateScheduleDates(tripId, startDate),
     updateExpenseDates(tripId, startDate),
+    updateFlightDates(tripId, startDate, endDate),
   ]);
 
   // 4. trips 테이블 업데이트

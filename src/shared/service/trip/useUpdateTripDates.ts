@@ -46,6 +46,9 @@ export function useUpdateTripDates(
       queryClient.invalidateQueries({
         queryKey: ["tripExpenses", tripId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["tripFlights", tripId],
+      });
 
       cancelTripNotification({ tripId });
       if (callback?.tripTitle) {
