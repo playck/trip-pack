@@ -7,12 +7,16 @@ import {
   textColors,
 } from "@/shared/constants/colors";
 import { useParkingStatus } from "../services/useParkingQueries";
-import { getCongestion, groupParkingLots } from "../utils";
-import type { ParkingGroup } from "../types";
+import { getCongestion, groupParkingLots, lotsToGroups } from "../utils";
+import type { ParkingAirport, ParkingGroup } from "../types";
 
-// 인천공항 주차장 현황 표현 컴포넌트 (스스로 데이터를 불러옴).
-// 모달/위젯 등 어떤 컨테이너에도 넣어 재사용한다.
-export default function ParkingStatusContent() {
+interface ParkingStatusContentProps {
+  airport?: ParkingAirport;
+}
+
+export default function ParkingStatusContent({
+  airport = "ICN",
+}: ParkingStatusContentProps) {
   const {
     data: lots,
     isLoading,
@@ -20,13 +24,19 @@ export default function ParkingStatusContent() {
     isFetching,
     isPaused,
     refetch,
-  } = useParkingStatus();
+  } = useParkingStatus(airport);
 
-  const groups = useMemo(() => groupParkingLots(lots ?? []), [lots]);
+  // 인천은 터미널·유형별 집계, 김포는 주차장 단위 그대로 노출
+  const groups = useMemo(
+    () =>
+      airport === "ICN"
+        ? groupParkingLots(lots ?? [])
+        : lotsToGroups(lots ?? []),
+    [airport, lots],
+  );
   const updatedAt = lots?.[0]?.updatedAt;
   const hasData = groups.length > 0;
 
-  // 데이터가 없을 때의 상태 문구 — 분기가 서로 배타적이도록 한 곳에서 결정
   const getEmptyMessage = () => {
     if (hasData) return null;
     if (isPaused) return "오프라인 상태예요. 연결 후 다시 시도해주세요";
@@ -36,7 +46,6 @@ export default function ParkingStatusContent() {
   };
   const emptyMessage = getEmptyMessage();
 
-  // 데이터는 있지만 갱신이 실패했거나 오프라인인 경우: 목록은 유지하고 안내만 덧붙인다
   const isStale = hasData && (isError || isPaused);
 
   return (

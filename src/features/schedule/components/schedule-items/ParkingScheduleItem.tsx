@@ -3,9 +3,16 @@ import { Button, Timeline } from "@chakra-ui/react";
 import { SquareParking, ChevronRight } from "lucide-react";
 import { colors } from "@/shared/constants/colors";
 import { ParkingStatusModal } from "@/features/airport-parking/components";
+import type { ParkingAirport } from "@/features/airport-parking/types";
+import { PARKING_AIRPORT_NAMES } from "@/features/airport-parking/types";
 
-// 일정표 출발편 아래 전폭 트리거. 누를 때만 모달을 열어 데이터를 조회한다.
-export default function ParkingScheduleItem() {
+interface ParkingScheduleItemProps {
+  airport?: ParkingAirport;
+}
+
+export default function ParkingScheduleItem({
+  airport = "ICN",
+}: ParkingScheduleItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -32,11 +39,15 @@ export default function ParkingScheduleItem() {
           _hover={{ bg: colors.primary.subtle }}
           _active={{ bg: colors.primary.subtle }}
         >
-          인천공항 주차장 현황 보기
+          {PARKING_AIRPORT_NAMES[airport]} 주차장 현황 보기
           <ChevronRight size={15} />
         </Button>
 
-        <ParkingStatusModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        <ParkingStatusModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          airport={airport}
+        />
       </Timeline.Content>
     </Timeline.Item>
   );

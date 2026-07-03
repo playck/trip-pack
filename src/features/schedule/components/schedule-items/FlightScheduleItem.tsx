@@ -13,7 +13,7 @@ import { colors, hexColors, textColors } from "@/shared/constants/colors";
 import { useFlightStatus } from "@/features/flight/services/useFlightQueries";
 import { FlightStatusBadge } from "@/features/flight/components";
 import { formatFlightTime } from "@/features/flight/utils";
-import { TERMINAL_NAMES } from "@/features/flight/types";
+import { AIRPORT_NAMES, TERMINAL_NAMES } from "@/features/flight/types";
 import type { TripFlight } from "@/features/flight/types";
 
 interface FlightScheduleItemProps {
@@ -93,13 +93,14 @@ export default function FlightScheduleItem({
             <HStack justify="space-around" align="center">
               <VStack gap={0} flex={1} align="center">
                 <Text fontSize="md" fontWeight="bold" color="gray.800">
-                  {flight.departure_airport === "ICN"
-                    ? "인천"
-                    : flight.departure_airport || destinationName || "출발지"}
+                  {AIRPORT_NAMES[flight.departure_airport] ||
+                    flight.departure_airport ||
+                    destinationName ||
+                    "출발지"}
                 </Text>
                 <Text fontSize="2xs" color="gray.400">
                   {isDeparture
-                    ? "ICN"
+                    ? flight.departure_airport || "ICN"
                     : status?.airportCode || flight.departure_airport || ""}
                 </Text>
               </VStack>
@@ -110,17 +111,16 @@ export default function FlightScheduleItem({
 
               <VStack gap={0} flex={1} align="center">
                 <Text fontSize="md" fontWeight="bold" color="gray.800">
-                  {flight.arrival_airport === "ICN"
-                    ? "인천"
-                    : flight.arrival_airport ||
-                      status?.airport ||
-                      destinationName ||
-                      "도착지"}
+                  {AIRPORT_NAMES[flight.arrival_airport] ||
+                    flight.arrival_airport ||
+                    status?.airport ||
+                    destinationName ||
+                    "도착지"}
                 </Text>
                 <Text fontSize="2xs" color="gray.400">
                   {isDeparture
                     ? status?.airportCode || flight.arrival_airport || ""
-                    : "ICN"}
+                    : flight.arrival_airport || "ICN"}
                 </Text>
               </VStack>
             </HStack>

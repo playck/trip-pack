@@ -28,7 +28,7 @@ import MemoItem from "../schedule-items/MemoItem";
 import FlightScheduleItem from "../schedule-items/FlightScheduleItem";
 import ParkingScheduleItem from "../schedule-items/ParkingScheduleItem";
 import FlightActionSheet from "../modals/FlightActionSheet";
-import { shouldShowParkingStatus } from "@/features/airport-parking/utils";
+import { getParkingAirport } from "@/features/airport-parking/utils";
 import { isMemo } from "../../utils/scheduleHelpers";
 
 interface DayScheduleCardProps {
@@ -80,9 +80,10 @@ export default function DayScheduleCard({
     (f: TripFlight) => f.flight_type === "return",
   );
 
-  // 노출 조건(인천공항 출발편 + D-0)은 airport-parking 정책 함수가 판단
-  const showParkingStatus =
-    isFirstDay && shouldShowParkingStatus(departureFlight);
+  // 노출 조건(지원 공항 출발편 + D-0)은 airport-parking 정책 함수가 판단
+  const parkingAirport = isFirstDay
+    ? getParkingAirport(departureFlight)
+    : null;
 
   const goToEditDayPage = () => {
     navigate({
@@ -110,8 +111,8 @@ export default function DayScheduleCard({
           />
         )}
 
-        {/* 출발 당일: 인천공항 주차장 현황 */}
-        {showParkingStatus && <ParkingScheduleItem />}
+        {/* 출발 당일: 출발 공항 주차장 현황 */}
+        {parkingAirport && <ParkingScheduleItem airport={parkingAirport} />}
 
         {schedules.map((schedule) =>
           isMemo(schedule) ? (

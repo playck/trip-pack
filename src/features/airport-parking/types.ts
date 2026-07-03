@@ -1,5 +1,13 @@
 import { badgePalette } from "@/shared/constants/colors";
 
+// 주차장 현황 지원 공항
+export type ParkingAirport = "ICN" | "GMP";
+
+export const PARKING_AIRPORT_NAMES: Record<ParkingAirport, string> = {
+  ICN: "인천공항",
+  GMP: "김포공항",
+};
+
 // 인천공항 주차장 현황 (공공데이터포털 data.go.kr — B551177/StatusOfParking)
 
 // API 원본 응답 아이템 (모든 값이 문자열로 내려옴)
@@ -24,6 +32,28 @@ export interface ParkingApiResponse {
       totalCount: number;
     };
   };
+}
+
+// KAC(한국공항공사) 전국공항 주차장 혼잡도_GW 응답 아이템 — 김포 등 (면수는 숫자로 내려옴)
+export interface KacParkingApiItem {
+  airportKor: string; // 공항명 (한글)
+  airportEng: string; // 공항명 (영문)
+  parkingAirportCodeName: string; // 주차장명 (e.g. "국내선 제1주차장")
+  parkingTotalSpace: number; // 전체 주차면수
+  parkingOccupiedSpace: number; // 현재 주차 대수
+  parkingCongestionDegree: string; // 만차율 문자열 (e.g. "72.97%")
+  parkingCongestion: string; // KAC 자체 혼잡 등급 (원활/혼잡 등 — 앱은 만차율로 자체 산정)
+  sysGetdate: string; // 업데이트 일자 "YYYY-MM-DD"
+  sysGettime: string; // 업데이트 시간 "HH:mm:ss"
+}
+
+export interface KacParkingApiBody {
+  items:
+    | { item: KacParkingApiItem[] | KacParkingApiItem }
+    | KacParkingApiItem[];
+  numOfRows: string;
+  pageNo: string;
+  totalCount: string;
 }
 
 export type ParkingTerminal = "T1" | "T2" | "기타";

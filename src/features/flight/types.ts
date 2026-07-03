@@ -65,3 +65,9 @@ export const TERMINAL_NAMES: Record<string, string> = {
   P02: "제2터미널",
   P03: "탑승동",
 };
+
+// 등록 시 선택 가능한 국내 공항 (코드 → 표시명)
+export const AIRPORT_NAMES: Record<string, string> = {
+  ICN: "인천",
+  GMP: "김포",
+};

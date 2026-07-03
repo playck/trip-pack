@@ -24,6 +24,22 @@ const POPULAR_AIRLINES = [
   { code: "RS", name: "에어서울" },
 ];
 
+const AIRPORTS = [
+  { code: "ICN", name: "인천공항" },
+  { code: "GMP", name: "김포공항" },
+] as const;
+
+type AirportCode = (typeof AIRPORTS)[number]["code"];
+
+// 출발편은 출발 공항, 리턴편은 도착 공항이 사용자가 이용하는 국내 공항
+const getInitialAirport = (flight?: TripFlight): AirportCode => {
+  const code =
+    flight?.flight_type === "return"
+      ? flight.arrival_airport
+      : flight?.departure_airport;
+  return code === "GMP" ? "GMP" : "ICN";
+};
+
 interface AddFlightSheetProps {
   isOpen: boolean;
   onClose: () => void;
@@ -48,12 +64,16 @@ export default function AddFlightSheet({
   const [flightType, setFlightType] = useState<"departure" | "return">(
     initialFlight?.flight_type || defaultFlightType || "departure",
   );
+  const [airport, setAirport] = useState<AirportCode>(
+    getInitialAirport(initialFlight),
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialFlight) {
       setFlightId(initialFlight.flight_id);
       setFlightType(initialFlight.flight_type);
+      setAirport(getInitialAirport(initialFlight));
     } else if (defaultFlightType) {
       setFlightType(defaultFlightType);
     }
@@ -79,8 +99,8 @@ export default function AddFlightSheet({
       trip_id: tripId,
       flight_id: flightId.trim().toUpperCase(),
       airline: "",
-      departure_airport: flightType === "departure" ? "ICN" : "",
-      arrival_airport: flightType === "departure" ? "" : "ICN",
+      departure_airport: flightType === "departure" ? airport : "",
+      arrival_airport: flightType === "departure" ? "" : airport,
       scheduled_date: flightType === "departure" ? startDate : endDate,
       scheduled_time: null,
       flight_type: flightType,
@@ -96,6 +116,7 @@ export default function AddFlightSheet({
   const handleClose = () => {
     setFlightId("");
     setFlightType("departure");
+    setAirport("ICN");
     onClose();
   };
 
@@ -197,6 +218,43 @@ export default function AddFlightSheet({
               />
             </SegmentGroup.Root>
           )}
+        </VStack>
+
+        {/* 공항 선택 — 출발편은 출발 공항, 리턴편은 도착 공항 */}
+        <VStack align="stretch" gap={1}>
+          <Text fontSize="sm" fontWeight="medium" color="gray.600">
+            {flightType === "departure" ? "출발 공항" : "도착 공항"}
+          </Text>
+          <SegmentGroup.Root
+            size="md"
+            w="full"
+            value={airport}
+            onValueChange={(details) => {
+              if (details.value) {
+                setAirport(details.value as AirportCode);
+              }
+            }}
+          >
+            <SegmentGroup.Indicator />
+            <SegmentGroup.Items
+              w="full"
+              items={AIRPORTS.map((item) => ({
+                value: item.code,
+                label: (
+                  <Text
+                    fontWeight={airport === item.code ? "semibold" : "normal"}
+                    color={
+                      airport === item.code
+                        ? colors.primary.hex[500]
+                        : "currentColor"
+                    }
+                  >
+                    {item.name}
+                  </Text>
+                ),
+              }))}
+            />
+          </SegmentGroup.Root>
         </VStack>
 
         {/* 항공사 바로가기 */}

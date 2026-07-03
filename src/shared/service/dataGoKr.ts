@@ -1,18 +1,23 @@
 // 공공데이터포털(data.go.kr) 공용 클라이언트 — 항공편·주차장 등 인천공항(B551177) API가 공유
 const API_KEY = import.meta.env.VITE_DATA_GO_KR_API_KEY || "";
 
+interface DataGoKrHeader {
+  resultCode: string;
+  resultMsg: string;
+}
+
 interface DataGoKrEnvelope<TBody> {
   response?: {
-    header?: {
-      resultCode: string;
-      resultMsg: string;
-    };
+    header?: DataGoKrHeader;
     body: TBody;
   };
+  // 일부 게이트웨이(신형 GW)는 response 래퍼 없이 header/body를 바로 반환
+  header?: DataGoKrHeader;
+  body?: TBody;
 }
 
 interface FetchOptions {
-  label?: string; // 에러 메시지에 쓸 데이터 이름 (e.g. "항공편", "주차장 현황")
+  label?: string;
   signal?: AbortSignal;
 }
 
@@ -51,13 +56,19 @@ export const fetchDataGoKr = async <TBody>(
   try {
     data = JSON.parse(text);
   } catch {
-    const gatewayMsg = text.match(/<returnAuthMsg>([^<]*)<\/returnAuthMsg>/)?.[1];
+    const gatewayMsg = text.match(
+      /<returnAuthMsg>([^<]*)<\/returnAuthMsg>/,
+    )?.[1];
     throw new Error(
       `${label} 게이트웨이 오류: ${gatewayMsg || "응답이 JSON 형식이 아닙니다"}`,
     );
   }
 
-  const response = data.response;
+  const response =
+    data.response ??
+    (data.header
+      ? { header: data.header, body: data.body as TBody }
+      : undefined);
 
   if (!response?.header) {
     throw new Error(`${label} 응답 형식이 올바르지 않습니다`);

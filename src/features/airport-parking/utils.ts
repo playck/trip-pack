@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import type { TripFlight } from "@/features/flight/types";
 import type {
   CongestionLevel,
+  ParkingAirport,
   ParkingGroup,
   ParkingLot,
   ParkingTerminal,
@@ -9,20 +10,33 @@ import type {
 } from "./types";
 import { CONGESTION_COLORS } from "./types";
 
-// 노출 정책: 인천공항 출발편의 출발 당일(D-0)에만 주차장 현황을 제공한다.
-// 현재 항공편 등록 UI가 출발 공항을 항상 "ICN"으로 저장해 사실상 '출발편 존재 + D-0'와
-// 동치이지만, 공항 선택이 생겼을 때를 대비해 조건을 이곳 한 군데에서 관리한다.
-export const shouldShowParkingStatus = (flight?: TripFlight): boolean =>
-  !!flight &&
-  flight.flight_type === "departure" &&
-  flight.departure_airport === "ICN" &&
-  dayjs().format("YYYY-MM-DD") === flight.scheduled_date;
+const PARKING_AIRPORTS: ParkingAirport[] = ["ICN", "GMP"];
+
+// 노출 정책: 지원 공항(인천·김포) 출발편의 출발 당일(D-0)에만 주차장 현황을 제공한다.
+// 조건 충족 시 해당 공항 코드를, 아니면 null을 반환 — 조건은 이곳 한 군데에서 관리한다.
+export const getParkingAirport = (
+  flight?: TripFlight,
+): ParkingAirport | null => {
+  if (!flight || flight.flight_type !== "departure") return null;
+  if (dayjs().format("YYYY-MM-DD") !== flight.scheduled_date) return null;
+
+  return (
+    PARKING_AIRPORTS.find((code) => code === flight.departure_airport) ?? null
+  );
+};
 
 // "20211103162024.804" → "16:20" (기준 시각)
 export const formatParkingTime = (datetm: string): string => {
   const digits = (datetm || "").replace(/\D/g, "");
   if (digits.length < 12) return "--:--";
   return `${digits.substring(8, 10)}:${digits.substring(10, 12)}`;
+};
+
+// KAC 업데이트 시간("HH:MM:SS"·"HHMM" 등 표기 편차 방어) → "HH:mm"
+export const formatKacParkingTime = (gettime: string): string => {
+  const digits = (gettime || "").replace(/\D/g, "");
+  if (digits.length < 4) return "--:--";
+  return `${digits.substring(0, 2)}:${digits.substring(2, 4)}`;
 };
 
 // floor 문자열에서 터미널 판별 (정확한 표기가 불확실하므로 문자열 포함 매칭)
@@ -47,7 +61,7 @@ const getCongestionLevel = (rate: number): CongestionLevel => {
   return "여유";
 };
 
-// 만차율 → 등급 + 색상 (등급/색상이 항상 함께 쓰여 한 번에 반환)
+// 만차율 → 등급 + 색상
 export const getCongestion = (rate: number) => {
   const level = getCongestionLevel(rate);
   return { level, ...CONGESTION_COLORS[level] };
@@ -87,8 +101,22 @@ export const groupParkingLots = (lots: ParkingLot[]): ParkingGroup[] => {
   }
 
   return [...groups.values()].sort((a, b) => {
-    const t = TERMINAL_ORDER.indexOf(a.terminal) - TERMINAL_ORDER.indexOf(b.terminal);
+    const t =
+      TERMINAL_ORDER.indexOf(a.terminal) - TERMINAL_ORDER.indexOf(b.terminal);
     if (t !== 0) return t;
     return GROUP_ORDER.indexOf(a.type) - GROUP_ORDER.indexOf(b.type);
   });
 };
+
+// 김포 등 KAC 공항은 주차장 수가 적어 집계 없이 주차장 단위 그대로 노출
+export const lotsToGroups = (lots: ParkingLot[]): ParkingGroup[] =>
+  lots.map((lot) => ({
+    key: lot.name,
+    label: lot.name,
+    terminal: lot.terminal,
+    type: lot.type,
+    occupied: lot.occupied,
+    total: lot.total,
+    available: lot.available,
+    occupancyRate: lot.occupancyRate,
+  }));
