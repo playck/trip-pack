@@ -8,10 +8,14 @@ import { PARKING_AIRPORT_NAMES } from "@/features/airport-parking/types";
 
 interface ParkingScheduleItemProps {
   airport?: ParkingAirport;
+  tripStartDate?: string;
+  tripDays?: number;
 }
 
 export default function ParkingScheduleItem({
   airport = "ICN",
+  tripStartDate,
+  tripDays,
 }: ParkingScheduleItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -47,6 +51,8 @@ export default function ParkingScheduleItem({
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           airport={airport}
+          tripStartDate={tripStartDate}
+          tripDays={tripDays}
         />
       </Timeline.Content>
     </Timeline.Item>

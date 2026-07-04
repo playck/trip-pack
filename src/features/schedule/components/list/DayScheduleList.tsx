@@ -73,6 +73,7 @@ export default function DayScheduleList({
               onAddMemo={() => onAddMemo?.(dayNumber, date)}
               startDate={dayNumber === FIRST_DAY ? startDate : undefined}
               endDate={dayNumber === tripDays ? endDate : undefined}
+              tripTotalDays={tripDays}
               isLastDay={dayNumber === tripDays}
               regionName={regionName}
             />

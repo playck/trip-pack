@@ -41,6 +41,7 @@ interface DayScheduleCardProps {
   onAddMemo?: () => void;
   startDate?: string;
   endDate?: string;
+  tripTotalDays?: number;
   isLastDay?: boolean;
   regionName?: string;
 }
@@ -54,6 +55,7 @@ export default function DayScheduleCard({
   onAddMemo,
   startDate,
   endDate,
+  tripTotalDays,
   isLastDay = false,
   regionName,
 }: DayScheduleCardProps) {
@@ -112,7 +114,13 @@ export default function DayScheduleCard({
         )}
 
         {/* 출발 당일: 출발 공항 주차장 현황 */}
-        {parkingAirport && <ParkingScheduleItem airport={parkingAirport} />}
+        {parkingAirport && (
+          <ParkingScheduleItem
+            airport={parkingAirport}
+            tripStartDate={startDate}
+            tripDays={tripTotalDays}
+          />
+        )}
 
         {schedules.map((schedule) =>
           isMemo(schedule) ? (

@@ -3,19 +3,25 @@ import { Box, HStack, VStack, Text, IconButton, Badge } from "@chakra-ui/react";
 import { RefreshCw } from "lucide-react";
 import {
   backgrounds,
+  borderColors,
   statusColors,
   textColors,
 } from "@/shared/constants/colors";
 import { useParkingStatus } from "../services/useParkingQueries";
 import { getCongestion, groupParkingLots, lotsToGroups } from "../utils";
+import { estimateParkingFee, PARKING_FEE_ROWS } from "../fees";
 import type { ParkingAirport, ParkingGroup } from "../types";
 
 interface ParkingStatusContentProps {
   airport?: ParkingAirport;
+  tripStartDate?: string;
+  tripDays?: number;
 }
 
 export default function ParkingStatusContent({
   airport = "ICN",
+  tripStartDate,
+  tripDays,
 }: ParkingStatusContentProps) {
   const {
     data: lots,
@@ -47,6 +53,12 @@ export default function ParkingStatusContent({
   const emptyMessage = getEmptyMessage();
 
   const isStale = hasData && (isError || isPaused);
+
+  // 여행 기간 기준 예상 주차 요금 — 출발일·일수가 전달됐을 때만
+  const feeEstimate =
+    tripStartDate && tripDays
+      ? estimateParkingFee(airport, tripStartDate, tripDays)
+      : null;
 
   return (
     <VStack align="stretch" gap={1.5} pb={6}>
@@ -95,6 +107,66 @@ export default function ParkingStatusContent({
           ))}
         </VStack>
       )}
+
+      {/* 주차 요금 안내 (공식 요금, 정적 데이터) */}
+      <Box mt={2} pt={3} borderTopWidth="1px" borderColor={borderColors.subtle}>
+        <Text
+          fontSize="xs"
+          fontWeight="semibold"
+          color={textColors.secondary}
+          mb={1.5}
+        >
+          주차 요금 (소형차 기준)
+        </Text>
+        <VStack align="stretch" gap={1}>
+          {PARKING_FEE_ROWS[airport].map((row) => (
+            <HStack
+              key={row.label}
+              justify="space-between"
+              align="baseline"
+              gap={2}
+            >
+              <Text
+                fontSize="xs"
+                fontWeight="medium"
+                color={textColors.primary}
+                flexShrink={0}
+              >
+                {row.label}
+              </Text>
+              <Text
+                fontSize="xs"
+                fontWeight="medium"
+                color={textColors.secondary}
+                textAlign="right"
+              >
+                {row.note}
+              </Text>
+            </HStack>
+          ))}
+        </VStack>
+        {feeEstimate && (
+          <Box
+            mt={2}
+            px={3}
+            py={2}
+            bg={backgrounds.muted}
+            borderWidth="1px"
+            borderColor={borderColors.default}
+            borderRadius="md"
+          >
+            <Text fontSize="xs" fontWeight="semibold" color={textColors.primary}>
+              주차 {tripDays}일 기준 {feeEstimate.basisLabel} 약{" "}
+              {feeEstimate.amount.toLocaleString("ko-KR")}원
+            </Text>
+            <Text fontSize="2xs" color={textColors.muted} mt={0.5}>
+              {airport === "GMP"
+                ? "날짜별 평일·주말(금~일) 요금 합산 · 공휴일 할증과 각종 할인은 제외"
+                : "장기주차장 1일 정액 기준 · 각종 할인은 반영되지 않아요"}
+            </Text>
+          </Box>
+        )}
+      </Box>
     </VStack>
   );
 }
@@ -136,8 +208,8 @@ function ParkingGroupRow({ group }: { group: ParkingGroup }) {
         />
       </Box>
       <Text fontSize="xs" color={textColors.subtle} mt={1}>
-        잔여 {group.available.toLocaleString()}면 / 총{" "}
-        {group.total.toLocaleString()}면
+        잔여 {group.available.toLocaleString("ko-KR")}면 / 총{" "}
+        {group.total.toLocaleString("ko-KR")}면
       </Text>
     </Box>
   );
