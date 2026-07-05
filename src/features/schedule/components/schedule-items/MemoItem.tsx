@@ -28,7 +28,12 @@ export default function MemoItem({ memo }: MemoItemProps) {
 
       <Timeline.Content width="full" ml={-2} minH="20px" pb="16px">
         <div style={{ paddingRight: onOpenActionSheet ? "32px" : "0" }}>
-          <Timeline.Title fontSize="md" fontWeight="semibold" mb="0">
+          <Timeline.Title
+            className="selectable"
+            fontSize="md"
+            fontWeight="semibold"
+            mb="0"
+          >
             {memo.place_name}
             {hasExpense && (
               <Badge

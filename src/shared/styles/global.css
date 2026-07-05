@@ -1,0 +1,37 @@
+/*
+ * 웹뷰 앱 네이티브 느낌 유지용 전역 스타일.
+ * - 텍스트 드래그 선택 차단
+ * - 이미지 드래그(고스트) 차단
+ * - iOS 롱프레스 콜아웃 메뉴(복사/공유/이미지 저장) 차단
+ *
+ * 복사가 필요한 값(금액, 예약번호, 주소 등)에는 `selectable` 클래스를 부여해 예외 처리한다.
+ */
+
+* {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* 입력 요소는 커서 이동·선택이 필요하므로 항상 예외 */
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* 복사 허용 대상: 요소와 그 하위 텍스트 모두 선택 가능 */
+.selectable,
+.selectable * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: default;
+}
+
+/* 이미지 드래그 고스트 방지 (클릭 핸들러는 유지) */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}

@@ -97,8 +97,8 @@ export default function FlightStatusCard({
         </HStack>
       </HStack>
 
-      {/* 본문 */}
-      <VStack px={4} py={3} gap={3} align="stretch">
+      {/* 본문 (편명·항공사·노선·실시간 현황: 복사 가능) */}
+      <VStack className="selectable" px={4} py={3} gap={3} align="stretch">
         {/* 항공편 기본 정보 */}
         <HStack justify="space-between" align="center">
           <VStack align="start" gap={0.5}>

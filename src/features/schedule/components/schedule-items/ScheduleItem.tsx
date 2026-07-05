@@ -42,7 +42,12 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
           }}
         >
           <HStack justify="space-between" align="center" gap={2}>
-            <Timeline.Title fontSize="md" fontWeight="semibold" mb="4px">
+            <Timeline.Title
+              className="selectable"
+              fontSize="md"
+              fontWeight="semibold"
+              mb="4px"
+            >
               {schedule.place_name}
               {isExpenseContent && (
                 <Badge
@@ -81,7 +86,12 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
           )}
 
           {!isScheduleMemo && schedule.notes && (
-            <Text fontSize="sm" color={textColors.subtle} mt={1}>
+            <Text
+              className="selectable"
+              fontSize="sm"
+              color={textColors.subtle}
+              mt={1}
+            >
               {schedule.notes}
             </Text>
           )}
