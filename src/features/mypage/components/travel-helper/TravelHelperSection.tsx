@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Box, Text, VStack } from "@chakra-ui/react";
-import { Search, Plane, DollarSign } from "lucide-react";
+import { Search, Plane, DollarSign, SquareParking } from "lucide-react";
 import AirlineBaggagePolicySheet from "@/features/packing/list/components/AirlineBaggagePolicySheet";
+import { ParkingLookupSheet } from "@/features/airport-parking/components";
 import MenuItem from "../MenuItem";
 import BaggageRuleSearchSheet from "./BaggageRuleSearch";
 import ExchangeRateSheet from "./ExchangeRateSheet";
@@ -10,6 +11,7 @@ export default function TravelHelperSection() {
   const [isSearchSheetOpen, setIsSearchSheetOpen] = useState(false);
   const [isAirlineSheetOpen, setIsAirlineSheetOpen] = useState(false);
   const [isExchangeRateSheetOpen, setIsExchangeRateSheetOpen] = useState(false);
+  const [isParkingSheetOpen, setIsParkingSheetOpen] = useState(false);
 
   return (
     <>
@@ -47,6 +49,11 @@ export default function TravelHelperSection() {
             label="환율 조회"
             onClick={() => setIsExchangeRateSheetOpen(true)}
           />
+          <MenuItem
+            icon={SquareParking}
+            label="주차장 현황 보기"
+            onClick={() => setIsParkingSheetOpen(true)}
+          />
         </VStack>
       </Box>
 
@@ -61,6 +68,10 @@ export default function TravelHelperSection() {
       <ExchangeRateSheet
         isOpen={isExchangeRateSheetOpen}
         onClose={() => setIsExchangeRateSheetOpen(false)}
+      />
+      <ParkingLookupSheet
+        isOpen={isParkingSheetOpen}
+        onClose={() => setIsParkingSheetOpen(false)}
       />
     </>
   );
