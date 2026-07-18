@@ -91,7 +91,7 @@ export const ELECTRONICS_ITEMS: PackItem[] = [
     name: "보조배터리",
     cabin: "allowed",
     cabinNotes:
-      "기내만 허용, 위탁 금지. ≤100Wh 자유, 100~160Wh 항공사 승인, 160Wh 초과 반입 금지",
+      "기내만 허용, 위탁 금지. 160Wh 이하 1인당 최대 2개(초과 반입 금지), 좌석 선반 보관 금지 — 몸에 소지",
   },
 ];
 

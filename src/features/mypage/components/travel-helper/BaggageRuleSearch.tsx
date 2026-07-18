@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import { Box, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Input, Separator, Text, VStack } from "@chakra-ui/react";
 import { Search } from "lucide-react";
 import {
-  checkBaggageRule,
+  checkBaggageRules,
   type BaggageCheckResult,
 } from "@/shared/utils/baggageChecker";
 import BottomSheet from "@/shared/components/BottomSheet";
 import BaggageRuleResult from "./BaggageRuleResult";
+
+const MAX_RESULTS = 3;
 
 interface BaggageRuleSearchSheetProps {
   isOpen: boolean;
@@ -19,23 +21,23 @@ export default function BaggageRuleSearchSheet({
   onClose,
 }: BaggageRuleSearchSheetProps) {
   const [search, setSearch] = useState("");
-  const [result, setResult] = useState<BaggageCheckResult | null>(null);
+  const [results, setResults] = useState<BaggageCheckResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
   const debouncedSearch = useDebounceCallback((value: string) => {
     const trimmed = value.trim();
     if (!trimmed) {
-      setResult(null);
+      setResults([]);
       setHasSearched(false);
       return;
     }
-    setResult(checkBaggageRule(trimmed));
+    setResults(checkBaggageRules(trimmed).slice(0, MAX_RESULTS));
     setHasSearched(true);
   }, 300);
 
   const handleClose = () => {
     setSearch("");
-    setResult(null);
+    setResults([]);
     setHasSearched(false);
     onClose();
   };
@@ -75,13 +77,28 @@ export default function BaggageRuleSearchSheet({
         </Box>
 
         {hasSearched &&
-          (result ? (
-            <BaggageRuleResult item={result.item} />
+          (results.length > 0 ? (
+            <VStack align="stretch" gap={4}>
+              {results.map((result, index) => (
+                <VStack key={result.item.name} align="stretch" gap={4}>
+                  {index > 0 && <Separator />}
+                  <BaggageRuleResult item={result.item} />
+                </VStack>
+              ))}
+            </VStack>
           ) : (
             <Box py={6} textAlign="center">
-              <Text fontSize="sm" color="gray.400">
-                해당하는 규정을 찾을 수 없습니다
-              </Text>
+              <VStack gap={2}>
+                <Text fontSize="sm" color="gray.500" fontWeight="medium">
+                  매칭된 검색 결과가 없어요
+                </Text>
+                <Text fontSize="xs" color="gray.400" lineHeight="1.6" px={4}>
+                  검색 결과에 없는 일반 물품은 대부분 기내·위탁 모두 반입
+                  가능해요. 다만 날카로운 물품, 배터리, 액체, 스프레이류는
+                  규정이 있을 수 있으니 항공보안365(avsec365.or.kr)에서
+                  확인해주세요.
+                </Text>
+              </VStack>
             </Box>
           ))}
       </VStack>

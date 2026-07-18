@@ -7,9 +7,11 @@ import {
   Luggage,
   Globe,
 } from "lucide-react";
-import type { CabinCheckItem } from "@/shared/data/baggagePolicyData";
-
-type TransportStatus = "allowed" | "prohibited" | "restricted";
+import {
+  BAGGAGE_POLICY_VERIFIED_AT,
+  type CabinCheckItem,
+  type TransportStatus,
+} from "@/shared/data/baggagePolicyData";
 
 const getPolicyConfig = (status: TransportStatus) => {
   switch (status) {
@@ -134,6 +136,10 @@ export default function BaggageRuleResult({ item }: BaggageRuleResultProps) {
               </HStack>
             ))}
           </VStack>
+          <Text fontSize="xs" color="gray.500" mt={2}>
+            표시된 국가 외에도 국가별 규정이 있을 수 있으니 도착국 규정을 별도로
+            확인해주세요.
+          </Text>
         </Box>
       )}
 
@@ -142,7 +148,7 @@ export default function BaggageRuleResult({ item }: BaggageRuleResultProps) {
           <Text fontSize="xs" lineHeight="1.4">💡</Text>
           <Text fontSize="xs" color="gray.500" lineHeight="1.4">
             항공사별로 규정이 다를 수 있으니, 출발 전 해당 항공사의 최신 규정을
-            확인해주세요.
+            확인해주세요. ({BAGGAGE_POLICY_VERIFIED_AT} 규정 기준)
           </Text>
         </HStack>
       </Box>

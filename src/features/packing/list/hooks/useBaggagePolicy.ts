@@ -41,7 +41,8 @@ export const useBaggagePolicy = (
       item.cabin_policy) as CabinPolicy;
 
     // 3. 위탁 수하물 정책 결정 (실시간 검색 결과 우선)
-    let finalCheckedPolicy = baggageRule?.item.checked.status as CabinPolicy;
+    let finalCheckedPolicy: CabinPolicy | null =
+      baggageRule?.item.checked.status ?? null;
 
     // 4. 기내 반입은 가능(allowed)하지만 위탁이 금지(prohibited)된 경우
     if (finalCheckedPolicy === "prohibited" && finalCabinPolicy === "allowed") {
