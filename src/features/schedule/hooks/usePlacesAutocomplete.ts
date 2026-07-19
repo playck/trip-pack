@@ -12,6 +12,7 @@ export interface PlaceResult {
     lat: number;
     lng: number;
   };
+  types?: string[];
 }
 
 /**
@@ -51,7 +52,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
 
         const request: google.maps.places.PlaceDetailsRequest = {
           placeId,
-          fields: ["place_id", "name", "formatted_address", "geometry"],
+          fields: ["place_id", "name", "formatted_address", "geometry", "types"],
         };
 
         placesServiceRef.current.getDetails(request, (place, status) => {
@@ -66,6 +67,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
                     lng: place.geometry.location.lng(),
                   }
                 : undefined,
+              types: place.types,
             };
             resolve(result);
           } else {

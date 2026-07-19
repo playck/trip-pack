@@ -9,6 +9,7 @@ interface CreateMemoParams {
   dayNumber: number;
   scheduleDate: string;
   memoText: string;
+  iconKey?: string;
 }
 
 interface UseCreateMemoOptions {
@@ -18,7 +19,7 @@ interface UseCreateMemoOptions {
 
 export const useCreateMemo = (
   tripId: string,
-  options?: UseCreateMemoOptions
+  options?: UseCreateMemoOptions,
 ) => {
   const queryClient = useQueryClient();
 
@@ -37,6 +38,7 @@ export const useCreateMemo = (
         placeId: createMemoId(),
         placeName: params.memoText,
         visitOrder: lastOrder + 1,
+        category: params.iconKey,
       });
     },
     onSuccess: (data) => {

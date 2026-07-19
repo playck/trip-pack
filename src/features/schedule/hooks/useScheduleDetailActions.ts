@@ -13,7 +13,8 @@ interface EditMemoHandler {
     scheduleId: string,
     memoText: string,
     dayNumber: number,
-    scheduleDate: string
+    scheduleDate: string,
+    iconKey?: string
   ): void;
 }
 
@@ -85,7 +86,8 @@ export function useScheduleDetailActions(
         selectedSchedule.id,
         selectedSchedule.place_name,
         selectedSchedule.day_number,
-        selectedSchedule.schedule_date
+        selectedSchedule.schedule_date,
+        selectedSchedule.category ?? undefined
       );
       setSelectedSchedule(null);
     } else {
@@ -100,7 +102,7 @@ export function useScheduleDetailActions(
 
   const handleSaveEditSchedule = (
     scheduleId: string,
-    updates: { placeName: string; notes?: string }
+    updates: { placeName: string; notes?: string; category?: string }
   ) => {
     updateScheduleMutation.mutate({ scheduleId, ...updates });
   };

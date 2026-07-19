@@ -288,6 +288,7 @@ function SchedulePageContent() {
           dayNumber={memoSelectedDay.dayNumber}
           date={memoSelectedDay.date}
           initialMemoText={editingMemo?.memoText}
+          initialIconKey={editingMemo?.iconKey}
           isEditMode={!!editingMemo}
         />
       )}

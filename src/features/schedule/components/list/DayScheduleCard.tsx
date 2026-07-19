@@ -7,7 +7,7 @@ import {
   Timeline,
   Button,
 } from "@chakra-ui/react";
-import { Plus, StickyNote, Edit, Plane, PlaneLanding } from "lucide-react";
+import { MapPin, StickyNote, Edit, Plane, PlaneLanding } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   colors,
@@ -204,7 +204,7 @@ export default function DayScheduleCard({
               colorPalette={colors.primary.palette}
               _hover={{ bg: "whiteAlpha.500" }}
             >
-              <Plus size={14} />
+              <MapPin size={14} />
             </IconButton>
             <IconButton
               size="xs"

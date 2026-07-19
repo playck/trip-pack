@@ -1,7 +1,8 @@
 import { Timeline, Badge, IconButton } from "@chakra-ui/react";
-import { StickyNote, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import type { Schedule } from "../../types";
 import { useScheduleContext } from "../../context";
+import { getMemoIcon } from "../../memoIcons";
 
 interface MemoItemProps {
   memo: Schedule;
@@ -11,6 +12,7 @@ export default function MemoItem({ memo }: MemoItemProps) {
   const { onOpenActionSheet, scheduleExpenses } = useScheduleContext();
   const expenseAmount = scheduleExpenses?.[memo.id];
   const hasExpense = expenseAmount !== undefined && expenseAmount > 0;
+  const MemoIcon = getMemoIcon(memo.category);
 
   const handleOpenAction = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -22,7 +24,7 @@ export default function MemoItem({ memo }: MemoItemProps) {
       <Timeline.Connector>
         <Timeline.Separator />
         <Timeline.Indicator bg="white">
-          <StickyNote size={14} />
+          <MemoIcon size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>
 

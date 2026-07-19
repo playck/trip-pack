@@ -1,7 +1,8 @@
 import { Text, Timeline, HStack, Box } from "@chakra-ui/react";
-import { MapPin, StickyNote, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { textColors, colors } from "@/shared/constants/colors";
 import { isMemo } from "../../utils/scheduleHelpers";
+import { getMemoIcon, getPlaceIcon } from "../../memoIcons";
 import type { Schedule } from "../../types";
 import DragHandle from "./DragHandle";
 
@@ -17,6 +18,9 @@ export default function EditableScheduleItem({
   onToggleSelect,
 }: EditableScheduleItemProps) {
   const isScheduleMemo = isMemo(schedule);
+  const ItemIcon = isScheduleMemo
+    ? getMemoIcon(schedule.category)
+    : getPlaceIcon(schedule.category);
 
   return (
     <Timeline.Item>
@@ -26,7 +30,7 @@ export default function EditableScheduleItem({
           mt={isScheduleMemo ? "6px" : schedule.notes ? "0" : "5px"}
           bg="white"
         >
-          {isScheduleMemo ? <StickyNote size={14} /> : <MapPin size={14} />}
+          <ItemIcon size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>
 

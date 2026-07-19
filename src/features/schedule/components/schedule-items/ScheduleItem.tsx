@@ -1,8 +1,9 @@
 import { Text, Timeline, IconButton, Badge, HStack } from "@chakra-ui/react";
-import { MapPin, StickyNote, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { textColors } from "@/shared/constants/colors";
 import type { Schedule } from "../../types";
 import { isMemo } from "../../utils/scheduleHelpers";
+import { getMemoIcon, getPlaceIcon } from "../../memoIcons";
 import { useScheduleContext } from "../../context";
 
 interface ScheduleItemProps {
@@ -15,6 +16,9 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
   const expenseAmount = scheduleExpenses?.[schedule.id];
   const isExpenseContent = expenseAmount !== undefined && expenseAmount > 0;
   const isScheduleMemo = isMemo(schedule);
+  const ItemIcon = isScheduleMemo
+    ? getMemoIcon(schedule.category)
+    : getPlaceIcon(schedule.category);
 
   const handleClick = () => {
     onScheduleClick?.(schedule);
@@ -30,7 +34,7 @@ export default function ScheduleItem({ schedule }: ScheduleItemProps) {
       <Timeline.Connector>
         <Timeline.Separator />
         <Timeline.Indicator bg="white">
-          {isScheduleMemo ? <StickyNote size={14} /> : <MapPin size={14} />}
+          <ItemIcon size={14} />
         </Timeline.Indicator>
       </Timeline.Connector>
       <Timeline.Content width="full" ml={-2} pb="16px">

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useCreateMemo } from "../services/useCreateMemo";
 import { useUpdateSchedule } from "../services/useUpdateSchedule";
+import { DEFAULT_MEMO_ICON_KEY } from "../memoIcons";
 import type { SelectedDay } from "../types";
 
 interface EditingMemo {
   scheduleId: string;
   memoText: string;
+  iconKey: string;
 }
 
 export const useScheduleMemo = (tripId: string) => {
@@ -26,10 +28,11 @@ export const useScheduleMemo = (tripId: string) => {
     scheduleId: string,
     memoText: string,
     dayNumber: number,
-    date: string
+    date: string,
+    iconKey: string = DEFAULT_MEMO_ICON_KEY
   ) => {
     setSelectedDay({ dayNumber, date });
-    setEditingMemo({ scheduleId, memoText });
+    setEditingMemo({ scheduleId, memoText, iconKey });
     setIsMemoSheetOpen(true);
   };
 
@@ -38,7 +41,7 @@ export const useScheduleMemo = (tripId: string) => {
     setEditingMemo(null);
   };
 
-  const handleSaveMemo = (memoText: string) => {
+  const handleSaveMemo = (memoText: string, iconKey: string) => {
     if (!tripId || !selectedDay) {
       return;
     }
@@ -48,6 +51,7 @@ export const useScheduleMemo = (tripId: string) => {
       updateScheduleMutation.mutate({
         scheduleId: editingMemo.scheduleId,
         placeName: memoText,
+        category: iconKey,
       });
     } else {
       // 추가 모드
@@ -56,6 +60,7 @@ export const useScheduleMemo = (tripId: string) => {
         dayNumber: selectedDay.dayNumber,
         scheduleDate: selectedDay.date,
         memoText,
+        iconKey,
       });
     }
   };

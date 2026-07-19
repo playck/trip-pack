@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCreateSchedule } from "../services/useCreateSchedule";
+import { mapGoogleTypesToIconKey } from "../memoIcons";
 import type { PlaceResult } from "./usePlacesAutocomplete";
 import type { SelectedDay } from "../types";
 
@@ -32,6 +33,7 @@ export const useScheduleAdd = (tripId: string) => {
       placeAddress: place.address,
       latitude: place.location?.lat,
       longitude: place.location?.lng,
+      category: mapGoogleTypesToIconKey(place.types),
     });
   };
 

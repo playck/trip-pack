@@ -106,6 +106,12 @@ export default function CategoryForm({
                           : "gray.200"
                       }
                       borderRadius="xl"
+                      outline={
+                        isSelected
+                          ? `2px solid ${colors.primary.hex[500]}`
+                          : undefined
+                      }
+                      outlineOffset={isSelected ? "2px" : undefined}
                       display="flex"
                       flexDirection="column"
                       alignItems="center"
