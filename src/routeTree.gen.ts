@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as MainRouteImport } from './routes/main'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MypageIndexRouteImport } from './routes/mypage/index'
@@ -31,6 +32,11 @@ import { Route as MypageMyChecklistsTemplateIdRouteImport } from './routes/mypag
 import { Route as ExpenseSettlementTripIdRouteImport } from './routes/expense.settlement.$tripId'
 import { Route as ScheduleEditTripIdDayNumberRouteImport } from './routes/schedule.edit.$tripId.$dayNumber'
 
+const SubscribeRoute = SubscribeRouteImport.update({
+  id: '/subscribe',
+  path: '/subscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MainRoute = MainRouteImport.update({
   id: '/main',
   path: '/main',
@@ -142,6 +148,7 @@ const ScheduleEditTripIdDayNumberRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/subscribe': typeof SubscribeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/subscribe': typeof SubscribeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/main': typeof MainRoute
+  '/subscribe': typeof SubscribeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/expense/$tripId': typeof ExpenseTripIdRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/main'
+    | '/subscribe'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/main'
+    | '/subscribe'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -260,6 +271,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/main'
+    | '/subscribe'
     | '/auth/login'
     | '/auth/signup'
     | '/expense/$tripId'
@@ -284,6 +296,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainRoute: typeof MainRoute
+  SubscribeRoute: typeof SubscribeRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   ExpenseTripIdRoute: typeof ExpenseTripIdRoute
@@ -307,6 +320,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/subscribe': {
+      id: '/subscribe'
+      path: '/subscribe'
+      fullPath: '/subscribe'
+      preLoaderRoute: typeof SubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/main': {
       id: '/main'
       path: '/main'
@@ -460,6 +480,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRoute: MainRoute,
+  SubscribeRoute: SubscribeRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   ExpenseTripIdRoute: ExpenseTripIdRoute,

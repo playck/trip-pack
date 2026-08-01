@@ -18,7 +18,7 @@ export const createTripWithChecklist = async (
   );
 
   if (error) {
-    throw new Error(`여행 생성 실패: ${error.message}`);
+    throw error;
   }
 
   if (!data) {

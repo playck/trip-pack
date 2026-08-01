@@ -1,16 +1,29 @@
 import { useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
-import { LogOut, UserX, Shield, FileText, Info } from "lucide-react";
+import {
+  LogOut,
+  UserX,
+  Shield,
+  FileText,
+  Info,
+  Receipt,
+  Crown,
+} from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/shared/hooks/useAuth";
-import { LEGAL_URLS } from "@/shared/constants/app";
+import { LEGAL_URLS, PAYMENT_LIVE } from "@/shared/constants/app";
 import { openUrl } from "@/shared/utils/nativeMessage";
+import { useSubscription } from "@/features/subscription/services/useSubscription";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import type { DialogConfig, DialogType } from "../type";
 import MenuItem from "./MenuItem";
 import AboutSheet from "./AboutSheet";
 
 export default function AccountSection() {
-  const { logout, deleteAccount } = useAuth();
+  const { logout, deleteAccount, user } = useAuth();
+  const navigate = useNavigate();
+  // 결제 미오픈 시 불필요한 tier 조회 방지 (캐싱 비용 전략).
+  const { isPremium } = useSubscription(user?.id, { enabled: PAYMENT_LIVE });
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({
     isOpen: false,
     type: null,
@@ -44,6 +57,25 @@ export default function AccountSection() {
 
   return (
     <>
+      {PAYMENT_LIVE && (
+        <Box>
+          <VStack
+            gap={0}
+            bg="white"
+            borderRadius="xl"
+            px={4}
+            borderWidth="1px"
+            borderColor="gray.200"
+          >
+            <MenuItem
+              icon={Crown}
+              label={isPremium ? "프리미엄 이용 중" : "프리미엄으로 업그레이드"}
+              onClick={() => navigate({ to: "/subscribe" })}
+            />
+          </VStack>
+        </Box>
+      )}
+
       <Box>
         <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
           앱 정보
@@ -65,6 +97,11 @@ export default function AccountSection() {
             icon={FileText}
             label="이용약관"
             onClick={() => handleOpenUrl(LEGAL_URLS.TERMS_OF_SERVICE)}
+          />
+          <MenuItem
+            icon={Receipt}
+            label="환불정책"
+            onClick={() => handleOpenUrl(LEGAL_URLS.REFUND_POLICY)}
           />
           <MenuItem
             icon={Info}

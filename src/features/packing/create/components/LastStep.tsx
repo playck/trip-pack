@@ -160,6 +160,9 @@ export default function LastStep() {
     userId: user?.id ?? "",
     onSuccess: handleSuccess,
     onError: handleError,
+    onTripLimitExceeded: () => {
+      navigate({ to: "/" });
+    },
   });
 
   useEffect(() => {

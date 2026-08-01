@@ -20,11 +20,27 @@ interface AppleSignInRequestMessage {
   type: "APPLE_SIGN_IN_REQUEST";
 }
 
+interface PremiumPurchaseRequestMessage {
+  type: "PREMIUM_PURCHASE_REQUEST";
+  userId: string;
+  productId?: string;
+  /** 요청 상관번호 — 네이티브가 결과에 그대로 실어 회신(늦은 결과 오배달 차단). */
+  nonce?: string;
+}
+
+interface RestorePurchasesMessage {
+  type: "RESTORE_PURCHASES";
+  userId: string;
+  nonce?: string;
+}
+
 type NativeMessage =
   | TripNotificationMessage
   | HapticMessage
   | OpenUrlMessage
-  | AppleSignInRequestMessage;
+  | AppleSignInRequestMessage
+  | PremiumPurchaseRequestMessage
+  | RestorePurchasesMessage;
 
 export interface AppleSignInBridgeResult {
   identityToken: string;
@@ -148,4 +164,96 @@ export function requestAppleSignIn(): Promise<AppleSignInBridgeResult> {
     });
     postNativeMessage({ type: "APPLE_SIGN_IN_REQUEST" });
   });
+}
+
+export interface PremiumPurchaseResult {
+  ok: boolean;
+  cancelled: boolean;
+  message?: string;
+}
+
+interface PremiumPurchaseResultDetail {
+  ok?: boolean;
+  cancelled?: boolean;
+  message?: string;
+  nonce?: string;
+}
+
+// 결제/복원 시트 상호작용(카드 입력/인증) 여유를 위해 길게.
+const PREMIUM_PURCHASE_TIMEOUT_MS = 180_000;
+
+function makeNonce(): string {
+  const c = globalThis.crypto;
+  if (c && typeof c.randomUUID === "function") return c.randomUUID();
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+// 네이티브에 메시지를 보내고 지정한 결과 이벤트를 기다린다.
+// 요청마다 nonce를 부여하고, 응답의 nonce가 일치할 때만 수락한다
+// (타임아웃 후 재시도 등에서 이전 요청의 늦은 결과가 새 요청을 오배달하는 것 방지).
+function awaitNativeResult(
+  resultEvent: string,
+  buildMessage: (nonce: string) => NativeMessage
+): Promise<PremiumPurchaseResult> {
+  return new Promise((resolve, reject) => {
+    if (!isReactNativeWebView()) {
+      reject(new Error("Not running inside React Native WebView"));
+      return;
+    }
+
+    const nonce = makeNonce();
+
+    const handleResult = (event: Event) => {
+      const detail = (event as CustomEvent<PremiumPurchaseResultDetail>).detail;
+      // 다른 요청의 늦은 결과는 무시(nonce가 있으면 일치할 때만 수락, 없으면 하위호환 수락).
+      if (detail?.nonce != null && detail.nonce !== nonce) return;
+      cleanup();
+      resolve({
+        ok: !!detail?.ok,
+        cancelled: !!detail?.cancelled,
+        message: detail?.message,
+      });
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("결제 응답 시간이 초과되었습니다"));
+    }, PREMIUM_PURCHASE_TIMEOUT_MS);
+
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener(resultEvent, handleResult);
+    };
+
+    window.addEventListener(resultEvent, handleResult);
+    postNativeMessage(buildMessage(nonce));
+  });
+}
+
+/**
+ * 네이티브(RevenueCat)에 프리미엄 일회성 언락 구매를 요청한다.
+ * userId(=Supabase uid)로 RevenueCat 식별 → 웹훅이 우리 유저에 매핑.
+ * tier 갱신은 웹훅(서버 권위)이 담당. 여기서는 UX 신호만.
+ */
+export function requestPremiumPurchase(
+  userId: string,
+  productId?: string
+): Promise<PremiumPurchaseResult> {
+  return awaitNativeResult("premium-purchase-result", (nonce) => ({
+    type: "PREMIUM_PURCHASE_REQUEST",
+    userId,
+    productId,
+    nonce,
+  }));
+}
+
+/** 구매 복원 (비소모성 필수 — 기기 변경/재설치 시 프리미엄 재동기화). */
+export function restorePremiumPurchase(
+  userId: string
+): Promise<PremiumPurchaseResult> {
+  return awaitNativeResult("premium-restore-result", (nonce) => ({
+    type: "RESTORE_PURCHASES",
+    userId,
+    nonce,
+  }));
 }

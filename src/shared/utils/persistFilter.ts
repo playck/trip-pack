@@ -15,6 +15,10 @@ export function isTripWithinPersistWindow(
   // 여행 목록은 상세 데이터 접근의 진입점이므로 항상 persist
   if (queryName === "tripList") return true;
 
+  // 구독 상태는 오프라인에서도 프리미엄 여부를 읽어야 하므로 persist.
+  // (키가 유저 스코프라 계정별로 분리 저장됨)
+  if (queryName === "subscription") return true;
+
   if (!tripId) return false;
 
   const tripInfo =
