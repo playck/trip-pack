@@ -284,7 +284,7 @@ url = ""
 # If enabled, the nonce check will be skipped. Required for local sign in with Google auth.
 skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
-email_optional = false
+# email_optional = false  # CLI < 2.108 미지원. 업그레이드 후 복원.
 
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.
@@ -314,14 +314,11 @@ enabled = false
 # Obtain from https://clerk.com/setup/supabase
 # domain = "example.clerk.accounts.dev"
 
-# OAuth server configuration
-[auth.oauth_server]
-# Enable OAuth server functionality
-enabled = false
-# Path for OAuth consent flow UI
-authorization_url_path = "/oauth/consent"
-# Allow dynamic client registration
-allow_dynamic_registration = false
+# OAuth server configuration (CLI < 2.108 미지원. 업그레이드 후 복원.)
+# [auth.oauth_server]
+# enabled = false
+# authorization_url_path = "/oauth/consent"
+# allow_dynamic_registration = false
 
 [edge_runtime]
 enabled = true
@@ -337,8 +334,12 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# RevenueCat 웹훅: Supabase JWT 대신 자체 Authorization 헤더로 인증하므로 JWT 검증 비활성화.
+[functions.revenuecat-webhook]
+verify_jwt = false
+
 [analytics]
-enabled = true
+enabled = false  # 로컬 Logflare 컨테이너 헬스체크 실패로 비활성화. 앱 개발엔 불필요.
 port = 54327
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"

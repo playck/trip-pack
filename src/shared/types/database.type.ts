@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          payload: Json
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       checklist_categories: {
         Row: {
           created_at: string | null
@@ -147,23 +192,65 @@ export type Database = {
           },
         ]
       }
+      payment_events: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          event_type: string
+          id: string
+          processed_at: string | null
+          provider: string
+          provider_event_id: string
+          raw_payload: Json
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type: string
+          id?: string
+          processed_at?: string | null
+          provider: string
+          provider_event_id: string
+          raw_payload?: Json
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type?: string
+          id?: string
+          processed_at?: string | null
+          provider?: string
+          provider_event_id?: string
+          raw_payload?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           id: string
+          tier: Database["public"]["Enums"]["subscription_tier_enum"]
           username: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id?: string
+          tier?: Database["public"]["Enums"]["subscription_tier_enum"]
           username?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
+          tier?: Database["public"]["Enums"]["subscription_tier_enum"]
           username?: string | null
         }
         Relationships: []
@@ -866,6 +953,10 @@ export type Database = {
         Args: { p_categories: Json; p_items: Json; p_trip_data: Json }
         Returns: string
       }
+      force_downgrade: {
+        Args: { reason?: string; target_user_id: string }
+        Returns: undefined
+      }
       get_my_owned_trip_ids: { Args: never; Returns: string[] }
       get_my_trip_ids: { Args: never; Returns: string[] }
       get_trips_with_check_progress: {
@@ -881,9 +972,17 @@ export type Database = {
           total_items: number
         }[]
       }
+      grant_premium: {
+        Args: { reason?: string; target_user_id: string }
+        Returns: undefined
+      }
+      manual_refund: {
+        Args: { reason?: string; target_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      subscription_tier_enum: "free" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1010,6 +1109,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_tier_enum: ["free", "premium"],
+    },
   },
 } as const

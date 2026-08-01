@@ -9,6 +9,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "gen:types": "npx supabase gen types typescript --project-id usishveqgtrglwxlezch > src/shared/types/database.type.ts",
+    "gen:types:local": "npx supabase gen types typescript --local > src/shared/types/database.type.ts",
+    "db:new": "supabase migration new",
+    "db:status": "supabase migration list --linked",
+    "db:diff": "supabase db diff -f",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push --linked",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
     "update:visa": "node --env-file=.env.local scripts/update-visa-data.mjs"
   },
   "dependencies": {
