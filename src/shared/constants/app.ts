@@ -10,6 +10,12 @@ export const APP_NAME = "Trip Pack";
  */
 export const PAYMENT_LIVE = import.meta.env.VITE_PAYMENT_LIVE === "true";
 
+/**
+ * 무료 플랜 여행 생성 한도. 서버 RPC(create_trip_with_checklist)의 카운트 기준과 일치해야 한다.
+ * 클라이언트에서는 결제 유도(페이월) 판단용 힌트로만 쓴다(최종 강제는 서버 게이트).
+ */
+export const FREE_TRIP_LIMIT = 3;
+
 export const LEGAL_URLS = {
   PRIVACY_POLICY:
     "https://foil-macaroon-8ff.notion.site/Trip-Pack-33979c3fa916809f9820facbc2510a4c",

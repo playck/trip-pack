@@ -1,19 +1,12 @@
 import { useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
-import {
-  LogOut,
-  UserX,
-  Shield,
-  FileText,
-  Info,
-  Receipt,
-  Crown,
-} from "lucide-react";
+import { LogOut, UserX, Shield, FileText, Info, Receipt } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { LEGAL_URLS, PAYMENT_LIVE } from "@/shared/constants/app";
 import { openUrl } from "@/shared/utils/nativeMessage";
 import { useSubscription } from "@/features/subscription/services/useSubscription";
+import PremiumCard from "@/features/subscription/components/PremiumCard";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import type { DialogConfig, DialogType } from "../type";
 import MenuItem from "./MenuItem";
@@ -58,22 +51,10 @@ export default function AccountSection() {
   return (
     <>
       {PAYMENT_LIVE && (
-        <Box>
-          <VStack
-            gap={0}
-            bg="white"
-            borderRadius="xl"
-            px={4}
-            borderWidth="1px"
-            borderColor="gray.200"
-          >
-            <MenuItem
-              icon={Crown}
-              label={isPremium ? "프리미엄 이용 중" : "프리미엄으로 업그레이드"}
-              onClick={() => navigate({ to: "/subscribe" })}
-            />
-          </VStack>
-        </Box>
+        <PremiumCard
+          isPremium={isPremium}
+          onClick={() => navigate({ to: "/subscribe" })}
+        />
       )}
 
       <Box>
@@ -137,10 +118,7 @@ export default function AccountSection() {
         </VStack>
       </Box>
 
-      <AboutSheet
-        isOpen={isAboutOpen}
-        onClose={() => setIsAboutOpen(false)}
-      />
+      <AboutSheet isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
 
       <ConfirmDialog
         isOpen={dialogConfig.isOpen}
