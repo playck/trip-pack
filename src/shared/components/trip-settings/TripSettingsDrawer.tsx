@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Box,
   Drawer,
@@ -20,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { statusColors, customPalette } from "@/shared/constants/colors";
+import { pushSheet, popSheet, useTopSheetId } from "../bottomSheetStack";
 import TripImageCard from "./TripImageCard";
 
 interface TripSettingsDrawerProps {
@@ -65,6 +67,20 @@ export default function TripSettingsDrawer({
     action();
   };
 
+  // BottomSheet 과 동일한 전역 stack 에 참여해, 위에 시트가 열리면 뒤로 물러난다.
+  const [myId, setMyId] = useState<number | null>(null);
+  const topId = useTopSheetId();
+  useEffect(() => {
+    if (!isOpen) return;
+    const id = pushSheet();
+    setMyId(id);
+    return () => {
+      popSheet(id);
+      setMyId(null);
+    };
+  }, [isOpen]);
+  const isHidden = myId !== null && topId !== null && myId !== topId;
+
   return (
     <Drawer.Root
       open={isOpen}
@@ -76,7 +92,15 @@ export default function TripSettingsDrawer({
       <Portal>
         <Drawer.Backdrop css={{ zIndex: 1200 }} />
         <Drawer.Positioner css={{ zIndex: 1201 }}>
-          <Drawer.Content maxW="100%">
+          <Drawer.Content
+            maxW="100%"
+            style={{
+              // 반투명 대신 스크림(brightness)으로 어둡게 — BottomSheet 과 동일
+              filter: isHidden ? "brightness(0.6)" : undefined,
+              pointerEvents: isHidden ? "none" : "auto",
+              transition: "filter 0.15s ease-out",
+            }}
+          >
             <Drawer.Header px={5} pt={5} pb={3}>
               <HStack justify="space-between" w="full">
                 <Text fontSize="md" fontWeight="semibold">

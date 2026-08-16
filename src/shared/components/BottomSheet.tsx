@@ -32,6 +32,14 @@ interface BottomSheetProps {
   title?: string;
   children: React.ReactNode;
   size?: BottomSheetSize;
+  height?: string;
+  /**
+   * 위에 다른 시트가 열렸을 때 이 시트를 어둡게 처리할지 여부 (기본 true).
+   * backdrop 은 모든 시트 콘텐츠보다 아래에 깔리므로 뒤 시트를 덮지 못한다.
+   * 그래서 시트 자체에 스크림을 씌워 깊이를 표현한다.
+   * 어둡게 처리하지 않아도 클릭은 항상 비활성화된다.
+   */
+  dimWhenBehind?: boolean;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
   primaryButton?: BottomSheetAction;
@@ -45,14 +53,17 @@ export default function BottomSheet({
   title,
   children,
   size = "content",
+  height,
+  dimWhenBehind = true,
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
   primaryButton,
   secondaryButton,
 }: BottomSheetProps) {
   const isFullscreen = size === "fullscreen";
-  const { minHeight, maxHeight } =
-    size === "min"
+  const { minHeight, maxHeight } = height
+    ? { minHeight: height, maxHeight: height }
+    : size === "min"
       ? {
           minHeight: BOTTOM_SHEET_MIN_HEIGHT,
           maxHeight: BOTTOM_SHEET_MAX_HEIGHT,
@@ -115,13 +126,16 @@ export default function BottomSheet({
             overflowY={isFullscreen ? "hidden" : "auto"}
             overscrollBehavior="contain"
             style={{
-              opacity: isHidden ? 0.7 : 1,
+              // 반투명(opacity) 대신 스크림(brightness)으로 어둡게 처리한다.
+              // opacity 를 쓰면 시트가 비쳐서 뒤 페이지가 배어 나온다.
+              filter:
+                isHidden && dimWhenBehind ? "brightness(0.6)" : undefined,
               pointerEvents: isHidden ? "none" : "auto",
               transform:
                 keyboardOffset > 0
                   ? `translateY(-${keyboardOffset}px)`
                   : undefined,
-              transition: "opacity 0.15s ease-out, transform 0.1s ease-out",
+              transition: "filter 0.15s ease-out, transform 0.1s ease-out",
             }}
           >
             <Drawer.Header
