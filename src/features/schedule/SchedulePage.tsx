@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Share2, Settings } from "lucide-react";
+import { Share2, Settings, Edit2, Wallet, Trash2, Heart } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
@@ -24,14 +24,15 @@ import { useTripExpenses } from "@/features/expense/services/useTripExpenses";
 import {
   GoogleMapView,
   DayScheduleList,
-  AddScheduleSheet,
+  PlaceSearchSheet,
   AddMemoSheet,
   ApiKeyMissingState,
   MapWrapper,
   MapCollapseButton,
+  WishlistBottomSheet,
 } from "./components";
-import ScheduleActionSheet from "./components/modals/ScheduleActionSheet";
-import EditScheduleSheet from "./components/modals/EditScheduleSheet";
+import PlaceActionSheet from "./components/modals/PlaceActionSheet";
+import PlaceDetailEditSheet from "./components/modals/PlaceDetailEditSheet";
 import {
   useGeocoding,
   parseRegionId,
@@ -43,12 +44,15 @@ import {
 import { useScheduleDetailActions } from "./hooks/useScheduleDetailActions";
 import { useScheduleMap } from "./hooks/useScheduleMap";
 import { useHidePastSchedule } from "./hooks/useHidePastSchedule";
+import { useConvertScheduleToWishlist } from "./services/useConvertScheduleToWishlist";
+import { isMemo } from "./utils/scheduleHelpers";
 import { ScheduleProvider } from "./context";
 
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
   const settingsDrawer = useDisclosure();
+  const moveToWishlistConfirm = useDisclosure();
   const { data: expenses } = useTripExpenses(tripId);
   const { data: allSchedules } = useTripSchedules(tripId);
 
@@ -78,6 +82,14 @@ function SchedulePageContent() {
     handleCloseSheet,
     handleSelectPlace,
   } = useScheduleAdd(tripId || "");
+
+  // 일정 → 가고 싶은 곳 되돌리기
+  const convertToWishlistMutation = useConvertScheduleToWishlist(tripId || "", {
+    onSuccess: moveToWishlistConfirm.onClose,
+  });
+
+  // 가고 싶은 곳 목록 시트
+  const wishlistSheet = useDisclosure();
 
   // 메모
   const {
@@ -111,6 +123,22 @@ function SchedulePageContent() {
     handleCloseExpenseSheet,
     handleSaveExpense,
   } = useScheduleDetailActions(tripId || "", handleEditMemo);
+
+  // 가고 싶은 곳으로 옮기기 — 연동 경비가 있으면 확인 후 진행
+  const handleMoveToWishlist = () => {
+    if (!selectedSchedule) return;
+
+    if (scheduleExpenseMap[selectedSchedule.id]) {
+      moveToWishlistConfirm.onOpen();
+    } else {
+      convertToWishlistMutation.mutate(selectedSchedule.id);
+    }
+  };
+
+  const handleConfirmMoveToWishlist = () => {
+    if (!selectedSchedule) return;
+    convertToWishlistMutation.mutate(selectedSchedule.id);
+  };
 
   // 지도
   const {
@@ -160,6 +188,15 @@ function SchedulePageContent() {
 
   const headerRightAction = (
     <HStack gap={0}>
+      <IconButton
+        aria-label="가고 싶은 곳"
+        variant="ghost"
+        size="sm"
+        onClick={wishlistSheet.onOpen}
+        color="gray.600"
+      >
+        <Heart size={20} />
+      </IconButton>
       <IconButton
         aria-label="일정 공유하기"
         variant="ghost"
@@ -269,15 +306,25 @@ function SchedulePageContent() {
 
       {/* 일정 추가 바텀시트 */}
       {selectedDay && (
-        <AddScheduleSheet
+        <PlaceSearchSheet
           isOpen={isSheetOpen}
           onClose={handleCloseSheet}
+          tripId={tripId}
           onSelectPlace={handleSelectPlace}
-          dayNumber={selectedDay.dayNumber}
-          date={selectedDay.date}
+          targetDay={selectedDay}
           countryCode={countryCode}
         />
       )}
+
+      {/* 가고 싶은 곳 목록 바텀시트 */}
+      <WishlistBottomSheet
+        isOpen={wishlistSheet.open}
+        onClose={wishlistSheet.onClose}
+        tripId={tripId}
+        tripStartDate={tripInfo.startDate}
+        tripEndDate={tripInfo.endDate}
+        countryCode={countryCode}
+      />
 
       {/* 메모 바텀시트 */}
       {memoSelectedDay && (
@@ -296,21 +343,47 @@ function SchedulePageContent() {
       {/* 일정 액션 시트 */}
       {selectedSchedule && (
         <>
-          <ScheduleActionSheet
+          <PlaceActionSheet
             isOpen={isActionSheetOpen}
             onClose={handleCloseActionSheet}
-            scheduleName={selectedSchedule.place_name}
-            scheduleAddress={selectedSchedule.place_address ?? undefined}
-            onEdit={handleEditSchedule}
-            onAddExpense={handleOpenExpenseSheet}
-            onDelete={handleDeleteSchedule}
+            placeName={selectedSchedule.place_name}
+            placeAddress={selectedSchedule.place_address ?? undefined}
+            actions={[
+              { icon: Edit2, label: "수정하기", onClick: handleEditSchedule },
+              {
+                icon: Wallet,
+                label: "경비 추가하기",
+                onClick: handleOpenExpenseSheet,
+              },
+              // 메모는 장소가 아니므로 보관함으로 옮길 수 없다
+              ...(isMemo(selectedSchedule)
+                ? []
+                : [
+                    {
+                      icon: Heart,
+                      label: "가고 싶은 곳으로 옮기기",
+                      onClick: handleMoveToWishlist,
+                    },
+                  ]),
+              {
+                icon: Trash2,
+                label: "삭제하기",
+                onClick: handleDeleteSchedule,
+                isDangerous: true,
+              },
+            ]}
           />
 
-          <EditScheduleSheet
+          <PlaceDetailEditSheet
             isOpen={isEditSheetOpen}
             onClose={handleCloseEditSheet}
-            schedule={selectedSchedule}
-            onSave={handleSaveEditSchedule}
+            title="일정 수정"
+            initialPlaceName={selectedSchedule.place_name}
+            initialNotes={selectedSchedule.notes}
+            initialCategory={selectedSchedule.category}
+            onSave={(values) =>
+              handleSaveEditSchedule(selectedSchedule.id, values)
+            }
           />
         </>
       )}
@@ -331,6 +404,26 @@ function SchedulePageContent() {
           </Text>
           <br />
           일정을 정말로 삭제하시겠습니까?
+        </Text>
+      </ConfirmDialog>
+
+      {/* 가고 싶은 곳으로 옮기기 확인 다이얼로그 (경비 연동 시) */}
+      <ConfirmDialog
+        isOpen={moveToWishlistConfirm.open}
+        onClose={moveToWishlistConfirm.onClose}
+        title="가고 싶은 곳으로 옮기기"
+        confirmLabel="옮기기"
+        onConfirm={handleConfirmMoveToWishlist}
+        isLoading={convertToWishlistMutation.isPending}
+      >
+        <Text>
+          <Text as="span" fontWeight="bold">
+            "{selectedSchedule?.place_name}"
+          </Text>
+          <br />
+          연결된 경비는 경비 목록에 그대로 남고
+          <br />
+          일정 연결만 해제됩니다. 옮기시겠습니까?
         </Text>
       </ConfirmDialog>
 

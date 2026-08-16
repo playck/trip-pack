@@ -875,6 +875,59 @@ export type Database = {
           },
         ]
       }
+      trip_wishlists: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          notes: string | null
+          place_address: string | null
+          place_id: string
+          place_name: string
+          sort_order: number
+          trip_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          place_address?: string | null
+          place_id: string
+          place_name: string
+          sort_order?: number
+          trip_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          notes?: string | null
+          place_address?: string | null
+          place_id?: string
+          place_name?: string
+          sort_order?: number
+          trip_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_wishlists_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trips: {
         Row: {
           budget: number | null

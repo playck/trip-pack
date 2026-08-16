@@ -41,13 +41,16 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
   const getPlaceDetails = useCallback(
     (placeId: string): Promise<PlaceResult> => {
       return new Promise((resolve, reject) => {
-        if (!placesLib || !map) {
-          reject(new Error("Places library or map not ready"));
+        if (!placesLib) {
+          reject(new Error("Places library not ready"));
           return;
         }
 
         if (!placesServiceRef.current) {
-          placesServiceRef.current = new placesLib.PlacesService(map);
+          // 지도가 없는 화면(가고 싶은 곳 등)에서는 분리된 div로 서비스를 생성한다
+          placesServiceRef.current = new placesLib.PlacesService(
+            map ?? document.createElement("div"),
+          );
         }
 
         const request: google.maps.places.PlaceDetailsRequest = {

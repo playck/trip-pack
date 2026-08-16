@@ -1,45 +1,51 @@
 import { useEffect, useState } from "react";
 import { VStack, Input, Text, Textarea } from "@chakra-ui/react";
 import { BottomSheet } from "@/shared/components";
-import type { Schedule } from "../../types";
 import { PLACE_ICON_OPTIONS, DEFAULT_PLACE_ICON_KEY } from "../../memoIcons";
 import IconPicker from "../IconPicker";
 
-interface EditScheduleSheetProps {
+interface PlaceDetailEditSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  schedule: Schedule;
-  onSave: (
-    scheduleId: string,
-    updates: { placeName: string; notes?: string; category?: string }
-  ) => void;
+  title: string;
+  initialPlaceName: string;
+  initialNotes?: string | null;
+  initialCategory?: string | null;
+  onSave: (values: {
+    placeName: string;
+    notes: string;
+    category: string;
+  }) => void;
 }
 
-export default function EditScheduleSheet({
+export default function PlaceDetailEditSheet({
   isOpen,
   onClose,
-  schedule,
+  title,
+  initialPlaceName,
+  initialNotes,
+  initialCategory,
   onSave,
-}: EditScheduleSheetProps) {
-  const [placeName, setPlaceName] = useState(schedule.place_name);
-  const [notes, setNotes] = useState(schedule.notes || "");
+}: PlaceDetailEditSheetProps) {
+  const [placeName, setPlaceName] = useState(initialPlaceName);
+  const [notes, setNotes] = useState(initialNotes || "");
   const [iconKey, setIconKey] = useState(
-    schedule.category ?? DEFAULT_PLACE_ICON_KEY
+    initialCategory ?? DEFAULT_PLACE_ICON_KEY
   );
 
-  // 시트가 열릴 때마다 대상 일정 값으로 동기화 (BottomSheet는 unmountOnExit라
+  // 시트가 열릴 때마다 대상 값으로 동기화 (BottomSheet는 unmountOnExit라
   // 부모 상태가 유지되므로 열림 시점에 명시적으로 맞춰준다)
   useEffect(() => {
     if (isOpen) {
-      setPlaceName(schedule.place_name);
-      setNotes(schedule.notes || "");
-      setIconKey(schedule.category ?? DEFAULT_PLACE_ICON_KEY);
+      setPlaceName(initialPlaceName);
+      setNotes(initialNotes || "");
+      setIconKey(initialCategory ?? DEFAULT_PLACE_ICON_KEY);
     }
-  }, [isOpen, schedule]);
+  }, [isOpen, initialPlaceName, initialNotes, initialCategory]);
 
   const handleSave = () => {
     if (placeName.trim()) {
-      onSave(schedule.id, {
+      onSave({
         placeName: placeName.trim(),
         notes: notes.trim(),
         category: iconKey,
@@ -52,7 +58,7 @@ export default function EditScheduleSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={onClose}
-      title="일정 수정"
+      title={title}
       primaryButton={{
         text: "저장하기",
         onClick: handleSave,

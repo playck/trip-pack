@@ -34,3 +34,24 @@ export interface UpdateScheduleParams {
   notes?: string;
   category?: string;
 }
+
+export type Wishlist = Tables<"trip_wishlists">;
+export type WishlistInsert = TablesInsert<"trip_wishlists">;
+
+export interface CreateWishlistParams {
+  tripId: string;
+  placeId: string;
+  placeName: string;
+  placeAddress?: string;
+  latitude?: number;
+  longitude?: number;
+  notes?: string;
+  category?: string;
+}
+
+export interface UpdateWishlistParams {
+  wishlistId: string;
+  placeName?: string;
+  notes?: string;
+  category?: string;
+}

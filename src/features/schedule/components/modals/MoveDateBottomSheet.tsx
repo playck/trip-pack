@@ -11,6 +11,7 @@ interface MoveDateBottomSheetProps {
   tripEndDate: string;
   onSelectDay: (dayNumber: number) => void;
   isLoading?: boolean;
+  title?: string;
 }
 
 export default function MoveDateBottomSheet({
@@ -21,11 +22,12 @@ export default function MoveDateBottomSheet({
   tripEndDate,
   onSelectDay,
   isLoading = false,
+  title = "이동할 날짜 선택",
 }: MoveDateBottomSheetProps) {
   const totalDays = getTripDays(tripStartDate, tripEndDate);
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="이동할 날짜 선택">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
       <VStack gap={0} pb={4} px={2}>
         {Array.from({ length: totalDays }, (_, i) => i + 1).map(
           (day, index, array) => {
