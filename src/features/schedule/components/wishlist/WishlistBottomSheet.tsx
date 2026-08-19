@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { VStack, Text, Box, Button } from "@chakra-ui/react";
-import { Plus, Edit2, Trash2 } from "lucide-react";
+import { VStack, Text, Box } from "@chakra-ui/react";
+import { Edit2, Trash2 } from "lucide-react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import { toaster } from "@/shared/components/ui/toaster";
-import { borderColors, textColors } from "@/shared/constants/colors";
+import { textColors } from "@/shared/constants/colors";
 import WishlistItem from "./WishlistItem";
 import PlaceActionSheet from "../modals/PlaceActionSheet";
 import PlaceDetailEditSheet from "../modals/PlaceDetailEditSheet";
@@ -37,7 +37,9 @@ export default function WishlistBottomSheet({
   tripEndDate,
   countryCode,
 }: WishlistBottomSheetProps) {
-  const { data: wishlists = [] } = useTripWishlists(isOpen ? tripId : undefined);
+  const { data: wishlists = [] } = useTripWishlists(
+    isOpen ? tripId : undefined,
+  );
 
   const [selected, setSelected] = useState<Wishlist | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -109,26 +111,13 @@ export default function WishlistBottomSheet({
         isOpen={isOpen}
         onClose={onClose}
         title="가고 싶은 곳"
-        height="80vh"
+        height="90vh"
+        primaryButton={{
+          text: "가고 싶은 곳 담기",
+          onClick: () => setIsSearchOpen(true),
+        }}
       >
         <VStack align="stretch" gap={0} px={2} pb={4}>
-          <Box px={1} pb={2}>
-            <Button
-              w="full"
-              size="sm"
-              variant="outline"
-              borderColor={borderColors.emphasized}
-              borderWidth="2px"
-              borderStyle="dashed"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Plus size={14} />
-              <Text ml={1} fontSize="sm">
-                가고 싶은 곳 담기
-              </Text>
-            </Button>
-          </Box>
-
           {wishlists.length === 0 ? (
             <Box p={6} textAlign="center">
               <Text fontSize="sm" color={textColors.subtle}>
@@ -139,7 +128,7 @@ export default function WishlistBottomSheet({
             </Box>
           ) : (
             <>
-              <Box px={3} pb={1.5}>
+              <Box px={3} pb={1.5} textAlign="right">
                 <Text fontSize="xs" color={textColors.tertiary}>
                   장소를 선택하면 원하는 일차의 일정으로 추가돼요
                 </Text>
