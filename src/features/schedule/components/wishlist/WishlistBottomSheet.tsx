@@ -57,7 +57,7 @@ export default function WishlistBottomSheet({
     },
   });
   const convertMutation = useConvertWishlistToSchedule(tripId, tripStartDate, {
-    onSuccess: () => {
+    onDone: () => {
       setIsMoveOpen(false);
       setSelected(null);
     },

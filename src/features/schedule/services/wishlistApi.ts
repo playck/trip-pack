@@ -1,6 +1,6 @@
 import { supabase } from "@/shared/service/supabase/cilent";
 import { getDayDate } from "@/shared/utiles/date";
-import { createSchedule, getLastVisitOrder, getScheduleById } from "./api";
+import { getScheduleById } from "./api";
 import { isMemo } from "../utils/scheduleHelpers";
 import type {
   CreateWishlistParams,
@@ -12,9 +12,7 @@ import type {
 /**
  * 여행의 위시리스트(가고 싶은 곳) 목록 조회
  */
-export const getTripWishlists = async (
-  tripId: string
-): Promise<Wishlist[]> => {
+export const getTripWishlists = async (tripId: string): Promise<Wishlist[]> => {
   const { data, error } = await supabase
     .from("trip_wishlists")
     .select("*")
@@ -48,12 +46,12 @@ export const getLastSortOrder = async (tripId: string): Promise<number> => {
 };
 
 /**
- * 위시리스트 추가 (멱등)
+ * 위시리스트 추가
  * - sort_order는 서버 조회 기준으로 계산한다 (여러 기기 동시 사용 시 캐시 충돌 방지)
  * - 같은 장소가 이미 담겨 있으면(trip_id+place_id 유니크) 새로 만들지 않고 기존 항목을 반환한다
  */
 export const createWishlist = async (
-  params: CreateWishlistParams
+  params: CreateWishlistParams,
 ): Promise<{ id: string }> => {
   const lastOrder = await getLastSortOrder(params.tripId);
 
@@ -105,7 +103,7 @@ export const createWishlist = async (
  * 위시리스트 수정
  */
 export const updateWishlist = async (
-  params: UpdateWishlistParams
+  params: UpdateWishlistParams,
 ): Promise<void> => {
   const { wishlistId, ...updateData } = params;
 
@@ -139,7 +137,7 @@ export const updateWishlist = async (
  */
 export const deleteWishlistByPlaceId = async (
   tripId: string,
-  placeId: string
+  placeId: string,
 ): Promise<number> => {
   const { data, error } = await supabase
     .from("trip_wishlists")
@@ -171,81 +169,72 @@ export const deleteWishlist = async (wishlistId: string): Promise<void> => {
 
 /**
  * 위시리스트 항목을 특정 일차의 일정으로 전환
- * 일정 생성이 성공한 뒤에만 위시리스트에서 제거한다 (실패 시 원본 보존)
+ *
+ * 생성과 제거를 한 트랜잭션에서 처리하는 RPC 를 호출한다.
+ * 클라이언트에서 나눠 보내면 그 사이 창에서 유령 항목(제거 실패)이나
+ * 중복 일정(두 일행이 동시 변환)이 생길 수 있다.
+ *
+ * 반환값이 null 이면 대상 항목이 서버에 이미 없다는 뜻이다
+ * (일행이 먼저 정리했거나 내가 다른 기기에서 처리함). 이때 일정은 만들어지지 않는다.
  */
 export const convertWishlistToSchedule = async (params: {
   wishlistId: string;
-  tripId: string;
   dayNumber: number;
   tripStartDate: string;
-}): Promise<{ id: string }> => {
-  const { wishlistId, tripId, dayNumber, tripStartDate } = params;
+}): Promise<{ id: string } | null> => {
+  const { wishlistId, dayNumber, tripStartDate } = params;
 
-  const { data: wishlist, error } = await supabase
-    .from("trip_wishlists")
-    .select("*")
-    .eq("id", wishlistId)
-    .single();
-
-  if (error || !wishlist) {
-    throw new Error("가고 싶은 곳을 찾을 수 없습니다");
-  }
-
-  const lastOrder = await getLastVisitOrder(tripId, dayNumber);
-
-  const created = await createSchedule({
-    tripId,
-    dayNumber,
-    scheduleDate: getDayDate(tripStartDate, dayNumber),
-    placeId: wishlist.place_id,
-    placeName: wishlist.place_name,
-    placeAddress: wishlist.place_address ?? undefined,
-    latitude: wishlist.latitude ?? undefined,
-    longitude: wishlist.longitude ?? undefined,
-    visitOrder: lastOrder + 1,
-    notes: wishlist.notes ?? undefined,
-    category: wishlist.category ?? undefined,
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: {
+        p_wishlist_id: string;
+        p_day_number: number;
+        p_schedule_date: string;
+      },
+    ) => Promise<{ data: string | null; error: { message: string } | null }>
+  )("convert_wishlist_to_schedule", {
+    p_wishlist_id: wishlistId,
+    p_day_number: dayNumber,
+    p_schedule_date: getDayDate(tripStartDate, dayNumber),
   });
 
-  await deleteWishlist(wishlistId);
+  if (error) {
+    throw new Error(`일정 추가에 실패했습니다: ${error.message}`);
+  }
 
-  return created;
+  return data ? { id: data } : null;
 };
 
 /**
  * 일정을 위시리스트로 되돌리기
- * - 위시리스트 생성이 성공한 뒤에만 일정을 제거한다 (실패 시 원본 보존)
- * - 일정 행만 삭제하므로 연동 경비는 남고 schedule_id 연결만 해제된다
- *   (trip_expenses_schedule_id_fkey ON DELETE SET NULL)
+ *
+ * 정방향과 마찬가지로 생성·제거를 한 트랜잭션에서 처리하는 RPC 를 호출한다.
+ * 연동 경비는 그대로 남고 schedule_id 연결만 해제된다
+ * (trip_expenses_schedule_id_fkey ON DELETE SET NULL).
+ *
+ * 반환값이 null 이면 대상 일정이 서버에 이미 없다는 뜻이다.
  */
 export const convertScheduleToWishlist = async (params: {
   scheduleId: string;
-}): Promise<{ id: string }> => {
+}): Promise<{ id: string } | null> => {
+  // 메모 가드는 클라이언트에 둔다 — place_id 는 불변이라 원자성이 필요 없다
   const schedule = await getScheduleById(params.scheduleId);
 
   if (isMemo(schedule)) {
     throw new Error("메모는 가고 싶은 곳으로 옮길 수 없습니다");
   }
 
-  const created = await createWishlist({
-    tripId: schedule.trip_id,
-    placeId: schedule.place_id,
-    placeName: schedule.place_name,
-    placeAddress: schedule.place_address ?? undefined,
-    latitude: schedule.latitude ?? undefined,
-    longitude: schedule.longitude ?? undefined,
-    notes: schedule.notes ?? undefined,
-    category: schedule.category ?? undefined,
-  });
-
-  const { error } = await supabase
-    .from("trip_schedules")
-    .delete()
-    .eq("id", params.scheduleId);
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: { p_schedule_id: string },
+    ) => Promise<{ data: string | null; error: { message: string } | null }>
+  )("convert_schedule_to_wishlist", { p_schedule_id: params.scheduleId });
 
   if (error) {
     throw new Error(`일정 이동에 실패했습니다: ${error.message}`);
   }
 
-  return created;
+  return data ? { id: data } : null;
 };

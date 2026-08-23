@@ -85,7 +85,7 @@ function SchedulePageContent() {
 
   // 일정 → 가고 싶은 곳 되돌리기
   const convertToWishlistMutation = useConvertScheduleToWishlist(tripId || "", {
-    onSuccess: moveToWishlistConfirm.onClose,
+    onDone: moveToWishlistConfirm.onClose,
   });
 
   // 가고 싶은 곳 목록 시트
