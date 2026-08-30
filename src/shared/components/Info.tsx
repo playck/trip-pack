@@ -3,7 +3,7 @@ import { Box, type BoxProps } from "@chakra-ui/react";
 
 interface InfoProps extends BoxProps {
   children: ReactNode;
-  colorScheme?: "blue" | "gray" | "green" | "orange";
+  colorScheme?: "blue" | "gray" | "green" | "orange" | "purple";
 }
 
 const COLOR_MAP = {
@@ -11,6 +11,7 @@ const COLOR_MAP = {
   gray: { bg: "gray.50", border: "gray.100" },
   green: { bg: "green.50", border: "green.100" },
   orange: { bg: "orange.50", border: "orange.100" },
+  purple: { bg: "purple.50", border: "purple.100" },
 } as const;
 
 export default function Info({

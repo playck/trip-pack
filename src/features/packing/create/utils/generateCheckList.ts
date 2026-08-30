@@ -14,6 +14,8 @@ import {
   RAINY_ITEMS,
 } from "@/shared/data/checkList";
 import type { PackItem } from "@/shared/data/checkList";
+import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
+import { ESSENTIAL_CATEGORY_NAME } from "@/shared/data/essentialItemGuides";
 import { getPlugNote } from "@/shared/data/plugStandards";
 
 import type { PackingCreateState } from "../store/packingCreateAtom";
@@ -46,10 +48,26 @@ export function generateCheckList(
       required: visaRule.required,
       notes: getVisaNote(visaRule),
     });
-    result.push({ categoryName: "필수 준비물", items: essentialItems });
+
+    // 전자 입국신고·입국카드가 있는 국가면 비자 아이템 바로 뒤에 삽입
+    const declaration = getEntryDeclaration(countryCode);
+    if (declaration) {
+      essentialItems.splice(insertAt + 1, 0, {
+        name: declaration.name,
+        required: declaration.required,
+        notes: [declaration.deadline, declaration.note]
+          .filter(Boolean)
+          .join(", "),
+      });
+    }
+
+    result.push({
+      categoryName: ESSENTIAL_CATEGORY_NAME,
+      items: essentialItems,
+    });
   } else {
     result.push({
-      categoryName: "필수 준비물",
+      categoryName: ESSENTIAL_CATEGORY_NAME,
       items: DOMESTIC_ESSENTIAL_ITEMS,
     });
   }

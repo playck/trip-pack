@@ -1,11 +1,17 @@
 import { Box, Text, VStack, Flex, Badge, IconButton } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { CalendarDays, DollarSign } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { getTripBackgroundImage } from "@/shared/utiles/tripImage";
 import { colorCombinations, colors } from "@/shared/constants/colors";
+import {
+  getEntryDeclaration,
+  isDeclarationWindowOpen,
+} from "@/shared/data/entryDeclarations";
 import { formatTripDateRange } from "@/shared/utiles/date";
+import { isDeclarationCheckedInCache } from "@/features/packing/list/utils/declarationStatus";
 import type { Trip } from "../types";
 
 interface TripCardProps {
@@ -15,6 +21,7 @@ interface TripCardProps {
 
 export default function TripCard({ trip, onClick }: TripCardProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const backgroundImage = getTripBackgroundImage({
     id: trip.id,
@@ -48,6 +55,20 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
   };
 
   const tripStatus = getTripStatus(trip.start_date, trip.end_date);
+
+  // 전자 입국신고 작성 창이 열린 기간에만 배지 노출.
+  // 추가 쿼리 없이 날짜·국가 + 이미 캐시된 체크리스트만 읽는다 — 캐시가 없으면
+  // 체크 여부를 모르니 배지를 보여주는 쪽(과경고)으로 동작한다.
+  const declaration = getEntryDeclaration(trip.country_code);
+  const today = dayjs().startOf("day");
+  const daysUntilTrip = dayjs(trip.start_date).startOf("day").diff(today, "day");
+  const daysUntilTripEnd = dayjs(trip.end_date || trip.start_date)
+    .startOf("day")
+    .diff(today, "day");
+  const showDeclarationBadge =
+    !!declaration &&
+    isDeclarationWindowOpen(declaration, daysUntilTrip, daysUntilTripEnd) &&
+    !isDeclarationCheckedInCache(queryClient, trip.id);
 
   const handleScheduleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -129,26 +150,40 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
         position="relative"
         zIndex={1}
       >
-        {tripStatus && (
-          <Badge
-            colorPalette={
-              tripStatus === "여행중"
-                ? "orange"
-                : tripStatus === "여행종료"
-                  ? "gray"
-                  : colors.primary.palette
-            }
-            variant="solid"
-            fontSize="xs"
-            px={2}
-            py={1}
-            alignSelf="flex-start"
-            borderRadius="md"
-            fontWeight="bold"
-          >
-            {tripStatus}
-          </Badge>
-        )}
+        <Flex gap={1.5} align="center" alignSelf="flex-start">
+          {tripStatus && (
+            <Badge
+              colorPalette={
+                tripStatus === "여행중"
+                  ? "orange"
+                  : tripStatus === "여행종료"
+                    ? "gray"
+                    : colors.primary.palette
+              }
+              variant="solid"
+              fontSize="xs"
+              px={2}
+              py={1}
+              borderRadius="md"
+              fontWeight="bold"
+            >
+              {tripStatus}
+            </Badge>
+          )}
+          {showDeclarationBadge && declaration && (
+            <Badge
+              colorPalette="orange"
+              variant="solid"
+              fontSize="xs"
+              px={2}
+              py={1}
+              borderRadius="md"
+              fontWeight="bold"
+            >
+              {declaration.shortName} 작성 기간
+            </Badge>
+          )}
+        </Flex>
 
         <VStack justify="end" align="start" gap="2px" flex={1}>
           <Text
