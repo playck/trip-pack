@@ -24,11 +24,13 @@ const MANUAL_VISA_REQUIREMENTS: Record<string, VisaRequirement> = {
     rawText: "무사증 90일",
     note: "관광 목적, 2026.12.31까지 한시 연장",
   },
+  // 중국 정부의 일방·한시 조치라 외교부 공공데이터에 미반영(2026-04 수집본도 구제도만 기재).
+  // 만료(2026-12-31) 후 연장 발표가 없으면 required: true 로 원복할 것.
   CN: {
-    required: true,
-    stayDays: null,
-    rawText: "관광 비자 사전 발급 필요",
-    note: null,
+    required: false,
+    stayDays: 30,
+    rawText: "무사증 30일",
+    note: "관광 등 목적, 중국 정부 한시 시행(2026.12.31까지 연장 발표) — 만료 시점 재확인 필요",
   },
   CA: {
     required: true,

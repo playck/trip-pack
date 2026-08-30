@@ -5,15 +5,12 @@ import {
 
 // 지역 단위 예외(국가는 비자 필요지만 특정 지역만 무비자 등).
 // note 를 지정하면 국가 레벨 안내 대신 이 지역 전용 문구를 노출한다.
+// cn-hainan(여행사 경유 무사증)은 중국 전국 무비자 한시 시행(~2026.12.31)으로 제거 —
+// 전국 정책 만료 후 하이난만 무사증으로 돌아가면 복원할 것.
 const REGION_EXCEPTIONS: Record<
   string,
   { requiredOverride: boolean; note?: string }
-> = {
-  "cn-hainan": {
-    requiredOverride: false,
-    note: "하이난 무사증 30일 (전담 여행사 통해 최소 48시간 전 신청)",
-  },
-};
+> = {};
 
 export interface VisaRuleResult {
   required: boolean;

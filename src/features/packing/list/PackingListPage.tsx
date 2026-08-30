@@ -199,6 +199,7 @@ export default function PackingListPage() {
                 viewMode={viewMode}
                 showUncheckedOnly={showUncheckedOnly}
                 countryCode={tripInfo.countryCode}
+                regionId={tripInfo.regionId}
                 regionName={tripInfo.regionName}
                 startDate={tripInfo.startDate}
                 endDate={tripInfo.endDate}
