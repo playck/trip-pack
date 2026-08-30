@@ -20,6 +20,7 @@ import {
 import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors } from "@/shared/constants/colors";
+import { ESSENTIAL_CATEGORY_NAME } from "@/shared/data/essentialItemGuides";
 import { useTripDetail } from "@/features/main/hooks/useTripDetail";
 
 import PackingItemList from "./components/PackingItemList";
@@ -94,7 +95,7 @@ export default function CategoryDetailPage() {
   const category = categories?.find(
     (cat: CategoryWithItems) => cat.name === categoryName,
   );
-  const isEssentialCategory = category?.name === "필수 준비물";
+  const isEssentialCategory = category?.name === ESSENTIAL_CATEGORY_NAME;
 
   if (error) {
     return (
@@ -268,6 +269,7 @@ export default function CategoryDetailPage() {
               category={category}
               searchQuery={searchQuery}
               countryCode={countryCode}
+              isEssentialCategory={isEssentialCategory}
               isEditMode={isEditMode}
               isDeleting={deleteItemsMutation.isPending}
               onDeleteItems={handleDeleteItems}

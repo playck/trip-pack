@@ -14,6 +14,7 @@ interface PackingItemProps {
   onSelect?: (itemId: string) => void;
   onToggleCheck?: (itemId: string, isChecked: boolean) => void;
   onOpenActions?: (item: ChecklistItem) => void;
+  onOpenGuide?: (item: ChecklistItem) => void;
 }
 
 export default function PackingItem({
@@ -24,6 +25,7 @@ export default function PackingItem({
   onSelect,
   onToggleCheck,
   onOpenActions,
+  onOpenGuide,
 }: PackingItemProps) {
   const {
     cabinPolicy,
@@ -73,6 +75,7 @@ export default function PackingItem({
           isEditMode={isEditMode}
           onToggleCheck={handleItemCheck}
           onOpenActions={handleOpenActions}
+          onOpenGuide={onOpenGuide ? () => onOpenGuide(item) : undefined}
         />
 
         {item.notes && (

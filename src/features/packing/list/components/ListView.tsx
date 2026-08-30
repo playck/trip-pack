@@ -13,11 +13,17 @@ import { ChevronDown, ChevronRight, ArrowRight, Package } from "lucide-react";
 
 import { CabinPolicyIcon, Checkbox } from "@/shared/components";
 import type { CabinPolicy } from "@/shared/data/checkList";
+import {
+  ESSENTIAL_CATEGORY_NAME,
+  findEssentialGuide,
+} from "@/shared/data/essentialItemGuides";
 import { colors } from "@/shared/constants/colors";
 
 import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
 import PackingItemPolicyContainer from "./PackingItemPolicyContainer";
+import EssentialGuideButton from "./EssentialGuideButton";
+import EssentialItemGuideSheet from "./EssentialItemGuideSheet";
 
 type ChecklistItem = CategoryWithItems["items"][0];
 interface ListViewProps {
@@ -40,10 +46,16 @@ export default function ListView({
   const navigate = useNavigate();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const [selectedItem, setSelectedItem] = useState<ChecklistItem | null>(null);
+  const [guideItem, setGuideItem] = useState<ChecklistItem | null>(null);
   const {
     open: isPolicyOpen,
     onOpen: onPolicyOpen,
     onClose: onPolicyClose,
+  } = useDisclosure();
+  const {
+    open: isGuideOpen,
+    onOpen: onGuideOpen,
+    onClose: onGuideClose,
   } = useDisclosure();
 
   const getCompletionCount = (category: CategoryWithItems) => {
@@ -91,6 +103,12 @@ export default function ListView({
     onPolicyOpen();
   };
 
+  const handleGuideClick = (e: React.MouseEvent, item: ChecklistItem) => {
+    e.stopPropagation();
+    setGuideItem(item);
+    onGuideOpen();
+  };
+
   return (
     <VStack gap={2} align="stretch" w="full">
       <VStack gap={2} align="stretch" w="full">
@@ -101,6 +119,7 @@ export default function ListView({
               : CATEGORY_ICONS[category.name] || Package
           ) as LucideIcon;
           const isExpanded = expandedCategories[category.id] ?? true;
+          const isEssentialCategory = category.name === ESSENTIAL_CATEGORY_NAME;
           const { completed, total } = getCompletionCount(category);
           const sortedItems = sortedItemsByCategory[category.id] || [];
 
@@ -218,6 +237,13 @@ export default function ListView({
                                 {item.name}
                               </Text>
                             </HStack>
+                            {isEssentialCategory &&
+                              findEssentialGuide(item.name) && (
+                                <EssentialGuideButton
+                                  itemName={item.name}
+                                  onClick={(e) => handleGuideClick(e, item)}
+                                />
+                              )}
                             {item.cabin_policy &&
                               item.cabin_policy !== "allowed" && (
                                 <CabinPolicyIcon
@@ -249,6 +275,14 @@ export default function ListView({
         onClose={onPolicyClose}
         item={selectedItem}
         countryCode={countryCode}
+      />
+
+      <EssentialItemGuideSheet
+        isOpen={isGuideOpen}
+        onClose={onGuideClose}
+        item={guideItem}
+        countryCode={countryCode}
+        onToggleCheck={onToggleItem}
       />
     </VStack>
   );

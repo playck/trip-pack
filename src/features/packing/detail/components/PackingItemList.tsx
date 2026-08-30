@@ -14,11 +14,13 @@ import { Checkbox, ConfirmDialog } from "@/shared/components";
 import { colors, statusColors } from "@/shared/constants/colors";
 import { findCoupangDeal } from "@/shared/data/coupangDeals";
 import type { CoupangDeal } from "@/shared/data/coupangDeals";
+import { findEssentialGuide } from "@/shared/data/essentialItemGuides";
 import PackingItem from "./PackingItem";
 import ItemActionsSheet from "./ItemActionsSheet";
 import EditItemSheet from "./EditItemSheet";
 import CoupangCollectRow from "../../list/components/CoupangCollectRow";
 import CoupangShoppingSheet from "../../list/components/CoupangShoppingSheet";
+import EssentialItemGuideSheet from "../../list/components/EssentialItemGuideSheet";
 import { useUpdateItemCheckedStatus } from "../../list/hooks/useTripChecklist";
 import type { CategoryWithItems, ChecklistItem } from "../../type";
 
@@ -26,6 +28,7 @@ interface PackingItemListProps {
   category: CategoryWithItems;
   searchQuery?: string;
   countryCode?: string | null;
+  isEssentialCategory?: boolean;
   isEditMode?: boolean;
   isDeleting?: boolean;
   onDeleteItems?: (itemIds: string[]) => void;
@@ -35,6 +38,7 @@ export default function PackingItemList({
   category,
   searchQuery = "",
   countryCode,
+  isEssentialCategory = false,
   isEditMode = false,
   isDeleting = false,
   onDeleteItems,
@@ -45,6 +49,7 @@ export default function PackingItemList({
   const [showUncheckedOnly, setShowUncheckedOnly] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [activeItem, setActiveItem] = useState<ChecklistItem | null>(null);
+  const [guideItem, setGuideItem] = useState<ChecklistItem | null>(null);
   const {
     open: isDeleteConfirmOpen,
     onOpen: onDeleteConfirmOpen,
@@ -59,6 +64,11 @@ export default function PackingItemList({
     open: isEditOpen,
     onOpen: onEditOpen,
     onClose: onEditClose,
+  } = useDisclosure();
+  const {
+    open: isGuideOpen,
+    onOpen: onGuideOpen,
+    onClose: onGuideClose,
   } = useDisclosure();
   const shoppingSheet = useDisclosure();
 
@@ -151,6 +161,14 @@ export default function PackingItemList({
     [onActionsOpen],
   );
 
+  const handleOpenGuide = useCallback(
+    (item: ChecklistItem) => {
+      setGuideItem(item);
+      onGuideOpen();
+    },
+    [onGuideOpen],
+  );
+
   const handleEditFromActions = useCallback(() => {
     onActionsClose();
     onEditOpen();
@@ -227,6 +245,11 @@ export default function PackingItemList({
               onSelect={handleSelect}
               onToggleCheck={handleToggleCheck}
               onOpenActions={handleOpenActions}
+              onOpenGuide={
+                isEssentialCategory && findEssentialGuide(item.name)
+                  ? handleOpenGuide
+                  : undefined
+              }
             />
           ))}
           {!isEditMode && !searchQuery.trim() && suggestedDeal && (
@@ -299,6 +322,14 @@ export default function PackingItemList({
         isOpen={shoppingSheet.open}
         onClose={shoppingSheet.onClose}
         deals={categoryDeals}
+      />
+
+      <EssentialItemGuideSheet
+        isOpen={isGuideOpen}
+        onClose={onGuideClose}
+        item={guideItem}
+        countryCode={countryCode}
+        onToggleCheck={handleToggleCheck}
       />
     </Box>
   );

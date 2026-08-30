@@ -3,6 +3,7 @@ import { MoreVertical } from "lucide-react";
 
 import { Checkbox, CabinPolicyIcon } from "@/shared/components";
 import { CabinPolicyModal } from "@/features/packing/list/components";
+import EssentialGuideButton from "@/features/packing/list/components/EssentialGuideButton";
 import { colors } from "@/shared/constants/colors";
 import type { CabinPolicy } from "@/shared/data/checkList";
 import type { CountryRestriction } from "@/shared/data/baggagePolicyData";
@@ -18,6 +19,7 @@ interface PackingItemContentProps {
   isEditMode?: boolean;
   onToggleCheck: () => void;
   onOpenActions: () => void;
+  onOpenGuide?: () => void;
 }
 
 export default function PackingItemContent({
@@ -31,6 +33,7 @@ export default function PackingItemContent({
   isEditMode = false,
   onToggleCheck,
   onOpenActions,
+  onOpenGuide,
 }: PackingItemContentProps) {
   const { open: isOpen, onOpen, onClose } = useDisclosure();
 
@@ -57,6 +60,15 @@ export default function PackingItemContent({
           </Flex>
           {!isEditMode && (
             <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+          )}
+          {!isEditMode && onOpenGuide && (
+            <EssentialGuideButton
+              itemName={itemName}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenGuide();
+              }}
+            />
           )}
         </Flex>
 
