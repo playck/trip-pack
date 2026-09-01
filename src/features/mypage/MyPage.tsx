@@ -4,6 +4,7 @@ import { useAuth } from "@/shared/hooks/useAuth";
 import ProfileCard from "./components/ProfileCard";
 import ActivitySection from "./components/ActivitySection";
 import AccountSection from "./components/AccountSection";
+import NotificationSection from "./components/NotificationSection";
 import TravelHelperSection from "./components/travel-helper/TravelHelperSection";
 
 export default function MyPage() {
@@ -16,6 +17,7 @@ export default function MyPage() {
           <ProfileCard user={user} isLoading={loading} />
           <ActivitySection />
           <TravelHelperSection />
+          <NotificationSection />
           <AccountSection />
         </VStack>
       </Box>
