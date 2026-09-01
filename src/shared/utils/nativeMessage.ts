@@ -1,9 +1,17 @@
+import { getDefaultStore } from "jotai";
+import { tripReminderEnabledAtom } from "@/shared/store/notificationSettingsStore";
+
 interface TripNotificationMessage {
   type: "TRIP_NOTIFICATION";
   action: "schedule" | "cancel";
   tripId: string;
   tripTitle?: string;
   startDate?: string;
+}
+
+interface NotificationPermissionMessage {
+  type: "NOTIFICATION_PERMISSION";
+  action: "query" | "openSettings";
 }
 
 interface HapticMessage {
@@ -36,6 +44,7 @@ interface RestorePurchasesMessage {
 
 type NativeMessage =
   | TripNotificationMessage
+  | NotificationPermissionMessage
   | HapticMessage
   | OpenUrlMessage
   | AppleSignInRequestMessage
@@ -83,6 +92,9 @@ function postNativeMessage(message: NativeMessage) {
 }
 
 export function scheduleTripNotification(data: ScheduleData) {
+  // 전역 리마인더 OFF면 신규 예약을 보내지 않는다 (모든 호출 지점 공통 게이트).
+  // 취소는 OFF 상태에서도 나가야 하므로 cancel 쪽엔 게이트를 두지 않는다.
+  if (!getDefaultStore().get(tripReminderEnabledAtom)) return;
   postNativeMessage({
     type: "TRIP_NOTIFICATION",
     action: "schedule",
@@ -95,6 +107,19 @@ export function cancelTripNotification(data: CancelData) {
     type: "TRIP_NOTIFICATION",
     action: "cancel",
     ...data,
+  });
+}
+
+/** 기기 알림 권한 상태 요청 — 응답은 "notification-permission-result" CustomEvent */
+export function queryNotificationPermission() {
+  postNativeMessage({ type: "NOTIFICATION_PERMISSION", action: "query" });
+}
+
+/** OS 앱 알림 설정 화면 열기 */
+export function openAppNotificationSettings() {
+  postNativeMessage({
+    type: "NOTIFICATION_PERMISSION",
+    action: "openSettings",
   });
 }
 
