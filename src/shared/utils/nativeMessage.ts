@@ -123,9 +123,7 @@ export function openAppNotificationSettings() {
   });
 }
 
-export function triggerHaptic(
-  style: HapticMessage["style"] = "light"
-) {
+export function triggerHaptic(style: HapticMessage["style"] = "light") {
   postNativeMessage({ type: "HAPTIC", style });
 }
 
@@ -218,7 +216,7 @@ function makeNonce(): string {
 // (타임아웃 후 재시도 등에서 이전 요청의 늦은 결과가 새 요청을 오배달하는 것 방지).
 function awaitNativeResult(
   resultEvent: string,
-  buildMessage: (nonce: string) => NativeMessage
+  buildMessage: (nonce: string) => NativeMessage,
 ): Promise<PremiumPurchaseResult> {
   return new Promise((resolve, reject) => {
     if (!isReactNativeWebView()) {
@@ -262,7 +260,7 @@ function awaitNativeResult(
  */
 export function requestPremiumPurchase(
   userId: string,
-  productId?: string
+  productId?: string,
 ): Promise<PremiumPurchaseResult> {
   return awaitNativeResult("premium-purchase-result", (nonce) => ({
     type: "PREMIUM_PURCHASE_REQUEST",
@@ -274,7 +272,7 @@ export function requestPremiumPurchase(
 
 /** 구매 복원 (비소모성 필수 — 기기 변경/재설치 시 프리미엄 재동기화). */
 export function restorePremiumPurchase(
-  userId: string
+  userId: string,
 ): Promise<PremiumPurchaseResult> {
   return awaitNativeResult("premium-restore-result", (nonce) => ({
     type: "RESTORE_PURCHASES",

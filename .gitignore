@@ -32,6 +32,7 @@ CLAUDE.md
 .tmp-screenshots/
 skills-lock.json
 docs/superpowers/
+.superpowers/
 
 # Supabase
 supabase/.temp/
