@@ -9,6 +9,7 @@ import {
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { useCloseOnNativeTabFocus } from "@/shared/hooks";
 import { colors } from "@/shared/constants/colors";
 
 export interface ModalAction {
@@ -30,6 +31,11 @@ export interface ModalProps {
   hideCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEsc?: boolean;
+  /**
+   * 네이티브 앱에서 탭을 전환했다가 돌아왔을 때 이 모달을 유지할지 여부 (기본 false).
+   * 기본값은 닫힘 — 탭을 옮겼다 돌아오면 이전 모달이 남아있지 않게 한다.
+   */
+  keepOnTabFocus?: boolean;
 }
 
 export default function Modal({
@@ -42,7 +48,11 @@ export default function Modal({
   hideCloseButton = false,
   closeOnOverlayClick = true,
   closeOnEsc = true,
+  keepOnTabFocus = false,
 }: ModalProps) {
+  // 네이티브 탭 재진입 시 닫기 (keepOnTabFocus면 유지)
+  useCloseOnNativeTabFocus(isOpen, onClose, !keepOnTabFocus);
+
   const handleOpenChange = (details: { open: boolean }) => {
     if (!details.open) {
       onClose();
