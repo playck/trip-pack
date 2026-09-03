@@ -3,52 +3,15 @@ import { Crown, ChevronRight } from "lucide-react";
 import { colors } from "@/shared/constants/colors";
 
 interface PremiumCardProps {
-  isPremium: boolean;
   onClick: () => void;
 }
 
 /**
- * 마이페이지 프리미엄 진입점. 밋밋한 메뉴 행이 아니라 눈에 띄는 카드로 전환율을 높인다.
- * - 미가입: 테마색(primary) solid 카드(업그레이드 유도)
- * - 가입: 테마색(primary) subtle 카드(이용 중 상태)
+ * 마이페이지 프리미엄 업그레이드 진입점.
+ * 테마색(primary) solid 카드로 전환율을 높인다.
+ * 이용 중 상태는 프로필 상단 프리미엄 뱃지로 표시하므로 여기서 다루지 않는다.
  */
-export default function PremiumCard({ isPremium, onClick }: PremiumCardProps) {
-  if (isPremium) {
-    return (
-      <Box
-        as="button"
-        w="full"
-        onClick={onClick}
-        bg={colors.primary.subtle}
-        borderWidth="1px"
-        borderColor={colors.primary.muted}
-        borderRadius="xl"
-        px={4}
-        py={3.5}
-        _active={{ opacity: 0.8 }}
-      >
-        <HStack justify="space-between" w="full">
-          <HStack gap={3}>
-            <Box color={colors.primary.solid} display="flex">
-              <Crown size={22} strokeWidth={2} />
-            </Box>
-            <VStack align="start" gap={0}>
-              <Text fontSize="md" fontWeight="bold" color="gray.800">
-                프리미엄 이용 중
-              </Text>
-              <Text fontSize="xs" color="gray.500">
-                여행을 무제한으로 즐기고 있어요 🎉
-              </Text>
-            </VStack>
-          </HStack>
-          <Box color="gray.400" display="flex">
-            <ChevronRight size={18} />
-          </Box>
-        </HStack>
-      </Box>
-    );
-  }
-
+export default function PremiumCard({ onClick }: PremiumCardProps) {
   return (
     <Box
       as="button"
@@ -89,7 +52,7 @@ export default function PremiumCard({ isPremium, onClick }: PremiumCardProps) {
               프리미엄으로 업그레이드
             </Text>
             <Text fontSize="xs" opacity={0.9}>
-              여행 무제한 · 한 번 결제로 평생
+              여행 관리 무제한 · 한 번 결제로 평생
             </Text>
           </VStack>
         </HStack>

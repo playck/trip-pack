@@ -1,6 +1,6 @@
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "1.0.2";
 
-export const APP_NAME = "Trip Pack";
+export const APP_NAME = "트립팩";
 
 /**
  * 프리미엄 결제 오픈 여부.

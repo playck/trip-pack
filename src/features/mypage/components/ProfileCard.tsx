@@ -1,15 +1,40 @@
 import { Box, HStack, Text, Avatar, VStack, Skeleton } from "@chakra-ui/react";
+import { Crown } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { colors } from "@/shared/constants/colors";
 
 interface ProfileCardProps {
   user: User | null;
   isLoading?: boolean;
+  isPremium?: boolean;
+}
+
+function PremiumBadge() {
+  return (
+    <HStack
+      gap={1}
+      bg={colors.primary.subtle}
+      borderWidth="1px"
+      borderColor={colors.primary.muted}
+      borderRadius="full"
+      px={2}
+      py={0.5}
+      flexShrink={0}
+    >
+      <Box color={colors.primary.solid} display="flex">
+        <Crown size={12} strokeWidth={2.4} />
+      </Box>
+      <Text fontSize="xs" fontWeight="bold" color={colors.primary.fg}>
+        프리미엄
+      </Text>
+    </HStack>
+  );
 }
 
 export default function ProfileCard({
   user,
   isLoading = false,
+  isPremium = false,
 }: ProfileCardProps) {
   const username = user?.user_metadata?.username || "여행자";
   const email = user?.email || "";
@@ -38,14 +63,17 @@ export default function ProfileCard({
             {isLoading ? (
               <Skeleton height="28px" width="100px" />
             ) : (
-              <Text
-                fontSize="lg"
-                fontWeight="bold"
-                color="gray.800"
-                lineHeight="28px"
-              >
-                {username}
-              </Text>
+              <>
+                <Text
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="gray.800"
+                  lineHeight="28px"
+                >
+                  {username}
+                </Text>
+                {isPremium && <PremiumBadge />}
+              </>
             )}
           </HStack>
           {isLoading ? (

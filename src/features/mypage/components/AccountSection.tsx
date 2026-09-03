@@ -1,27 +1,29 @@
 import { useState } from "react";
-import { VStack, Text, Box } from "@chakra-ui/react";
-import { LogOut, UserX, Shield, FileText, Info, Receipt } from "lucide-react";
+import { VStack, Text, Box, HStack } from "@chakra-ui/react";
+import { LogOut, UserX, Shield, FileText, Receipt } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/shared/hooks/useAuth";
-import { LEGAL_URLS, PAYMENT_LIVE } from "@/shared/constants/app";
+import { APP_VERSION, LEGAL_URLS, PAYMENT_LIVE } from "@/shared/constants/app";
 import { openUrl } from "@/shared/utils/nativeMessage";
-import { useSubscription } from "@/features/subscription/services/useSubscription";
 import PremiumCard from "@/features/subscription/components/PremiumCard";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
 import type { DialogConfig, DialogType } from "../type";
 import MenuItem from "./MenuItem";
-import AboutSheet from "./AboutSheet";
 
-export default function AccountSection() {
-  const { logout, deleteAccount, user } = useAuth();
+interface AccountSectionProps {
+  /** 프리미엄 이용 중이면 업그레이드 카드를 숨긴다(뱃지로 대체). */
+  isPremium?: boolean;
+}
+
+export default function AccountSection({
+  isPremium = false,
+}: AccountSectionProps) {
+  const { logout, deleteAccount } = useAuth();
   const navigate = useNavigate();
-  // 결제 미오픈 시 불필요한 tier 조회 방지 (캐싱 비용 전략).
-  const { isPremium } = useSubscription(user?.id, { enabled: PAYMENT_LIVE });
   const [dialogConfig, setDialogConfig] = useState<DialogConfig>({
     isOpen: false,
     type: null,
   });
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const openDialog = (type: DialogType) => {
     setDialogConfig({ isOpen: true, type });
@@ -50,17 +52,19 @@ export default function AccountSection() {
 
   return (
     <>
-      {PAYMENT_LIVE && (
-        <PremiumCard
-          isPremium={isPremium}
-          onClick={() => navigate({ to: "/subscribe" })}
-        />
+      {PAYMENT_LIVE && !isPremium && (
+        <PremiumCard onClick={() => navigate({ to: "/subscribe" })} />
       )}
 
       <Box>
-        <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
-          앱 정보
-        </Text>
+        <HStack gap={1.5} mb={2} px={1} align="baseline">
+          <Text fontSize="sm" fontWeight="bold" color="gray.400">
+            앱 정보
+          </Text>
+          <Text fontSize="xs" color="gray.400">
+            v{APP_VERSION}
+          </Text>
+        </HStack>
         <VStack
           gap={0}
           bg="white"
@@ -83,11 +87,6 @@ export default function AccountSection() {
             icon={Receipt}
             label="환불정책"
             onClick={() => handleOpenUrl(LEGAL_URLS.REFUND_POLICY)}
-          />
-          <MenuItem
-            icon={Info}
-            label="앱 정보"
-            onClick={() => setIsAboutOpen(true)}
           />
         </VStack>
       </Box>
@@ -117,8 +116,6 @@ export default function AccountSection() {
           />
         </VStack>
       </Box>
-
-      <AboutSheet isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
 
       <ConfirmDialog
         isOpen={dialogConfig.isOpen}
