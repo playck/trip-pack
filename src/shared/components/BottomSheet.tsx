@@ -8,7 +8,10 @@ import {
   Button,
   HStack,
 } from "@chakra-ui/react";
-import { useKeyboardOffset } from "@/shared/hooks";
+import {
+  useKeyboardOffset,
+  useCloseOnNativeTabFocus,
+} from "@/shared/hooks";
 import { colors } from "@/shared/constants/colors";
 import {
   BOTTOM_SHEET_MAX_HEIGHT,
@@ -42,6 +45,11 @@ interface BottomSheetProps {
   dimWhenBehind?: boolean;
   adjustForKeyboard?: boolean;
   closeOnInteractOutside?: boolean;
+  /**
+   * 네이티브 앱에서 탭을 전환했다가 돌아왔을 때 이 시트를 유지할지 여부 (기본 false).
+   * 기본값은 닫힘 — 탭을 옮겼다 돌아오면 이전 시트가 남아있지 않게 한다.
+   */
+  keepOnTabFocus?: boolean;
   primaryButton?: BottomSheetAction;
   secondaryButton?: BottomSheetAction;
 }
@@ -57,6 +65,7 @@ export default function BottomSheet({
   dimWhenBehind = true,
   adjustForKeyboard = true,
   closeOnInteractOutside = true,
+  keepOnTabFocus = false,
   primaryButton,
   secondaryButton,
 }: BottomSheetProps) {
@@ -80,6 +89,9 @@ export default function BottomSheet({
   const keyboardOffset = useKeyboardOffset(
     isOpen && adjustForKeyboard && !isFullscreen,
   );
+
+  // 네이티브 탭 재진입 시 닫기 (keepOnTabFocus면 유지)
+  useCloseOnNativeTabFocus(isOpen, onClose, !keepOnTabFocus);
 
   // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡
   const visibleAreaCap =
