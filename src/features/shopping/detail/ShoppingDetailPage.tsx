@@ -18,6 +18,7 @@ import {
   FloatingAddButton,
 } from "@/shared/components";
 import { toaster } from "@/shared/components/ui/toaster";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors } from "@/shared/constants/colors";
 
@@ -80,8 +81,13 @@ export default function ShoppingDetailPage() {
   });
 
   const category = categories?.find(
-    (cat: ShoppingCategoryWithItems) => cat.id === categoryIdParam
+    (cat: ShoppingCategoryWithItems) => cat.id === categoryIdParam,
   );
+
+  // 카테고리 수정·삭제는 만든 사람만 가능하다(shopping_categories RLS).
+  const { user } = useAuth();
+  const isMyCategory =
+    !!category?.created_by && category.created_by === user?.id;
 
   const resetForm = () => {
     setNewItemName("");
@@ -214,7 +220,7 @@ export default function ShoppingDetailPage() {
                 </Text>
               </HStack>
               <HStack gap={1}>
-                {!isEditMode && (
+                {!isEditMode && isMyCategory && (
                   <>
                     <IconButton
                       aria-label="카테고리 수정"

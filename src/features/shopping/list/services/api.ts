@@ -95,12 +95,16 @@ export const updateShoppingCategory = async (params: {
   if (name.length > 15)
     throw new Error("카테고리 이름은 15자 이하로 입력해주세요.");
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("shopping_categories")
     .update({ name, icon_key: params.iconKey })
-    .eq("id", params.categoryId);
+    .eq("id", params.categoryId)
+    .select("id");
 
   if (error) throw new Error(`카테고리 수정 실패: ${error.message}`);
+  // 카테고리 수정은 만든 사람만 가능하다. RLS 가 막으면 오류가 아니라 0행이 온다.
+  if (!data?.length)
+    throw new Error("카테고리를 만든 사람만 수정할 수 있습니다.");
 };
 
 export const deleteShoppingCategory = async (
@@ -114,26 +118,17 @@ export const deleteShoppingCategory = async (
   if (!cat) throw new Error("카테고리를 찾을 수 없습니다.");
   await verifyTripMembership(cat.trip_id);
 
-  const { error: itemsError } = await supabase
-    .from("shopping_items")
-    .delete()
-    .eq("category_id", categoryId);
-
-  if (itemsError)
-    throw new Error(`카테고리 아이템 삭제 실패: ${itemsError.message}`);
-
-  const { error } = await supabase
+  // 물품을 먼저 지우지 않는다.
+  // shopping_items.category_id 는 ON DELETE CASCADE 라 카테고리만 지우면 물품도 함께 사라진다.
+  const { data, error } = await supabase
     .from("shopping_categories")
     .delete()
-    .eq("id", categoryId);
+    .eq("id", categoryId)
+    .select("id");
 
-  if (error) {
-    console.error(
-      `카테고리 삭제 실패 (아이템은 이미 삭제됨, categoryId: ${categoryId}):`,
-      error.message,
-    );
-    throw new Error(`카테고리 삭제 실패: ${error.message}`);
-  }
+  if (error) throw new Error(`카테고리 삭제 실패: ${error.message}`);
+  if (!data?.length)
+    throw new Error("카테고리를 만든 사람만 삭제할 수 있습니다.");
 };
 
 export const createShoppingItem = async (

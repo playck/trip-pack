@@ -32,6 +32,11 @@ interface TripSettingsDrawerProps {
   onOpenEditTitle: () => void;
   onOpenEditDate: () => void;
   onOpenDeleteTrip: () => void;
+  /**
+   * 방장 여부. 제목·기간·커버이미지·삭제는 방장만 할 수 있어(DB 에서 강제) 일반 멤버에게는 감춘다.
+   * 메모는 일행이 함께 적는 공유 메모라 모두에게 열려 있다.
+   */
+  isOwner?: boolean;
   onOpenFlight?: () => void;
   onOpenMemo?: () => void;
   onChangeImage?: () => void;
@@ -56,6 +61,7 @@ export default function TripSettingsDrawer({
   onOpenEditTitle,
   onOpenEditDate,
   onOpenDeleteTrip,
+  isOwner = true,
   onOpenFlight,
   onOpenMemo,
   onChangeImage,
@@ -149,17 +155,21 @@ export default function TripSettingsDrawer({
                 <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
                   여행
                 </Text>
-                <MenuItemRow
-                  icon={<Edit3 size={18} />}
-                  label="여행 제목 수정"
-                  onClick={() => handleAction(onOpenEditTitle)}
-                />
-                <MenuItemRow
-                  icon={<CalendarDays size={18} />}
-                  label="여행 기간 수정"
-                  onClick={() => handleAction(onOpenEditDate)}
-                />
-                {onChangeImage && (
+                {isOwner && (
+                  <MenuItemRow
+                    icon={<Edit3 size={18} />}
+                    label="여행 제목 수정"
+                    onClick={() => handleAction(onOpenEditTitle)}
+                  />
+                )}
+                {isOwner && (
+                  <MenuItemRow
+                    icon={<CalendarDays size={18} />}
+                    label="여행 기간 수정"
+                    onClick={() => handleAction(onOpenEditDate)}
+                  />
+                )}
+                {isOwner && onChangeImage && (
                   <MenuItemRow
                     icon={<ImagePlus size={18} />}
                     label="여행 이미지 변경"
@@ -199,30 +209,32 @@ export default function TripSettingsDrawer({
                 />
               </VStack>
 
-              {/* 여행 삭제 - 하단 고정 */}
-              <Box pt={4} pb={5} mt="auto">
-                <HStack
-                  as="button"
-                  w="full"
-                  gap={2}
-                  py={3}
-                  justify="center"
-                  cursor="pointer"
-                  borderRadius="lg"
-                  bg={customPalette.rose[50]}
-                  color={statusColors.error.text}
-                  _hover={{ bg: customPalette.rose[100] }}
-                  onClick={() => handleAction(onOpenDeleteTrip)}
-                  css={{ touchAction: "manipulation" }}
-                >
-                  <Box aria-hidden="true" flexShrink={0}>
-                    <Trash2 size={16} />
-                  </Box>
-                  <Text fontSize="sm" fontWeight="semibold">
-                    여행 삭제
-                  </Text>
-                </HStack>
-              </Box>
+              {/* 여행 삭제 - 하단 고정 (방장만) */}
+              {isOwner && (
+                <Box pt={4} pb={5} mt="auto">
+                  <HStack
+                    as="button"
+                    w="full"
+                    gap={2}
+                    py={3}
+                    justify="center"
+                    cursor="pointer"
+                    borderRadius="lg"
+                    bg={customPalette.rose[50]}
+                    color={statusColors.error.text}
+                    _hover={{ bg: customPalette.rose[100] }}
+                    onClick={() => handleAction(onOpenDeleteTrip)}
+                    css={{ touchAction: "manipulation" }}
+                  >
+                    <Box aria-hidden="true" flexShrink={0}>
+                      <Trash2 size={16} />
+                    </Box>
+                    <Text fontSize="sm" fontWeight="semibold">
+                      여행 삭제
+                    </Text>
+                  </HStack>
+                </Box>
+              )}
             </Drawer.Body>
           </Drawer.Content>
         </Drawer.Positioner>
