@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -67,7 +67,7 @@ export type Database = {
           icon_key: string | null
           id: string
           name: string
-          trip_id: string | null
+          trip_id: string
         }
         Insert: {
           created_at?: string | null
@@ -76,7 +76,7 @@ export type Database = {
           icon_key?: string | null
           id?: string
           name: string
-          trip_id?: string | null
+          trip_id: string
         }
         Update: {
           created_at?: string | null
@@ -85,7 +85,7 @@ export type Database = {
           icon_key?: string | null
           id?: string
           name?: string
-          trip_id?: string | null
+          trip_id?: string
         }
         Relationships: [
           {
@@ -108,7 +108,7 @@ export type Database = {
         Row: {
           cabin_notes: string | null
           cabin_policy: string | null
-          category_id: string | null
+          category_id: string
           created_at: string | null
           display_order: number | null
           id: string
@@ -121,7 +121,7 @@ export type Database = {
         Insert: {
           cabin_notes?: string | null
           cabin_policy?: string | null
-          category_id?: string | null
+          category_id: string
           created_at?: string | null
           display_order?: number | null
           id?: string
@@ -134,7 +134,7 @@ export type Database = {
         Update: {
           cabin_notes?: string | null
           cabin_policy?: string | null
-          category_id?: string | null
+          category_id?: string
           created_at?: string | null
           display_order?: number | null
           id?: string
@@ -162,7 +162,7 @@ export type Database = {
           is_public: boolean | null
           title: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -171,7 +171,7 @@ export type Database = {
           is_public?: boolean | null
           title: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -180,7 +180,7 @@ export type Database = {
           is_public?: boolean | null
           title?: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -664,18 +664,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "trip_expenses_schedule_id_fkey"
-            columns: ["schedule_id"]
-            isOneToOne: false
-            referencedRelation: "trip_schedules"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "trip_expenses_trip_id_fkey"
             columns: ["trip_id"]
             isOneToOne: false
             referencedRelation: "trips"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_expenses_trip_schedule_fkey"
+            columns: ["trip_id", "schedule_id"]
+            isOneToOne: false
+            referencedRelation: "trip_schedules"
+            referencedColumns: ["trip_id", "id"]
           },
         ]
       }
@@ -738,7 +738,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          created_by: string
+          created_by?: string
           expires_at?: string | null
           id?: string
           invite_code: string
@@ -807,6 +807,94 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_reservations: {
+        Row: {
+          address: string | null
+          amount: number | null
+          confirmation_code: string | null
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          end_date: string | null
+          end_time: string | null
+          id: string
+          notes: string | null
+          provider: string | null
+          schedule_id: string | null
+          start_date: string
+          start_time: string | null
+          title: string
+          trip_id: string
+          type: string
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          address?: string | null
+          amount?: number | null
+          confirmation_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          end_date?: string | null
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          provider?: string | null
+          schedule_id?: string | null
+          start_date: string
+          start_time?: string | null
+          title: string
+          trip_id: string
+          type: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          address?: string | null
+          amount?: number | null
+          confirmation_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          end_date?: string | null
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          provider?: string | null
+          schedule_id?: string | null
+          start_date?: string
+          start_time?: string | null
+          title?: string
+          trip_id?: string
+          type?: string
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_reservations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_reservations_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_reservations_trip_schedule_fkey"
+            columns: ["trip_id", "schedule_id"]
+            isOneToOne: false
+            referencedRelation: "trip_schedules"
+            referencedColumns: ["trip_id", "id"]
           },
         ]
       }
@@ -944,7 +1032,7 @@ export type Database = {
           start_date: string
           title: string
           trip_types: Json | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           budget?: number | null
@@ -961,7 +1049,7 @@ export type Database = {
           start_date: string
           title: string
           trip_types?: Json | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           budget?: number | null
@@ -978,7 +1066,7 @@ export type Database = {
           start_date?: string
           title?: string
           trip_types?: Json | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -1001,6 +1089,18 @@ export type Database = {
           out_trip_id: string
           out_trip_title: string
         }[]
+      }
+      convert_schedule_to_wishlist: {
+        Args: { p_schedule_id: string }
+        Returns: string
+      }
+      convert_wishlist_to_schedule: {
+        Args: {
+          p_day_number: number
+          p_schedule_date: string
+          p_wishlist_id: string
+        }
+        Returns: string
       }
       create_trip_with_checklist: {
         Args: { p_categories: Json; p_items: Json; p_trip_data: Json }
@@ -1033,6 +1133,19 @@ export type Database = {
         Args: { reason?: string; target_user_id: string }
         Returns: undefined
       }
+      transfer_trip_ownership: {
+        Args: { p_new_owner_id: string; p_trip_id: string }
+        Returns: undefined
+      }
+      update_trip_dates: {
+        Args: {
+          p_delete_out_of_range?: boolean
+          p_end_date: string
+          p_start_date: string
+          p_trip_id: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       subscription_tier_enum: "free" | "premium"
@@ -1051,12 +1164,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1080,11 +1193,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1105,11 +1218,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1130,11 +1243,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1147,11 +1260,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

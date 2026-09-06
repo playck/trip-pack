@@ -101,7 +101,8 @@ function toCategoryWithType(
     icon_key: iconKey,
     display_order: 0,
     created_at: null,
-    trip_id: null,
+    // 아직 저장 전인 미리보기 객체라 실제 행이 아니다. created_by 와 같은 방식으로 빈 값을 둔다
+    trip_id: "",
     created_by: "",
     category_type: sectionType,
     items,
