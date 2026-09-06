@@ -23,7 +23,7 @@ const convertToCategories = (
       icon_key: tc.icon_key,
       display_order: tc.display_order,
       created_at: tc.created_at,
-      trip_id: null,
+      trip_id: "",
       created_by: "",
       category_type: tc.category_type,
       items: tc.template_items

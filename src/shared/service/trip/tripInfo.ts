@@ -36,7 +36,7 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
         budget,
         image_url,
         memo
-      `
+      `,
       )
       .eq("id", tripId)
       .single();
@@ -74,16 +74,23 @@ export const getTripInfo = async (tripId: string): Promise<TripInfo | null> => {
 // 여행 예산 업데이트 API
 export const updateTripBudget = async (
   tripId: string,
-  budget: number | null
+  budget: number | null,
 ): Promise<boolean> => {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("trips")
       .update({ budget })
-      .eq("id", tripId);
+      .eq("id", tripId)
+      .select("id");
 
     if (error) {
       console.error("여행 예산 업데이트 에러:", error);
+      return false;
+    }
+
+    // 예산은 방장만 바꿀 수 있다.
+    if (!data?.length) {
+      console.error("여행 예산 업데이트 거부: 권한 없음 (방장만 가능)");
       return false;
     }
 

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { useHistoryBack } from "@/shared/hooks";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -31,6 +31,11 @@ export default function TripSettingsPanel({
   const { user } = useAuth();
   const { data: tripInfo } = useTripInfo(tripId);
   const { data: members } = useTripMembers(tripId);
+  // 제목·기간·이미지·삭제는 방장만 가능하다(DB 에서 강제). 일반 멤버에게는 항목 자체를 감춘다.
+  const isOwner = useMemo(
+    () => members?.find((m) => m.user_id === user?.id)?.role === "owner",
+    [members, user?.id],
+  );
   const { mutate: deleteTripMutate, isPending: isDeletePending } =
     useDeleteTrip();
   const { mutate: updateImageMutate, isPending: isImageUploading } =
@@ -80,6 +85,7 @@ export default function TripSettingsPanel({
         onOpenInvite={invite.onOpen}
         onOpenEditTitle={editTitle.onOpen}
         onOpenEditDate={editDate.onOpen}
+        isOwner={isOwner}
         onOpenDeleteTrip={deleteTrip.onOpen}
         onOpenFlight={handleOpenFlight}
         onOpenMemo={memoSheet.onOpen}
