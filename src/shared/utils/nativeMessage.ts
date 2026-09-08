@@ -42,6 +42,11 @@ interface RestorePurchasesMessage {
   nonce?: string;
 }
 
+interface PremiumProductRequestMessage {
+  type: "PREMIUM_PRODUCT_REQUEST";
+  nonce?: string;
+}
+
 type NativeMessage =
   | TripNotificationMessage
   | NotificationPermissionMessage
@@ -49,7 +54,8 @@ type NativeMessage =
   | OpenUrlMessage
   | AppleSignInRequestMessage
   | PremiumPurchaseRequestMessage
-  | RestorePurchasesMessage;
+  | RestorePurchasesMessage
+  | PremiumProductRequestMessage;
 
 export interface AppleSignInBridgeResult {
   identityToken: string;
@@ -82,6 +88,10 @@ declare global {
   interface Window {
     ReactNativeWebView?: {
       postMessage: (message: string) => void;
+    };
+    /** RN 앱이 페이지 스크립트보다 먼저 주입하는 브릿지 정보. 구버전 앱은 주입하지 않는다. */
+    __TRIP_PACK_NATIVE__?: {
+      capabilities?: string[];
     };
   }
 }
@@ -133,6 +143,18 @@ export function openUrl(url: string) {
 
 export function isReactNativeWebView(): boolean {
   return typeof window !== "undefined" && !!window.ReactNativeWebView;
+}
+
+/** RN 앱이 지원하는 브릿지 커맨드 이름(앱 저장소 utils/webview.ts NATIVE_CAPABILITIES와 맞춘다). */
+export type NativeCapability = "premiumProduct";
+
+/**
+ * 현재 앱 바이너리가 해당 브릿지 커맨드를 지원하는지.
+ * 구버전 앱은 목록을 주입하지 않으므로 false → 응답이 오지 않을 요청을 애초에 보내지 않는다.
+ */
+export function hasNativeCapability(capability: NativeCapability): boolean {
+  if (!isReactNativeWebView()) return false;
+  return window.__TRIP_PACK_NATIVE__?.capabilities?.includes(capability) ?? false;
 }
 
 /**
@@ -205,19 +227,43 @@ interface PremiumPurchaseResultDetail {
 // 결제/복원 시트 상호작용(카드 입력/인증) 여유를 위해 길게.
 const PREMIUM_PURCHASE_TIMEOUT_MS = 180_000;
 
+const toPurchaseResult = (
+  detail: PremiumPurchaseResultDetail | undefined,
+): PremiumPurchaseResult => ({
+  ok: !!detail?.ok,
+  cancelled: !!detail?.cancelled,
+  message: detail?.message,
+});
+
 function makeNonce(): string {
   const c = globalThis.crypto;
   if (c && typeof c.randomUUID === "function") return c.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+interface NativeResultDetail {
+  nonce?: string;
+}
+
+interface AwaitNativeResultOptions<TDetail extends NativeResultDetail, TResult> {
+  resultEvent: string;
+  buildMessage: (nonce: string) => NativeMessage;
+  /** 네이티브 응답(detail)을 호출자 결과로 변환. 필드 누락에 방어적으로 작성한다. */
+  mapDetail: (detail: TDetail | undefined) => TResult;
+  timeoutMs: number;
+  timeoutMessage: string;
+}
+
 // 네이티브에 메시지를 보내고 지정한 결과 이벤트를 기다린다.
 // 요청마다 nonce를 부여하고, 응답의 nonce가 일치할 때만 수락한다
 // (타임아웃 후 재시도 등에서 이전 요청의 늦은 결과가 새 요청을 오배달하는 것 방지).
-function awaitNativeResult(
-  resultEvent: string,
-  buildMessage: (nonce: string) => NativeMessage,
-): Promise<PremiumPurchaseResult> {
+function awaitNativeResult<TDetail extends NativeResultDetail, TResult>({
+  resultEvent,
+  buildMessage,
+  mapDetail,
+  timeoutMs,
+  timeoutMessage,
+}: AwaitNativeResultOptions<TDetail, TResult>): Promise<TResult> {
   return new Promise((resolve, reject) => {
     if (!isReactNativeWebView()) {
       reject(new Error("Not running inside React Native WebView"));
@@ -227,21 +273,17 @@ function awaitNativeResult(
     const nonce = makeNonce();
 
     const handleResult = (event: Event) => {
-      const detail = (event as CustomEvent<PremiumPurchaseResultDetail>).detail;
+      const detail = (event as CustomEvent<TDetail>).detail;
       // 다른 요청의 늦은 결과는 무시(nonce가 있으면 일치할 때만 수락, 없으면 하위호환 수락).
       if (detail?.nonce != null && detail.nonce !== nonce) return;
       cleanup();
-      resolve({
-        ok: !!detail?.ok,
-        cancelled: !!detail?.cancelled,
-        message: detail?.message,
-      });
+      resolve(mapDetail(detail));
     };
 
     const timeoutId = window.setTimeout(() => {
       cleanup();
-      reject(new Error("결제 응답 시간이 초과되었습니다"));
-    }, PREMIUM_PURCHASE_TIMEOUT_MS);
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
 
     const cleanup = () => {
       window.clearTimeout(timeoutId);
@@ -262,21 +304,73 @@ export function requestPremiumPurchase(
   userId: string,
   productId?: string,
 ): Promise<PremiumPurchaseResult> {
-  return awaitNativeResult("premium-purchase-result", (nonce) => ({
-    type: "PREMIUM_PURCHASE_REQUEST",
-    userId,
-    productId,
-    nonce,
-  }));
+  return awaitNativeResult<PremiumPurchaseResultDetail, PremiumPurchaseResult>({
+    resultEvent: "premium-purchase-result",
+    buildMessage: (nonce) => ({
+      type: "PREMIUM_PURCHASE_REQUEST",
+      userId,
+      productId,
+      nonce,
+    }),
+    mapDetail: toPurchaseResult,
+    timeoutMs: PREMIUM_PURCHASE_TIMEOUT_MS,
+    timeoutMessage: "결제 응답 시간이 초과되었습니다",
+  });
 }
 
 /** 구매 복원 (비소모성 필수 — 기기 변경/재설치 시 프리미엄 재동기화). */
 export function restorePremiumPurchase(
   userId: string,
 ): Promise<PremiumPurchaseResult> {
-  return awaitNativeResult("premium-restore-result", (nonce) => ({
-    type: "RESTORE_PURCHASES",
-    userId,
-    nonce,
-  }));
+  return awaitNativeResult<PremiumPurchaseResultDetail, PremiumPurchaseResult>({
+    resultEvent: "premium-restore-result",
+    buildMessage: (nonce) => ({ type: "RESTORE_PURCHASES", userId, nonce }),
+    mapDetail: toPurchaseResult,
+    timeoutMs: PREMIUM_PURCHASE_TIMEOUT_MS,
+    timeoutMessage: "결제 응답 시간이 초과되었습니다",
+  });
+}
+
+/** 프리미엄 상품 정보(스토어 현지화 가격). RN 앱이 RevenueCat에서 조회해 회신한다. */
+export interface PremiumProductInfo {
+  productId: string;
+  /** 스토어가 현지화한 표시용 가격 문자열(예: "₩4,900"). 계산에는 price·currencyCode를 쓴다. */
+  priceString: string;
+  price: number;
+  currencyCode: string;
+}
+
+interface PremiumProductResultDetail extends NativeResultDetail {
+  ok?: boolean;
+  productId?: string;
+  priceString?: string;
+  price?: number;
+  currencyCode?: string;
+  message?: string;
+}
+
+// 가격 조회는 StoreKit 캐시로 보통 1초 안에 끝난다. 결제 시트를 기다리는 타임아웃보다 짧게.
+const PREMIUM_PRODUCT_TIMEOUT_MS = 10_000;
+
+/**
+ * 프리미엄 상품의 스토어 가격을 네이티브(RevenueCat)에 요청한다. 표시용이며 결제는 requestPremiumPurchase.
+ * 상품을 못 불러오면(스토어 오류·미설정) null. 구버전 앱은 응답하지 않으므로
+ * 호출 전에 hasNativeCapability("premiumProduct")로 걸러야 한다.
+ */
+export function requestPremiumProduct(): Promise<PremiumProductInfo | null> {
+  return awaitNativeResult<PremiumProductResultDetail, PremiumProductInfo | null>({
+    resultEvent: "premium-product-result",
+    buildMessage: (nonce) => ({ type: "PREMIUM_PRODUCT_REQUEST", nonce }),
+    mapDetail: (detail) =>
+      detail?.ok && detail.priceString
+        ? {
+            productId: detail.productId ?? "",
+            priceString: detail.priceString,
+            price: detail.price ?? 0,
+            currencyCode: detail.currencyCode ?? "",
+          }
+        : null,
+    timeoutMs: PREMIUM_PRODUCT_TIMEOUT_MS,
+    timeoutMessage: "상품 정보 응답 시간이 초과되었습니다",
+  });
 }

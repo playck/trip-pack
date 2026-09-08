@@ -64,7 +64,7 @@ export default function SubscribePage() {
         queryClient.invalidateQueries({ queryKey: key });
       })();
     },
-    [queryClient]
+    [queryClient],
   );
 
   const handlePurchase = useCallback(async () => {
@@ -226,21 +226,15 @@ export default function SubscribePage() {
           <br />
           여행을 무제한으로
         </Heading>
-        <Text color="fg.muted" fontSize="md">
-          무료 플랜은 여행 3개까지 만들 수 있어요. 프리미엄은 한 번만 결제하면
-          평생 무제한이에요.
+        <Text as="p" color="fg.muted" fontSize="md">
+          무료 플랜은 여행 3개까지 만들 수 있어요. <br /> 프리미엄은 한 번만
+          결제하면 평생 무제한이에요.
         </Text>
       </VStack>
 
       {benefitsList}
 
       {cta}
-
-      {PAYMENT_LIVE && (
-        <Text fontSize="xs" color="fg.muted" textAlign="center">
-          한 번 결제로 영구 이용. 자동 갱신이 없어요.
-        </Text>
-      )}
     </VStack>
   );
 }

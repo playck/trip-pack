@@ -4,17 +4,27 @@ export const APP_NAME = "트립팩";
 
 /**
  * 프리미엄 결제 오픈 여부.
- * - false(기본): 결제 UI 전부 "준비 중" 처리 + 마이페이지 진입점 숨김.
- * - true: RevenueCat + RN 결제(B1) 완성 후 결제 노출.
- * 무료 3개 제한(서버 게이트)은 이 플래그와 무관하게 항상 작동한다.
+ * 무료 3개 제한(서버 게이트)은 이 플래그와 무관하게 항상 작동.
  */
 export const PAYMENT_LIVE = import.meta.env.VITE_PAYMENT_LIVE === "true";
 
 /**
  * 무료 플랜 여행 생성 한도. 서버 RPC(create_trip_with_checklist)의 카운트 기준과 일치해야 한다.
- * 클라이언트에서는 결제 유도(페이월) 판단용 힌트로만 쓴다(최종 강제는 서버 게이트).
  */
 export const FREE_TRIP_LIMIT = 3;
+
+/** App Store Connect 비소모성 상품 ID. RN 앱 services/purchases.ts와 같은 값. */
+export const PREMIUM_PRODUCT_ID = "com.trippack.app.premium";
+
+/**
+ * 프리미엄 표시용 가격(폴백). App Store Connect의 상품 가격과 수동으로 맞춘다.
+ * - 앱이 스토어 현지화 가격을 회신하면(1.0.3+) 그 값을 우선 쓰고, 웹·구버전 앱에서만 이 값을 보여 준다.
+ */
+export const PREMIUM_PRICE_FALLBACK: {
+  priceString: string;
+  price: number;
+  currencyCode: string;
+} | null = { priceString: "₩3,300", price: 3300, currencyCode: "KRW" };
 
 export const LEGAL_URLS = {
   PRIVACY_POLICY:
