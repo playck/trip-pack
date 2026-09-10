@@ -1,8 +1,7 @@
 import { useMemo } from "react";
-import { Box, HStack, Text, VStack, useDisclosure } from "@chakra-ui/react";
-import { ChevronRight } from "lucide-react";
+import { Box, VStack, useDisclosure } from "@chakra-ui/react";
 
-import { Info } from "@/shared/components";
+import { borderColors } from "@/shared/constants/colors";
 import { BAGGAGE_POLICY_BY_AIR } from "@/shared/data/baggagePolicyByAir";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { useTripFlights } from "@/features/flight/services/useFlightQueries";
@@ -13,6 +12,7 @@ import {
 
 import AirlineBaggagePolicySheet from "./AirlineBaggagePolicySheet";
 import EntryInfoSheet from "./EntryInfoSheet";
+import RequirementRow, { RequirementValue } from "./RequirementRow";
 
 const compactBaggageText = (value: string) => {
   const paren = value.match(/\(([^)]*)\)/)?.[1];
@@ -38,6 +38,10 @@ const compactBaggageText = (value: string) => {
     .trim();
 };
 
+/** "파라타항공(구 플라이강원)" → "파라타항공". 괄호 병기는 줄바꿈만 유발해 요약에선 생략 */
+const compactAirlineName = (value: string) =>
+  value.replace(/\s*\([^)]*\)/g, "").trim();
+
 interface TravelRequirementCardsProps {
   tripId: string;
   countryCode?: string | null;
@@ -46,7 +50,7 @@ interface TravelRequirementCardsProps {
   baggageSheet: { isOpen: boolean; onOpen: () => void; onClose: () => void };
 }
 
-/** 비자·입국 정보와 항공사 수하물 규정 요약 카드 (탭하면 각 상세 시트) */
+/** 비자·입국 정보와 항공사 수하물 규정 리드아웃 (탭하면 각 상세 시트) */
 export default function TravelRequirementCards({
   tripId,
   countryCode,
@@ -59,18 +63,50 @@ export default function TravelRequirementCards({
     countryCode && countryCode.toUpperCase() !== "KR",
   );
 
-  const visaSummary = useMemo(() => {
+  // 값은 짧은 상태값으로, 긴 원문은 detail로 분리 — 값 컬럼이 스캔 가능하게 유지된다
+  const visa = useMemo(() => {
     if (!isOverseasTrip) return null;
+
     const rule = getVisaRule(countryCode ?? undefined, regionId ?? undefined);
-    const declarationHint = getEntryDeclaration(countryCode)?.required
-      ? " · 입국신고 필수"
-      : "";
-    if (rule.isUnknown) return `비자 규정 확인 필요${declarationHint}`;
-    // 지역 예외(overrideNote)는 무비자여도 별도 조건이 붙으므로 요약에 그대로 노출
-    if (rule.required || rule.overrideNote)
-      return `${getVisaNote(rule)}${declarationHint}`;
+    const declarationBadge = getEntryDeclaration(countryCode)?.required
+      ? "입국신고 필수"
+      : undefined;
+
+    if (rule.isUnknown) {
+      return {
+        text: "규정 확인 필요",
+        tone: "attention" as const,
+        detail: "외교부 해외안전여행에서 최신 규정 확인",
+        badge: declarationBadge,
+      };
+    }
+
+    // 지역 예외는 무비자여도 별도 조건이 붙으므로 예외 문구를 그대로 노출
+    if (rule.overrideNote) {
+      return {
+        text: "조건부 입국",
+        tone: "attention" as const,
+        detail: rule.overrideNote,
+        badge: declarationBadge,
+      };
+    }
+
+    if (rule.required) {
+      return {
+        text: "비자 필요",
+        tone: "attention" as const,
+        detail: getVisaNote(rule),
+        badge: declarationBadge,
+      };
+    }
+
     const days = rule.info?.stayDays;
-    return `${days ? `무비자 ${days}일` : "무비자 입국"}${declarationHint}`;
+    return {
+      text: days ? `무비자 ${days}일` : "무비자 입국",
+      tone: "default" as const,
+      detail: null,
+      badge: declarationBadge,
+    };
   }, [isOverseasTrip, countryCode, regionId]);
 
   // 등록된 항공편의 편명 앞 2자리로 항공사 규정을 매칭 (중복 제거)
@@ -94,107 +130,41 @@ export default function TravelRequirementCards({
 
   return (
     <>
-      {/* 비자·입국 정보 + 수하물 규정 가로 배치 (한쪽만 있으면 전체 폭 차지) */}
-      {(isOverseasTrip || hasBaggagePolicies) && (
-        <HStack gap={2} align="stretch">
-          {isOverseasTrip && (
-            <Info
-              as="button"
-              colorScheme="orange"
-              textAlign="left"
-              cursor="pointer"
-              flex={1}
-              minW={0}
-              py={2}
-              onClick={visaSheet.onOpen}
-            >
-              <VStack align="stretch" gap={0.5}>
-                <HStack justify="space-between">
-                  <Text fontSize="xs" fontWeight="semibold" color="orange.700">
-                    비자·입국 정보
-                  </Text>
-                  <Box color="orange.300" flexShrink={0}>
-                    <ChevronRight size={14} />
-                  </Box>
-                </HStack>
-                {/* 카드가 커지지 않게 1줄 캡 — 전체 내용은 탭해서 시트에서 확인 */}
-                <Text
-                  fontSize="2xs"
-                  color="orange.600"
-                  lineHeight="1.5"
-                  lineClamp={1}
-                >
-                  {visaSummary}
-                </Text>
-              </VStack>
-            </Info>
-          )}
+      <Box
+        borderWidth="1px"
+        borderColor={borderColors.default}
+        borderRadius="lg"
+        bg="white"
+        overflow="hidden"
+      >
+        {visa && (
+          <RequirementRow label="비자" onClick={visaSheet.onOpen}>
+            <RequirementValue
+              text={visa.text}
+              tone={visa.tone}
+              badge={visa.badge}
+              detail={visa.detail}
+            />
+          </RequirementRow>
+        )}
 
-          {hasBaggagePolicies && (
-            <Info
-              as="button"
-              textAlign="left"
-              cursor="pointer"
-              // 수하물 문구가 비자 요약보다 길어 폭을 조금 더 준다 (한 줄 유지용)
-              flex={1.25}
-              minW={0}
-              py={2}
-              onClick={baggageSheet.onOpen}
-            >
-              <VStack align="stretch" gap={0.5}>
-                <HStack justify="space-between">
-                  <Text
-                    fontSize="xs"
-                    fontWeight="semibold"
-                    color="blue.700"
-                    lineClamp={1}
-                  >
-                    {matchedBaggagePolicies.length === 1
-                      ? `${matchedBaggagePolicies[0].airline} ${matchedBaggagePolicies[0].iataCode}`
-                      : "수하물 규정"}
-                  </Text>
-                  <Box color="blue.300" flexShrink={0}>
-                    <ChevronRight size={14} />
-                  </Box>
-                </HStack>
-                <VStack align="stretch" gap={0.5}>
-                  {matchedBaggagePolicies.map((policy) => (
-                    <Text
-                      key={policy.iataCode}
-                      fontSize="2xs"
-                      color="blue.500"
-                      lineHeight="1.5"
-                      lineClamp={1}
-                    >
-                      {matchedBaggagePolicies.length > 1 &&
-                        `${policy.iataCode} · `}
-                      기내 {compactBaggageText(policy.cabinBaggage)} · 위탁{" "}
-                      {compactBaggageText(policy.checkedBaggage)}
-                    </Text>
-                  ))}
-                </VStack>
-              </VStack>
-            </Info>
+        {/* 항공편이 등록됐으면 실제 규정을, 아니면 전체 규정 진입점을 같은 자리에 */}
+        <RequirementRow label="수하물" onClick={baggageSheet.onOpen}>
+          {hasBaggagePolicies ? (
+            <VStack align="stretch" gap={1.5}>
+              {matchedBaggagePolicies.map((policy) => (
+                <RequirementValue
+                  key={policy.iataCode}
+                  prefix={compactAirlineName(policy.airline)}
+                  text={`기내 ${compactBaggageText(policy.cabinBaggage)} · 위탁 ${compactBaggageText(policy.checkedBaggage)}`}
+                />
+              ))}
+            </VStack>
+          ) : (
+            <RequirementValue text="항공사별 규정 보기" tone="muted" />
           )}
-        </HStack>
-      )}
-
-      {/* 등록된 항공편이 없으면 전체 규정을 볼 수 있는 진입점만 노출 */}
-      {!hasBaggagePolicies && (
-        <HStack
-          as="button"
-          gap={1}
-          cursor="pointer"
-          onClick={baggageSheet.onOpen}
-        >
-          <Text fontSize="xs" color="gray.500" fontWeight="medium">
-            항공사별 수하물 규정
-          </Text>
-          <Box color="gray.400">
-            <ChevronRight size={14} />
-          </Box>
-        </HStack>
-      )}
+        </RequirementRow>
+      </Box>
 
       <AirlineBaggagePolicySheet
         isOpen={baggageSheet.isOpen}

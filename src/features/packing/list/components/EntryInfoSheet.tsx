@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
-import { Info } from "@/shared/components";
 import { colors } from "@/shared/constants/colors";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { countries } from "@/shared/data/regions";
@@ -41,7 +40,9 @@ const MOFA_URL = "https://www.0404.go.kr";
 
 const primary = colors.primary.palette;
 
-/** 국가 특이점(teal) + 공통 안내(gray) 불릿 렌더 */
+/**
+ * 국가 특이점 vs 공통 안내 불릿.
+ */
 function Bullets({
   items,
   tone,
@@ -49,28 +50,45 @@ function Bullets({
   items: readonly string[];
   tone: "country" | "common";
 }) {
+  const isCountry = tone === "country";
+
   return (
     <>
       {items.map((text, i) => (
         <HStack key={i} gap={2} align="start">
           <Box
-            mt="7px"
-            w="4px"
-            h="4px"
+            mt={isCountry ? "8px" : "7px"}
+            w={isCountry ? "5px" : "4px"}
+            h={isCountry ? "5px" : "4px"}
             borderRadius="full"
             flexShrink={0}
-            bg={tone === "country" ? "teal.400" : "gray.300"}
+            bg={isCountry ? `${primary}.500` : "gray.300"}
           />
           <Text
-            fontSize="xs"
+            fontSize={isCountry ? "sm" : "xs"}
+            fontWeight={isCountry ? "medium" : "normal"}
             lineHeight="1.6"
-            color={tone === "country" ? "gray.700" : "gray.500"}
+            color={isCountry ? "gray.800" : "gray.500"}
           >
             {text}
           </Text>
         </HStack>
       ))}
     </>
+  );
+}
+
+/** 특이점·공통을 나누는 그룹 라벨 (둘 다 있을 때만 노출) */
+function GroupLabel({ children }: { children: string }) {
+  return (
+    <Text
+      fontSize="xs"
+      fontWeight="semibold"
+      color="gray.500"
+      letterSpacing="0.02em"
+    >
+      {children}
+    </Text>
   );
 }
 
@@ -85,10 +103,7 @@ export default function EntryInfoSheet({
     () => new Set(["visa"]),
   );
 
-  const country = useMemo(
-    () => countries.find((c) => c.code === code),
-    [code],
-  );
+  const country = useMemo(() => countries.find((c) => c.code === code), [code]);
   const rule = useMemo(
     () => getVisaRule(code, regionId ?? undefined),
     [code, regionId],
@@ -106,11 +121,17 @@ export default function EntryInfoSheet({
     );
   }, [code]);
 
+  // 색 규칙은 짐 목록 리드아웃과 동일 — 조치가 필요할 때만 주황, 아니면 무채색
   const status = rule.isUnknown
-    ? { label: "확인 필요", palette: "gray" }
+    ? { label: "확인 필요", palette: "orange" }
     : rule.required
       ? { label: "비자 필요", palette: "orange" }
-      : { label: "무비자 입국", palette: "green" };
+      : { label: "무비자 입국", palette: "gray" };
+
+  // 여행경보는 "위험", 입국신고는 "할 일" — 등급 3(출국권고) 이상은 빨강으로 분리
+  const alertPalette = alert && alert.level >= 3 ? "red" : "orange";
+  // 필수 신고만 조치색, 권장이면 무채색
+  const declarationPalette = declaration?.required ? "orange" : "gray";
 
   const info = rule.info;
   const detailNote = rule.overrideNote || info?.note || null;
@@ -124,15 +145,38 @@ export default function EntryInfoSheet({
       return next;
     });
 
+  const countryLabel = `${country?.name ?? "현지"} 특이사항`;
+
   const bulletBody = (
-    country?: readonly string[],
-    common?: readonly string[],
-  ) => (
-    <VStack align="stretch" gap={1.5}>
-      {country && <Bullets items={country} tone="country" />}
-      {common && <Bullets items={common} tone="common" />}
-    </VStack>
-  );
+    countryItems?: readonly string[],
+    commonItems?: readonly string[],
+  ) => {
+    const hasCountry = Boolean(countryItems?.length);
+    const hasCommon = Boolean(commonItems?.length);
+    // 라벨은 둘 다 있을 때만 — 한쪽뿐이면 라벨이 노이즈가 된다
+    const showLabels = hasCountry && hasCommon;
+
+    return (
+      <VStack align="stretch" gap={showLabels ? 3.5 : 1.5}>
+        {hasCountry && (
+          <VStack align="stretch" gap={1.5}>
+            {showLabels && <GroupLabel>{countryLabel}</GroupLabel>}
+            <Bullets items={countryItems!} tone="country" />
+          </VStack>
+        )}
+        {hasCommon && (
+          <VStack align="stretch" gap={1.5}>
+            {showLabels && <GroupLabel>어디서나 공통</GroupLabel>}
+            <Bullets items={commonItems!} tone="common" />
+          </VStack>
+        )}
+      </VStack>
+    );
+  };
+
+  /** 접힌 상태에서 "이 안에 이 나라 얘기가 있나"를 알려주는 힌트 */
+  const countryHint = (countryItems?: readonly string[]) =>
+    countryItems?.length ? `특이사항 ${countryItems.length}` : undefined;
 
   type Section = {
     key: string;
@@ -170,7 +214,7 @@ export default function EntryInfoSheet({
             </Text>
           )}
           {rawText && (
-            <Text fontSize="2xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               외교부 원문(일반여권 입국가능기간): {rawText}
             </Text>
           )}
@@ -180,41 +224,49 @@ export default function EntryInfoSheet({
     highlight?.entry && {
       key: "entry",
       title: "입국 절차·서류",
+      hint: countryHint(highlight.entry),
       body: bulletBody(highlight.entry),
     },
     {
       key: "customs",
       title: "세관·면세",
+      hint: countryHint(highlight?.dutyFree),
       body: bulletBody(highlight?.dutyFree, COMMON_ENTRY_INFO.customs),
     },
     {
       key: "prohibited",
       title: "금지·제한 물품",
+      hint: countryHint(highlight?.prohibited),
       body: bulletBody(highlight?.prohibited, COMMON_ENTRY_INFO.prohibited),
     },
     {
       key: "declaration",
       title: "세관신고",
+      hint: countryHint(highlight?.customsDecl),
       body: bulletBody(highlight?.customsDecl, COMMON_ENTRY_INFO.declaration),
     },
     highlight?.quarantine && {
       key: "quarantine",
       title: "검역(동식물)",
+      hint: countryHint(highlight.quarantine),
       body: bulletBody(highlight.quarantine),
     },
     highlight?.vaccination && {
       key: "vaccination",
       title: "예방접종",
+      hint: countryHint(highlight.vaccination),
       body: bulletBody(highlight.vaccination),
     },
     highlight?.caution && {
       key: "caution",
       title: "주의사항",
+      hint: countryHint(highlight.caution),
       body: bulletBody(highlight.caution),
     },
     highlight?.minors && {
       key: "minors",
       title: "동반 미성년자",
+      hint: countryHint(highlight.minors),
       body: bulletBody(highlight.minors),
     },
     {
@@ -227,7 +279,12 @@ export default function EntryInfoSheet({
   const sections = rawSections.filter((s): s is Section => Boolean(s));
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="비자·입국 정보" size="max">
+    <BottomSheet
+      isOpen={isOpen}
+      onClose={onClose}
+      title="비자·입국 정보"
+      size="max"
+    >
       <VStack align="stretch" gap={0} h="calc(90vh - 60px)">
         {/* 고정 헤더: 국가 + 비자 상태 + 여행경보 */}
         <Box px={4} pt={1} pb={2} flexShrink={0}>
@@ -252,48 +309,74 @@ export default function EntryInfoSheet({
           </HStack>
 
           {alert && (
-            <Info colorScheme="orange" mt={2}>
+            <Box
+              mt={2}
+              bg={`${alertPalette}.50`}
+              borderWidth="1px"
+              borderColor={`${alertPalette}.200`}
+              borderRadius="lg"
+              px={3}
+              py={2.5}
+            >
               <HStack gap={2} align="start">
-                <Box color="orange.500" mt={0.5}>
+                <Box color={`${alertPalette}.500`} mt={0.5}>
                   <AlertTriangle size={15} />
                 </Box>
                 <VStack align="start" gap={0.5}>
-                  <Text fontSize="xs" fontWeight="bold" color="orange.700">
+                  <Text
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color={`${alertPalette}.700`}
+                  >
                     외교부 여행경보 {ALERT_META[alert.level].label}
                     {!alert.nationwide && " (일부 지역)"}
                   </Text>
-                  <Text fontSize="xs" color="orange.600">
+                  {/* 600은 50 배경 위에서 3.4:1 — AA 미달이라 700으로 */}
+                  <Text
+                    fontSize="xs"
+                    color={`${alertPalette}.700`}
+                    lineHeight="1.5"
+                  >
                     {alert.reason}
                   </Text>
                 </VStack>
               </HStack>
-            </Info>
+            </Box>
           )}
 
           {declaration && (
             <Box
               mt={2}
-              bg={`${primary}.50`}
+              bg={`${declarationPalette}.50`}
               borderWidth="1px"
-              borderColor={`${primary}.200`}
+              borderColor={`${declarationPalette}.200`}
               borderRadius="lg"
               px={3}
               py={2.5}
             >
               <HStack justify="space-between" align="center" gap={2}>
-                <Text fontSize="xs" fontWeight="bold" color={`${primary}.700`}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="bold"
+                  color={`${declarationPalette}.700`}
+                >
                   {declaration.name}
                 </Text>
                 <Badge
-                  colorPalette={declaration.required ? primary : "gray"}
+                  colorPalette={declarationPalette}
                   variant="subtle"
-                  fontSize="2xs"
+                  fontSize="xs"
                   flexShrink={0}
                 >
                   {declaration.required ? "필수" : "권장"}
                 </Badge>
               </HStack>
-              <Text fontSize="2xs" color={`${primary}.700`} mt={1} lineHeight="1.6">
+              <Text
+                fontSize="xs"
+                color={`${declarationPalette}.700`}
+                mt={1}
+                lineHeight="1.6"
+              >
                 {declaration.deadline}
                 {declaration.note ? ` · ${declaration.note}` : ""}
               </Text>
@@ -305,7 +388,8 @@ export default function EntryInfoSheet({
                   mt={1.5}
                   fontSize="xs"
                   fontWeight="semibold"
-                  color={`${primary}.600`}
+                  color={`${declarationPalette}.700`}
+                  textDecoration="underline"
                   display="inline-flex"
                   alignItems="center"
                   gap={1}
@@ -314,7 +398,12 @@ export default function EntryInfoSheet({
                   <ExternalLink size={12} />
                 </Link>
               ) : (
-                <Text fontSize="2xs" color={`${primary}.600`} mt={1.5}>
+                <Text
+                  fontSize="xs"
+                  color={`${declarationPalette}.700`}
+                  mt={1.5}
+                  lineHeight="1.5"
+                >
                   작성처가 수시로 바뀌는 국가입니다. 항공사 안내나 현지 대사관
                   공지에서 공식 접수처를 확인하세요.
                 </Text>
@@ -325,32 +414,46 @@ export default function EntryInfoSheet({
 
         {/* 스크롤 영역: 섹션 아코디언 */}
         <Box flex={1} overflowY="auto" px={4} pb={6}>
-          <VStack align="stretch" gap={2}>
+          {/* 개별 카드 8장 대신 하나의 문서 — 헤어라인으로만 구분 */}
+          <Box
+            borderWidth="1px"
+            borderColor="gray.200"
+            borderRadius="lg"
+            overflow="hidden"
+            bg="white"
+          >
             {sections.map((section) => {
               const isExpanded = openKeys.has(section.key);
               return (
                 <Box
                   key={section.key}
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  borderRadius="lg"
-                  overflow="hidden"
+                  _notFirst={{
+                    borderTopWidth: "1px",
+                    borderTopColor: "gray.100",
+                  }}
                 >
                   <HStack
                     as="button"
                     w="full"
                     px={3}
-                    py={2.5}
+                    py={3}
                     justify="space-between"
                     cursor="pointer"
+                    transition="background 0.12s ease"
+                    _active={{ bg: "gray.100" }}
+                    _focusVisible={{
+                      outline: "2px solid",
+                      outlineColor: `${primary}.500`,
+                      outlineOffset: "-2px",
+                    }}
                     onClick={() => toggle(section.key)}
                   >
-                    <Text fontSize="sm" fontWeight="semibold" color="gray.700">
+                    <Text fontSize="sm" fontWeight="semibold" color="gray.800">
                       {section.title}
                     </Text>
                     <HStack gap={1.5}>
                       {section.hint && !isExpanded && (
-                        <Text fontSize="2xs" color="gray.400">
+                        <Text fontSize="xs" color="gray.500">
                           {section.hint}
                         </Text>
                       )}
@@ -364,20 +467,14 @@ export default function EntryInfoSheet({
                     </HStack>
                   </HStack>
                   {isExpanded && (
-                    <Box
-                      px={3}
-                      pb={3}
-                      pt={2}
-                      borderTopWidth="1px"
-                      borderColor="gray.100"
-                    >
+                    <Box px={3} pb={3.5} pt={0.5}>
                       {section.body}
                     </Box>
                   )}
                 </Box>
               );
             })}
-          </VStack>
+          </Box>
 
           {/* 출처 + 면책 */}
           <Box
@@ -389,10 +486,10 @@ export default function EntryInfoSheet({
             borderWidth="1px"
             borderColor="gray.100"
           >
-            <Text fontSize="2xs" color="gray.500" lineHeight="1.6">
-              비자 정보 출처: 외교부 국가·지역별 입국허가요건(공공데이터). 세관·금지물품
-              등은 일반 안내이며 국가별로 다를 수 있습니다. 입국 규정은 수시로 바뀌므로
-              여행 전 반드시 최신 정보를 확인하세요.
+            <Text fontSize="xs" color="gray.600" lineHeight="1.6">
+              비자 정보 출처: 외교부 국가·지역별 입국허가요건(공공데이터).
+              세관·금지물품 등은 일반 안내이며 국가별로 다를 수 있습니다. 입국
+              규정은 수시로 바뀌므로 여행 전 반드시 최신 정보를 확인하세요.
             </Text>
             <Link
               href={MOFA_URL}
@@ -401,7 +498,8 @@ export default function EntryInfoSheet({
               mt={1.5}
               fontSize="xs"
               fontWeight="semibold"
-              color="teal.600"
+              color={`${primary}.700`}
+              textDecoration="underline"
               display="inline-flex"
               alignItems="center"
               gap={1}

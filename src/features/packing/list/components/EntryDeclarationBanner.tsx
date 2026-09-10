@@ -80,23 +80,31 @@ export default function EntryDeclarationBanner({
           colorScheme="orange"
           textAlign="left"
           cursor="pointer"
+          transition="background 0.12s ease"
+          _active={{ bg: "orange.200" }}
+          _focusVisible={{
+            outline: "2px solid",
+            outlineColor: "orange.400",
+            outlineOffset: "-2px",
+          }}
           onClick={guideSheet.onOpen}
         >
           <HStack justify="space-between">
             <HStack gap={1.5} align="start">
-              <Box color="orange.500" mt="1px">
+              <Box color="orange.500" mt="2px">
                 <CircleAlert size={15} />
               </Box>
-              <VStack align="start" gap={0}>
-                <Text fontSize="xs" fontWeight="bold" color="orange.700">
+              <VStack align="start" gap={0.5}>
+                <Text fontSize="sm" fontWeight="bold" color="orange.700">
                   {declaration.name} 작성 가능 기간이에요
                 </Text>
-                <Text fontSize="2xs" color="orange.600">
+                {/* orange.600은 orange.50 위에서 3.4:1 — AA 미달이라 700으로 */}
+                <Text fontSize="xs" color="orange.700" lineHeight="1.5">
                   {declaration.deadline} · 도착 전 필수
                 </Text>
               </VStack>
             </HStack>
-            <Box color="orange.300">
+            <Box color="orange.400" flexShrink={0} mt="2px">
               <ChevronRight size={14} />
             </Box>
           </HStack>
