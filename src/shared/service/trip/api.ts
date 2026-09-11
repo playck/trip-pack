@@ -39,18 +39,7 @@ export const updateTripDatesWithSchedules = async (params: {
 }): Promise<{ deletedScheduleCount: number }> => {
   const { tripId, startDate, endDate, deleteOutOfRangeSchedules } = params;
 
-  // RPC는 생성된 타입에 아직 반영되지 않았을 수 있어 함수명 타입 회피
-  const { data, error } = await (
-    supabase.rpc as unknown as (
-      fn: string,
-      args: {
-        p_trip_id: string;
-        p_start_date: string;
-        p_end_date: string;
-        p_delete_out_of_range: boolean;
-      },
-    ) => Promise<{ data: number | null; error: { message: string } | null }>
-  )("update_trip_dates", {
+  const { data, error } = await supabase.rpc("update_trip_dates", {
     p_trip_id: tripId,
     p_start_date: startDate,
     p_end_date: endDate,

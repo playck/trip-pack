@@ -1,5 +1,4 @@
 import { supabase } from "@/shared/service/supabase/cilent";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   CategoryWithItems,
   TripWithProgress,
@@ -218,11 +217,9 @@ export const getTripsWithProgress = async (): Promise<TripWithProgress[]> => {
 
   if (!user) return [];
 
-  const { data, error } = await (supabase as SupabaseClient).rpc(
+  const { data, error } = await supabase.rpc(
     "get_trips_with_check_progress",
-    {
-      p_user_id: user.id,
-    },
+    { p_user_id: user.id },
   );
 
   if (error) throw new Error(`여행 목록 조회 실패: ${error.message}`);
