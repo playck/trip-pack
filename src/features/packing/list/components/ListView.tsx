@@ -257,7 +257,7 @@ export default function ListView({
                       );
                     })
                   ) : (
-                    <Text fontSize="sm" color="gray.400" fontStyle="italic">
+                    <Text fontSize="sm" color="gray.500" fontStyle="italic">
                       {showUncheckedOnly
                         ? "모든 항목을 체크했습니다"
                         : "아이템이 없습니다"}

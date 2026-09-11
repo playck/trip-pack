@@ -249,7 +249,7 @@ export default function ImportTextSheet({
                         {item.name}
                       </Text>
                       {item.notes && (
-                        <Text fontSize="xs" color="gray.400">
+                        <Text fontSize="xs" color="gray.500">
                           {item.notes}
                         </Text>
                       )}
@@ -355,7 +355,7 @@ export default function ImportTextSheet({
                 <Text
                   fontSize="sm"
                   fontWeight="semibold"
-                  color="teal.600"
+                  color="teal.700"
                   mb={2}
                 >
                   {ex.label}

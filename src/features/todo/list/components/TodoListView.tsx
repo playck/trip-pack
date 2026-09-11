@@ -233,7 +233,7 @@ export default function TodoListView({
                     );
                   })
                 ) : (
-                  <Text fontSize="sm" color="gray.400" fontStyle="italic">
+                  <Text fontSize="sm" color="gray.500" fontStyle="italic">
                     {showOnlyMine
                       ? "나에게 할당된 할일이 없습니다"
                       : showUncheckedOnly

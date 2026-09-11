@@ -55,7 +55,7 @@ export default function MyChecklistsPage() {
             <VStack gap={2}>
               <ClipboardList size={48} color={colors.neutral.fg} />
               <Text color="gray.500">저장된 체크리스트가 없습니다.</Text>
-              <Text fontSize="sm" color="gray.400">
+              <Text fontSize="sm" color="gray.500">
                 여행 준비물을 저장하면 여기에 표시됩니다.
               </Text>
             </VStack>

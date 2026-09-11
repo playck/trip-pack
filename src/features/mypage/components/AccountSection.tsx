@@ -58,10 +58,10 @@ export default function AccountSection({
 
       <Box>
         <HStack gap={1.5} mb={2} px={1} align="baseline">
-          <Text fontSize="sm" fontWeight="bold" color="gray.400">
+          <Text fontSize="sm" fontWeight="bold" color="gray.500">
             앱 정보
           </Text>
-          <Text fontSize="xs" color="gray.400">
+          <Text fontSize="xs" color="gray.500">
             v{APP_VERSION}
           </Text>
         </HStack>
@@ -92,7 +92,7 @@ export default function AccountSection({
       </Box>
 
       <Box>
-        <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
+        <Text fontSize="sm" fontWeight="bold" color="gray.500" mb={2} px={1}>
           계정 관리
         </Text>
         <VStack

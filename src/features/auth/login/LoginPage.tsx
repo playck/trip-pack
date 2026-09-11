@@ -335,7 +335,7 @@ export default function LoginPage() {
               </Box>
 
               <Box textAlign="center" mt={1}>
-                <Text fontSize="xs" color="gray.400">
+                <Text fontSize="xs" color="gray.500">
                   가입 시{" "}
                   <Text
                     as="button"

@@ -16,7 +16,6 @@ const TONE_STYLE: Record<ValueTone, { color: string; fontWeight: string }> = {
 interface RequirementValueProps {
   text: string;
   tone?: ValueTone;
-  /** 값 앞에 붙는 짧은 출처 표시 (예: 항공사 IATA 코드). 숫자가 시선의 기준이 되도록 흐리게 */
   prefix?: string;
   /** 조치가 필요한 항목에만 붙이는 배지 (예: 입국신고 필수) */
   badge?: string;

@@ -117,7 +117,7 @@ export default function ExpenseSummaryCard({
 
                 {/* 환율 정보 (심플하게 표시) */}
                 {isForeignCurrency && !isRateLoading && exchangeRate && (
-                  <Text fontSize="10px" color="gray.400" lineHeight="shorter">
+                  <Text fontSize="10px" color="gray.500" lineHeight="shorter">
                     {currencySymbol}1 ≈{" "}
                     {Math.round(exchangeRate).toLocaleString()}원
                   </Text>

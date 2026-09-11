@@ -100,7 +100,7 @@ export default function PullToRefresh({
             </MotionBox>
           ) : (
             <MotionBox animate={{ rotate: progress * 180, opacity: progress }}>
-              <Text fontSize="lg" color="gray.400">
+              <Text fontSize="lg" color="gray.500">
                 ↓
               </Text>
             </MotionBox>

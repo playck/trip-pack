@@ -58,7 +58,7 @@ export default function FlightSheet({
 
           {isLoading && (
             <Center py={8}>
-              <Text fontSize="sm" color="gray.400">
+              <Text fontSize="sm" color="gray.500">
                 항공편 정보 로딩중...
               </Text>
             </Center>

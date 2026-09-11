@@ -132,7 +132,7 @@ export default function DailyTrendCard({
                 <Text fontSize="2xs" color="gray.600" fontWeight="semibold">
                   D{bucket.dayNumber}
                 </Text>
-                <Text fontSize="2xs" color="gray.400">
+                <Text fontSize="2xs" color="gray.500">
                   {bucket.label}
                 </Text>
               </VStack>

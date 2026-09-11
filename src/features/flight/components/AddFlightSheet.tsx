@@ -303,7 +303,7 @@ export default function AddFlightSheet({
             autoComplete="off"
             lang="en"
           />
-          <Text fontSize="xs" color="gray.400">
+          <Text fontSize="xs" color="gray.500">
             출발 당일에 실시간 운항 정보가 자동으로 표시됩니다.
           </Text>
         </VStack>

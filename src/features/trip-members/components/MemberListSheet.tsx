@@ -57,11 +57,11 @@ export default function MemberListSheet({
       >
         <VStack gap={0} px={4} pb={4} align="stretch">
           {isLoading ? (
-            <Text fontSize="sm" color="gray.400" textAlign="center" py={6}>
+            <Text fontSize="sm" color="gray.500" textAlign="center" py={6}>
               불러오는 중...
             </Text>
           ) : members.length === 0 ? (
-            <Text fontSize="sm" color="gray.400" textAlign="center" py={6}>
+            <Text fontSize="sm" color="gray.500" textAlign="center" py={6}>
               멤버가 없습니다.
             </Text>
           ) : (
@@ -101,7 +101,7 @@ export default function MemberListSheet({
                           </Badge>
                         )}
                       </HStack>
-                      <Text fontSize="xs" color="gray.400">
+                      <Text fontSize="xs" color="gray.500">
                         {isMemberOwner ? "방장" : "멤버"}
                       </Text>
                     </VStack>

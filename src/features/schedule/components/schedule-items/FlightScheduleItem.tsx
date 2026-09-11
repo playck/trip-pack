@@ -98,7 +98,7 @@ export default function FlightScheduleItem({
                     destinationName ||
                     "출발지"}
                 </Text>
-                <Text fontSize="2xs" color="gray.400">
+                <Text fontSize="2xs" color="gray.500">
                   {isDeparture
                     ? flight.departure_airport || "ICN"
                     : status?.airportCode || flight.departure_airport || ""}
@@ -117,7 +117,7 @@ export default function FlightScheduleItem({
                     destinationName ||
                     "도착지"}
                 </Text>
-                <Text fontSize="2xs" color="gray.400">
+                <Text fontSize="2xs" color="gray.500">
                   {isDeparture
                     ? status?.airportCode || flight.arrival_airport || ""
                     : flight.arrival_airport || "ICN"}

@@ -26,7 +26,7 @@ export default function ImportCategorySelect({
       {/* 중복 안내 */}
       {duplicateCount > 0 && (
         <Box px={2} py={2} bg="orange.50" borderRadius="md">
-          <Text fontSize="xs" color="orange.600">
+          <Text fontSize="xs" color="orange.700">
             이미 동일한 이름의 카테고리가 {duplicateCount}개 있어 선택할 수
             없습니다.
           </Text>

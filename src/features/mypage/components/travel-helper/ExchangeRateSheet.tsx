@@ -199,7 +199,7 @@ export default function ExchangeRateSheet({
       size="max"
     >
       {rateDate && !isLoading && (
-        <Text fontSize="xs" color="gray.400" textAlign="right" px={5} py={1}>
+        <Text fontSize="xs" color="gray.500" textAlign="right" px={5} py={1}>
           {rateDate} 기준 환율
         </Text>
       )}
@@ -261,7 +261,7 @@ function CurrencyListView({
               <Text fontSize="lg">{currency.flag}</Text>
               <Text fontSize="sm" fontWeight="medium" color="gray.800">
                 {currency.name}{" "}
-                <Text as="span" color="gray.400">
+                <Text as="span" color="gray.500">
                   ({currency.code.toUpperCase()})
                 </Text>
               </Text>
@@ -339,7 +339,7 @@ function CalculatorView({
                 {currency.code.toUpperCase()}
               </Text>
             </HStack>
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               {currency.symbol}
             </Text>
           </HStack>
@@ -357,13 +357,13 @@ function CalculatorView({
             onChange={(e) => onForeignAmountChange(e.target.value)}
           />
           {foreignKorean ? (
-            <Text fontSize="xs" color="gray.400" textAlign="right" mt={1}>
+            <Text fontSize="xs" color="gray.500" textAlign="right" mt={1}>
               {foreignKorean}
             </Text>
           ) : null}
         </Box>
 
-        <Text fontSize="xl" color="gray.400" fontWeight="bold">
+        <Text fontSize="xl" color="gray.500" fontWeight="bold">
           ↕
         </Text>
 
@@ -385,7 +385,7 @@ function CalculatorView({
                 KRW
               </Text>
             </HStack>
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               ₩
             </Text>
           </HStack>
@@ -403,7 +403,7 @@ function CalculatorView({
             onChange={(e) => onKrwAmountChange(e.target.value)}
           />
           {krwKorean ? (
-            <Text fontSize="xs" color="gray.400" textAlign="right" mt={1}>
+            <Text fontSize="xs" color="gray.500" textAlign="right" mt={1}>
               {krwKorean}
             </Text>
           ) : null}
