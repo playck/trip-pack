@@ -134,7 +134,12 @@ export const ELECTRONICS_ITEMS: PackItem[] = [
 export const CLOTHING_ITEMS: PackItem[] = [
   { name: "슬리퍼", cabin: "allowed" },
   { name: "선글라스", tier: "optional", cabin: "allowed" },
-  { name: "신발", tier: "optional", cabin: "allowed" },
+  {
+    // "신발" 은 이미 신고 가는 신발과 구분이 안 돼 챙길 항목처럼 보였다.
+    name: "여분 신발",
+    tier: "optional",
+    cabin: "allowed",
+  },
   { name: "모자", tier: "optional", cabin: "allowed" },
   { name: "양말", cabin: "allowed" },
   { name: "잠옷", tier: "optional", cabin: "allowed" },
@@ -456,7 +461,6 @@ export const SIGHTSEEING_ITEMS: PackItem[] = [
     name: "셀카봉/삼각대",
     cabin: "allowed",
   },
-  { name: "편한 워킹화", cabin: "allowed" },
 ];
 
 export const NATURE_ITEMS: PackItem[] = [
