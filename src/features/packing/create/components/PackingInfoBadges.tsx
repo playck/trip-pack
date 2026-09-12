@@ -2,6 +2,7 @@ import { HStack, Badge } from "@chakra-ui/react";
 import { useAtomValue } from "jotai";
 
 import { formatDateRange } from "@/shared/utiles/date";
+import { TRIP_TYPE_LABELS } from "../data/data";
 import { packingCreateAtom } from "../store/packingCreateAtom";
 
 export default function PackingInfoBadges() {
@@ -43,7 +44,7 @@ export default function PackingInfoBadges() {
   if (state.tripTypes.length > 0) {
     badges.push(
       <Badge key="tripTypes" variant="outline" size="sm">
-        🎯 {state.tripTypes.join(", ")}
+        🎯 {state.tripTypes.map((type) => TRIP_TYPE_LABELS[type]).join(", ")}
       </Badge>
     );
   }
