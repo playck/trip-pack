@@ -13,7 +13,8 @@ import {
   WINTER_ITEMS,
   RAINY_ITEMS,
 } from "@/shared/data/checkList";
-import type { PackItem } from "@/shared/data/checkList";
+import { isIncludedInStyle } from "@/shared/data/checkList";
+import type { PackItem, PackingStyle } from "@/shared/data/checkList";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { ESSENTIAL_CATEGORY_NAME } from "@/shared/data/essentialItemGuides";
 import { getPlugNote } from "@/shared/data/plugStandards";
@@ -29,7 +30,8 @@ export interface GeneratedCheckList {
 }
 
 export function generateCheckList(
-  state: PackingCreateState
+  state: PackingCreateState,
+  packingStyle: PackingStyle = "full",
 ): GeneratedCheckList[] {
   const result: GeneratedCheckList[] = [];
   const countryCode = state.region?.countryCode ?? "KR";
@@ -40,7 +42,7 @@ export function generateCheckList(
   if (isOverseasTrip) {
     const essentialItems = [...ESSENTIAL_ITEMS];
     const passportIndex = essentialItems.findIndex(
-      (item) => item.name === "여권"
+      (item) => item.name === "여권",
     );
     const insertAt = passportIndex >= 0 ? passportIndex + 1 : 0;
     essentialItems.splice(insertAt, 0, {
@@ -83,13 +85,24 @@ export function generateCheckList(
       })
     : ELECTRONICS_ITEMS;
 
+  // 고정 블록은 사용자가 고른 조건이 아니라 항상 들어가는 구간이라,
+  // 판정은 `tier` 만 본다
+  const filterByPackingStyle = (items: PackItem[]) =>
+    items.filter((item) => isIncludedInStyle(item.tier, packingStyle));
+
   result.push(
-    { categoryName: "전자제품", items: electronicsItems },
-    { categoryName: "의류", items: CLOTHING_ITEMS },
-    { categoryName: "세면용품", items: TOILETRIES_ITEMS },
-    { categoryName: "화장품", items: COSMETICS_ITEMS },
-    { categoryName: "상비약", items: EMERGENCY_MED_ITEMS },
-    { categoryName: "기타용품", items: MISC_OPTIONAL_ITEMS }
+    { categoryName: "전자제품", items: filterByPackingStyle(electronicsItems) },
+    { categoryName: "의류", items: filterByPackingStyle(CLOTHING_ITEMS) },
+    { categoryName: "세면용품", items: filterByPackingStyle(TOILETRIES_ITEMS) },
+    { categoryName: "화장품", items: filterByPackingStyle(COSMETICS_ITEMS) },
+    {
+      categoryName: "상비약",
+      items: filterByPackingStyle(EMERGENCY_MED_ITEMS),
+    },
+    {
+      categoryName: "기타용품",
+      items: filterByPackingStyle(MISC_OPTIONAL_ITEMS),
+    },
   );
 
   // ── 3. 계절별 아이템 ──
