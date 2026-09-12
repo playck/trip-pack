@@ -88,7 +88,7 @@ describe("등급 데이터 무결성", () => {
     // 등급을 고치면 이 숫자도 같이 고쳐야 한다. 의도한 변경임을 확인하는 장치다.
     const optional = FIXED_BLOCK.filter((item) => item.tier === "optional");
     expect(FIXED_BLOCK).toHaveLength(46);
-    expect(optional).toHaveLength(27);
+    expect(optional).toHaveLength(24);
   });
 
   it("고정 블록에 같은 이름이 두 번 없다", () => {

@@ -125,7 +125,6 @@ export const ELECTRONICS_ITEMS: PackItem[] = [
   },
   {
     name: "보조배터리",
-    tier: "optional",
     cabin: "allowed",
     cabinNotes:
       "기내만 허용, 위탁 금지. 160Wh 이하 1인당 최대 2개(초과 반입 금지), 좌석 선반 보관 금지 — 몸에 소지",
@@ -133,9 +132,9 @@ export const ELECTRONICS_ITEMS: PackItem[] = [
 ];
 
 export const CLOTHING_ITEMS: PackItem[] = [
-  { name: "슬리퍼", tier: "optional", cabin: "allowed" },
+  { name: "슬리퍼", cabin: "allowed" },
   { name: "선글라스", tier: "optional", cabin: "allowed" },
-  { name: "신발", cabin: "allowed" },
+  { name: "신발", tier: "optional", cabin: "allowed" },
   { name: "모자", tier: "optional", cabin: "allowed" },
   { name: "양말", cabin: "allowed" },
   { name: "잠옷", tier: "optional", cabin: "allowed" },
@@ -235,7 +234,6 @@ export const EMERGENCY_MED_ITEMS: PackItem[] = [
   },
   {
     name: "지사제",
-    tier: "optional",
     required: true,
     cabin: "allowed",
   },
@@ -245,7 +243,7 @@ export const EMERGENCY_MED_ITEMS: PackItem[] = [
     tier: "optional",
     cabin: "allowed",
   },
-  { name: "밴드/패드", tier: "optional", required: true, cabin: "allowed" },
+  { name: "밴드/패드", required: true, cabin: "allowed" },
   {
     name: "소독 티슈/연고",
     tier: "optional",
