@@ -1,3 +1,4 @@
+export * from "./profile";
 export * from "./trip/api";
 export * from "./trip/tripInfo";
 export * from "./trip/useDeleteTrip";
