@@ -413,7 +413,7 @@ export default function SettlementPage() {
           </>
         )}
 
-        <Text fontSize="2xs" color="gray.400" textAlign="center" px={4} mt={2}>
+        <Text fontSize="2xs" color="gray.500" textAlign="center" px={4} mt={2}>
           공동 경비만 집계됩니다. 개인 경비(MY 표시)는 제외돼요.
         </Text>
       </VStack>

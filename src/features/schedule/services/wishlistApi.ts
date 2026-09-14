@@ -184,16 +184,7 @@ export const convertWishlistToSchedule = async (params: {
 }): Promise<{ id: string } | null> => {
   const { wishlistId, dayNumber, tripStartDate } = params;
 
-  const { data, error } = await (
-    supabase.rpc as unknown as (
-      fn: string,
-      args: {
-        p_wishlist_id: string;
-        p_day_number: number;
-        p_schedule_date: string;
-      },
-    ) => Promise<{ data: string | null; error: { message: string } | null }>
-  )("convert_wishlist_to_schedule", {
+  const { data, error } = await supabase.rpc("convert_wishlist_to_schedule", {
     p_wishlist_id: wishlistId,
     p_day_number: dayNumber,
     p_schedule_date: getDayDate(tripStartDate, dayNumber),
@@ -225,12 +216,9 @@ export const convertScheduleToWishlist = async (params: {
     throw new Error("메모는 가고 싶은 곳으로 옮길 수 없습니다");
   }
 
-  const { data, error } = await (
-    supabase.rpc as unknown as (
-      fn: string,
-      args: { p_schedule_id: string },
-    ) => Promise<{ data: string | null; error: { message: string } | null }>
-  )("convert_schedule_to_wishlist", { p_schedule_id: params.scheduleId });
+  const { data, error } = await supabase.rpc("convert_schedule_to_wishlist", {
+    p_schedule_id: params.scheduleId,
+  });
 
   if (error) {
     throw new Error(`일정 이동에 실패했습니다: ${error.message}`);

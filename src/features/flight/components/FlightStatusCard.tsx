@@ -129,7 +129,7 @@ export default function FlightStatusCard({
                 ? "인천"
                 : flight.departure_airport}
             </Text>
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               {isDeparture ? "ICN" : status?.airportCode || ""}
             </Text>
           </VStack>
@@ -143,7 +143,7 @@ export default function FlightStatusCard({
                 ? "인천"
                 : flight.arrival_airport}
             </Text>
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               {isDeparture ? status?.airportCode || "" : "ICN"}
             </Text>
           </VStack>
@@ -152,7 +152,7 @@ export default function FlightStatusCard({
         {/* 실시간 운항 현황 */}
         {isLoading && (
           <Box py={2} textAlign="center">
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               운항 현황 조회중...
             </Text>
           </Box>
@@ -160,7 +160,7 @@ export default function FlightStatusCard({
 
         {isError && (
           <Box py={2} textAlign="center">
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               운항 현황을 가져올 수 없습니다
             </Text>
           </Box>

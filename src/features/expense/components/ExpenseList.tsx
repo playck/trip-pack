@@ -77,7 +77,7 @@ export default function ExpenseList({
       <VStack align="stretch" gap={0} mt={2}>
         {expenses.length === 0 ? (
           <Box py={1} textAlign="center">
-            <Text color="gray.400" fontSize="sm">
+            <Text color="gray.500" fontSize="sm">
               경비 내역이 없습니다
             </Text>
           </Box>

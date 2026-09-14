@@ -98,16 +98,9 @@ export const createInvitation = async (
 export const acceptInvitation = async (
   inviteCode: string,
 ): Promise<{ tripId: string; tripTitle: string }> => {
-  // RPC는 생성된 타입에 아직 반영되지 않았을 수 있어 함수명 타입 회피
-  const { data, error } = await (
-    supabase.rpc as unknown as (
-      fn: string,
-      args: { p_code: string },
-    ) => Promise<{
-      data: Array<{ out_trip_id: string; out_trip_title: string }> | null;
-      error: { message: string } | null;
-    }>
-  )("accept_invitation", { p_code: inviteCode });
+  const { data, error } = await supabase.rpc("accept_invitation", {
+    p_code: inviteCode,
+  });
 
   if (error) {
     if (error.message.includes("invalid_or_expired_invitation")) {

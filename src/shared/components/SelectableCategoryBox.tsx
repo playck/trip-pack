@@ -66,7 +66,7 @@ export default function SelectableCategoryBox({
             {name}
           </Text>
           {subText && (
-            <Text fontSize="xs" color="gray.400">
+            <Text fontSize="xs" color="gray.500">
               {subText}
             </Text>
           )}

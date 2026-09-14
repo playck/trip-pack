@@ -135,7 +135,7 @@ export default function ExpenseItem({
             {expense.scheduleName && (
               <HStack gap={1} mt={0.5}>
                 <Link2 size={11} color="var(--chakra-colors-gray-400)" />
-                <Text fontSize="xs" color="gray.400" lineClamp={1}>
+                <Text fontSize="xs" color="gray.500" lineClamp={1}>
                   {expense.scheduleName}
                 </Text>
               </HStack>

@@ -5,6 +5,7 @@ import {
   type TripTypeOption,
   TRIP_TYPE_OPTIONS,
   TRIP_TYPE_ICONS,
+  TRIP_TYPE_LABELS,
 } from "../data/data";
 import { packingCreateAtom } from "../store/packingCreateAtom";
 
@@ -42,7 +43,7 @@ export default function SelectTripType() {
               size="sm"
               onClick={() => handleTripTypeToggle(type)}
             >
-              {TRIP_TYPE_ICONS[type]} {type}
+              {TRIP_TYPE_ICONS[type]} {TRIP_TYPE_LABELS[type]}
             </Button>
           </WrapItem>
         ))}

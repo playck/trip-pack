@@ -91,7 +91,7 @@ export default function AirlineBaggagePolicySheet({
             <Box color="gray.400">
               <Info size={12} />
             </Box>
-            <Text fontSize="2xs" color="gray.400">
+            <Text fontSize="2xs" color="gray.500">
               실제 허용량은 운임 등급에 따라 상이할 수 있습니다
             </Text>
           </HStack>
@@ -101,7 +101,7 @@ export default function AirlineBaggagePolicySheet({
         <Box flex={1} overflowY="auto" px={4} pb={6}>
           {grouped.size === 0 ? (
             <Box py={12} textAlign="center">
-              <Text fontSize="sm" color="gray.400">
+              <Text fontSize="sm" color="gray.500">
                 검색 결과가 없습니다
               </Text>
             </Box>

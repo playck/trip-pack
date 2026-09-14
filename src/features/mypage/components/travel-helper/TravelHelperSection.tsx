@@ -16,7 +16,7 @@ export default function TravelHelperSection() {
   return (
     <>
       <Box>
-        <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
+        <Text fontSize="sm" fontWeight="bold" color="gray.500" mb={2} px={1}>
           여행 도우미
         </Text>
 

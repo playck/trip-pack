@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 import { componentColors } from "@/shared/constants/colors";
 
 import { packingCreateAtom } from "../store/packingCreateAtom";
+import ChoiceCard from "./ChoiceCard";
 import {
   type CompanionType,
   type CompanionTypeOption,
@@ -38,35 +39,18 @@ export default function TravelCompanion() {
 
   return (
     <VStack gap={6} align="stretch">
-      <HStack gap={4} justify="center">
-        <Button
-          variant={companion === "alone" ? "solid" : "outline"}
-          colorPalette={componentColors.button.primary}
-          borderColor={
-            companion === "alone"
-              ? componentColors.button.primary
-              : componentColors.button.border.default
-          }
-          size="lg"
-          flex={1}
-          onClick={() => handleCompanionChange("alone")}
-        >
-          🧑 혼자 떠나요!
-        </Button>
-        <Button
-          variant={companion === "withCompanion" ? "solid" : "outline"}
-          colorPalette={componentColors.button.primary}
-          borderColor={
-            companion === "withCompanion"
-              ? componentColors.button.primary
-              : componentColors.button.border.default
-          }
-          size="lg"
-          flex={1}
-          onClick={() => handleCompanionChange("withCompanion")}
-        >
-          👥 일행이 있어요!
-        </Button>
+      {/* 5단계 짐 스타일과 같은 종류의 질문이라 같은 컨트롤을 쓴다 */}
+      <HStack gap={3} align="stretch">
+        <ChoiceCard
+          label="🧑 혼자 떠나요"
+          isSelected={companion === "alone"}
+          onSelect={() => handleCompanionChange("alone")}
+        />
+        <ChoiceCard
+          label="👥 일행이 있어요"
+          isSelected={companion === "withCompanion"}
+          onSelect={() => handleCompanionChange("withCompanion")}
+        />
       </HStack>
 
       {companion === "withCompanion" && (

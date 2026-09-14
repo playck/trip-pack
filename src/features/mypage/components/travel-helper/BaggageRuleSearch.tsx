@@ -92,7 +92,7 @@ export default function BaggageRuleSearchSheet({
                 <Text fontSize="sm" color="gray.500" fontWeight="medium">
                   매칭된 검색 결과가 없어요
                 </Text>
-                <Text fontSize="xs" color="gray.400" lineHeight="1.6" px={4}>
+                <Text fontSize="xs" color="gray.500" lineHeight="1.6" px={4}>
                   검색 결과에 없는 일반 물품은 대부분 기내·위탁 모두 반입
                   가능해요. 다만 날카로운 물품, 배터리, 액체, 스프레이류는
                   규정이 있을 수 있으니 항공보안365(avsec365.or.kr)에서

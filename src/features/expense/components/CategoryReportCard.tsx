@@ -55,7 +55,7 @@ export default function CategoryReportCard({
                   <Text fontSize="sm" color="gray.700" fontWeight="medium">
                     {bucket.def.label}
                   </Text>
-                  <Text fontSize="2xs" color="gray.400">
+                  <Text fontSize="2xs" color="gray.500">
                     {percentLabel}
                   </Text>
                 </HStack>

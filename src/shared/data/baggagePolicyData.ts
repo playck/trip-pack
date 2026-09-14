@@ -170,7 +170,6 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "야채",
       "채소",
       "농산물",
-      "검역",
       "식물",
       "씨앗",
       "망고",
@@ -238,8 +237,8 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       status: "allowed",
       reason: "위탁 수하물로는 용량 제한 없이 가능합니다.",
     },
+
     keywords: [
-      "물",
       "생수",
       "음료",
       "음료수",
@@ -889,7 +888,7 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
   // --- 4. 조건부 허용 ---
   {
     name: "액체류 (화장품/세면도구)",
-    description: "스킨, 로션, 샴푸, 향수, 치약, 헤어스프레이",
+    description: "스킨, 로션, 샴푸, 치약, 클렌징폼",
     category: "lifestyle",
     cabin: {
       status: "restricted",
@@ -897,22 +896,18 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
     },
     checked: {
       status: "allowed",
-      reason:
-        "일반 화장품·세면도구는 위탁 용량 제한이 없습니다. 단, 인화성 스프레이(에어로졸)는 총 2L(2kg), 개당 500ml 이하만 가능합니다.",
+      reason: "일반 화장품·세면도구는 위탁 용량 제한이 없습니다.",
     },
+
+    // 에어로졸(스프레이형)은 위탁 용량 제한이 따로 있어 아래 항목으로 분리
     keywords: [
       "화장품",
       "스킨",
       "로션",
-      "향수",
       "샴푸",
       "린스",
       "치약",
-      "헤어스프레이",
-      "미스트",
       "선크림",
-      "데오드란트",
-      "데오드란트스프레이",
       "폼클렌징",
       "클렌징폼",
       "바디워시",
@@ -923,6 +918,30 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "왁스",
       "틴트",
       "화장수",
+    ],
+  },
+  {
+    name: "인화성 화장품 (에어로졸·향수)",
+    description: "헤어스프레이, 데오드란트, 미스트, 향수",
+    category: "lifestyle",
+    cabin: {
+      status: "restricted",
+      reason: "개별 100ml 이하만 가능, 총 1L 지퍼백 1개 제한.",
+    },
+    checked: {
+      status: "restricted",
+      reason:
+        "인화성 화장품(에어로졸·향수)은 총 2L(2kg), 개당 500ml 이하만 가능합니다.",
+    },
+    keywords: [
+      "헤어스프레이",
+      "데오드란트스프레이",
+      "데오드란트",
+      "바디미스트",
+      "미스트",
+      "에어로졸",
+      "향수",
+      "스프레이",
     ],
   },
   {
@@ -953,6 +972,11 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "인슐린",
       "처방약",
       "해열제",
+      "감기약",
+      "멀미약",
+      "소화제",
+      "지사제",
+      "진통제",
       "렌즈액",
       "연고",
       "주사기",

@@ -158,7 +158,7 @@ export default function TripSettingsDrawer({
 
               <VStack align="stretch" gap={0} flex={1}>
                 {/* 여행 설정 섹션 */}
-                <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium" mb={1}>
                   여행
                 </Text>
                 <MenuItemRow
@@ -175,7 +175,7 @@ export default function TripSettingsDrawer({
                 <Separator my={3} />
 
                 {/* 공유 섹션 */}
-                <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium" mb={1}>
                   공유
                 </Text>
                 <MenuItemRow
@@ -187,7 +187,7 @@ export default function TripSettingsDrawer({
                 <Separator my={3} />
 
                 {/* 일행 설정 섹션 */}
-                <Text fontSize="xs" color="gray.400" fontWeight="medium" mb={1}>
+                <Text fontSize="xs" color="gray.500" fontWeight="medium" mb={1}>
                   일행 설정
                 </Text>
                 <MenuItemRow

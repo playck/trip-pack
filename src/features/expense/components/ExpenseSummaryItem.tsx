@@ -27,7 +27,7 @@ const ExpenseSummaryItem = ({
     </HStack>
     <HStack gap={2}>
       {subValue && (
-        <Text fontSize="xs" color="gray.400">
+        <Text fontSize="xs" color="gray.500">
           {subValue}
         </Text>
       )}

@@ -7,6 +7,7 @@ import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { scheduleTripNotification } from "@/shared/utils/nativeMessage";
 
+import { TRIP_TYPE_LABELS } from "../data/data";
 import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import {
   packingCreateAtom,
@@ -33,7 +34,7 @@ function buildLoadingMessages(
   const messages = [`${destination} 체크리스트를 만들고 있어요...`];
 
   if (tripTypes.length > 0) {
-    messages.push(`${tripTypes.join(", ")} 여행에 맞는 아이템을 골라볼게요`);
+    messages.push(`${tripTypes.join(", ")}에 맞는 아이템을 골라볼게요`);
   } else {
     messages.push("여행에 꼭 필요한 아이템을 골라볼게요");
   }
@@ -77,7 +78,7 @@ export default function LastStep() {
     () =>
       buildLoadingMessages(
         packingCreateState.region?.name,
-        packingCreateState.tripTypes,
+        packingCreateState.tripTypes.map((type) => TRIP_TYPE_LABELS[type]),
         packingCreateState.startMode,
       ),
     [

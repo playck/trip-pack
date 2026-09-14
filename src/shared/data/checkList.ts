@@ -1,5 +1,40 @@
 export type CabinPolicy = "allowed" | "restricted" | "prohibited";
 
+/**
+ * 짐 스타일 등급.
+ * - `core`(기본): 성향과 무관하게 항상 생성
+ * - `optional`: `minimal` 성향이면 생성하지 않음
+ *
+ * 미지정은 `core` 로 취급한다(안전한 기본값). 고정 6개 카테고리에만 부여하며,
+ * 사용자가 직접 고른 조건부 카테고리(여행유형·계절 등)에는 부여하지 않는다.
+ *
+ * `required` 와는 별개 축이다 — `required` 는 UI 의 (필수) 표시용이고,
+ * 생성 여부는 `tier` 만으로 판정한다. 여권·항공권 등은 고정 블록이 아닌
+ * 필수 준비물 카테고리에 있어 애초에 이 판정을 타지 않는다.
+ */
+export type PackTier = "core" | "optional";
+
+/**
+ * 사용자의 짐 스타일. `profiles.packing_style` 과 같은 값이다.
+ * 마이그레이션 후에는 `Database["public"]["Enums"]` 에서 파생하도록 바꾼다.
+ * - `full`: 현재 동작(전부 생성). 성향을 안 고른 사용자의 기본값
+ * - `minimal`: 고정 카테고리의 `optional` 등급을 생성하지 않음
+ */
+export type PackingStyle = "minimal" | "full";
+
+/**
+ * 등급·성향의 포함 범위. 값이 클수록 더 많이 포함한다.
+ * 3단계로 늘릴 때는 두 표에 값을 하나씩 추가하면 되고, 판정 로직은 그대로다.
+ */
+const TIER_RANK: Record<PackTier, number> = { core: 0, optional: 1 };
+const STYLE_RANK: Record<PackingStyle, number> = { minimal: 0, full: 1 };
+
+/** 이 성향의 체크리스트에 해당 등급의 항목이 포함되는가. `tier` 미지정은 `core`. */
+export const isIncludedInStyle = (
+  tier: PackTier | undefined,
+  style: PackingStyle
+): boolean => TIER_RANK[tier ?? "core"] <= STYLE_RANK[style];
+
 export interface PackItem {
   name: string;
   required?: boolean;
@@ -7,6 +42,7 @@ export interface PackItem {
   cabin?: CabinPolicy;
   cabinNotes?: string;
   checked?: boolean;
+  tier?: PackTier;
 }
 
 export const ESSENTIAL_ITEMS: PackItem[] = [
@@ -97,12 +133,17 @@ export const ELECTRONICS_ITEMS: PackItem[] = [
 
 export const CLOTHING_ITEMS: PackItem[] = [
   { name: "슬리퍼", cabin: "allowed" },
-  { name: "선글라스", cabin: "allowed" },
-  { name: "신발", cabin: "allowed" },
-  { name: "모자", cabin: "allowed" },
+  { name: "선글라스", tier: "optional", cabin: "allowed" },
+  {
+    // "신발" 은 이미 신고 가는 신발과 구분이 안 돼 챙길 항목처럼 보였다.
+    name: "여분 신발",
+    tier: "optional",
+    cabin: "allowed",
+  },
+  { name: "모자", tier: "optional", cabin: "allowed" },
   { name: "양말", cabin: "allowed" },
-  { name: "잠옷", cabin: "allowed" },
-  { name: "수면안대", cabin: "allowed" },
+  { name: "잠옷", tier: "optional", cabin: "allowed" },
+  { name: "수면안대", tier: "optional", cabin: "allowed" },
   { name: "속옷", cabin: "allowed" },
   { name: "상의", cabin: "allowed" },
   { name: "하의", cabin: "allowed" },
@@ -121,6 +162,7 @@ export const TOILETRIES_ITEMS: PackItem[] = [
   },
   {
     name: "샴푸",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정, 1L 지퍼백",
   },
@@ -131,28 +173,33 @@ export const TOILETRIES_ITEMS: PackItem[] = [
   },
   {
     name: "바디워시",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정",
   },
   {
     name: "면도기(일회용/카트리지)",
+    tier: "optional",
     cabin: "allowed",
     cabinNotes: "일회용/카트리지형 일반 허용",
   },
   {
     name: "스킨/토너",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정",
   },
   {
     name: "로션/크림",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔류 100ml 규정",
   },
-  { name: "면봉/화장솜", cabin: "allowed" },
-  { name: "손톱깎이", cabin: "allowed" },
+  { name: "면봉/화장솜", tier: "optional", cabin: "allowed" },
+  { name: "손톱깎이", tier: "optional", cabin: "allowed" },
   {
     name: "수건(여행용 속건타월)",
+    tier: "optional",
     cabin: "allowed",
   },
 ];
@@ -167,11 +214,13 @@ export const COSMETICS_ITEMS: PackItem[] = [
   },
   {
     name: "립밤",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "겔/크림류로 100ml 규정",
   },
   {
     name: "화장품",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔/크림·마스카라 등 100ml 규정",
   },
@@ -193,28 +242,32 @@ export const EMERGENCY_MED_ITEMS: PackItem[] = [
     required: true,
     cabin: "allowed",
   },
-  { name: "멀미약", cabin: "allowed" },
+  { name: "멀미약", tier: "optional", cabin: "allowed" },
   {
     name: "감기약(콧물/기침/목)",
+    tier: "optional",
     cabin: "allowed",
   },
   { name: "밴드/패드", required: true, cabin: "allowed" },
   {
     name: "소독 티슈/연고",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "액체/겔 100ml 규정(연고)",
   },
   {
     name: "모기퇴치제(스프레이/로션)",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "스프레이/액체 100ml 규정",
   },
   {
     name: "자외선 화상용 진정젤(알로에 등)",
+    tier: "optional",
     cabin: "restricted",
     cabinNotes: "겔 100ml 규정",
   },
-  { name: "마스크", cabin: "allowed" },
+  { name: "마스크", tier: "optional", cabin: "allowed" },
   {
     name: "개인 처방약",
     required: true,
@@ -224,14 +277,15 @@ export const EMERGENCY_MED_ITEMS: PackItem[] = [
 ];
 
 export const MISC_OPTIONAL_ITEMS: PackItem[] = [
-  { name: "의류 압축팩", cabin: "allowed" },
+  { name: "의류 압축팩", tier: "optional", cabin: "allowed" },
   {
     name: "지퍼백(여러 사이즈)",
     cabin: "allowed",
   },
-  { name: "목베개", cabin: "allowed" },
+  { name: "목베개", tier: "optional", cabin: "allowed" },
   {
     name: "미니 배낭/크로스백",
+    tier: "optional",
     notes: "여권·현금 등 귀중품 휴대, 소매치기 방지 지퍼형 권장",
     cabin: "allowed",
   },
@@ -407,7 +461,6 @@ export const SIGHTSEEING_ITEMS: PackItem[] = [
     name: "셀카봉/삼각대",
     cabin: "allowed",
   },
-  { name: "편한 워킹화", cabin: "allowed" },
 ];
 
 export const NATURE_ITEMS: PackItem[] = [
@@ -456,7 +509,8 @@ export const RESORT_ITEMS: PackItem[] = [
     cabin: "allowed",
   },
   {
-    name: "눈가리개/귀마개",
+    // 눈가리개는 의류의 `수면안대` 와 같은 물건이라 제외하고 귀마개만 둔다.
+    name: "귀마개",
     cabin: "allowed",
   },
   { name: "양산", cabin: "allowed" },
@@ -483,6 +537,16 @@ export const SHOPPING_ITEMS: PackItem[] = [
 // ── 계절별 추가 아이템 ──
 
 export const SUMMER_ITEMS: PackItem[] = [
+  // 아래 셋은 고정 카테고리에도 있지만 거기선 `optional` 이다.
+  // 이름을 맞춰 두면 full 에서는 중복 제거가 잡고, minimal 에서는
+  // "여름·열대 목적지" 라는 조건이 되살린다.
+  { name: "모자", cabin: "allowed" },
+  { name: "선글라스", cabin: "allowed" },
+  {
+    name: "모기퇴치제(스프레이/로션)",
+    cabin: "restricted",
+    cabinNotes: "액체/겔류 100ml 이하, 1L 투명 지퍼백",
+  },
   {
     name: "양산/UV 우산",
     cabin: "allowed",
@@ -504,6 +568,12 @@ export const SUMMER_ITEMS: PackItem[] = [
 ];
 
 export const WINTER_ITEMS: PackItem[] = [
+  // 화장품에도 있으나 거기선 `optional`. 겨울엔 선크림보다 더 필요하다.
+  {
+    name: "립밤",
+    cabin: "restricted",
+    cabinNotes: "겔/크림류로 100ml 규정",
+  },
   { name: "핫팩", cabin: "allowed" },
   { name: "내복/히트텍", cabin: "allowed" },
   { name: "장갑", notes: "터치스크린 호환 권장", cabin: "allowed" },
@@ -524,8 +594,10 @@ export const RAINY_ITEMS: PackItem[] = [
     cabin: "allowed",
   },
   {
-    name: "여분 수건",
-    notes: "속건 타월 권장",
+    // 세면용품의 같은 항목과 이름을 맞춰 둔다. 이름이 같아야
+    // full 에서는 중복 제거가 잡아내고, minimal 에서는 우기 조건이 되살린다.
+    name: "수건(여행용 속건타월)",
+    notes: "우기엔 여벌로, 속건 타월 권장",
     cabin: "allowed",
   },
 ];

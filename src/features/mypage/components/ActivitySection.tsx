@@ -8,8 +8,8 @@ export default function ActivitySection() {
 
   return (
     <Box>
-      <Text fontSize="sm" fontWeight="bold" color="gray.400" mb={2} px={1}>
-        내 활동
+      <Text fontSize="sm" fontWeight="bold" color="gray.500" mb={2} px={1}>
+        내 여행
       </Text>
       <VStack
         gap={0}

@@ -1,6 +1,8 @@
 import { Button, Text, VStack } from "@chakra-ui/react";
 
 import { colors } from "@/shared/constants/colors";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { usePackingStyle } from "@/shared/service/profile";
 
 import { useCreatePersonalChecklist } from "../hooks/useCreatePersonalChecklist";
 
@@ -9,7 +11,9 @@ interface EmptyPackingCTAProps {
 }
 
 export default function EmptyPackingCTA({ tripId }: EmptyPackingCTAProps) {
-  const mutation = useCreatePersonalChecklist(tripId);
+  const { user } = useAuth();
+  const { effectiveStyle } = usePackingStyle(user?.id);
+  const mutation = useCreatePersonalChecklist(tripId, effectiveStyle);
 
   return (
     <VStack pt={6} gap={2}>
