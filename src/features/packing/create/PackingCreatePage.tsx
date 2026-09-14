@@ -61,7 +61,7 @@ export default function PackingCreatePage() {
   const { data: templates } = useChecklistTemplate();
 
   const { user } = useAuth();
-  const { packingStyle, isLoading: isStyleLoading } = usePackingStyle(user?.id);
+  const { packingStyle } = usePackingStyle(user?.id);
   const savePackingStyle = useUpdatePackingStyle(user?.id, { silent: true });
 
   // 저장된 템플릿이 있을 때만 여행유형 단계에서 생성 방법(CTA)을 노출
@@ -71,10 +71,8 @@ export default function PackingCreatePage() {
     setPackingState(INITIAL_PACKING_CREATE_STATE);
   }, [setPackingState]);
 
-  /**
-   * 이미 저장된 성향은 atom 에 시드해 둔다. LastStep 이 profiles 를 조회하지 않게
-   * 하는 것이 목적이다(단 1회 발화 useEffect 라 늦게 온 응답을 반영할 수 없다).
-   */
+  // 이미 저장된 성향은 atom에 시드해 둔다.
+  // LastStep 이 profiles를 조회하지 않게 하는 것이 목적이다
   useEffect(() => {
     if (!packingStyle) return;
     setPackingState((prev) =>
@@ -82,24 +80,10 @@ export default function PackingCreatePage() {
     );
   }, [packingStyle, setPackingState]);
 
-  /**
-   * 성향을 아직 모르는 구간.
-   *
-   * `useAuth` 가 `user` 를 비동기로 채우는 동안 `usePackingStyle(undefined)` 는
-   * `enabled: false` 이고, React Query 는 `isLoading = isPending && isFetching` 이라
-   * **비활성 쿼리를 로딩으로 보지 않는다**(`isLoading === false`).
-   * 그래서 `isStyleLoading` 만 보면 이 구간이 "성향 없음(NULL)" 으로 읽혀,
-   * 이미 답한 사용자에게도 질문 단계가 끼어들었다가 사라진다.
-   */
-  const isStyleUnknown = !user?.id || isStyleLoading;
+  //질문 단계가 필요한지는 마운트 시 한 번만 정한다
+  const [needsStyleStep] = useState(() => packingStyle === null);
 
-  /** 성향을 아직 안 물어봤을 때만(NULL) 질문 단계를 순서에 끼운다. */
-  const needsStyleStep = !isStyleUnknown && packingStyle === null;
-
-  /**
-   * 화면 순서를 배열로 조립한다. 단계 수가 4/5로 달라지므로
-   * `step + 1` 같은 인덱스 산술을 쓰지 않고 이 배열의 위치로만 이동한다.
-   */
+  // 화면 순서를 배열로 조립한다. 단계 수가 4/5로 달라지므로 `step + 1` 같은 인덱스 산술을 쓰지 않고 이 배열의 위치로만 이동한다
   const stepSequence = useMemo<StepValue[]>(
     () => (needsStyleStep ? [...BASE_STEPS, Step.STYLE] : BASE_STEPS),
     [needsStyleStep],
@@ -122,10 +106,9 @@ export default function PackingCreatePage() {
       case Step.COMPANION:
         return !validation.hasCompanion;
       default:
-        // 성향을 아직 모르는 동안 생성으로 넘어가면 기본값으로 만들어져 되돌릴 수 없다.
-        return isStyleUnknown;
+        return false;
     }
-  }, [step, validation, isStyleUnknown]);
+  }, [step, validation]);
 
   const handlePreviousStep = useCallback(() => {
     if (currentIndex > 0) setStep(stepSequence[currentIndex - 1]);
@@ -137,8 +120,6 @@ export default function PackingCreatePage() {
       return;
     }
 
-    // 성향 단계를 지나왔다면 여기서 저장한다. 실패해도 atom 값으로 이번 여행은
-    // 반영되고(다음 여행에서 다시 묻는다) 생성 자체를 막지는 않는다.
     if (step === Step.STYLE && packingState.packingStyle) {
       savePackingStyle.mutate(packingState.packingStyle);
     }
@@ -198,7 +179,6 @@ export default function PackingCreatePage() {
           count={totalSteps}
           currentStep={step === Step.LOADING ? totalSteps : currentIndex}
           icons={stepSequence.map((value) => STEP_ICONS[value])}
-          isListHidden={isStyleUnknown}
           completedContent={step === Step.LOADING ? <LastStep /> : undefined}
           renderContent={renderContent}
         />
@@ -211,7 +191,6 @@ export default function PackingCreatePage() {
               onStartAuto={handleNextStep}
               onStartTemplate={handleStartLoading}
               onPrevious={handlePreviousStep}
-              isAutoDisabled={isStyleUnknown}
             />
           ) : (
             <StepBtnContainer

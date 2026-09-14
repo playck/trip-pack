@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 
 import { toaster } from "@/shared/components/ui/toaster";
 import type { PackingStyle } from "@/shared/data/checkList";
+
+import { packingStyleAtom } from "@/shared/store/packingStyleStore";
 
 import { updateMyPackingStyle } from "./api";
 import { packingStyleQueryKey } from "./usePackingStyle";
@@ -19,6 +22,7 @@ export function useUpdatePackingStyle(
   options?: UseUpdatePackingStyleOptions,
 ) {
   const queryClient = useQueryClient();
+  const setPackingStyle = useSetAtom(packingStyleAtom);
 
   return useMutation({
     mutationFn: (packingStyle: PackingStyle) => {
@@ -26,6 +30,8 @@ export function useUpdatePackingStyle(
       return updateMyPackingStyle(userId, packingStyle);
     },
     onSuccess: (_, packingStyle) => {
+      // 화면 판단의 기준은 로컬이다. DB 성공을 확인한 뒤에 갱신한다.
+      setPackingStyle(packingStyle);
       queryClient.setQueryData(packingStyleQueryKey(userId), packingStyle);
       queryClient.invalidateQueries({
         queryKey: packingStyleQueryKey(userId),
