@@ -2,6 +2,7 @@ import { atom } from "jotai";
 
 import type { Region } from "@/shared/data/regions";
 import type { TravelDates } from "@/shared/components/Calendar";
+import type { PackingStyle } from "@/shared/data/checkList";
 import type { GeneratedCheckList } from "../hooks/useGenerateCheckList";
 import type {
   CompanionType,
@@ -19,6 +20,7 @@ export type PackingCreateState = {
   companionTypes: CompanionTypeOption[];
   tripTypes: TripTypeOption[];
   startMode: PackingStartMode;
+  packingStyle?: PackingStyle;
   generatedCheckList?: GeneratedCheckList[];
 };
 
@@ -32,11 +34,12 @@ export const INITIAL_PACKING_CREATE_STATE: PackingCreateState = {
   companionTypes: [],
   tripTypes: [],
   startMode: "auto",
+  packingStyle: undefined,
   generatedCheckList: undefined,
 };
 
 export const packingCreateAtom = atom<PackingCreateState>(
-  INITIAL_PACKING_CREATE_STATE
+  INITIAL_PACKING_CREATE_STATE,
 );
 
 export const packingCreateValidationAtom = atom((get) => {

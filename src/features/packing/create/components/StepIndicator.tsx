@@ -8,6 +8,8 @@ interface StepIndicatorProps {
   icons?: ReactNode[];
   renderContent?: (index: number) => ReactNode;
   completedContent?: ReactNode;
+  // 단계 수가 아직 확정되지 않았을 때 목록을 감춘다.
+  isListHidden?: boolean;
 }
 
 export default function StepIndicator({
@@ -16,12 +18,13 @@ export default function StepIndicator({
   icons,
   renderContent,
   completedContent,
+  isListHidden = false,
 }: StepIndicatorProps) {
   const steps = Array.from({ length: count });
 
   return (
     <Steps.Root step={currentStep} count={count}>
-      <Steps.List>
+      <Steps.List visibility={isListHidden ? "hidden" : "visible"}>
         {steps.map((_, index) => (
           <Steps.Item
             key={index}

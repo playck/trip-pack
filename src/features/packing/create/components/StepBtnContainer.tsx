@@ -1,11 +1,12 @@
 import { Button, HStack } from "@chakra-ui/react";
 
 import { componentColors } from "@/shared/constants/colors";
-import { Step, LAST_STEP, type StepValue } from "../constants";
+import { Step, type StepValue } from "../constants";
 
 interface StepBtnContainerProps {
   currentStep: StepValue;
   totalSteps: number;
+  isLastStep: boolean;
   isPreviousDisabled?: boolean;
   isNextDisabled?: boolean;
   onPrevious?: () => void;
@@ -14,13 +15,13 @@ interface StepBtnContainerProps {
 
 export default function StepBtnContainer({
   currentStep,
+  isLastStep,
   isPreviousDisabled = false,
   isNextDisabled = false,
   onPrevious,
   onNext,
 }: StepBtnContainerProps) {
   const isFirstStep = currentStep === Step.REGION;
-  const isLastStep = currentStep === LAST_STEP;
 
   return (
     <HStack

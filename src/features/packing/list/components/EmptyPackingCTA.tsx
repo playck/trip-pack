@@ -1,6 +1,8 @@
 import { Button, Text, VStack } from "@chakra-ui/react";
 
 import { colors } from "@/shared/constants/colors";
+import { useAuth } from "@/shared/hooks/useAuth";
+import { usePackingStyle } from "@/shared/service/profile";
 
 import { useCreatePersonalChecklist } from "../hooks/useCreatePersonalChecklist";
 
@@ -9,13 +11,16 @@ interface EmptyPackingCTAProps {
 }
 
 export default function EmptyPackingCTA({ tripId }: EmptyPackingCTAProps) {
-  const mutation = useCreatePersonalChecklist(tripId);
+  const { user } = useAuth();
+  const { effectiveStyle, isLoading } = usePackingStyle(user?.id);
+  const mutation = useCreatePersonalChecklist(tripId, effectiveStyle);
 
   return (
     <VStack pt={6} gap={2}>
       <Button
         colorPalette={colors.primary.palette}
         loading={mutation.isPending}
+        disabled={isLoading}
         onClick={() => mutation.mutate()}
       >
         나의 짐 체크리스트 만들기

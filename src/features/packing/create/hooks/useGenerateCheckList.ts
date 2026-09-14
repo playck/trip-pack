@@ -6,7 +6,7 @@ export type { GeneratedCheckList } from "../utils/generateCheckList";
 
 export default function useGenerateCheckList(state: PackingCreateState) {
   const handleSetUpCheckList = useCallback(
-    () => generateCheckList(state),
+    () => generateCheckList(state, state.packingStyle ?? "full"),
     [state],
   );
 
