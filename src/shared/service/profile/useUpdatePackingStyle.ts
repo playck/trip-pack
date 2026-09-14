@@ -11,11 +11,11 @@ import { packingStyleQueryKey } from "./usePackingStyle";
 
 interface UseUpdatePackingStyleOptions {
   onSuccess?: (packingStyle: PackingStyle) => void;
-  silent?: boolean;
 }
 
 /**
  * 짐 스타일 변경.
+ * 실패 시 토스트로 알린다.
  */
 export function useUpdatePackingStyle(
   userId: string | undefined,
@@ -38,17 +38,6 @@ export function useUpdatePackingStyle(
       });
 
       options?.onSuccess?.(packingStyle);
-
-      if (!options?.silent) {
-        toaster.create({
-          title:
-            packingStyle === "minimal"
-              ? "다음 여행부터 가볍게 만들어드릴게요"
-              : "다음 여행부터 넉넉하게 만들어드릴게요",
-          type: "success",
-          duration: 2000,
-        });
-      }
     },
     onError: (error: Error) => {
       toaster.create({

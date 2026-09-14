@@ -62,7 +62,7 @@ export default function PackingCreatePage() {
 
   const { user } = useAuth();
   const { packingStyle } = usePackingStyle(user?.id);
-  const savePackingStyle = useUpdatePackingStyle(user?.id, { silent: true });
+  const savePackingStyle = useUpdatePackingStyle(user?.id);
 
   // 저장된 템플릿이 있을 때만 여행유형 단계에서 생성 방법(CTA)을 노출
   const hasTemplates = (templates?.length ?? 0) > 0;
