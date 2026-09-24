@@ -14,9 +14,12 @@ const OPTIONS: { value: PackingStyle; label: string }[] = [
   { value: "full", label: "많이" },
 ];
 
-// 마이페이지 "체크리스트" 그룹 — 짐 스타일 변경.
-// 값이 아직 없으면(NULL) `많이`를 선택된 것으로 보여준다.
-export default function PackingStyleSection() {
+/**
+ * 짐 스타일 변경 행. 카드와 그룹 제목은 감싸는 쪽이 그린다.
+ *
+ * 값이 아직 없으면(NULL) `많이`를 선택된 것으로 보여준다.
+ */
+export default function PackingStyleRow() {
   const { user } = useAuth();
   const { effectiveStyle } = usePackingStyle(user?.id);
   const update = useUpdatePackingStyle(user?.id);
@@ -24,20 +27,14 @@ export default function PackingStyleSection() {
   if (!user) return null;
 
   return (
-    <Box>
-      <Text fontSize="sm" fontWeight="bold" color="gray.500" mb={2} px={1}>
-        체크리스트
-      </Text>
-      <HStack
-        gap={3}
-        justify="space-between"
-        bg="white"
-        borderRadius="xl"
-        px={4}
-        py={3}
-        borderWidth="1px"
-        borderColor="gray.200"
-      >
+    <Box
+      w="full"
+      py={3}
+      borderBottomWidth="1px"
+      borderColor="gray.200"
+      _last={{ borderBottomWidth: 0 }}
+    >
+      <HStack gap={3} justify="space-between">
         <HStack gap={3}>
           <Icon as={Luggage} color="gray.500" size="lg" />
           <Text fontSize="md" fontWeight="medium" color="gray.700">
