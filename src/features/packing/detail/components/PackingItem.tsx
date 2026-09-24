@@ -9,6 +9,7 @@ import PackingItemContent from "./PackingItemContent";
 interface PackingItemProps {
   item: ChecklistItem;
   countryCode?: string | null;
+  tripStartDate?: string | null;
   isEditMode?: boolean;
   isSelected?: boolean;
   onSelect?: (itemId: string) => void;
@@ -20,6 +21,7 @@ interface PackingItemProps {
 export default function PackingItem({
   item,
   countryCode,
+  tripStartDate,
   isEditMode = false,
   isSelected = false,
   onSelect,
@@ -66,6 +68,7 @@ export default function PackingItem({
       <VStack gap={1} align="stretch">
         <PackingItemContent
           itemName={item.name}
+          tripStartDate={tripStartDate}
           isChecked={isItemChecked}
           cabinPolicy={cabinPolicy}
           cabinNotes={cabinNotes}

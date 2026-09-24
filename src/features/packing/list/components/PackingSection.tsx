@@ -144,6 +144,7 @@ export default function PackingSection({
                 updateItemStatus.mutate({ itemId, isChecked })
               }
               countryCode={countryCode}
+              startDate={startDate}
               showUncheckedOnly={showUncheckedOnly}
               expandedCategories={listControls.expandedCategories}
               toggleCategory={listControls.toggleCategory}
