@@ -3,13 +3,13 @@ import { Box, VStack, useDisclosure } from "@chakra-ui/react";
 
 import { borderColors } from "@/shared/constants/colors";
 import { BAGGAGE_POLICY_BY_AIR } from "@/shared/data/baggagePolicyByAir";
-import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { useTripFlights } from "@/features/flight/services/useFlightQueries";
 import {
   getVisaRule,
   getVisaNote,
 } from "@/features/packing/create/utils/visaRules";
 
+import { useEntryDeclarationStatus } from "../hooks/useEntryDeclarationStatus";
 import AirlineBaggagePolicySheet from "./AirlineBaggagePolicySheet";
 import EntryInfoSheet from "./EntryInfoSheet";
 import RequirementRow, { RequirementValue } from "./RequirementRow";
@@ -46,6 +46,9 @@ interface TravelRequirementCardsProps {
   tripId: string;
   countryCode?: string | null;
   regionId?: string | null;
+  /** 입국신고 작성 창이 열렸는지 판정하는 데 쓴다 */
+  startDate: string;
+  endDate: string;
   /** 플로팅 메뉴에서도 열려서 상위에 리프팅된 상태 */
   baggageSheet: { isOpen: boolean; onOpen: () => void; onClose: () => void };
 }
@@ -55,6 +58,8 @@ export default function TravelRequirementCards({
   tripId,
   countryCode,
   regionId,
+  startDate,
+  endDate,
   baggageSheet,
 }: TravelRequirementCardsProps) {
   const visaSheet = useDisclosure();
@@ -63,14 +68,25 @@ export default function TravelRequirementCards({
     countryCode && countryCode.toUpperCase() !== "KR",
   );
 
+  const { declaration, isDeclarationDue } = useEntryDeclarationStatus(
+    tripId,
+    countryCode,
+    startDate,
+    endDate,
+  );
+
   // 값은 짧은 상태값으로, 긴 원문은 detail로 분리 — 값 컬럼이 스캔 가능하게 유지된다
   const visa = useMemo(() => {
     if (!isOverseasTrip) return null;
 
     const rule = getVisaRule(countryCode ?? undefined, regionId ?? undefined);
-    const declarationBadge = getEntryDeclaration(countryCode)?.required
-      ? "입국신고 필수"
-      : undefined;
+    // 작성 창이 열리면 "있다"에서 "지금 해라"로 승격한다. 홈 여행 카드 배지와 같은
+    // 문구를 써서 거기서 보고 들어온 사용자가 같은 건임을 바로 알아보게 한다.
+    const declarationBadge = !declaration?.required
+      ? undefined
+      : isDeclarationDue
+        ? `${declaration.shortName} 작성 기간`
+        : "입국신고 필수";
 
     if (rule.isUnknown) {
       return {
@@ -107,7 +123,7 @@ export default function TravelRequirementCards({
       detail: null,
       badge: declarationBadge,
     };
-  }, [isOverseasTrip, countryCode, regionId]);
+  }, [isOverseasTrip, countryCode, regionId, declaration, isDeclarationDue]);
 
   // 등록된 항공편의 편명 앞 2자리로 항공사 규정을 매칭 (중복 제거)
   const { data: tripFlights = [] } = useTripFlights(tripId);
