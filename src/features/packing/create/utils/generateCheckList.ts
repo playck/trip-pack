@@ -85,8 +85,7 @@ export function generateCheckList(
       })
     : ELECTRONICS_ITEMS;
 
-  // 고정 블록은 사용자가 고른 조건이 아니라 항상 들어가는 구간이라,
-  // 판정은 `tier` 만 본다
+  // 고정 블록은 사용자가 고른 조건이 아니라 항상 들어가는 구간이라 `tier` 만 본다
   const filterByPackingStyle = (items: PackItem[]) =>
     items.filter((item) => isIncludedInStyle(item.tier, packingStyle));
 

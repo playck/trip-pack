@@ -28,6 +28,7 @@ interface PackingItemListProps {
   category: CategoryWithItems;
   searchQuery?: string;
   countryCode?: string | null;
+  tripStartDate?: string | null;
   isEssentialCategory?: boolean;
   isEditMode?: boolean;
   isDeleting?: boolean;
@@ -37,6 +38,7 @@ interface PackingItemListProps {
 export default function PackingItemList({
   category,
   searchQuery = "",
+  tripStartDate,
   countryCode,
   isEssentialCategory = false,
   isEditMode = false,
@@ -240,6 +242,7 @@ export default function PackingItemList({
               key={item.id || `${item.name}-${idx}`}
               item={item}
               countryCode={countryCode}
+              tripStartDate={tripStartDate}
               isEditMode={isEditMode}
               isSelected={item.id ? selectedIds.has(item.id) : false}
               onSelect={handleSelect}

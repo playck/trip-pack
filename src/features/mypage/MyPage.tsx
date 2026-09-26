@@ -7,7 +7,7 @@ import ProfileCard from "./components/ProfileCard";
 import ActivitySection from "./components/ActivitySection";
 import AccountSection from "./components/AccountSection";
 import NotificationSection from "./components/NotificationSection";
-import PackingStyleSection from "./components/PackingStyleSection";
+import MyInfoSection from "./components/MyInfoSection";
 import TravelHelperSection from "./components/travel-helper/TravelHelperSection";
 
 export default function MyPage() {
@@ -25,8 +25,8 @@ export default function MyPage() {
             isPremium={PAYMENT_LIVE && isPremium}
           />
           <ActivitySection />
+          <MyInfoSection />
           <TravelHelperSection />
-          <PackingStyleSection />
           <NotificationSection />
           <AccountSection isPremium={isPremium} />
         </VStack>

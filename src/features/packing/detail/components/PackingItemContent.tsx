@@ -4,12 +4,15 @@ import { MoreVertical } from "lucide-react";
 import { Checkbox, CabinPolicyIcon } from "@/shared/components";
 import { CabinPolicyModal } from "@/features/packing/list/components";
 import EssentialGuideButton from "@/features/packing/list/components/EssentialGuideButton";
+import { PassportExpiryPill } from "@/features/passport";
 import { colors } from "@/shared/constants/colors";
 import type { CabinPolicy } from "@/shared/data/checkList";
 import type { CountryRestriction } from "@/shared/data/baggagePolicyData";
 
 interface PackingItemContentProps {
   itemName: string;
+  /** 여행 출발일. 여권 만료일 경고 판정 기준 */
+  tripStartDate?: string | null;
   isChecked: boolean;
   cabinPolicy?: CabinPolicy | null;
   cabinNotes?: string | null;
@@ -24,6 +27,7 @@ interface PackingItemContentProps {
 
 export default function PackingItemContent({
   itemName,
+  tripStartDate,
   isChecked,
   cabinPolicy,
   cabinNotes,
@@ -59,7 +63,13 @@ export default function PackingItemContent({
             </Text>
           </Flex>
           {!isEditMode && (
-            <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+            <>
+              <PassportExpiryPill
+                itemName={itemName}
+                startDate={tripStartDate}
+              />
+              <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+            </>
           )}
           {!isEditMode && onOpenGuide && (
             <EssentialGuideButton

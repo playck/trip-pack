@@ -36,22 +36,39 @@ import {
 } from "./components";
 import { Step, type StepValue, BASE_STEPS } from "./constants";
 
-const STEP_ICONS: Record<StepValue, React.ReactNode> = {
-  [Step.REGION]: <MapPin size={18} />,
-  [Step.DATE]: <Calendar size={18} />,
-  [Step.COMPANION]: <Users size={18} />,
-  [Step.TRIP_TYPE]: <Luggage size={18} />,
-  [Step.STYLE]: <SlidersHorizontal size={18} />,
-  [Step.LOADING]: null,
+/** LOADING 은 stepSequence 에 들어가지 않아 여기 없다. */
+const STEPS: Partial<
+  Record<
+    StepValue,
+    { icon: React.ReactNode; title: string; body: React.ReactNode }
+  >
+> = {
+  [Step.REGION]: {
+    icon: <MapPin size={18} />,
+    title: "어디로 떠나시나요?",
+    body: <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />,
+  },
+  [Step.DATE]: {
+    icon: <Calendar size={18} />,
+    title: "언제 떠나시나요?",
+    body: <SearchCalendar />,
+  },
+  [Step.COMPANION]: {
+    icon: <Users size={18} />,
+    title: "누구와 함께 떠나시나요?",
+    body: <TravelCompanion />,
+  },
+  [Step.TRIP_TYPE]: {
+    icon: <Luggage size={18} />,
+    title: "어떤 여행을 떠나시나요?",
+    body: <SelectTripType />,
+  },
+  [Step.STYLE]: {
+    icon: <SlidersHorizontal size={18} />,
+    title: "짐 많이 챙기는 편이세요?",
+    body: <SelectPackingStyle />,
+  },
 };
-
-const STEP_TITLES = {
-  [Step.REGION]: "어디로 떠나시나요?",
-  [Step.DATE]: "언제 떠나시나요?",
-  [Step.COMPANION]: "누구와 함께 떠나시나요?",
-  [Step.TRIP_TYPE]: "어떤 여행을 떠나시나요?",
-  [Step.STYLE]: "짐 많이 챙기는 편이세요?",
-} as const;
 
 export default function PackingCreatePage() {
   const [step, setStep] = useState<StepValue>(Step.REGION);
@@ -71,8 +88,7 @@ export default function PackingCreatePage() {
     setPackingState(INITIAL_PACKING_CREATE_STATE);
   }, [setPackingState]);
 
-  // 이미 저장된 성향은 atom에 시드해 둔다.
-  // LastStep 이 profiles를 조회하지 않게 하는 것이 목적이다
+  // LastStep 이 profiles 를 조회하지 않도록 atom 에 시드해 둔다
   useEffect(() => {
     if (!packingStyle) return;
     setPackingState((prev) =>
@@ -80,10 +96,10 @@ export default function PackingCreatePage() {
     );
   }, [packingStyle, setPackingState]);
 
-  //질문 단계가 필요한지는 마운트 시 한 번만 정한다
+  // 마운트 시 한 번만 정한다 — 도중에 바뀌면 표시 단계 수가 깜빡인다
   const [needsStyleStep] = useState(() => packingStyle === null);
 
-  // 화면 순서를 배열로 조립한다. 단계 수가 4/5로 달라지므로 `step + 1` 같은 인덱스 산술을 쓰지 않고 이 배열의 위치로만 이동한다
+  // 단계 수가 4/5로 달라져 `step + 1` 인덱스 산술이 성립하지 않는다
   const stepSequence = useMemo<StepValue[]>(
     () => (needsStyleStep ? [...BASE_STEPS, Step.STYLE] : BASE_STEPS),
     [needsStyleStep],
@@ -136,40 +152,9 @@ export default function PackingCreatePage() {
   ]);
 
   const renderContent = useCallback(() => {
-    switch (step) {
-      case Step.REGION:
-        return (
-          <StepContainer title={STEP_TITLES[Step.REGION]}>
-            <SearchRegionComboBox placeholder="예: 제주, Tokyo, 다낭" />
-          </StepContainer>
-        );
-      case Step.DATE:
-        return (
-          <StepContainer title={STEP_TITLES[Step.DATE]}>
-            <SearchCalendar />
-          </StepContainer>
-        );
-      case Step.COMPANION:
-        return (
-          <StepContainer title={STEP_TITLES[Step.COMPANION]}>
-            <TravelCompanion />
-          </StepContainer>
-        );
-      case Step.TRIP_TYPE:
-        return (
-          <StepContainer title={STEP_TITLES[Step.TRIP_TYPE]}>
-            <SelectTripType />
-          </StepContainer>
-        );
-      case Step.STYLE:
-        return (
-          <StepContainer title={STEP_TITLES[Step.STYLE]}>
-            <SelectPackingStyle />
-          </StepContainer>
-        );
-      default:
-        return null;
-    }
+    const current = STEPS[step];
+    if (!current) return null;
+    return <StepContainer title={current.title}>{current.body}</StepContainer>;
   }, [step]);
 
   return (
@@ -178,7 +163,7 @@ export default function PackingCreatePage() {
         <StepIndicator
           count={totalSteps}
           currentStep={step === Step.LOADING ? totalSteps : currentIndex}
-          icons={stepSequence.map((value) => STEP_ICONS[value])}
+          icons={stepSequence.map((value) => STEPS[value]?.icon)}
           completedContent={step === Step.LOADING ? <LastStep /> : undefined}
           renderContent={renderContent}
         />

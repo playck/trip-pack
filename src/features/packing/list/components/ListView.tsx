@@ -23,6 +23,7 @@ import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
 import PackingItemPolicyContainer from "./PackingItemPolicyContainer";
 import EssentialGuideButton from "./EssentialGuideButton";
+import { PassportExpiryPill } from "@/features/passport";
 import EssentialItemGuideSheet from "./EssentialItemGuideSheet";
 
 type ChecklistItem = CategoryWithItems["items"][0];
@@ -30,6 +31,8 @@ interface ListViewProps {
   categories: CategoryWithItems[];
   onToggleItem?: (itemId: string, isChecked: boolean) => void;
   countryCode?: string | null;
+  /** 여행 출발일. 여권 만료일 경고 판정 기준 */
+  startDate?: string | null;
   showUncheckedOnly: boolean;
   expandedCategories: Record<string, boolean>;
   toggleCategory: (categoryId: string) => void;
@@ -39,6 +42,7 @@ export default function ListView({
   categories,
   onToggleItem,
   countryCode,
+  startDate,
   showUncheckedOnly,
   expandedCategories,
   toggleCategory,
@@ -237,6 +241,10 @@ export default function ListView({
                                 {item.name}
                               </Text>
                             </HStack>
+                            <PassportExpiryPill
+                              itemName={item.name}
+                              startDate={startDate}
+                            />
                             {isEssentialCategory &&
                               findEssentialGuide(item.name) && (
                                 <EssentialGuideButton

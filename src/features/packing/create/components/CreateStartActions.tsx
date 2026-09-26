@@ -10,20 +10,12 @@ import TemplateStartSheet from "./TemplateStartSheet";
 
 interface CreateStartActionsProps {
   templates: ChecklistTemplateWithCategories[];
-  /**
-   * 추천으로 만들기. **다음 단계로 진행**한다(성향 질문이 남아 있으면 그 화면).
-   * 여기서 곧바로 생성을 시작하면 성향 질문을 건너뛰게 된다.
-   */
+  /** 추천으로 만들기 → **다음 단계로**. 여기서 생성을 시작하면 성향 질문을 건너뛴다. */
   onStartAuto: () => void;
-  /**
-   * 템플릿으로 시작. 생성(LOADING)으로 직행한다.
-   * 템플릿 경로는 generateCheckList 를 타지 않아 성향이 결과에 영향이 없다.
-   */
+  /** 템플릿으로 시작 → 생성 직행. 템플릿은 generateCheckList 를 안 타서 성향과 무관. */
   onStartTemplate: () => void;
   /** 이전 단계로 이동 */
   onPrevious: () => void;
-  /** 성향 조회가 끝나기 전엔 추천 생성을 막는다(기본값으로 만들어지는 것 방지). */
-  isAutoDisabled?: boolean;
 }
 
 export default function CreateStartActions({
@@ -31,7 +23,6 @@ export default function CreateStartActions({
   onStartAuto,
   onStartTemplate,
   onPrevious,
-  isAutoDisabled = false,
 }: CreateStartActionsProps) {
   const setPackingState = useSetAtom(packingCreateAtom);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -103,7 +94,6 @@ export default function CreateStartActions({
           colorPalette={componentColors.button.primary}
           size="lg"
           flex={1}
-          disabled={isAutoDisabled}
           onClick={handleStartAuto}
         >
           <Sparkles size={18} />

@@ -28,6 +28,12 @@ interface AppleSignInRequestMessage {
   type: "APPLE_SIGN_IN_REQUEST";
 }
 
+interface KakaoSignInRequestMessage {
+  type: "KAKAO_SIGN_IN_REQUEST";
+  /** 요청 상관번호 — 네이티브가 결과에 그대로 실어 회신(늦은 결과 오배달 차단). */
+  nonce?: string;
+}
+
 interface PremiumPurchaseRequestMessage {
   type: "PREMIUM_PURCHASE_REQUEST";
   userId: string;
@@ -53,6 +59,7 @@ type NativeMessage =
   | HapticMessage
   | OpenUrlMessage
   | AppleSignInRequestMessage
+  | KakaoSignInRequestMessage
   | PremiumPurchaseRequestMessage
   | RestorePurchasesMessage
   | PremiumProductRequestMessage;
@@ -146,7 +153,7 @@ export function isReactNativeWebView(): boolean {
 }
 
 /** RN 앱이 지원하는 브릿지 커맨드 이름(앱 저장소 utils/webview.ts NATIVE_CAPABILITIES와 맞춘다). */
-export type NativeCapability = "premiumProduct";
+export type NativeCapability = "premiumProduct" | "kakaoLogin";
 
 /**
  * 현재 앱 바이너리가 해당 브릿지 커맨드를 지원하는지.
@@ -208,6 +215,43 @@ export function requestAppleSignIn(): Promise<AppleSignInBridgeResult> {
       once: true,
     });
     postNativeMessage({ type: "APPLE_SIGN_IN_REQUEST" });
+  });
+}
+
+export type KakaoSignInBridgeResult =
+  | { ok: true; idToken: string }
+  | { ok: false; cancelled: boolean; message?: string };
+
+interface KakaoSignInResultDetail extends NativeResultDetail {
+  ok?: boolean;
+  idToken?: string;
+  cancelled?: boolean;
+  code?: string;
+  message?: string;
+}
+
+// 카카오톡 앱 전환 → 동의 → 복귀까지의 여유. 애플 로그인과 동일하게 잡는다.
+const KAKAO_SIGN_IN_TIMEOUT_MS = 60_000;
+
+/**
+ * 네이티브 카카오 로그인을 요청한다. 카카오톡이 설치돼 있으면 앱으로 전환된다.
+ * 성공 시 받은 idToken을 supabase.auth.signInWithIdToken({ provider: "kakao" })에 넘긴다.
+ * 구버전 앱은 응답하지 않으므로 호출 전에 hasNativeCapability("kakaoLogin")로 걸러야 한다.
+ */
+export function requestKakaoSignIn(): Promise<KakaoSignInBridgeResult> {
+  return awaitNativeResult<KakaoSignInResultDetail, KakaoSignInBridgeResult>({
+    resultEvent: "kakao-sign-in-result",
+    buildMessage: (nonce) => ({ type: "KAKAO_SIGN_IN_REQUEST", nonce }),
+    mapDetail: (detail) =>
+      detail?.ok && detail.idToken
+        ? { ok: true, idToken: detail.idToken }
+        : {
+            ok: false,
+            cancelled: !!detail?.cancelled,
+            message: detail?.message,
+          },
+    timeoutMs: KAKAO_SIGN_IN_TIMEOUT_MS,
+    timeoutMessage: "카카오 로그인 응답 시간이 초과되었습니다",
   });
 }
 

@@ -91,6 +91,7 @@ export default function CategoryDetailPage() {
   });
 
   const countryCode = trip?.country_code;
+  const tripStartDate = trip?.start_date;
   const categoryName = decodeURIComponent(categoryParam);
   const category = categories?.find(
     (cat: CategoryWithItems) => cat.name === categoryName,
@@ -269,6 +270,7 @@ export default function CategoryDetailPage() {
               category={category}
               searchQuery={searchQuery}
               countryCode={countryCode}
+              tripStartDate={tripStartDate}
               isEssentialCategory={isEssentialCategory}
               isEditMode={isEditMode}
               isDeleting={deleteItemsMutation.isPending}

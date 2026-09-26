@@ -8,15 +8,10 @@ import { packingCreateAtom } from "../store/packingCreateAtom";
 import { generateCheckList } from "../utils/generateCheckList";
 import ChoiceCard from "./ChoiceCard";
 
-interface StyleOption {
-  value: PackingStyle;
-  title: string;
-}
-
-const STYLE_OPTIONS: StyleOption[] = [
-  { value: "minimal", title: "아니요, 가볍게" },
-  { value: "full", title: "네, 많이" },
-];
+const STYLE_OPTIONS = [
+  { value: "minimal", label: "아니요, 가볍게" },
+  { value: "full", label: "네, 많이" },
+] as const satisfies { value: PackingStyle; label: string }[];
 
 export default function SelectPackingStyle() {
   const [packingState, setPackingState] = useAtom(packingCreateAtom);
@@ -46,22 +41,20 @@ export default function SelectPackingStyle() {
         {STYLE_OPTIONS.map((option) => (
           <ChoiceCard
             key={option.value}
-            label={option.title}
+            label={option.label}
             isSelected={selected === option.value}
             onSelect={() => handleSelect(option.value)}
           />
         ))}
       </HStack>
 
-      <VStack gap={1}>
-        {lighterPercent > 0 && (
-          <Text fontSize="sm" color="gray.600" textAlign="center">
-            {selected === "minimal"
-              ? `꼭 필요한 것만 골라 약 ${lighterPercent}% 적게 담아드려요`
-              : `가볍게를 고르면 약 ${lighterPercent}% 적게 담아드려요`}
-          </Text>
-        )}
-      </VStack>
+      {lighterPercent > 0 && (
+        <Text fontSize="sm" color="gray.600" textAlign="center">
+          {selected === "minimal"
+            ? `꼭 필요한 것만 골라 약 ${lighterPercent}% 적게 담아드려요`
+            : `가볍게를 고르면 약 ${lighterPercent}% 적게 담아드려요`}
+        </Text>
+      )}
     </VStack>
   );
 }

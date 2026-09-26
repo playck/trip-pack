@@ -1,39 +1,19 @@
 export type CabinPolicy = "allowed" | "restricted" | "prohibited";
 
 /**
- * 짐 스타일 등급.
- * - `core`(기본): 성향과 무관하게 항상 생성
- * - `optional`: `minimal` 성향이면 생성하지 않음
- *
- * 미지정은 `core` 로 취급한다(안전한 기본값). 고정 6개 카테고리에만 부여하며,
- * 사용자가 직접 고른 조건부 카테고리(여행유형·계절 등)에는 부여하지 않는다.
- *
- * `required` 와는 별개 축이다 — `required` 는 UI 의 (필수) 표시용이고,
- * 생성 여부는 `tier` 만으로 판정한다. 여권·항공권 등은 고정 블록이 아닌
- * 필수 준비물 카테고리에 있어 애초에 이 판정을 타지 않는다.
+ * `core`: 항상 생성. `optional`: `minimal` 성향이면 생성하지 않음.
+ * 미지정은 `core`. 고정 6개 카테고리에만 부여하고, 사용자가 고른 조건부
+ * 카테고리(여행유형·계절)에는 부여하지 않는다.
  */
 export type PackTier = "core" | "optional";
 
-/**
- * 사용자의 짐 스타일. `profiles.packing_style` 과 같은 값이다.
- * 마이그레이션 후에는 `Database["public"]["Enums"]` 에서 파생하도록 바꾼다.
- * - `full`: 현재 동작(전부 생성). 성향을 안 고른 사용자의 기본값
- * - `minimal`: 고정 카테고리의 `optional` 등급을 생성하지 않음
- */
+/** `profiles.packing_style` 과 같은 값. 성향을 안 고른 사용자의 기본값은 `full`. */
 export type PackingStyle = "minimal" | "full";
 
-/**
- * 등급·성향의 포함 범위. 값이 클수록 더 많이 포함한다.
- * 3단계로 늘릴 때는 두 표에 값을 하나씩 추가하면 되고, 판정 로직은 그대로다.
- */
-const TIER_RANK: Record<PackTier, number> = { core: 0, optional: 1 };
-const STYLE_RANK: Record<PackingStyle, number> = { minimal: 0, full: 1 };
-
-/** 이 성향의 체크리스트에 해당 등급의 항목이 포함되는가. `tier` 미지정은 `core`. */
 export const isIncludedInStyle = (
   tier: PackTier | undefined,
-  style: PackingStyle
-): boolean => TIER_RANK[tier ?? "core"] <= STYLE_RANK[style];
+  style: PackingStyle,
+): boolean => style === "full" || tier !== "optional";
 
 export interface PackItem {
   name: string;

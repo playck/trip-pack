@@ -7,7 +7,7 @@ import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { scheduleTripNotification } from "@/shared/utils/nativeMessage";
 
-import { TRIP_TYPE_LABELS } from "../data/data";
+import { tripTypeLabel } from "../data/data";
 import useGenerateCheckList from "../hooks/useGenerateCheckList";
 import {
   packingCreateAtom,
@@ -78,7 +78,7 @@ export default function LastStep() {
     () =>
       buildLoadingMessages(
         packingCreateState.region?.name,
-        packingCreateState.tripTypes.map((type) => TRIP_TYPE_LABELS[type]),
+        packingCreateState.tripTypes.map(tripTypeLabel),
         packingCreateState.startMode,
       ),
     [

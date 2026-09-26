@@ -17,7 +17,6 @@ import { useListViewControls } from "../hooks/useListViewControls";
 import { getTripCountdown } from "../utils/tripCountdown";
 import GridView from "./GridView";
 import ListView from "./ListView";
-import EntryDeclarationBanner from "./EntryDeclarationBanner";
 import TravelRequirementCards from "./TravelRequirementCards";
 import ImportTextSheet from "./ImportTextSheet";
 import EmptyPackingCTA from "./EmptyPackingCTA";
@@ -114,19 +113,13 @@ export default function PackingSection({
         />
       )}
 
-      {/* 전자 입국신고 작성 기간 배너 */}
-      <EntryDeclarationBanner
-        tripId={tripId}
-        countryCode={countryCode}
-        startDate={startDate}
-        endDate={endDate}
-      />
-
-      {/* 비자·입국 정보 + 항공사 수하물 규정 요약 */}
+      {/* 비자·입국신고·항공사 수하물 규정 요약 */}
       <TravelRequirementCards
         tripId={tripId}
         countryCode={countryCode}
         regionId={regionId}
+        startDate={startDate}
+        endDate={endDate}
         baggageSheet={baggageSheet}
       />
 
@@ -144,6 +137,7 @@ export default function PackingSection({
                 updateItemStatus.mutate({ itemId, isChecked })
               }
               countryCode={countryCode}
+              startDate={startDate}
               showUncheckedOnly={showUncheckedOnly}
               expandedCategories={listControls.expandedCategories}
               toggleCategory={listControls.toggleCategory}

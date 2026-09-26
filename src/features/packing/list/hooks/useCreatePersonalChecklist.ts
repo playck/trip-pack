@@ -15,12 +15,9 @@ import type { CategoryWithItems } from "../../type";
 import type { ChecklistItem } from "../../type";
 
 /**
- * 여행에 나중에 합류한 멤버가 자기 체크리스트를 자동 생성하는 경로.
- *
- * `packingStyle` 은 마법사 경로와 **같은 값**이 들어와야 한다. 서로 다르면
- * 같은 사용자가 경로에 따라 다른 체크리스트를 받는다 — 이 기능이 고치려던
- * 문제가 그대로 재발한다. 성향 저장(`profiles.packing_style`)이 붙기 전까지는
- * 기본값 `"full"` 로 현재 동작을 유지한다.
+ * 나중에 합류한 멤버가 자기 체크리스트를 자동 생성하는 경로.
+ * `packingStyle` 은 마법사 경로와 **같은 값**이어야 한다 — 다르면 같은 사용자가
+ * 경로에 따라 다른 체크리스트를 받는다.
  */
 export function useCreatePersonalChecklist(
   tripId: string,
