@@ -14,11 +14,7 @@ const OPTIONS: { value: PackingStyle; label: string }[] = [
   { value: "full", label: "많이" },
 ];
 
-/**
- * 짐 스타일 변경 행. 카드와 그룹 제목은 감싸는 쪽이 그린다.
- *
- * 값이 아직 없으면(NULL) `많이`를 선택된 것으로 보여준다.
- */
+/** 짐 스타일 변경 행. 카드와 그룹 제목은 감싸는 쪽이 그린다. */
 export default function PackingStyleRow() {
   const { user } = useAuth();
   const { effectiveStyle } = usePackingStyle(user?.id);

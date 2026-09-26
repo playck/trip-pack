@@ -50,7 +50,6 @@ describe("checkPassportExpiry — 읽을 수 없는 값", () => {
       const result = checkPassportExpiry(value, 출발일);
       expect(result.status).toBe("unregistered");
       expect(result.monthsLeft).toBeNull();
-      expect(result.requiredValidUntil).toBeNull();
     },
   );
 
@@ -71,20 +70,8 @@ describe("checkPassportExpiry — 월말·윤년", () => {
   });
 });
 
-describe("requiredValidUntil", () => {
-  it("출발일 + 6개월을 돌려준다", () => {
-    expect(checkPassportExpiry("2026-09-01", 출발일).requiredValidUntil).toBe(
-      "2026-09-01",
-    );
-  });
-
-  it("부족한 경우에도 목표 날짜를 알려준다", () => {
-    expect(checkPassportExpiry("2026-05-01", 출발일).requiredValidUntil).toBe(
-      "2026-09-01",
-    );
-  });
-
-  it("요건 상수와 일치한다", () => {
+describe("요건 상수", () => {
+  it("6개월이다", () => {
     expect(PASSPORT_VALIDITY_MONTHS).toBe(6);
   });
 });

@@ -3,13 +3,10 @@ import { chakra, Text } from "@chakra-ui/react";
 import { colors, componentColors } from "@/shared/constants/colors";
 
 interface ChoiceCardProps {
-  /** 선택지 라벨. 이모지를 포함할 수 있다. */
   label: string;
   isSelected: boolean;
   onSelect: () => void;
 }
-
-const CHOICE_CARD_MIN_H = "56px";
 
 export default function ChoiceCard({
   label,
@@ -20,7 +17,7 @@ export default function ChoiceCard({
     <chakra.button
       type="button"
       flex={1}
-      minH={CHOICE_CARD_MIN_H}
+      minH="56px"
       display="flex"
       alignItems="center"
       justifyContent="center"

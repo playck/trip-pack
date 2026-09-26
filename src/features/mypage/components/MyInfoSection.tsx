@@ -4,12 +4,7 @@ import { PassportExpiryRow } from "@/features/passport";
 
 import PackingStyleRow from "./PackingStyleRow";
 
-/**
- * 마이페이지 "내 정보" 그룹.
- *
- * 한 번 넣어두면 **앞으로 만드는 여행에 알아서 쓰이는 값**들을 모은다.
- * 조회 도구인 `TravelHelperSection`("여행 도우미")과 나누는 기준이 그것이다.
- */
+/** 한 번 넣어두면 앞으로 만드는 여행에 알아서 쓰이는 값들. 조회 도구는 `TravelHelperSection`. */
 export default function MyInfoSection() {
   return (
     <Box>

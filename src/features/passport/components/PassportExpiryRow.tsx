@@ -6,18 +6,14 @@ import { useAtom } from "jotai";
 import { colors } from "@/shared/constants/colors";
 import { passportExpiryAtom } from "@/shared/store/passportStore";
 
-/** 여권 최장 유효기간이 10년이라 그보다 조금 넉넉하게 잡는다. */
+/** 여권 최장 유효기간 10년보다 조금 넉넉하게. */
 const MAX_YEARS_AHEAD = 11;
 
 /**
  * 여권 만료일 입력 행. 카드와 그룹 제목은 감싸는 쪽이 그린다.
  *
- * 날짜 하나를 받자고 바텀시트를 띄우지 않는다. 행에서 바로 입력한다
- * (`TodoItemForm` 과 같은 방식). Chakra v3·ark-ui 에 날짜 선택 컴포넌트가
- * 없어서 네이티브 `<input type="date">` 를 쓴다 — OS 기본 피커가 뜬다.
- *
- * 잔여 기간은 여기서 말하지 않는다. 경고는 짐 목록 배너가 여행 출발일을 기준으로
- * 하므로, 여기서까지 개월 수를 띄우면 기준이 둘로 갈려 혼란만 준다.
+ * Chakra v3·ark-ui 에 날짜 선택 컴포넌트가 없어 네이티브 `<input type="date">` 를 쓴다.
+ * 잔여 기간은 여기서 말하지 않는다 — 경고는 출발일 기준이라 기준이 둘로 갈린다.
  */
 export default function PassportExpiryRow() {
   const [expiryDate, setExpiryDate] = useAtom(passportExpiryAtom);
@@ -26,8 +22,7 @@ export default function PassportExpiryRow() {
   const maxDate = dayjs().add(MAX_YEARS_AHEAD, "year").format("YYYY-MM-DD");
 
   const handleChange = (value: string) => {
-    // 비우면 등록 해제. 범위를 벗어난 값은 저장하지 않는다
-    // (직접 입력·자동완성으로 브라우저 min/max 를 넘길 수 있다).
+    // 직접 입력·자동완성은 브라우저 min/max 를 넘길 수 있다.
     if (!value) {
       setExpiryDate(null);
       return;

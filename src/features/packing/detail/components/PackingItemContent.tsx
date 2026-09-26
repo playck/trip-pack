@@ -63,13 +63,13 @@ export default function PackingItemContent({
             </Text>
           </Flex>
           {!isEditMode && (
-            <PassportExpiryPill
-              itemName={itemName}
-              startDate={tripStartDate}
-            />
-          )}
-          {!isEditMode && (
-            <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+            <>
+              <PassportExpiryPill
+                itemName={itemName}
+                startDate={tripStartDate}
+              />
+              <CabinPolicyIcon policy={cabinPolicy} onClick={onOpen} />
+            </>
           )}
           {!isEditMode && onOpenGuide && (
             <EssentialGuideButton
