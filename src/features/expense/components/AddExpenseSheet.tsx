@@ -11,10 +11,12 @@ import {
 } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
+import { useSaveAndClose } from "@/shared/hooks/useSaveAndClose";
 import type { Schedule } from "@/features/schedule/types";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
 import { useTripCurrency } from "../hooks/useTripCurrency";
-import { useAmountInput } from "../hooks/useAmountInput";
+import { useAmountInput, RATE_MISSING_TOAST } from "../hooks/useAmountInput";
+import { toaster } from "@/shared/components/ui/toaster";
 import { showLocalCurrencyAtom } from "../store/currencyStore";
 import type { ExpenseCategoryDef } from "../constants/categories";
 import ExpenseCategoryChips from "./ExpenseCategoryChips";
@@ -38,7 +40,7 @@ interface AddExpenseSheetProps {
     amount: number,
     scheduleId?: string,
     options?: ExpenseSaveOptions,
-  ) => void;
+  ) => Promise<unknown>;
   scheduleName?: string;
   scheduleId?: string;
   date?: string;
@@ -105,29 +107,12 @@ export default function AddExpenseSheet({
       setSelectedCategory(null);
       setMemo("");
       setIsPersonal(false);
-    }
-  }, [isOpen]);
-
-  const handleSave = () => {
-    if (selectedCategory && isValidAmount) {
-      const trimmedMemo = memo.trim();
-      const options: ExpenseSaveOptions = {
-        isPersonal: hasMultipleMembers ? isPersonal : false,
-        memo: trimmedMemo ? trimmedMemo : null,
-      };
-      onSaveExpense(
-        selectedCategory.label,
-        toKrwAmount(),
-        selectedSchedule?.id,
-        options,
+      // 경비 탭에선 시트가 계속 마운트돼 있어, 비우지 않으면 이전 입력의 일정 연결이 다른 날 지출에 붙는다
+      setSelectedSchedule(
+        scheduleId && scheduleName ? { id: scheduleId, name: scheduleName } : null,
       );
-      setSelectedCategory(null);
-      setMemo("");
-      setIsPersonal(false);
-      resetAmount();
-      onClose();
     }
-  };
+  }, [isOpen, scheduleId, scheduleName]);
 
   const handleClose = () => {
     setSelectedCategory(null);
@@ -135,6 +120,31 @@ export default function AddExpenseSheet({
     setIsPersonal(false);
     resetAmount();
     onClose();
+  };
+
+  const { isSaving, saveAndClose } = useSaveAndClose(handleClose);
+
+  const handleSave = () => {
+    if (selectedCategory && isValidAmount) {
+      const krwAmount = toKrwAmount();
+      if (krwAmount === null) {
+        toaster.create(RATE_MISSING_TOAST);
+        return;
+      }
+      const trimmedMemo = memo.trim();
+      const options: ExpenseSaveOptions = {
+        isPersonal: hasMultipleMembers ? isPersonal : false,
+        memo: trimmedMemo ? trimmedMemo : null,
+      };
+      saveAndClose(() =>
+        onSaveExpense(
+          selectedCategory.label,
+          krwAmount,
+          selectedSchedule?.id,
+          options,
+        ),
+      );
+    }
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -152,11 +162,13 @@ export default function AddExpenseSheet({
       <BottomSheet
         isOpen={isOpen}
         onClose={handleClose}
+        keepOnTabFocus
         title="경비 추가"
         size="fullscreen"
         primaryButton={{
           onClick: handleSave,
-          disabled: !isCanSaveExpense,
+          disabled: !isCanSaveExpense || isSaving,
+          isLoading: isSaving,
         }}
         secondaryButton={{
           onClick: handleClose,

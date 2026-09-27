@@ -51,6 +51,7 @@ export function AmountCalculatorProvider({
   onToggleCurrency,
   children,
 }: AmountCalculatorProps & { children: ReactNode }) {
+  // 현지 통화는 센트(소수 2자리)까지, 원화는 정수
   const {
     displayValue,
     expression,
@@ -63,7 +64,7 @@ export function AmountCalculatorProvider({
     clear,
     deleteLast,
     setInitialValue,
-  } = useCalculator();
+  } = useCalculator(currencyType === "LOCAL" ? 2 : 0);
 
   const initializedRef = useRef(false);
 

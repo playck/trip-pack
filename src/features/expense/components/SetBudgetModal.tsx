@@ -3,7 +3,8 @@ import { VStack, Input, Button, HStack, Text, Box } from "@chakra-ui/react";
 import { ArrowLeftRight } from "lucide-react";
 import { ConfirmDialog } from "@/shared/components";
 import { useTripCurrency } from "../hooks/useTripCurrency";
-import { useAmountInput } from "../hooks/useAmountInput";
+import { useAmountInput, RATE_MISSING_TOAST } from "../hooks/useAmountInput";
+import { toaster } from "@/shared/components/ui/toaster";
 
 interface SetBudgetModalProps {
   isOpen: boolean;
@@ -36,13 +37,19 @@ export default function SetBudgetModal({
 
   useEffect(() => {
     if (isOpen) {
-      reset(currentBudget ? currentBudget.toLocaleString() : "");
+      reset(currentBudget ? currentBudget.toLocaleString("ko-KR") : "");
     }
   }, [isOpen, currentBudget]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = () => {
     if (isValidAmount) {
-      onSave(toKrwAmount());
+      const krwAmount = toKrwAmount();
+      // null은 "예산 삭제"라 그대로 넘기면 안 된다 — 환율이 없으면 모달을 유지한다
+      if (krwAmount === null) {
+        toaster.create(RATE_MISSING_TOAST);
+        return;
+      }
+      onSave(krwAmount);
     } else {
       onSave(null);
     }

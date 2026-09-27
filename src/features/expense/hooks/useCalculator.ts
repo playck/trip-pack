@@ -44,6 +44,11 @@ function parseInput(input: string): number {
   return parseFloat(input) || 0;
 }
 
+function roundTo(n: number, fractionDigits: number): number {
+  const factor = 10 ** fractionDigits;
+  return Math.round(n * factor) / factor;
+}
+
 function digitCount(input: string): number {
   return input.replace(".", "").replace(/^0+/, "").length || 1;
 }
@@ -63,7 +68,8 @@ function calculate(a: number, op: Operator, b: number): number | null {
   }
 }
 
-export function useCalculator() {
+/** @param fractionDigits 결과에 남길 소수 자릿수 (원화 0, 현지 통화 2) */
+export function useCalculator(fractionDigits = 0) {
   const [state, setState] = useState<CalculatorState>(initialState);
 
   const inputDigit = useCallback((digit: string) => {
@@ -83,11 +89,16 @@ export function useCalculator() {
 
       const current = prev.currentInput === "0" ? "" : prev.currentInput;
       if (digitCount(current + digit) > MAX_DIGITS) return prev;
+      // 소수 자릿수 제한은 현지 통화만 (원화는 기존대로 입력 후 반올림)
+      const decimals = current.split(".")[1];
+      if (fractionDigits > 0 && decimals !== undefined && decimals.length >= fractionDigits) {
+        return prev;
+      }
 
       const newInput = current + digit;
       return { ...prev, currentInput: newInput || "0", justEvaluated: false };
     });
-  }, []);
+  }, [fractionDigits]);
 
   const inputOperator = useCallback((op: Operator) => {
     setState((prev) => {
@@ -144,7 +155,7 @@ export function useCalculator() {
       }
 
       const fullExpression = `${formatNumber(prev.previousOperand)} ${prev.operator} ${formatInput(prev.currentInput)}`;
-      const rounded = Math.round(result);
+      const rounded = roundTo(result, fractionDigits);
 
       return {
         currentInput: String(Math.max(0, rounded)),
@@ -155,7 +166,7 @@ export function useCalculator() {
         justEvaluated: true,
       };
     });
-  }, []);
+  }, [fractionDigits]);
 
   const clear = useCallback(() => {
     setState(initialState);
@@ -172,9 +183,9 @@ export function useCalculator() {
   const setInitialValue = useCallback((value: number) => {
     setState({
       ...initialState,
-      currentInput: String(Math.max(0, Math.round(value))),
+      currentInput: String(Math.max(0, roundTo(value, fractionDigits))),
     });
-  }, []);
+  }, [fractionDigits]);
 
   const displayValue = useMemo(() => formatInput(state.currentInput), [state.currentInput]);
 
@@ -190,8 +201,8 @@ export function useCalculator() {
   }, [state]);
 
   const resultValue = useMemo(() => {
-    return Math.round(parseInput(state.currentInput));
-  }, [state.currentInput]);
+    return roundTo(parseInput(state.currentInput), fractionDigits);
+  }, [state.currentInput, fractionDigits]);
 
   const hasExpression = state.operator !== null;
   const isValid = resultValue > 0;
