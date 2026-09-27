@@ -5,7 +5,7 @@ import { ConfirmDialog } from "@/shared/components";
 import Calendar from "@/shared/components/Calendar";
 import {
   useUpdateTripDates,
-  useOutOfRangeScheduleCount,
+  useOutOfRangeCounts,
 } from "@/shared/service/trip/useUpdateTripDates";
 
 interface TravelDates {
@@ -66,18 +66,32 @@ export function TripDateEditModal({
 
   const isDurationShortened = newDuration < currentDuration && newDuration > 0;
 
-  // 범위 밖 일정 개수 조회 (기간이 단축된 경우에만)
-  const { data: outOfRangeCount = 0 } = useOutOfRangeScheduleCount(
-    tripId,
-    newDuration,
-    isDurationShortened && isOpen
-  );
+  // 범위 밖 일정·경비 개수 조회 (기간이 단축된 경우에만)
+  const {
+    data: outOfRange,
+    isFetching: isCountFetching,
+    isError: isCountError,
+  } = useOutOfRangeCounts(tripId, newDuration, isDurationShortened && isOpen);
+
+  // 개수를 모르면(조회 실패) 지워질 수 있다고 보고 경고한다
+  const needsDeleteWarning =
+    isDurationShortened &&
+    (isCountError ||
+      (outOfRange?.schedules ?? 0) + (outOfRange?.expenses ?? 0) > 0);
+
+  const deleteTargets = !outOfRange
+    ? "일정과 경비가"
+    : outOfRange.schedules > 0 && outOfRange.expenses > 0
+      ? `일정 ${outOfRange.schedules}개와 경비 ${outOfRange.expenses}건이`
+      : outOfRange.schedules > 0
+        ? `일정 ${outOfRange.schedules}개가`
+        : `경비 ${outOfRange.expenses}건이`;
 
   const handleSave = () => {
     if (!dates.startDate || !dates.endDate) return;
 
-    // 기간 단축 + 범위 밖 일정 존재 시 경고 다이얼로그 표시
-    if (isDurationShortened && outOfRangeCount > 0) {
+    // 기간 단축으로 지워질 일정·경비가 있으면 경고 다이얼로그 표시
+    if (needsDeleteWarning) {
       setShowDeleteWarning(true);
       return;
     }
@@ -120,7 +134,9 @@ export function TripDateEditModal({
         confirmLabel="저장"
         onConfirm={handleSave}
         isLoading={updateTripDatesMutation.isPending}
-        confirmDisabled={!isValidDate}
+        confirmDisabled={
+          !isValidDate || (isDurationShortened && isCountFetching)
+        }
         size="lg"
       >
         <VStack align="stretch" gap={1}>
@@ -187,8 +203,8 @@ export function TripDateEditModal({
       <ConfirmDialog
         isOpen={showDeleteWarning}
         onClose={() => setShowDeleteWarning(false)}
-        title="일정 삭제 확인"
-        message={`여행 기간을 단축하면 ${outOfRangeCount}개의 일정과 연결된 경비가 삭제됩니다. 계속하시겠습니까?`}
+        title="일정·경비 삭제 확인"
+        message={`여행 기간을 줄이면 ${newDuration + 1}일차부터의 ${deleteTargets} 삭제되며 되돌릴 수 없습니다. 계속하시겠습니까?`}
         confirmLabel="삭제하고 저장"
         cancelLabel="취소"
         onConfirm={handleConfirmDelete}

@@ -4,7 +4,11 @@ import {
   scheduleTripNotification,
   cancelTripNotification,
 } from "@/shared/utils/nativeMessage";
-import { updateTripDatesWithSchedules, getSchedulesOutOfRange } from "./api";
+import {
+  updateTripDatesWithSchedules,
+  getSchedulesOutOfRange,
+  countExpensesOutOfRange,
+} from "./api";
 
 interface UseUpdateTripDatesParams {
   tripTitle?: string;
@@ -89,16 +93,25 @@ export function useUpdateTripDates(
   });
 }
 
-// 범위 밖 일정 개수 조회 훅
-export function useOutOfRangeScheduleCount(
+// 기간 축소 시 삭제될 일정·경비 개수 조회 훅
+// 삭제 직전 경고용이라 캐시를 믿지 않고 매번 새로 센다(staleTime 0)
+export function useOutOfRangeCounts(
   tripId: string,
   maxDayNumber: number,
   enabled = true,
 ) {
   return useQuery({
-    queryKey: ["outOfRangeSchedules", tripId, maxDayNumber],
-    queryFn: () => getSchedulesOutOfRange(tripId, maxDayNumber),
+    queryKey: ["outOfRangeCounts", tripId, maxDayNumber],
+    queryFn: async () => {
+      const schedules = await getSchedulesOutOfRange(tripId, maxDayNumber);
+      const expenses = await countExpensesOutOfRange(
+        tripId,
+        maxDayNumber,
+        schedules.map((s) => s.id),
+      );
+      return { schedules: schedules.length, expenses };
+    },
     enabled: enabled && !!tripId && maxDayNumber > 0,
-    select: (data) => data.length,
+    staleTime: 0,
   });
 }

@@ -24,6 +24,31 @@ export const getSchedulesOutOfRange = async (
   return data || [];
 };
 
+// 기간 축소 시 update_trip_dates RPC가 지우는 경비 수 — RPC의 삭제 조건과 똑같이 센다
+// (범위 밖 일정에 연결된 경비 + 일정 연결 없이 범위 밖 날짜에 있는 경비)
+export const countExpensesOutOfRange = async (
+  tripId: string,
+  maxDayNumber: number,
+  outOfRangeScheduleIds: string[],
+): Promise<number> => {
+  const base = supabase
+    .from("trip_expenses")
+    .select("id", { count: "exact", head: true })
+    .eq("trip_id", tripId);
+
+  const { count, error } = await (outOfRangeScheduleIds.length > 0
+    ? base.or(
+        `schedule_id.in.(${outOfRangeScheduleIds.join(",")}),and(schedule_id.is.null,day_number.gt.${maxDayNumber})`,
+      )
+    : base.is("schedule_id", null).gt("day_number", maxDayNumber));
+
+  if (error) {
+    throw new Error(`범위 밖 경비 조회 실패: ${error.message}`);
+  }
+
+  return count ?? 0;
+};
+
 // 여행 기간 수정 + 일정/경비/항공편 날짜 재배치 (update_trip_dates RPC)
 //
 // RPC로 수행. 실패하면 아무것도 바뀌지 않는다.
