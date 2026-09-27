@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Text, VStack, Box } from "@chakra-ui/react";
 import { useAtom } from "jotai";
+import dayjs from "dayjs";
 import LazyLottie from "@/shared/components/LazyLottie";
 import animationData from "@/assets/lotties/animated-bot.json";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -125,7 +126,8 @@ export default function LastStep() {
         scheduleTripNotification({
           tripId,
           tripTitle,
-          startDate: startDate.toISOString().split("T")[0],
+          // toISOString()은 UTC라 KST 로컬 자정이 전날로 바뀐다 — DB 저장(tripAdapter)과 같은 로컬 포맷 사용
+          startDate: dayjs(startDate).format("YYYY-MM-DD"),
         });
       }
 
