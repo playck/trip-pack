@@ -1,7 +1,7 @@
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { ShoppingCart, ChevronRight } from "lucide-react";
 
-import { colors, hexColors } from "@/shared/constants/colors";
+import { colors, hexColors, textColors } from "@/shared/constants/colors";
 import type { CoupangDeal } from "@/shared/data/coupangDeals";
 
 interface CoupangPrepNudgeProps {
@@ -36,6 +36,15 @@ export default function CoupangPrepNudge({
             color={hexColors.teal[600]}
             style={{ flexShrink: 0 }}
           />
+          {/* 제휴(쿠팡 파트너스) 추천이라 누르기 전에 광고임을 알린다 — 수수료 고지는 시트에 있다 */}
+          <Text
+            flex="none"
+            fontSize="2xs"
+            fontWeight="semibold"
+            color={textColors.muted}
+          >
+            광고
+          </Text>
           <Text
             fontSize="sm"
             fontWeight="bold"

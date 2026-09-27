@@ -62,7 +62,7 @@ export default function CoupangCollectRow({
           bg={customPalette.rose[100]}
         >
           <Text fontSize="10px" fontWeight="bold" color={customPalette.rose[600]}>
-            쿠팡
+            쿠팡 광고
           </Text>
         </Box>
         <ChevronRight
