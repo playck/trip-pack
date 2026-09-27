@@ -1,8 +1,4 @@
 import { supabase } from "@/shared/service/supabase/cilent";
-import {
-  deleteExpensesByScheduleId,
-  deleteExpensesByScheduleIds,
-} from "@/features/expense/services/api";
 import { getDayDate } from "@/shared/utiles/date";
 import type {
   CreateScheduleParams,
@@ -91,12 +87,10 @@ export const getLastVisitOrder = async (
 };
 
 /**
- * 일정 삭제 (연결된 경비도 함께 삭제)
+ * 일정 삭제 — 연결된 경비는 지우지 않는다.
+ * FK(ON DELETE SET NULL)가 같은 문장 안에서 schedule_id만 비워 경비 금액은 보존된다.
  */
 export const deleteSchedule = async (scheduleId: string): Promise<void> => {
-  // 연결된 경비 먼저 삭제
-  await deleteExpensesByScheduleId(scheduleId);
-
   const { error } = await supabase
     .from("trip_schedules")
     .delete()
@@ -108,7 +102,7 @@ export const deleteSchedule = async (scheduleId: string): Promise<void> => {
 };
 
 /**
- * 일정 일괄 삭제 (연결된 경비도 함께 삭제)
+ * 일정 일괄 삭제 — 연결된 경비는 보존된다 (deleteSchedule 참고)
  */
 export const deleteBulkSchedules = async (
   scheduleIds: string[]
@@ -116,9 +110,6 @@ export const deleteBulkSchedules = async (
   if (scheduleIds.length === 0) {
     return;
   }
-
-  // 연결된 경비 먼저 삭제
-  await deleteExpensesByScheduleIds(scheduleIds);
 
   const { error } = await supabase
     .from("trip_schedules")
