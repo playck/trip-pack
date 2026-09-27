@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { VStack, Input, Text, Box, Textarea } from "@chakra-ui/react";
+import SuggestionChips from "@/shared/components/SuggestionChips";
+import { suggestBaggageKeywords } from "@/shared/utils/baggageChecker";
 
 interface ItemFormProps {
   name: string;
@@ -13,6 +16,9 @@ export default function ItemForm({
   onNameChange,
   onNotesChange,
 }: ItemFormProps) {
+  // 수하물 규정 키워드로 이름을 유도 → 저장 후 기내반입 태그 매칭률 상승
+  const suggestions = useMemo(() => suggestBaggageKeywords(name), [name]);
+
   return (
     <VStack gap={0} w="full" h="full" maxH="80vh">
       <Box flex={1} overflowY="auto" w="full" px={4}>
@@ -29,6 +35,7 @@ export default function ItemForm({
               borderRadius="xl"
               onChange={(e) => onNameChange(e.target.value)}
             />
+            <SuggestionChips items={suggestions} onSelect={onNameChange} />
           </VStack>
 
           {/* 메모 입력 */}

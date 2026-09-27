@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { Box, Input, Separator, Text, VStack } from "@chakra-ui/react";
 import { Search } from "lucide-react";
 import {
   checkBaggageRules,
+  suggestBaggageKeywords,
   type BaggageCheckResult,
 } from "@/shared/utils/baggageChecker";
 import BottomSheet from "@/shared/components/BottomSheet";
+import SuggestionChips from "@/shared/components/SuggestionChips";
 import BaggageRuleResult from "./BaggageRuleResult";
 
 const MAX_RESULTS = 3;
@@ -24,6 +26,11 @@ export default function BaggageRuleSearchSheet({
   const [results, setResults] = useState<BaggageCheckResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const runSearch = (value: string) => {
+    setResults(checkBaggageRules(value).slice(0, MAX_RESULTS));
+    setHasSearched(true);
+  };
+
   const debouncedSearch = useDebounceCallback((value: string) => {
     const trimmed = value.trim();
     if (!trimmed) {
@@ -31,9 +38,16 @@ export default function BaggageRuleSearchSheet({
       setHasSearched(false);
       return;
     }
-    setResults(checkBaggageRules(trimmed).slice(0, MAX_RESULTS));
-    setHasSearched(true);
+    runSearch(trimmed);
   }, 300);
+
+  const suggestions = useMemo(() => suggestBaggageKeywords(search), [search]);
+
+  const selectKeyword = (keyword: string) => {
+    debouncedSearch.cancel();
+    setSearch(keyword);
+    runSearch(keyword);
+  };
 
   const handleClose = () => {
     setSearch("");
@@ -75,6 +89,8 @@ export default function BaggageRuleSearchSheet({
             bg="gray.50"
           />
         </Box>
+
+        <SuggestionChips items={suggestions} onSelect={selectKeyword} />
 
         {hasSearched &&
           (results.length > 0 ? (

@@ -38,7 +38,7 @@ export const checkBaggageRules = (itemName: string): BaggageCheckResult[] => {
 
   // 매칭 키워드가 긴 순서로 정렬 (동률이면 데이터 순서 유지)
   return results.sort(
-    (a, b) => b.matchedKeyword.length - a.matchedKeyword.length
+    (a, b) => b.matchedKeyword.length - a.matchedKeyword.length,
   );
 };
 
@@ -46,6 +46,28 @@ export const checkBaggageRules = (itemName: string): BaggageCheckResult[] => {
  * 가장 정확도가 높은 규정 1건을 반환합니다. (체크리스트 아이템 매칭용)
  * @returns 매칭된 규정 정보 또는 null
  */
-export const checkBaggageRule = (
-  itemName: string
-): BaggageCheckResult | null => checkBaggageRules(itemName)[0] ?? null;
+export const checkBaggageRule = (itemName: string): BaggageCheckResult | null =>
+  checkBaggageRules(itemName)[0] ?? null;
+
+const ALL_KEYWORDS = [
+  ...new Set(BAGGAGE_POLICY_DATA.flatMap((item) => item.keywords)),
+];
+
+/**
+ * 입력 중 자동완성용 키워드 후보. 입력값을 포함하는 키워드(완전 일치 제외)를
+ * 입력값으로 시작하는 것 우선으로 최대 limit개 반환.
+ */
+export const suggestBaggageKeywords = (query: string, limit = 4): string[] => {
+  const q = normalize(query);
+  if (!q) return [];
+
+  const matched = ALL_KEYWORDS.filter((keyword) => {
+    const k = normalize(keyword);
+    return k !== q && k.includes(q);
+  });
+  const startsWith = (keyword: string) => normalize(keyword).startsWith(q);
+  return [
+    ...matched.filter(startsWith),
+    ...matched.filter((keyword) => !startsWith(keyword)),
+  ].slice(0, limit);
+};
