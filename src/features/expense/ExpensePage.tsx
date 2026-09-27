@@ -100,7 +100,7 @@ export default function ExpensePage() {
 
   if (!tripInfo) return null;
 
-  const handleSaveExpense = (
+  const handleSaveExpense = async (
     name: string,
     amount: number,
     scheduleId?: string,
@@ -111,7 +111,7 @@ export default function ExpensePage() {
     const selectedDateItem = dateList.find((d) => d.date === selectedDate);
     if (!selectedDateItem) return;
 
-    createExpenseMutation.mutate({
+    return createExpenseMutation.mutateAsync({
       tripId,
       expenseDate: selectedDate,
       dayNumber: selectedDateItem.dayNumber,

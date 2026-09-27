@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { VStack, Input, Text, Textarea } from "@chakra-ui/react";
 import { BottomSheet } from "@/shared/components";
+import { useSaveAndClose } from "@/shared/hooks/useSaveAndClose";
 import { PLACE_ICON_OPTIONS, DEFAULT_PLACE_ICON_KEY } from "../../memoIcons";
 import IconPicker from "../IconPicker";
 
@@ -15,7 +16,7 @@ interface PlaceDetailEditSheetProps {
     placeName: string;
     notes: string;
     category: string;
-  }) => void;
+  }) => Promise<unknown>;
 }
 
 export default function PlaceDetailEditSheet({
@@ -43,14 +44,17 @@ export default function PlaceDetailEditSheet({
     }
   }, [isOpen, initialPlaceName, initialNotes, initialCategory]);
 
+  const { isSaving, saveAndClose } = useSaveAndClose(onClose);
+
   const handleSave = () => {
     if (placeName.trim()) {
-      onSave({
-        placeName: placeName.trim(),
-        notes: notes.trim(),
-        category: iconKey,
-      });
-      onClose();
+      saveAndClose(() =>
+        onSave({
+          placeName: placeName.trim(),
+          notes: notes.trim(),
+          category: iconKey,
+        }),
+      );
     }
   };
 
@@ -58,11 +62,13 @@ export default function PlaceDetailEditSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={onClose}
+      keepOnTabFocus
       title={title}
       primaryButton={{
         text: "저장하기",
         onClick: handleSave,
-        disabled: !placeName.trim(),
+        disabled: !placeName.trim() || isSaving,
+        isLoading: isSaving,
       }}
       secondaryButton={{
         text: "취소",

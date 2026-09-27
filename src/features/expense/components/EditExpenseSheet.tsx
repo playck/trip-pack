@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
+import { useSaveAndClose } from "@/shared/hooks/useSaveAndClose";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import type { Schedule } from "@/features/schedule/types";
 import { useTripMembers } from "@/features/trip-members/hooks/useTripMembers";
@@ -35,7 +36,7 @@ interface EditExpenseSheetProps {
     amount: number,
     scheduleId?: string | null,
     options?: ExpenseSaveOptions,
-  ) => void;
+  ) => Promise<unknown>;
   initialName: string;
   initialAmount: number;
   initialMemo?: string | null;
@@ -129,6 +130,16 @@ export default function EditExpenseSheet({
     initialIsPersonal,
   ]);
 
+  const handleClose = () => {
+    setSelectedCategory(null);
+    setLegacyLabel(null);
+    setMemo("");
+    setIsPersonal(false);
+    onClose();
+  };
+
+  const { isSaving, saveAndClose } = useSaveAndClose(handleClose);
+
   const handleSave = () => {
     if (selectedCategory && isValidAmount) {
       const trimmedMemo = memo.trim();
@@ -136,26 +147,15 @@ export default function EditExpenseSheet({
         isPersonal: hasMultipleMembers ? isPersonal : initialIsPersonal,
         memo: trimmedMemo ? trimmedMemo : null,
       };
-      onSaveExpense(
-        selectedCategory.label,
-        parsedAmount,
-        selectedSchedule?.id ?? null,
-        options,
+      saveAndClose(() =>
+        onSaveExpense(
+          selectedCategory.label,
+          parsedAmount,
+          selectedSchedule?.id ?? null,
+          options,
+        ),
       );
-      setSelectedCategory(null);
-      setLegacyLabel(null);
-      setMemo("");
-      setIsPersonal(false);
-      onClose();
     }
-  };
-
-  const handleClose = () => {
-    setSelectedCategory(null);
-    setLegacyLabel(null);
-    setMemo("");
-    setIsPersonal(false);
-    onClose();
   };
 
   const handleSelectSchedule = (schedule: Schedule) => {
@@ -173,11 +173,13 @@ export default function EditExpenseSheet({
       <BottomSheet
         isOpen={isOpen}
         onClose={handleClose}
+        keepOnTabFocus
         title="경비 수정"
         size="fullscreen"
         primaryButton={{
           onClick: handleSave,
-          disabled: !isCanSaveExpense,
+          disabled: !isCanSaveExpense || isSaving,
+          isLoading: isSaving,
         }}
         secondaryButton={{
           onClick: handleClose,

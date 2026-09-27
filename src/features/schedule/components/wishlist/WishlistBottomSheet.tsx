@@ -96,13 +96,13 @@ export default function WishlistBottomSheet({
     setIsActionOpen(true);
   };
 
-  const handleSaveEdit = (values: {
+  const handleSaveEdit = async (values: {
     placeName: string;
     notes: string;
     category: string;
   }) => {
     if (!selected) return;
-    updateMutation.mutate({ wishlistId: selected.id, ...values });
+    return updateMutation.mutateAsync({ wishlistId: selected.id, ...values });
   };
 
   return (

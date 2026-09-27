@@ -41,21 +41,21 @@ export const useScheduleMemo = (tripId: string) => {
     setEditingMemo(null);
   };
 
-  const handleSaveMemo = (memoText: string, iconKey: string) => {
+  const handleSaveMemo = async (memoText: string, iconKey: string) => {
     if (!tripId || !selectedDay) {
       return;
     }
 
     if (editingMemo) {
       // 수정 모드
-      updateScheduleMutation.mutate({
+      return updateScheduleMutation.mutateAsync({
         scheduleId: editingMemo.scheduleId,
         placeName: memoText,
         category: iconKey,
       });
     } else {
       // 추가 모드
-      createMemoMutation.mutate({
+      return createMemoMutation.mutateAsync({
         tripId,
         dayNumber: selectedDay.dayNumber,
         scheduleDate: selectedDay.date,

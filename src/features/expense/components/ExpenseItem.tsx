@@ -62,8 +62,8 @@ export default function ExpenseItem({
     amount: number,
     scheduleId?: string | null,
     options?: ExpenseSaveOptions,
-  ) => {
-    updateExpenseMutation.mutate({
+  ) =>
+    updateExpenseMutation.mutateAsync({
       expenseId: expense.id,
       category: name,
       amount,
@@ -71,7 +71,6 @@ export default function ExpenseItem({
       scheduleId,
       isPersonal: options?.isPersonal,
     });
-  };
 
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);

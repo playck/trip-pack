@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { VStack, Textarea, Text } from "@chakra-ui/react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
+import { useSaveAndClose } from "@/shared/hooks/useSaveAndClose";
 import { textColors } from "@/shared/constants/colors";
 import { MEMO_ICON_OPTIONS, DEFAULT_MEMO_ICON_KEY } from "../../memoIcons";
 import IconPicker from "../IconPicker";
@@ -9,7 +10,7 @@ import IconPicker from "../IconPicker";
 interface AddMemoSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveMemo: (memoText: string, iconKey: string) => void;
+  onSaveMemo: (memoText: string, iconKey: string) => Promise<unknown>;
   dayNumber: number;
   date: string;
   initialMemoText?: string;
@@ -38,21 +39,24 @@ export default function AddMemoSheet({
     }
   }, [isOpen, initialMemoText, initialIconKey]);
 
+  const { isSaving, saveAndClose } = useSaveAndClose(onClose);
+
   const handleMemoSave = () => {
     const trimmed = memoText.trim();
     if (!trimmed) return;
-    onSaveMemo(trimmed, iconKey);
-    onClose();
+    saveAndClose(() => onSaveMemo(trimmed, iconKey));
   };
 
   return (
     <BottomSheet
       isOpen={isOpen}
       onClose={onClose}
+      keepOnTabFocus
       title={`${dayNumber}일차 메모 ${isEditMode ? "수정" : "추가"}`}
       primaryButton={{
         onClick: handleMemoSave,
-        disabled: !memoText.trim(),
+        disabled: !memoText.trim() || isSaving,
+        isLoading: isSaving,
       }}
       secondaryButton={{
         onClick: onClose,

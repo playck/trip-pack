@@ -40,6 +40,7 @@ export default function TripMemoSheet({
     <BottomSheet
       isOpen={isOpen}
       onClose={onClose}
+      keepOnTabFocus
       title="여행 메모"
       size="max"
       primaryButton={{

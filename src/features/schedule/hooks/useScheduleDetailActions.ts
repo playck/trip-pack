@@ -103,9 +103,7 @@ export function useScheduleDetailActions(
   const handleSaveEditSchedule = (
     scheduleId: string,
     updates: { placeName: string; notes?: string; category?: string }
-  ) => {
-    updateScheduleMutation.mutate({ scheduleId, ...updates });
-  };
+  ) => updateScheduleMutation.mutateAsync({ scheduleId, ...updates });
 
   // 삭제 핸들러
   const handleDeleteSchedule = () => {
@@ -133,7 +131,7 @@ export function useScheduleDetailActions(
     setSelectedScheduleForExpense(null);
   };
 
-  const handleSaveExpense = (
+  const handleSaveExpense = async (
     name: string,
     amount: number,
     scheduleId?: string,
@@ -141,7 +139,7 @@ export function useScheduleDetailActions(
   ) => {
     if (!tripId || !selectedScheduleForExpense) return;
 
-    createExpenseMutation.mutate({
+    return createExpenseMutation.mutateAsync({
       tripId,
       expenseDate: dayjs(selectedScheduleForExpense.schedule_date).format(
         "YYYY-MM-DD"
