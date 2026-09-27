@@ -7,6 +7,7 @@ import {
   getEntryDeclaration,
   isDeclarationWindowOpen,
 } from "@/shared/data/entryDeclarations";
+import { getTravelAuthorization } from "@/shared/data/travelAuthorizations";
 import {
   ENTRY_DECLARATION_GUIDE_KEY,
   ESSENTIAL_CATEGORY_NAME,
@@ -122,13 +123,18 @@ export default function TravelRequirementCards({
       : isDeclarationDue
         ? `${declaration.shortName} 작성 기간`
         : "입국신고 필수";
+    // 무비자여도 출발 전 전자여행허가(ESTA 등)가 필요하면 '무비자' 표시만으로 오해하지 않게 배지로 알린다
+    const authorization = getTravelAuthorization(countryCode, regionId);
+    const badge =
+      declarationBadge ??
+      (authorization ? `${authorization.shortName} 필요` : undefined);
 
     if (rule.isUnknown) {
       return {
         text: "규정 확인 필요",
         tone: "attention" as const,
         detail: "외교부 해외안전여행에서 최신 규정 확인",
-        badge: declarationBadge,
+        badge,
       };
     }
 
@@ -138,7 +144,7 @@ export default function TravelRequirementCards({
         text: "조건부 입국",
         tone: "attention" as const,
         detail: rule.overrideNote,
-        badge: declarationBadge,
+        badge,
       };
     }
 
@@ -147,7 +153,7 @@ export default function TravelRequirementCards({
         text: "비자 필요",
         tone: "attention" as const,
         detail: getVisaNote(rule),
-        badge: declarationBadge,
+        badge,
       };
     }
 
@@ -156,7 +162,7 @@ export default function TravelRequirementCards({
       text: days ? `무비자 ${days}일` : "무비자 입국",
       tone: "default" as const,
       detail: null,
-      badge: declarationBadge,
+      badge,
     };
   }, [isOverseasTrip, countryCode, regionId, declaration, isDeclarationDue]);
 

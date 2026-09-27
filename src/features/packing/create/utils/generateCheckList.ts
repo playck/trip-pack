@@ -16,6 +16,7 @@ import {
 import { isIncludedInStyle } from "@/shared/data/checkList";
 import type { PackItem, PackingStyle } from "@/shared/data/checkList";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
+import { getTravelAuthorization } from "@/shared/data/travelAuthorizations";
 import { ESSENTIAL_CATEGORY_NAME } from "@/shared/data/essentialItemGuides";
 import { getPlugNote } from "@/shared/data/plugStandards";
 
@@ -60,6 +61,16 @@ export function generateCheckList(
         notes: [declaration.deadline, declaration.note]
           .filter(Boolean)
           .join(", "),
+      });
+    }
+
+    // 무비자여도 출발 전 받아야 하는 전자여행허가(ESTA 등) — 비자 아이템 바로 뒤
+    const authorization = getTravelAuthorization(countryCode, state.region?.id);
+    if (authorization) {
+      essentialItems.splice(insertAt + 1, 0, {
+        name: authorization.name,
+        required: true,
+        notes: authorization.note,
       });
     }
 

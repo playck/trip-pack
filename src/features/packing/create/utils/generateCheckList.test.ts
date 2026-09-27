@@ -193,3 +193,19 @@ describe("generateCheckList - 되살림", () => {
     expect(hatCount).toBe(1);
   });
 });
+
+describe("generateCheckList - 전자여행허가", () => {
+  it("미국(본토·하와이) 여행이면 ESTA가 필수 준비물로 들어간다", () => {
+    // 무비자 90일로만 안내돼 ESTA 없이 탑승 거부될 수 있던 문제
+    const list = generateCheckList(buildState({ region: findRegion("하와이") }));
+    const esta = allItems(list).find((item) => item.name === "ESTA 전자여행허가");
+    expect(esta?.required).toBe(true);
+  });
+
+  it("괌·사이판은 별도 비자 면제 제도가 있어 ESTA를 넣지 않는다", () => {
+    for (const keyword of ["괌", "사이판"]) {
+      const list = generateCheckList(buildState({ region: findRegion(keyword) }));
+      expect(itemNames(list)).not.toContain("ESTA 전자여행허가");
+    }
+  });
+});

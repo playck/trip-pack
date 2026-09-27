@@ -46,8 +46,10 @@ export const getVisaRule = (
     };
   }
 
+  // 데이터에 없는 나라(유럽 다수 등)를 비자 필수로 단정하지 않는다 — 무비자 국가에 '비자' 필수 항목이 생겼다.
+  // 확인은 isUnknown(→ '규정 확인 필요' 표시)과 UNKNOWN_NOTE 메모로 유도한다.
   if (!info) {
-    return { required: true, info: null, isUnknown: true };
+    return { required: false, info: null, isUnknown: true };
   }
 
   return {
