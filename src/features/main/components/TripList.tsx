@@ -1,7 +1,7 @@
 import { VStack, Text, Box } from "@chakra-ui/react";
 import { useNavigate } from "@tanstack/react-router";
 import { colorCombinations } from "@/shared/constants/colors";
-import { ErrorMessage } from "@/shared/components";
+import StaleDataNotice from "@/shared/components/StaleDataNotice";
 
 import TripCard from "./TripCard";
 import NoticeCard from "./NoticeCard";
@@ -21,22 +21,16 @@ export default function TripList() {
     });
   };
 
-  if (error) {
-    return (
-      <ErrorMessage
-        message={error}
-        title="여행 목록 불러오기 실패"
-        variant="minimal"
-      />
-    );
-  }
-
   if (noTripList) {
     return null;
   }
 
   return (
     <VStack align="start" gap={2} w="full">
+      {/* 재조회 실패: 캐시된 목록은 그대로 두고 안내만 */}
+      {error && (
+        <StaleDataNotice message="최신 목록을 불러오지 못했어요. 당겨서 새로고침해 주세요." />
+      )}
       <Text
         fontSize="md"
         fontWeight="bold"

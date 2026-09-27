@@ -14,9 +14,9 @@ import { useState } from "react";
 import {
   BottomSheet,
   EditCategorySheet,
-  ErrorMessage,
   FloatingAddButton,
 } from "@/shared/components";
+import StaleDataNotice from "@/shared/components/StaleDataNotice";
 import { toaster } from "@/shared/components/ui/toaster";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
 import { colors } from "@/shared/constants/colors";
@@ -97,17 +97,6 @@ export default function CategoryDetailPage() {
     (cat: CategoryWithItems) => cat.name === categoryName,
   );
   const isEssentialCategory = category?.name === ESSENTIAL_CATEGORY_NAME;
-
-  if (error) {
-    return (
-      <ErrorMessage
-        message={error || "알 수 없는 오류가 발생했습니다"}
-        title="체크리스트 불러오기 실패"
-        centered
-        fullScreen
-      />
-    );
-  }
 
   if (!category) {
     return (
@@ -264,6 +253,13 @@ export default function CategoryDetailPage() {
             </HStack>
             <SearchBar onSearch={handleSearch} />
           </Box>
+
+          {/* 재조회 실패: 캐시된 목록은 그대로 두고 안내만 */}
+          {error && (
+            <Box px={5} pt={3}>
+              <StaleDataNotice />
+            </Box>
+          )}
 
           <Box px={5} py={3}>
             <PackingItemList

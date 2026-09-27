@@ -19,11 +19,14 @@ export default function GlobalErrorFallback({
   const router = useRouter();
   const errorMessage = error?.message || "알 수 없는 오류가 발생했습니다.";
 
+  // 오프라인에선 토큰 갱신 실패가 "로그인이 필요합니다" 류 오류로 올라온다 — 로그인 화면은 쓸 수 없으니
+  // 다시 시도 화면을 보인다 (정말 로그아웃된 경우는 라우트 가드 requireAuth가 로그인으로 보낸다)
   const isAuthError =
-    errorMessage.includes("인증") ||
-    errorMessage.includes("Auth") ||
-    errorMessage.includes("session") ||
-    errorMessage.includes("로그인");
+    navigator.onLine &&
+    (errorMessage.includes("인증") ||
+      errorMessage.includes("Auth") ||
+      errorMessage.includes("session") ||
+      errorMessage.includes("로그인"));
 
   const goToHome = async () => {
     router.invalidate();

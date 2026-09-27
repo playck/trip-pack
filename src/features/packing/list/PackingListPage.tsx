@@ -9,10 +9,10 @@ import PullToRefresh from "@/shared/components/PullToRefresh";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import {
   Checkbox,
-  ErrorMessage,
   FloatingAddButton,
   ScrollToTopButton,
 } from "@/shared/components";
+import StaleDataNotice from "@/shared/components/StaleDataNotice";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
@@ -94,19 +94,6 @@ export default function PackingListPage() {
     }
   }, [tripId, tripInfo, navigate]);
 
-  if (error) {
-    return (
-      <PageLayout>
-        <ErrorMessage
-          message={error || "알 수 없는 오류가 발생했습니다"}
-          title="체크리스트 불러오기 실패"
-          centered
-          fullScreen
-        />
-      </PageLayout>
-    );
-  }
-
   if (!tripId || !tripInfo) {
     return null;
   }
@@ -143,6 +130,10 @@ export default function PackingListPage() {
           />
           <Container maxW="6xl" pt={1} pb={6} px={0}>
             <VStack gap={3} align="stretch" pb="100px">
+              {/* 재조회 실패: 캐시된 목록은 그대로 두고 안내만 */}
+              {error && (
+                <StaleDataNotice message="최신 정보를 불러오지 못했어요. 당겨서 새로고침해 주세요." />
+              )}
               {/* 체크율 + 뷰 모드 토글 */}
               <HStack justify="space-between" align="center">
                 <HStack gap={1.5}>
