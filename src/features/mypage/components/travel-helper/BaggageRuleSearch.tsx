@@ -106,7 +106,7 @@ export default function BaggageRuleSearchSheet({
             <Box py={6} textAlign="center">
               <VStack gap={2}>
                 <Text fontSize="sm" color="gray.500" fontWeight="medium">
-                  매칭된 검색 결과가 없어요
+                  규정 목록에 없는 물품이에요
                 </Text>
                 <Text fontSize="xs" color="gray.500" lineHeight="1.6" px={4}>
                   검색 결과에 없는 일반 물품은 대부분 기내·위탁 모두 반입

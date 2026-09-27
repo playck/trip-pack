@@ -58,6 +58,22 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "떡",
       "커피믹스",
       "김",
+      "견과류",
+      "땅콩",
+      "아몬드",
+      "호두",
+      "사탕",
+      "젤리",
+      "캔디",
+      "원두",
+      "커피원두",
+      "녹차",
+      "홍차",
+      "티백",
+      "찻잎",
+      "향신료",
+      "후추",
+      "고춧가루",
     ],
   },
   {
@@ -487,6 +503,8 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "과도",
       "식칼",
       "회칼",
+      "면도날",
+      "면도기날",
     ],
   },
   {
@@ -542,6 +560,16 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "아이젠",
       "스케이트보드",
       "스노보드",
+      "스키플레이트",
+      "스키장비",
+      "서핑보드",
+      "테니스라켓",
+      "배드민턴라켓",
+      "라켓",
+      "볼링공",
+      "아령",
+      "덤벨",
+      "케틀벨",
     ],
   },
   {
@@ -812,6 +840,7 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "수은",
       "독극물",
       "에프킬라",
+      "수은체온계",
     ],
   },
   {
@@ -918,6 +947,12 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "왁스",
       "틴트",
       "화장수",
+      "에센스",
+      "세럼",
+      "마스크팩",
+      "아이스팩",
+      "보냉팩",
+      "쿨팩",
     ],
   },
   {
@@ -942,6 +977,9 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "에어로졸",
       "향수",
       "스프레이",
+      "매니큐어",
+      "네일",
+      "네일폴리시",
     ],
   },
   {
@@ -982,6 +1020,13 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "주사기",
       "주사바늘",
       "렌즈용액",
+      "체온계",
+      "혈압계",
+      "혈당계",
+      "콘택트렌즈",
+      "안약",
+      "파스",
+      "반창고",
     ],
   },
   {
@@ -1043,6 +1088,18 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "충전케이블",
       "케이블",
       "어댑터",
+      "전기장판",
+      "전기포트",
+      "커피포트",
+      "다리미",
+      "멀티탭",
+      "변압기",
+      "돼지코",
+      "스마트워치",
+      "게임기",
+      "닌텐도",
+      "전자책",
+      "킨들",
     ],
   },
   {
@@ -1079,6 +1136,17 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "수저",
       "랜턴",
       "손전등",
+      "향초",
+      "양초",
+      "캔들",
+      "텐트",
+      "침낭",
+      "자물쇠",
+      "안경",
+      "선글라스",
+      "장난감",
+      "인형",
+      "레고",
     ],
   },
   {
@@ -1095,6 +1163,214 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
         status: "restricted",
         message:
           "해외에서 새로 취득한 금 제품은 착용 여부와 무관하게 세관 신고 대상입니다(미신고 시 처벌·압수 가능). 1kg 이상 금괴는 별도 신고가 필요합니다.",
+      },
+    ],
+  },
+  // --- 검역류 (2026-09-27 추가) ---
+  // 출처: 찾기쉬운 생활법령정보(식물방역법 제10조·시행규칙 제12조: "흙 또는 흙이 붙어있는 식물" 수입금지, 제47조 벌칙),
+  //       日 植物防疫所(흙·흙 붙은 식물 전 지역 반입 금지), USDA APHIS(Plants in soil are prohibited, 맨뿌리 12개 이하+검역증명서),
+  //       豪 DAFF(soil·pot plants)
+  {
+    name: "화분·흙·생화",
+    description: "화분(흙 포함), 흙·배양토, 꽃다발·절화, 묘목·모종·다육이",
+    category: "lifestyle",
+    cabin: {
+      status: "restricted",
+      reason:
+        "보안검색은 통과 가능하나 도착국 식물검역 대상입니다. 흙이 있는 식물은 대부분 국가에서 반입 금지입니다.",
+    },
+    checked: {
+      status: "restricted",
+      reason:
+        "흙·흙이 붙은 식물은 한국 입국 시에도 수입금지품(식물방역법)입니다. 생화·묘목은 수출국 식물검역증명서와 도착 시 검역 신고가 필요합니다.",
+    },
+    keywords: [
+      "화분",
+      "흙",
+      "배양토",
+      "상토",
+      "분갈이흙",
+      "꽃다발",
+      "생화",
+      "절화",
+      "꽃묶음",
+      "묘목",
+      "모종",
+      "화초",
+      "다육이",
+      "다육식물",
+      "선인장",
+      "난초",
+      "분재",
+      "관엽식물",
+      "구근",
+      "알뿌리",
+    ],
+    countryRestrictions: [
+      {
+        countryCode: "JP",
+        countryName: "일본",
+        status: "prohibited",
+        message:
+          "흙과 흙이 붙은 식물은 모든 국가·지역에서 반입 금지입니다. 생화·묘목도 식물검역증명서 없이는 반입 불가(3년 이하 징역 또는 300만엔 이하 벌금).",
+      },
+      {
+        countryCode: "US",
+        countryName: "미국",
+        status: "prohibited",
+        message:
+          "흙이 있는 식물은 반입 금지입니다. 흙 없는 맨뿌리 식물만 12개 이하·식물검역증명서 지참 시 입국장 검사 후 가능합니다.",
+      },
+      {
+        countryCode: "AU",
+        countryName: "호주",
+        status: "prohibited",
+        message:
+          "흙·화분 식물은 반입할 수 없습니다. 모든 식물류는 반드시 신고해야 하며 미신고 시 고액 벌금이 부과됩니다.",
+      },
+    ],
+  },
+  // 출처: 인천공항 동식물 검역 안내(알·알가공품 신고 대상, 수출국 검역증명서 휴대 시에만 반입),
+  //       日 動物検疫所(卵(卵殻を含む) 검역 대상, 検査証明書 없으면 반입 불가), US CBP/APHIS(HPAI 지역산 계란·알가공품 금지), 豪 DAFF(eggs prohibited)
+  {
+    name: "계란·알가공품",
+    description: "생계란, 삶은 계란, 훈제란, 메추리알, 난백·난분 등 알가공품",
+    category: "food",
+    cabin: {
+      status: "restricted",
+      reason:
+        "보안검색은 통과 가능하나 대부분 국가에서 축산물 검역 대상입니다. 검역증명서 없이는 반입이 거부될 수 있습니다.",
+    },
+    checked: {
+      status: "restricted",
+      reason:
+        "축산물로 분류되어 도착국 검역 대상입니다. 한국 입국 시에도 알·알가공품은 신고 대상이며 수출국 검역증명서가 있어야 반입 가능합니다.",
+    },
+    keywords: [
+      "계란",
+      "달걀",
+      "삶은계란",
+      "삶은달걀",
+      "훈제란",
+      "구운계란",
+      "메추리알",
+      "알가공품",
+      "난백",
+    ],
+    countryRestrictions: [
+      {
+        countryCode: "JP",
+        countryName: "일본",
+        status: "prohibited",
+        message:
+          "계란(껍질 포함)은 동물검역 대상으로 수출국 정부 검사증명서 없이는 반입할 수 없습니다(300만엔 이하 벌금 또는 3년 이하 구금).",
+      },
+      {
+        countryCode: "US",
+        countryName: "미국",
+        status: "prohibited",
+        message:
+          "고병원성 조류인플루엔자(HPAI) 발생 지역산 계란·알가공품은 조리된 것이라도 USDA 수입허가 없이는 반입 금지입니다. 미신고 적발 시 최대 $10,000 벌금.",
+      },
+      {
+        countryCode: "AU",
+        countryName: "호주",
+        status: "prohibited",
+        message: "계란과 알 제품은 반입 금지 품목입니다.",
+      },
+    ],
+  },
+  // 출처: 찾기쉬운 생활법령정보(수산생물질병 관리법 제23조: 가공하지 않고 냉동·냉장한 전복류·굴·새우류 등 지정검역물, 말린 새우 제외),
+  //       국립수산물품질관리원 휴대품검역(입국 즉시 신고), 豪 DAFF(seafood in any form must be declared)
+  {
+    name: "수산물 (생선·해산물)",
+    description: "생선, 생선회, 조개·전복·굴, 새우, 건어물·멸치·오징어",
+    category: "food",
+    cabin: {
+      status: "restricted",
+      reason:
+        "생물·냉장 수산물은 얼음물이 액체류로 취급되고 냄새·누수 문제로 항공사가 거부할 수 있습니다. 건어물은 밀봉 시 가능합니다.",
+    },
+    checked: {
+      status: "restricted",
+      reason:
+        "가공하지 않은 냉동·냉장 전복·굴·새우류 등은 한국 입국 시 수산생물 검역 신고 대상입니다(말린 새우 등 건조·가공품은 제외). 도착국 검역 규정도 확인하세요.",
+    },
+    keywords: [
+      "생선",
+      "생선회",
+      "횟감",
+      "사시미",
+      "해산물",
+      "수산물",
+      "조개",
+      "전복",
+      "생굴",
+      "새우",
+      "꽃게",
+      "대게",
+      "킹크랩",
+      "랍스터",
+      "건어물",
+      "멸치",
+      "오징어",
+      "마른오징어",
+      "황태",
+      "북어",
+    ],
+    countryRestrictions: [
+      {
+        countryCode: "AU",
+        countryName: "호주",
+        status: "restricted",
+        message:
+          "수산물은 형태(생물·건조·냉동·조리·훈제·염장)와 무관하게 반드시 신고해야 하며, 검역관 판단에 따라 폐기될 수 있습니다.",
+      },
+    ],
+  },
+  // 출처: 日 動物検疫所(肉·臓器는 생·냉장·냉동·가열 가공품 등 형태 불문 검역 대상 → 육류 포함 사료 해당, 検査証明書 필요),
+  //       豪 DAFF(pet food and treats cannot be brought in)
+  {
+    name: "반려동물 사료·간식",
+    description: "강아지·고양이 사료, 개껌, 육포형 간식, 츄르",
+    category: "food",
+    cabin: {
+      status: "restricted",
+      reason:
+        "보안검색은 통과 가능하나 육류 성분이 든 사료·간식은 축산물로 검역 대상입니다.",
+    },
+    checked: {
+      status: "restricted",
+      reason:
+        "육류·유제품 성분이 포함된 사료·간식은 대부분 국가에서 검역증명서 없이는 반입이 거부됩니다. 미개봉 상업 포장이라도 검역 대상입니다.",
+    },
+    keywords: [
+      "사료",
+      "강아지사료",
+      "고양이사료",
+      "반려동물사료",
+      "애견사료",
+      "펫푸드",
+      "개껌",
+      "강아지간식",
+      "고양이간식",
+      "반려동물간식",
+      "애견간식",
+      "츄르",
+    ],
+    countryRestrictions: [
+      {
+        countryCode: "JP",
+        countryName: "일본",
+        status: "prohibited",
+        message:
+          "육류가 포함된 사료·간식은 형태를 불문하고 동물검역 대상이며, 수출국 정부 검사증명서 없이는 반입할 수 없습니다.",
+      },
+      {
+        countryCode: "AU",
+        countryName: "호주",
+        status: "prohibited",
+        message: "반려동물 사료와 간식은 반입 금지 품목입니다.",
       },
     ],
   },
