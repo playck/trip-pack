@@ -12,7 +12,6 @@ import type { LucideIcon } from "lucide-react";
 import { ChevronDown, ChevronRight, ArrowRight, Package } from "lucide-react";
 
 import { CabinPolicyIcon, Checkbox } from "@/shared/components";
-import type { CabinPolicy } from "@/shared/data/checkList";
 import {
   ESSENTIAL_CATEGORY_NAME,
   findEssentialGuide,
@@ -22,6 +21,7 @@ import { colors } from "@/shared/constants/colors";
 import type { CategoryWithItems } from "../../type";
 import { CATEGORY_ICONS } from "../constants/category";
 import PackingItemPolicyContainer from "./PackingItemPolicyContainer";
+import { resolveBaggagePolicy } from "../hooks/useBaggagePolicy";
 import EssentialGuideButton from "./EssentialGuideButton";
 import { PassportExpiryPill } from "@/features/passport";
 import EssentialItemGuideSheet from "./EssentialItemGuideSheet";
@@ -198,6 +198,11 @@ export default function ListView({
                   {sortedItems.length > 0 ? (
                     sortedItems.map(({ item, index }) => {
                       const checked = item.is_checked || false;
+                      // 상세 화면과 같은 판정 — DB 값만 보면 보조배터리(위탁 금지) 경고가 빠진다
+                      const { cabinPolicy } = resolveBaggagePolicy(
+                        item,
+                        countryCode,
+                      );
 
                       return (
                         <Box
@@ -252,10 +257,9 @@ export default function ListView({
                                   onClick={(e) => handleGuideClick(e, item)}
                                 />
                               )}
-                            {item.cabin_policy &&
-                              item.cabin_policy !== "allowed" && (
+                            {cabinPolicy && cabinPolicy !== "allowed" && (
                                 <CabinPolicyIcon
-                                  policy={item.cabin_policy as CabinPolicy}
+                                  policy={cabinPolicy}
                                   size={16}
                                   onClick={(e) => handlePolicyClick(e, item)}
                                 />

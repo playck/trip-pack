@@ -68,3 +68,39 @@ describe("checkBaggageRule 키워드 매핑", () => {
     );
   });
 });
+
+describe("checkBaggageRule 오탐 방지", () => {
+  // 1글자 키워드는 단어 끝에서만 매칭한다 — 한국어 합성어는 핵심 명사가 뒤에 온다
+  const headFinalCases: [string, string][] = [
+    ["칼", "칼류"],
+    ["식칼", "칼류"],
+    ["과도 칼", "칼류"],
+    ["감기약", "의약품"],
+    ["약(아이용)", "의약품"],
+    ["불면증약", "의약품"],
+  ];
+
+  it.each(headFinalCases)("%s → %s (단어 끝 매칭)", (query, expectedName) => {
+    expect(checkBaggageRule(query)?.item.name).toBe(expectedName);
+  });
+
+  // 단어 앞·중간에 1글자 키워드가 있거나, 너무 일반적인 2글자 이상 키워드에 걸리던 이름들
+  const falsePositives: [string, string][] = [
+    ["까스활명수", "무기류·호신용품"],
+    ["생활용품", "무기류·호신용품"],
+    ["총무 지갑", "무기류·호신용품"],
+    ["칼슘 영양제", "칼류"],
+    ["칼라렌즈", "칼류"],
+    ["필기도구", "칼류"],
+    ["화장도구", "칼류"],
+    ["알콜솜", "주류 (술)"],
+    ["기름종이", "식용 기름"],
+    ["헤어 액세서리", "금 제품"],
+    ["골드키위", "금 제품"],
+    ["아이 킥보드", "전동킥보드/전동휠"],
+  ];
+
+  it.each(falsePositives)("%s는 %s로 판정하지 않는다", (query, wrongName) => {
+    expect(checkBaggageRule(query)?.item.name).not.toBe(wrongName);
+  });
+});

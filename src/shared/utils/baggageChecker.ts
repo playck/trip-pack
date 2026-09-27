@@ -10,6 +10,14 @@ export interface BaggageCheckResult {
 
 const normalize = (text: string) => text.replace(/\s+/g, "").toLowerCase();
 
+// 1글자 키워드는 단어 끝에서만 매칭한다 — 한국어 합성어는 핵심 명사가 뒤에 와서
+// 식칼·감기약은 맞고, 칼슘·활명수·총무처럼 앞에 붙은 경우는 다른 말이다.
+const endsSomeWord = (itemName: string, keyword: string) =>
+  itemName
+    .toLowerCase()
+    .split(/[^가-힣a-z0-9]+/)
+    .some((word) => word.endsWith(keyword.toLowerCase()));
+
 /**
  * 입력된 아이템 이름과 매칭되는 모든 규정을 검색합니다.
  * 더 긴(=더 구체적인) 키워드가 매칭된 항목을 우선 정렬합니다.
@@ -26,10 +34,11 @@ export const checkBaggageRules = (itemName: string): BaggageCheckResult[] => {
   for (const item of BAGGAGE_POLICY_DATA) {
     let matchedKeyword = "";
     for (const keyword of item.keywords) {
-      if (
-        query.includes(normalize(keyword)) &&
-        keyword.length > matchedKeyword.length
-      ) {
+      const isMatch =
+        keyword.length === 1
+          ? endsSomeWord(itemName, keyword)
+          : query.includes(normalize(keyword));
+      if (isMatch && keyword.length > matchedKeyword.length) {
         matchedKeyword = keyword;
       }
     }

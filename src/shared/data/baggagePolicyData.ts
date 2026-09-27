@@ -389,7 +389,7 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       status: "allowed",
       reason: "누수되지 않게 밀폐 포장하면 위탁 반입 가능합니다.",
     },
-    keywords: ["참기름", "들기름", "식용유", "올리브유", "기름"],
+    keywords: ["참기름", "들기름", "식용유", "올리브유"],
   },
   {
     name: "유제품",
@@ -474,10 +474,9 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "양주",
       "사케",
       "샴페인",
-      "알코올",
+      "알코올음료",
       "막걸리",
       "알콜음료",
-      "알콜",
       "하이볼",
     ],
   },
@@ -498,7 +497,6 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       "커터칼",
       "맥가이버칼",
       "나이프",
-      "도구",
       "흉기",
       "과도",
       "식칼",
@@ -911,7 +909,7 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
       reason:
         "160Wh 초과 배터리 장착 기기는 위탁도 불가합니다. (배터리 분리형 일부 기기는 항공사 사전 승인 시 예외)",
     },
-    keywords: ["전동킥보드", "전동휠", "전기자전거", "킥보드", "세그웨이"],
+    keywords: ["전동킥보드", "전동휠", "전기자전거", "세그웨이"],
   },
 
   // --- 4. 조건부 허용 ---
@@ -1155,7 +1153,7 @@ export const BAGGAGE_POLICY_DATA: CabinCheckItem[] = [
     category: "lifestyle",
     cabin: { status: "allowed", reason: "신고 후 반입 가능합니다." },
     checked: { status: "allowed", reason: "신고 후 반입 가능합니다." },
-    keywords: ["골드", "금붙이", "액세서리", "순금", "금목걸이", "금반지"],
+    keywords: ["금붙이", "순금", "금목걸이", "금반지"],
     countryRestrictions: [
       {
         countryCode: "JP",
