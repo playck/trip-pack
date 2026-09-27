@@ -161,7 +161,9 @@ export type NativeCapability = "premiumProduct" | "kakaoLogin";
  */
 export function hasNativeCapability(capability: NativeCapability): boolean {
   if (!isReactNativeWebView()) return false;
-  return window.__TRIP_PACK_NATIVE__?.capabilities?.includes(capability) ?? false;
+  return (
+    window.__TRIP_PACK_NATIVE__?.capabilities?.includes(capability) ?? false
+  );
 }
 
 /**
@@ -176,6 +178,16 @@ export function openExternalUrl(url: string) {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 }
+
+/**
+ * 외부 링크(<a target="_blank">)의 onClick 핸들러.
+ * 앱 웹뷰에선 target=_blank가 같은 탭 웹뷰를 외부 사이트로 이동시키므로 브릿지로 외부 브라우저에서 오픈.
+ */
+export const openExternalOnClick =
+  (url: string) => (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    openExternalUrl(url);
+  };
 
 const APPLE_SIGN_IN_TIMEOUT_MS = 60_000;
 
@@ -289,7 +301,10 @@ interface NativeResultDetail {
   nonce?: string;
 }
 
-interface AwaitNativeResultOptions<TDetail extends NativeResultDetail, TResult> {
+interface AwaitNativeResultOptions<
+  TDetail extends NativeResultDetail,
+  TResult,
+> {
   resultEvent: string;
   buildMessage: (nonce: string) => NativeMessage;
   /** 네이티브 응답(detail)을 호출자 결과로 변환. 필드 누락에 방어적으로 작성한다. */
@@ -402,7 +417,10 @@ const PREMIUM_PRODUCT_TIMEOUT_MS = 10_000;
  * 호출 전에 hasNativeCapability("premiumProduct")로 걸러야 한다.
  */
 export function requestPremiumProduct(): Promise<PremiumProductInfo | null> {
-  return awaitNativeResult<PremiumProductResultDetail, PremiumProductInfo | null>({
+  return awaitNativeResult<
+    PremiumProductResultDetail,
+    PremiumProductInfo | null
+  >({
     resultEvent: "premium-product-result",
     buildMessage: (nonce) => ({ type: "PREMIUM_PRODUCT_REQUEST", nonce }),
     mapDetail: (detail) =>

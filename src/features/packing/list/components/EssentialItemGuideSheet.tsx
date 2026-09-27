@@ -11,6 +11,7 @@ import {
 
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors, statusColors } from "@/shared/constants/colors";
+import { openExternalOnClick } from "@/shared/utils/nativeMessage";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { findEssentialGuide } from "@/shared/data/essentialItemGuides";
 import { countries } from "@/shared/data/regions";
@@ -175,6 +176,7 @@ export default function EssentialItemGuideSheet({
               <Link
                 href={declaration.url}
                 target="_blank"
+                onClick={openExternalOnClick(declaration.url)}
                 rel="noreferrer"
                 mt={1.5}
                 fontSize="xs"
@@ -297,6 +299,7 @@ export default function EssentialItemGuideSheet({
               key={link.url}
               href={link.url}
               target="_blank"
+              onClick={openExternalOnClick(link.url)}
               rel="noreferrer"
               mb={1.5}
               fontSize="xs"

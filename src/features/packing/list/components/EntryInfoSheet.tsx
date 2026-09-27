@@ -10,6 +10,7 @@ import {
 
 import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
+import { openExternalOnClick } from "@/shared/utils/nativeMessage";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
 import { countries } from "@/shared/data/regions";
 import { travelAlerts, type AlertLevel } from "@/shared/data/travelAlert";
@@ -384,6 +385,7 @@ export default function EntryInfoSheet({
                 <Link
                   href={declaration.url}
                   target="_blank"
+                  onClick={openExternalOnClick(declaration.url)}
                   rel="noreferrer"
                   mt={1.5}
                   fontSize="xs"
@@ -494,6 +496,7 @@ export default function EntryInfoSheet({
             <Link
               href={MOFA_URL}
               target="_blank"
+              onClick={openExternalOnClick(MOFA_URL)}
               rel="noreferrer"
               mt={1.5}
               fontSize="xs"
