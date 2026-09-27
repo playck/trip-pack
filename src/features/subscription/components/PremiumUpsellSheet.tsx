@@ -68,8 +68,11 @@ export default function PremiumUpsellSheet({
               여행 생성을 무제한으로
             </Text>
             <Text as="p" fontSize="sm" color="gray.500" lineHeight="1.6">
-              무료 플랜은 여행 {FREE_TRIP_LIMIT}개까지예요. <br /> 프리미엄은 한
-              번만 결제하면 평생 무제한이에요.
+              무료 플랜은 지난 여행을 포함해 {FREE_TRIP_LIMIT}개까지
+              보관할 수 있어요.
+              <br />
+              지난 여행은 그대로 두고 새 여행을 만들려면 프리미엄으로
+              업그레이드하세요. 한 번 결제로 평생 무제한이에요.
             </Text>
           </VStack>
         </VStack>

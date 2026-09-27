@@ -20,6 +20,7 @@ export const getTripList = async (): Promise<TripListData> => {
       futureTrips: [],
       pastTrips: [],
       allTrips: [],
+      ownedTripCount: 0,
     };
   }
 
@@ -39,6 +40,7 @@ export const getTripList = async (): Promise<TripListData> => {
       futureTrips: [],
       pastTrips: [],
       allTrips: [],
+      ownedTripCount: 0,
     };
   }
 
@@ -46,7 +48,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: currentTrips, error: currentError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url, user_id"
     )
     .in("id", tripIds)
     .lte("start_date", today)
@@ -63,7 +65,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: futureTrips, error: futureError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url, user_id"
     )
     .in("id", tripIds)
     .gt("start_date", today)
@@ -79,7 +81,7 @@ export const getTripList = async (): Promise<TripListData> => {
   const { data: pastTrips, error: pastError } = await supabase
     .from("trips")
     .select(
-      "id, title, start_date, end_date, region_name, budget, country_code, image_url"
+      "id, title, start_date, end_date, region_name, budget, country_code, image_url, user_id"
     )
     .in("id", tripIds)
     .or(`end_date.lt.${today},and(start_date.lt.${today},end_date.is.null)`)
@@ -107,11 +109,19 @@ export const getTripList = async (): Promise<TripListData> => {
   const mappedFutureTrips = (futureTrips || []).map(allTrip);
   const mappedPastTrips = (pastTrips || []).map(allTrip);
 
+  // 무료 한도는 서버(create_trip_with_checklist)와 같게 "내가 만든 여행"만 센다 (초대받은 여행 제외, 지난 여행 포함)
+  const ownedTripCount = [
+    ...(currentTrips || []),
+    ...(futureTrips || []),
+    ...(pastTrips || []),
+  ].filter((trip) => trip.user_id === user.id).length;
+
   return {
     currentTrips: mappedCurrentTrips,
     futureTrips: mappedFutureTrips,
     pastTrips: mappedPastTrips,
     allTrips: [...mappedCurrentTrips, ...mappedFutureTrips, ...mappedPastTrips],
+    ownedTripCount,
   };
 };
 

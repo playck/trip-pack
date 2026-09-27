@@ -19,7 +19,7 @@ import { useTripList } from "./hooks/useTripList";
 export default function MainPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { noActiveTripList, hasPastTrips, trips } = useTripList();
+  const { noActiveTripList, hasPastTrips, ownedTripCount } = useTripList();
   const { isOnline } = useNetworkStatus();
   const queryClient = useQueryClient();
   const { isPremium, isLoading: isTierLoading } = useSubscription(user?.id, {
@@ -32,7 +32,7 @@ export default function MainPage() {
     PAYMENT_LIVE &&
     !isTierLoading &&
     !isPremium &&
-    trips.length >= FREE_TRIP_LIMIT;
+    ownedTripCount >= FREE_TRIP_LIMIT;
 
   const handleRefresh = async () => {
     await queryClient.invalidateQueries({ queryKey: ["tripList"] });

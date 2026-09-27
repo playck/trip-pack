@@ -13,7 +13,7 @@ import { Check, Sparkles } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 import { componentColors } from "@/shared/constants/colors";
-import { PAYMENT_LIVE } from "@/shared/constants/app";
+import { FREE_TRIP_LIMIT, PAYMENT_LIVE } from "@/shared/constants/app";
 import {
   isReactNativeWebView,
   requestPremiumPurchase,
@@ -227,8 +227,11 @@ export default function SubscribePage() {
           여행을 무제한으로
         </Heading>
         <Text as="p" color="fg.muted" fontSize="md">
-          무료 플랜은 여행 3개까지 만들 수 있어요. <br /> 프리미엄은 한 번만
-          결제하면 평생 무제한이에요.
+          무료 플랜은 지난 여행을 포함해 {FREE_TRIP_LIMIT}개까지 보관할 수
+          있어요.
+          <br />
+          지난 여행은 그대로 두고 새 여행을 만들려면 프리미엄으로
+          업그레이드하세요. 한 번 결제로 평생 무제한이에요.
         </Text>
       </VStack>
 

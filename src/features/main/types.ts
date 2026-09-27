@@ -14,4 +14,6 @@ export interface TripListData {
   futureTrips: Trip[];
   pastTrips: Trip[];
   allTrips: Trip[];
+  /** 내가 만든 여행 수 — 무료 한도 계산용 */
+  ownedTripCount: number;
 }

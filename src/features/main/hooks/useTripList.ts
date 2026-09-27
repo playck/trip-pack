@@ -7,6 +7,7 @@ export interface UseTripListReturn {
   futureTrips: Trip[];
   pastTrips: Trip[];
   trips: Trip[];
+  ownedTripCount: number;
   isLoading: boolean;
   error: string | null;
   noTripList: boolean;
@@ -32,6 +33,8 @@ export function useTripList(): UseTripListReturn {
     futureTrips: data.futureTrips || [],
     pastTrips: data.pastTrips || [],
     trips: data.allTrips || [],
+    // 필드 추가 전에 저장된 오프라인 캐시엔 값이 없을 수 있다(재조회 전까지 0 → 서버 게이트가 최종 판단)
+    ownedTripCount: data.ownedTripCount ?? 0,
     isLoading: false,
     noTripList,
     noActiveTripList,
