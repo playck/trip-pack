@@ -86,16 +86,16 @@ export default function BottomSheet({
           ? { minHeight: "100dvh", maxHeight: "100dvh" }
           : { minHeight: undefined, maxHeight: BOTTOM_SHEET_MAX_HEIGHT };
 
-  const keyboardOffset = useKeyboardOffset(
+  const { keyboardOffset, visibleHeight } = useKeyboardOffset(
     isOpen && adjustForKeyboard && !isFullscreen,
   );
+  const isKeyboardUp = visibleHeight > 0;
 
   // 네이티브 탭 재진입 시 닫기 (keepOnTabFocus면 유지)
   useCloseOnNativeTabFocus(isOpen, onClose, !keepOnTabFocus);
 
   // 키보드가 떠있는 동안에는 시트 높이가 가시 영역(viewport - 키보드)을 넘지 않도록 min/max 모두 캡
-  const visibleAreaCap =
-    keyboardOffset > 0 ? `calc(100vh - ${keyboardOffset}px)` : undefined;
+  const visibleAreaCap = isKeyboardUp ? `${visibleHeight}px` : undefined;
   const effectiveMaxHeight = visibleAreaCap ?? maxHeight;
   const effectiveMinHeight =
     visibleAreaCap && minHeight ? visibleAreaCap : minHeight;
@@ -128,7 +128,7 @@ export default function BottomSheet({
         <Drawer.Positioner>
           <Drawer.Content
             borderTopRadius={
-              isFullscreen || (keyboardOffset > 0 && size !== "content")
+              isFullscreen || (isKeyboardUp && size !== "content")
                 ? "none"
                 : "xl"
             }
@@ -143,10 +143,9 @@ export default function BottomSheet({
               filter:
                 isHidden && dimWhenBehind ? "brightness(0.6)" : undefined,
               pointerEvents: isHidden ? "none" : "auto",
-              transform:
-                keyboardOffset > 0
-                  ? `translateY(-${keyboardOffset}px)`
-                  : undefined,
+              transform: isKeyboardUp
+                ? `translateY(-${keyboardOffset}px)`
+                : undefined,
               transition: "filter 0.15s ease-out, transform 0.1s ease-out",
             }}
           >
