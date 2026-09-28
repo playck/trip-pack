@@ -156,3 +156,54 @@ export const removeMember = async (memberId: string): Promise<void> => {
     throw new Error(`멤버 제거 실패: ${error.message}`);
   }
 };
+
+const TRANSFER_ERROR_MESSAGES: Record<string, string> = {
+  NOT_OWNER: "방장만 방장을 넘길 수 있어요.",
+  NOT_A_MEMBER:
+    "이 여행의 일행에게만 넘길 수 있어요. 목록을 새로고침해 주세요.",
+  ALREADY_OWNER: "이미 방장인 일행이에요.",
+};
+
+/** 방장 넘기기 — 강등·승격·trips.user_id 변경을 한 트랜잭션으로 처리하는 RPC */
+export const transferTripOwnership = async (
+  tripId: string,
+  newOwnerUserId: string,
+): Promise<void> => {
+  const { error } = await supabase.rpc("transfer_trip_ownership", {
+    p_trip_id: tripId,
+    p_new_owner_id: newOwnerUserId,
+  });
+
+  if (error) {
+    throw new Error(
+      TRANSFER_ERROR_MESSAGES[error.message] ??
+        `방장 넘기기 실패: ${error.message}`,
+    );
+  }
+};
+
+/**
+ * 여행 나가기 — 내 멤버 행만 지운다. 내가 적은 경비·할 일은 일행에게 남는다.
+ * 방장 행은 DB가 삭제를 막으므로(여행당 방장 1명) 방장은 먼저 넘겨야 한다.
+ */
+export const leaveTrip = async (tripId: string): Promise<void> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+  if (!user) throw new Error("로그인이 필요합니다.");
+
+  const { data, error } = await supabase
+    .from("trip_members")
+    .delete()
+    .eq("trip_id", tripId)
+    .eq("user_id", user.id)
+    .select("id");
+
+  if (error) {
+    throw new Error(`여행 나가기 실패: ${error.message}`);
+  }
+  if (!data?.length) {
+    throw new Error("이미 나간 여행이거나 방장이라 나갈 수 없어요.");
+  }
+};

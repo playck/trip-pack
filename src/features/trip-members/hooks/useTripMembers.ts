@@ -1,7 +1,14 @@
 import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { toaster } from "@/shared/components/ui/toaster";
-import { getTripMembers, removeMember } from "../services/api";
+import { cancelTripNotification } from "@/shared/utils/nativeMessage";
+import {
+  getTripMembers,
+  leaveTrip,
+  removeMember,
+  transferTripOwnership,
+} from "../services/api";
 
 export const tripMemberKeys = {
   members: (tripId: string) => ["tripMembers", tripId] as const,
@@ -49,6 +56,57 @@ export function useRemoveMember(tripId: string) {
     onError: (error: Error) => {
       toaster.create({
         title: "멤버 제거 실패",
+        description: error.message,
+        type: "error",
+        duration: 3000,
+      });
+    },
+  });
+}
+
+export function useTransferOwnership(tripId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newOwnerUserId: string) =>
+      transferTripOwnership(tripId, newOwnerUserId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: tripMemberKeys.members(tripId),
+      });
+    },
+    onError: (error: Error) => {
+      toaster.create({
+        title: "방장 넘기기 실패",
+        description: error.message,
+        type: "error",
+        duration: 3000,
+      });
+    },
+  });
+}
+
+export function useLeaveTrip(tripId: string) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: () => leaveTrip(tripId),
+    onSuccess: () => {
+      // 나간 여행의 리마인더가 이 기기에 계속 오지 않게 취소
+      cancelTripNotification({ tripId });
+      queryClient.invalidateQueries({ queryKey: ["tripList"] });
+      toaster.create({
+        title: "여행에서 나왔어요",
+        description: "내가 적은 경비·할 일은 일행에게 그대로 남아요.",
+        type: "success",
+        duration: 3000,
+      });
+      navigate({ to: "/main" });
+    },
+    onError: (error: Error) => {
+      toaster.create({
+        title: "여행 나가기 실패",
         description: error.message,
         type: "error",
         duration: 3000,

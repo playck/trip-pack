@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useDisclosure } from "@chakra-ui/react";
 import { useHistoryBack } from "@/shared/hooks";
 import { useAuth } from "@/shared/hooks/useAuth";
@@ -30,7 +30,7 @@ export default function TripSettingsPanel({
 
   const { user } = useAuth();
   const { data: tripInfo } = useTripInfo(tripId);
-  const { data: members } = useTripMembers(tripId);
+  const { data: members, refetch: refetchMembers } = useTripMembers(tripId);
   // 제목·기간·이미지·삭제는 방장만 가능하다(DB 에서 강제). 일반 멤버에게는 항목 자체를 감춘다.
   const isOwner = useMemo(
     () => members?.find((m) => m.user_id === user?.id)?.role === "owner",
@@ -49,6 +49,25 @@ export default function TripSettingsPanel({
   const invite = useDisclosure();
   const flightSheet = useDisclosure();
   const memoSheet = useDisclosure();
+  // 삭제 모달의 '방장 넘기고 나가기'로 일행 목록을 열 때 새 방장 선택 단계부터 시작
+  const [startTransferAndLeave, setStartTransferAndLeave] = useState(false);
+
+  const openMembers = () => {
+    setStartTransferAndLeave(false);
+    membersSheet.onOpen();
+  };
+
+  // 삭제 가능 여부가 일행 수로 갈리므로, 5분 캐시가 아닌 최신 멤버 수로 판단한다
+  const openDeleteTrip = () => {
+    refetchMembers();
+    deleteTrip.onOpen();
+  };
+
+  const handleTransferAndLeave = () => {
+    deleteTrip.onClose();
+    setStartTransferAndLeave(true);
+    membersSheet.onOpen();
+  };
 
   const handleDeleteTrip = () => {
     deleteTripMutate(tripId);
@@ -81,12 +100,12 @@ export default function TripSettingsPanel({
       <TripSettingsDrawer
         isOpen={isOpen}
         onClose={onClose}
-        onOpenMembers={membersSheet.onOpen}
+        onOpenMembers={openMembers}
         onOpenInvite={invite.onOpen}
         onOpenEditTitle={editTitle.onOpen}
         onOpenEditDate={editDate.onOpen}
         isOwner={isOwner}
-        onOpenDeleteTrip={deleteTrip.onOpen}
+        onOpenDeleteTrip={openDeleteTrip}
         onOpenFlight={handleOpenFlight}
         onOpenMemo={memoSheet.onOpen}
         onChangeImage={handleChangeImage}
@@ -137,6 +156,8 @@ export default function TripSettingsPanel({
         tripTitle={tripInfo?.title || "여행"}
         onDeleteTrip={handleDeleteTrip}
         isLoading={isDeletePending}
+        memberCount={members?.length ?? 1}
+        onTransferAndLeave={handleTransferAndLeave}
       />
 
       <InviteSheet
@@ -149,6 +170,7 @@ export default function TripSettingsPanel({
         isOpen={membersSheet.open}
         onClose={membersSheet.onClose}
         tripId={tripId}
+        startWithTransferAndLeave={startTransferAndLeave}
       />
 
       <FlightSheet
