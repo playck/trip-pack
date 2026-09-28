@@ -15,6 +15,7 @@ import { Share2, Settings, Edit2, Wallet, Trash2, Heart } from "lucide-react";
 import PageLayout from "@/shared/components/layout/PageLayout";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useTripGoneRedirect } from "@/shared/hooks/useTripGoneRedirect";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { ConfirmDialog, ScrollToTopButton } from "@/shared/components";
 import { useScrollToTop } from "@/shared/hooks";
@@ -51,6 +52,7 @@ import { ScheduleProvider } from "./context";
 function SchedulePageContent() {
   const { tripId } = useParams({ from: "/schedule/$tripId" });
   const { data: tripInfo } = useTripInfo(tripId);
+  useTripGoneRedirect(tripId, tripInfo);
   const settingsDrawer = useDisclosure();
   const moveToWishlistConfirm = useDisclosure();
   const { data: expenses } = useTripExpenses(tripId);

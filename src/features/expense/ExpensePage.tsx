@@ -12,6 +12,7 @@ import { ScrollToTopButton } from "@/shared/components";
 import { useScrollToTop } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useTripGoneRedirect } from "@/shared/hooks/useTripGoneRedirect";
 import { useTripSchedules } from "@/features/schedule/services/useTripSchedules";
 import { DateTabList, ExpenseContent, AddExpenseSheet } from "./components";
 import { useTripExpenses, useCreateExpense } from "./services";
@@ -24,6 +25,7 @@ export default function ExpensePage() {
   const { tripId } = useParams({ from: "/expense/$tripId" });
   const navigate = useNavigate();
   const { data: tripInfo } = useTripInfo(tripId);
+  useTripGoneRedirect(tripId, tripInfo);
   const { data: expenses } = useTripExpenses(tripId);
   const { data: schedules } = useTripSchedules(tripId);
   const createExpenseMutation = useCreateExpense(tripId || "", {

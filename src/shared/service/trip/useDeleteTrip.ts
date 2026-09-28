@@ -20,14 +20,6 @@ export function useDeleteTrip(callback?: UseDeleteTripParams) {
         queryKey: ["tripList"],
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ["tripInfo", tripId],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["tripChecklist", tripId],
-      });
-
       cancelTripNotification({ tripId });
 
       if (callback?.onSuccess) {

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Container, Text, VStack, HStack, IconButton } from "@chakra-ui/react";
-import { useParams, useNavigate } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Settings, Share2, Minimize2, Maximize2 } from "lucide-react";
 
@@ -16,6 +16,7 @@ import StaleDataNotice from "@/shared/components/StaleDataNotice";
 import type { FloatingMenuItem } from "@/shared/components/FloatingAddButton";
 import { STORAGE_KEYS } from "@/shared/constants/stroage";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
+import { useTripGoneRedirect } from "@/shared/hooks/useTripGoneRedirect";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import { colors } from "@/shared/constants/colors";
 import { useScrollToTop } from "@/shared/hooks";
@@ -38,7 +39,6 @@ import TodoSection from "./components/TodoSection";
 import type { SectionHandle } from "./components/PackingSection";
 
 export default function PackingListPage() {
-  const navigate = useNavigate();
   const sheets = usePackingSheets();
   const { tripId } = useParams({ from: "/packing/list/$tripId" });
   const queryClient = useQueryClient();
@@ -88,11 +88,7 @@ export default function PackingListPage() {
     ]);
   }, [queryClient, tripId]);
 
-  useEffect(() => {
-    if (!tripId || !tripInfo) {
-      navigate({ to: "/main" });
-    }
-  }, [tripId, tripInfo, navigate]);
+  useTripGoneRedirect(tripId, tripInfo);
 
   if (!tripId || !tripInfo) {
     return null;
