@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/shared/service/supabase/cilent";
 import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/shared/components/ui/toaster";
 
 interface UseAuthReturn {
@@ -17,6 +18,7 @@ export const useAuth = (): UseAuthReturn => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const getUser = async () => {
@@ -73,21 +75,23 @@ export const useAuth = (): UseAuthReturn => {
 
   const deleteAccount = async () => {
     try {
-      // 실제 구현 시에는 Edge Function이나 백엔드 API 호출 필요
-      // 추후 실제 계정 삭제 API 연동 필요
-
-      const { error } = await supabase.auth.signOut();
+      // 서버가 일행 있는 방장 여행을 넘기고 계정을 삭제한다(supabase/functions/delete-account)
+      const { error } = await supabase.functions.invoke("delete-account");
       if (error) throw error;
 
+      // 계정은 이미 서버에서 지워졌다 — 서버 호출 없이 이 기기의 세션·캐시만 정리
+      await supabase.auth.signOut({ scope: "local" });
+      queryClient.clear();
+
       toaster.create({
-        description: "회원 탈퇴 처리가 완료되었습니다.",
+        description: "회원 탈퇴가 완료되었습니다.",
         type: "success",
       });
       navigate({ to: "/auth/login" });
     } catch (error) {
       console.error("Delete account error:", error);
       toaster.create({
-        description: "회원 탈퇴 처리 중 오류가 발생했습니다.",
+        description: "회원 탈퇴 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
         type: "error",
       });
       throw error;

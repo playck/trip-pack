@@ -33,11 +33,20 @@ export default function AccountSection({
     setDialogConfig({ isOpen: false, type: null });
   };
 
-  const handleConfirm = () => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleConfirm = async () => {
     if (dialogConfig.type === "logout") {
       logout();
     } else if (dialogConfig.type === "delete") {
-      deleteAccount();
+      setIsDeleting(true);
+      try {
+        await deleteAccount();
+      } catch {
+        // 실패 안내는 deleteAccount의 토스트가 한다
+      } finally {
+        setIsDeleting(false);
+      }
     }
     closeDialog();
   };
@@ -124,10 +133,11 @@ export default function AccountSection({
         message={
           dialogConfig.type === "logout"
             ? "정말 로그아웃 하시겠습니까?"
-            : "정말 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다."
+            : "탈퇴하면 계정과 혼자 쓰던 여행·템플릿이 삭제되며 복구할 수 없어요. 일행이 있는 여행은 가장 먼저 함께한 일행이 방장을 이어받고, 내가 적은 경비·할 일은 일행에게 남아요. 프리미엄은 같은 Apple ID로 다시 가입해 '구매 복원'하면 되살릴 수 있어요."
         }
         confirmLabel={dialogConfig.type === "logout" ? "로그아웃" : "탈퇴하기"}
         isDangerous={dialogConfig.type === "delete"}
+        isLoading={isDeleting}
         onConfirm={handleConfirm}
       />
     </>
