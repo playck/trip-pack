@@ -2,6 +2,7 @@ import {
   VISA_REQUIREMENTS,
   type VisaRequirement,
 } from "@/shared/data/visaRequirements";
+import { toIsoCountryCode } from "@/shared/data/regions";
 
 // 지역 단위 예외(국가는 비자 필요지만 특정 지역만 무비자 등).
 // note 를 지정하면 국가 레벨 안내 대신 이 지역 전용 문구를 노출한다.
@@ -33,7 +34,7 @@ export const getVisaRule = (
     return { required: false, info: null, isUnknown: false };
   }
 
-  const code = countryCode.toUpperCase();
+  const code = toIsoCountryCode(countryCode.toUpperCase());
   const info = VISA_REQUIREMENTS[code] ?? null;
 
   if (regionId && REGION_EXCEPTIONS[regionId]) {

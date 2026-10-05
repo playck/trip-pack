@@ -17,6 +17,12 @@ export interface Country {
   flag: string;
 }
 
+/**
+ * 지역 구분용 자체 코드(IMN=내몽골)를 실제 국가 코드로 바꾼다.
+ * 비자·입국신고·콘센트·장소 검색처럼 국가 기준으로 찾는 곳에 쓴다. 표지 이미지 등 표시용은 원래 코드 유지.
+ */
+export const toIsoCountryCode = (code: string) => (code === "IMN" ? "CN" : code);
+
 export const countries: Country[] = [
   {
     id: "kr",

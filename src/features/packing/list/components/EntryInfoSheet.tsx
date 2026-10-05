@@ -12,7 +12,7 @@ import BottomSheet from "@/shared/components/BottomSheet";
 import { colors } from "@/shared/constants/colors";
 import { openExternalOnClick } from "@/shared/utils/nativeMessage";
 import { getEntryDeclaration } from "@/shared/data/entryDeclarations";
-import { countries } from "@/shared/data/regions";
+import { countries, toIsoCountryCode } from "@/shared/data/regions";
 import { travelAlerts, type AlertLevel } from "@/shared/data/travelAlert";
 import {
   COMMON_ENTRY_INFO,
@@ -99,7 +99,7 @@ export default function EntryInfoSheet({
   countryCode,
   regionId,
 }: EntryInfoSheetProps) {
-  const code = countryCode?.toUpperCase();
+  const code = countryCode ? toIsoCountryCode(countryCode.toUpperCase()) : undefined;
   const [openKeys, setOpenKeys] = useState<Set<string>>(
     () => new Set(["visa"]),
   );

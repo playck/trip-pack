@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useMapsLibrary, useMap } from "@vis.gl/react-google-maps";
+import { toIsoCountryCode } from "@/shared/data/regions";
 
 /**
  * Google Places 검색 결과 타입
@@ -102,7 +103,7 @@ export const usePlacesAutocomplete = (countryCode?: string) => {
           input: query,
           types: type ? [type] : ["establishment", "geocode"],
           componentRestrictions: countryCode
-            ? { country: countryCode }
+            ? { country: toIsoCountryCode(countryCode) }
             : undefined,
         };
 

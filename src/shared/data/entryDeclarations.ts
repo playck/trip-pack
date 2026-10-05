@@ -2,6 +2,8 @@
 // - 무비자여도 사전 전자신고가 필수인 국가가 많아 여행 생성 시 필수 준비물 아이템으로 자동 삽입한다.
 // - 시행 공항·기한이 수시로 바뀌는 분야라 분기 재검증 루틴 대상.
 
+import { toIsoCountryCode } from "./regions";
+
 export interface EntryDeclaration {
   /** 신고서 이름 — 체크리스트 아이템명에 사용 */
   name: string;
@@ -131,7 +133,7 @@ export function getEntryDeclaration(
   countryCode?: string | null,
 ): EntryDeclaration | null {
   if (!countryCode) return null;
-  return ENTRY_DECLARATIONS[countryCode.toUpperCase()] ?? null;
+  return ENTRY_DECLARATIONS[toIsoCountryCode(countryCode.toUpperCase())] ?? null;
 }
 
 /**

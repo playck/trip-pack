@@ -2,6 +2,7 @@
  * 국가별 콘센트 플러그 모양 · 전압 정보
  * 출처: worldstandards.eu (IEC 기준)
  */
+import { toIsoCountryCode } from "./regions";
 
 export interface PlugStandard {
   /** 전압 (예: "220V") */
@@ -114,7 +115,7 @@ export const PLUG_STANDARDS: Record<string, PlugStandard> = {
 
 /** country code로 콘센트 정보 요약 문자열 반환 */
 export function getPlugNote(countryCode: string): string | undefined {
-  const info = PLUG_STANDARDS[countryCode];
+  const info = PLUG_STANDARDS[toIsoCountryCode(countryCode)];
   if (!info) return undefined;
 
   let note = `${info.voltage}, ${info.shape}`;
