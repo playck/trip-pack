@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   VStack,
   Box,
@@ -13,6 +14,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import { Share2, Settings, Edit2, Wallet, Trash2, Heart } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
+import PullToRefresh from "@/shared/components/PullToRefresh";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripGoneRedirect } from "@/shared/hooks/useTripGoneRedirect";
@@ -57,6 +59,15 @@ function SchedulePageContent() {
   const moveToWishlistConfirm = useDisclosure();
   const { data: expenses } = useTripExpenses(tripId);
   const { data: allSchedules } = useTripSchedules(tripId);
+  const queryClient = useQueryClient();
+  // 동행이 방금 바꾼 일정·경비·멤버까지 이 여행의 쿼리를 모두 새로 받는다
+  const handleRefresh = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[1] === tripId,
+      }),
+    [queryClient, tripId],
+  );
 
   const scheduleExpenseMap = useMemo(() => {
     if (!expenses) return {};
@@ -283,20 +294,22 @@ function SchedulePageContent() {
             )}
           </MapWrapper>
 
-          {/* 일정표 */}
+          {/* 일정표 — 지도 드래그와 겹치지 않게 목록 영역에서만 당겨서 새로고침 */}
           <Box mt={3} pb="300px" display={isMapFullScreen ? "none" : "block"}>
-            <DayScheduleList
-              tripId={tripId}
-              startDate={tripInfo.startDate}
-              endDate={tripInfo.endDate}
-              isMapCollapsed={isMapCollapsed}
-              regionName={tripInfo.regionName ?? undefined}
-              hidePastDayNumber={
-                showHidePastToggle && hidePast ? todayDayNumber : undefined
-              }
-              onAddSchedule={handleAddSchedule}
-              onAddMemo={handleAddMemo}
-            />
+            <PullToRefresh onRefresh={handleRefresh}>
+              <DayScheduleList
+                tripId={tripId}
+                startDate={tripInfo.startDate}
+                endDate={tripInfo.endDate}
+                isMapCollapsed={isMapCollapsed}
+                regionName={tripInfo.regionName ?? undefined}
+                hidePastDayNumber={
+                  showHidePastToggle && hidePast ? todayDayNumber : undefined
+                }
+                onAddSchedule={handleAddSchedule}
+                onAddMemo={handleAddMemo}
+              />
+            </PullToRefresh>
           </Box>
         </VStack>
       </ScheduleProvider>

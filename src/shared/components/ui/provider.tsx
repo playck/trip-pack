@@ -45,6 +45,15 @@ const queryClient = new QueryClient({
   },
 });
 
+// 탭·앱으로 돌아오면 staleTime(5분)이 지난 쿼리만 다시 받는다 — 동행이 바꾼 내용을 보여 주되 비용 정책은 유지.
+// 네이티브 앱은 탭 재진입 시 native:tab-focus 를 주입한다. 5분 안의 변경은 당겨서 새로고침으로.
+const refetchStaleQueries = () =>
+  queryClient.refetchQueries({ type: "active", stale: true });
+window.addEventListener("native:tab-focus", refetchStaleQueries);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") refetchStaleQueries();
+});
+
 const persister = createAsyncStoragePersister({
   storage: window.localStorage,
   key: "TRIP_PACK_QUERY_OFFLINE_CACHE",

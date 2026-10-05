@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { Box, Text, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
 import { Share2, Settings, Calculator } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
+import PullToRefresh from "@/shared/components/PullToRefresh";
 import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
@@ -35,6 +37,15 @@ export default function ExpensePage() {
   const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { showScrollTop, scrollToTop } = useScrollToTop();
+  const queryClient = useQueryClient();
+  // 동행이 방금 적은 경비·일정·멤버까지 이 여행의 쿼리를 모두 새로 받는다
+  const handleRefresh = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[1] === tripId,
+      }),
+    [queryClient, tripId],
+  );
   const settingsDrawer = useDisclosure();
 
   const dateList = useMemo(() => {
@@ -169,7 +180,7 @@ export default function ExpensePage() {
       />
 
       {dateList.length > 0 ? (
-        <>
+        <PullToRefresh onRefresh={handleRefresh}>
           <DateTabList
             dateList={dateList}
             selectedDate={selectedDate}
@@ -182,7 +193,7 @@ export default function ExpensePage() {
             isAllTab={selectedDate === ALL_TAB_VALUE}
             tripId={tripId}
           />
-        </>
+        </PullToRefresh>
       ) : (
         <Box
           p={8}
