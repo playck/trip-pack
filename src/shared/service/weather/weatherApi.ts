@@ -20,6 +20,7 @@ export interface WeatherData {
 }
 
 interface OpenWeatherForecastResponse {
+  city: { timezone: number }; // UTC 대비 초
   list: Array<{
     dt: number;
     main: {
@@ -70,7 +71,10 @@ export const getForecastByCoords = async (
     >();
 
     data.list.forEach((item) => {
-      const date = new Date(item.dt * 1000).toISOString().split("T")[0];
+      // 여행지 현지 날짜로 묶는다(UTC로 묶으면 시차만큼 전날·다음날 예보가 섞인다)
+      const date = new Date((item.dt + data.city.timezone) * 1000)
+        .toISOString()
+        .split("T")[0];
 
       if (!dailyForecasts.has(date)) {
         dailyForecasts.set(date, {
