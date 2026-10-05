@@ -10,7 +10,7 @@ import {
   VStack,
   AbsoluteCenter,
 } from "@chakra-ui/react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Mail, Lock, User } from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
@@ -36,13 +36,20 @@ interface SignupForm {
 
 export default function SignupPage() {
   const navigate = useNavigate();
-  const { handleKakaoLogin, handleAppleLogin, socialError } = useSocialLogin();
+  // 초대 링크로 왔다면 가입 후 초대 수락 화면으로 돌아간다
+  const { returnTo } = useSearch({ from: "/auth/signup" });
+  const safeReturnTo =
+    returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+      ? returnTo
+      : "/main";
+  const { handleKakaoLogin, handleAppleLogin, socialError } =
+    useSocialLogin(returnTo);
   const { user: authUser, loading: authLoading } = useAuth();
 
   useEffect(() => {
     if (authLoading || !authUser) return;
-    navigate({ to: "/main" });
-  }, [authUser, authLoading, navigate]);
+    navigate({ to: safeReturnTo });
+  }, [authUser, authLoading, navigate, safeReturnTo]);
 
   const [formData, setFormData] = useState<SignupForm>({
     email: "",
@@ -107,7 +114,7 @@ export default function SignupPage() {
           type: "success",
           duration: 3000,
         });
-        navigate({ to: "/auth/login" });
+        navigate({ to: "/auth/login", search: { returnTo } });
         return;
       }
 
@@ -116,7 +123,7 @@ export default function SignupPage() {
         type: "success",
         duration: 3000,
       });
-      navigate({ to: "/main" });
+      navigate({ to: safeReturnTo });
     } catch {
       setErrors({
         general: "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.",
@@ -400,7 +407,9 @@ export default function SignupPage() {
                     as="button"
                     color={`${colors.primary.palette}.600`}
                     fontWeight="semibold"
-                    onClick={() => navigate({ to: "/auth/login" })}
+                    onClick={() =>
+                      navigate({ to: "/auth/login", search: { returnTo } })
+                    }
                     _hover={{ textDecoration: "underline" }}
                   >
                     로그인하기

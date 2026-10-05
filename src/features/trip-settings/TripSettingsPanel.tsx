@@ -164,6 +164,11 @@ export default function TripSettingsPanel({
         isOpen={invite.open}
         onClose={invite.onClose}
         tripId={tripId}
+        tripTitle={tripInfo?.title || tripInfo?.regionName || "여행"}
+        inviterName={
+          members?.find((m) => m.user_id === user?.id)?.profiles?.username ||
+          user?.user_metadata?.username
+        }
       />
 
       <MemberListSheet

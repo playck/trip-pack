@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { VStack, Text, Spinner } from "@chakra-ui/react";
+import { VStack, Text, Spinner, Button } from "@chakra-ui/react";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { ErrorMessage } from "@/shared/components";
@@ -66,9 +66,12 @@ export default function InviteAcceptPage() {
       <VStack justify="center" h="60vh">
         <ErrorMessage
           title="초대 링크 오류"
-          message={acceptMutation.error.message}
+          message={`${acceptMutation.error.message} 초대한 일행에게 새 링크를 요청해 주세요.`}
           centered
         />
+        <Button variant="outline" onClick={() => navigate({ to: "/main" })}>
+          홈으로 가기
+        </Button>
       </VStack>
     );
   }

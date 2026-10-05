@@ -57,13 +57,14 @@ export const createInvitation = async (
 
   if (!user) throw new Error("로그인이 필요합니다.");
 
-  // 기존 유효한 초대가 있으면 재사용
+  // 하루 이상 남은 초대가 있으면 재사용 — 곧 만료될 링크를 단톡방에 다시 뿌리지 않게
+  const reusableUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const { data: existing } = await supabase
     .from("trip_invitations")
     .select()
     .eq("trip_id", tripId)
     .eq("is_active", true)
-    .gt("expires_at", new Date().toISOString())
+    .gt("expires_at", reusableUntil.toISOString())
     .order("expires_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -74,7 +75,7 @@ export const createInvitation = async (
   const inviteCode = crypto.randomUUID().replace(/-/g, "");
 
   const expiresAt = new Date();
-  expiresAt.setTime(expiresAt.getTime() + 12 * 60 * 60 * 1000); // 12시간 후 만료
+  expiresAt.setTime(expiresAt.getTime() + 7 * 24 * 60 * 60 * 1000); // 7일 후 만료
 
   const { data, error } = await supabase
     .from("trip_invitations")

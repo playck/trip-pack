@@ -326,7 +326,9 @@ export default function LoginPage() {
                     as="button"
                     color={`${colors.primary.palette}.600`}
                     fontWeight="semibold"
-                    onClick={() => navigate({ to: "/auth/signup" })}
+                    onClick={() =>
+                      navigate({ to: "/auth/signup", search: { returnTo } })
+                    }
                     _hover={{ textDecoration: "underline" }}
                   >
                     회원가입하기

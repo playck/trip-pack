@@ -117,8 +117,8 @@ export default function TripCard({ trip, onClick }: TripCardProps) {
         borderRadius="xl"
       />
 
-      {/* 일정 버튼 */}
-      {import.meta.env.DEV && (
+      {/* 일정·경비 바로가기 — 앱은 하단 탭으로 가므로 웹(앱 없는 일행)에서만 */}
+      {(import.meta.env.DEV || !window.ReactNativeWebView) && (
       <Flex position="absolute" top={3} right={3} zIndex={2} gap={2}>
         <IconButton
           size="sm"
