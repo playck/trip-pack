@@ -404,15 +404,19 @@ export default function SignupPage() {
                 <Text fontSize="sm" color="gray.500">
                   이미 계정이 있으신가요?{" "}
                   <Text
-                    as="button"
+                    asChild
                     color={`${colors.primary.palette}.600`}
                     fontWeight="semibold"
-                    onClick={() =>
-                      navigate({ to: "/auth/login", search: { returnTo } })
-                    }
                     _hover={{ textDecoration: "underline" }}
                   >
-                    로그인하기
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate({ to: "/auth/login", search: { returnTo } })
+                      }
+                    >
+                      로그인하기
+                    </button>
                   </Text>
                 </Text>
               </Box>
@@ -421,29 +425,37 @@ export default function SignupPage() {
                 <Text fontSize="xs" color="gray.500">
                   가입 시{" "}
                   <Text
-                    as="button"
+                    asChild
                     color="gray.500"
                     textDecoration="underline"
-                    onClick={() =>
-                      window.ReactNativeWebView
-                        ? openUrl(LEGAL_URLS.TERMS_OF_SERVICE)
-                        : window.open(LEGAL_URLS.TERMS_OF_SERVICE, "_blank")
-                    }
                   >
-                    이용약관
+                    <button
+                      type="button"
+                      onClick={() =>
+                        window.ReactNativeWebView
+                          ? openUrl(LEGAL_URLS.TERMS_OF_SERVICE)
+                          : window.open(LEGAL_URLS.TERMS_OF_SERVICE, "_blank")
+                      }
+                    >
+                      이용약관
+                    </button>
                   </Text>
                   {" 및 "}
                   <Text
-                    as="button"
+                    asChild
                     color="gray.500"
                     textDecoration="underline"
-                    onClick={() =>
-                      window.ReactNativeWebView
-                        ? openUrl(LEGAL_URLS.PRIVACY_POLICY)
-                        : window.open(LEGAL_URLS.PRIVACY_POLICY, "_blank")
-                    }
                   >
-                    개인정보 처리방침
+                    <button
+                      type="button"
+                      onClick={() =>
+                        window.ReactNativeWebView
+                          ? openUrl(LEGAL_URLS.PRIVACY_POLICY)
+                          : window.open(LEGAL_URLS.PRIVACY_POLICY, "_blank")
+                      }
+                    >
+                      개인정보 처리방침
+                    </button>
                   </Text>
                   에 동의하게 됩니다.
                 </Text>
