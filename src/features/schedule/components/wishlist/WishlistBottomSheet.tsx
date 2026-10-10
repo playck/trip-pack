@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { VStack, Text, Box } from "@chakra-ui/react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, Navigation } from "lucide-react";
 
 import BottomSheet from "@/shared/components/BottomSheet";
 import ConfirmDialog from "@/shared/components/ConfirmDialog";
@@ -8,6 +8,9 @@ import { toaster } from "@/shared/components/ui/toaster";
 import { textColors } from "@/shared/constants/colors";
 import WishlistItem from "./WishlistItem";
 import PlaceActionSheet from "../modals/PlaceActionSheet";
+import OpenInMapSheet from "../modals/OpenInMapSheet";
+import { googleMapsUrl } from "../../utils/mapLinks";
+import { openExternalUrl } from "@/shared/utils/nativeMessage";
 import PlaceDetailEditSheet from "../modals/PlaceDetailEditSheet";
 import PlaceSearchSheet from "../modals/PlaceSearchSheet";
 import MoveDateBottomSheet from "../modals/MoveDateBottomSheet";
@@ -47,6 +50,9 @@ export default function WishlistBottomSheet({
   const [isMoveOpen, setIsMoveOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isMapAppOpen, setIsMapAppOpen] = useState(false);
+  // 국내만 지도 앱을 고르게 하고, 해외는 구글 지도로 바로 연다
+  const isDomestic = countryCode === "KR";
 
   const createMutation = useCreateWishlist(tripId);
   const updateMutation = useUpdateWishlist(tripId);
@@ -164,6 +170,14 @@ export default function WishlistBottomSheet({
             placeAddress={selected.place_address ?? undefined}
             actions={[
               {
+                icon: Navigation,
+                label: isDomestic ? "지도 앱에서 열기" : "구글 지도로 길찾기",
+                onClick: isDomestic
+                  ? () => setIsMapAppOpen(true)
+                  : () =>
+                      openExternalUrl(googleMapsUrl(selected)),
+              },
+              {
                 icon: Edit2,
                 label: "수정하기",
                 onClick: () => setIsEditOpen(true),
@@ -175,6 +189,12 @@ export default function WishlistBottomSheet({
                 isDangerous: true,
               },
             ]}
+          />
+
+          <OpenInMapSheet
+            isOpen={isMapAppOpen}
+            onClose={() => setIsMapAppOpen(false)}
+            place={selected}
           />
 
           <MoveDateBottomSheet

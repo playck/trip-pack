@@ -174,6 +174,9 @@ export function hasNativeCapability(capability: NativeCapability): boolean {
 export function openExternalUrl(url: string) {
   if (isReactNativeWebView()) {
     openUrl(url);
+  } else if (!/^https?:/i.test(url)) {
+    // 앱 스킴(nmap:// 등)은 새 탭으로 열면 모바일 사파리가 막는다 — 현재 창에서 넘겨야 앱 열기 확인이 뜬다
+    window.location.href = url;
   } else {
     window.open(url, "_blank", "noopener,noreferrer");
   }

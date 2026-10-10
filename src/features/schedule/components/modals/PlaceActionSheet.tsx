@@ -7,14 +7,14 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { Copy } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 import BottomSheet from "@/shared/components/BottomSheet";
 import { toaster } from "@/shared/components/ui/toaster";
 import { borderColors, statusColors } from "@/shared/constants/colors";
 
 export interface PlaceAction {
-  icon: LucideIcon;
+  icon: ComponentType<{ size?: number }>;
   label: string;
   onClick: () => void;
   isDangerous?: boolean;

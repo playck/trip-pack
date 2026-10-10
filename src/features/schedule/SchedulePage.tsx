@@ -11,7 +11,15 @@ import {
 } from "@chakra-ui/react";
 import { useParams } from "@tanstack/react-router";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { Share2, Settings, Edit2, Wallet, Trash2, Heart } from "lucide-react";
+import {
+  Share2,
+  Settings,
+  Edit2,
+  Wallet,
+  Trash2,
+  Heart,
+  Navigation,
+} from "lucide-react";
 
 import PageLayout from "@/shared/components/layout/PageLayout";
 import PullToRefresh from "@/shared/components/PullToRefresh";
@@ -35,6 +43,9 @@ import {
   WishlistBottomSheet,
 } from "./components";
 import PlaceActionSheet from "./components/modals/PlaceActionSheet";
+import OpenInMapSheet from "./components/modals/OpenInMapSheet";
+import { googleMapsUrl } from "./utils/mapLinks";
+import { openExternalUrl } from "@/shared/utils/nativeMessage";
 import PlaceDetailEditSheet from "./components/modals/PlaceDetailEditSheet";
 import {
   useGeocoding,
@@ -57,6 +68,7 @@ function SchedulePageContent() {
   useTripGoneRedirect(tripId, tripInfo);
   const settingsDrawer = useDisclosure();
   const moveToWishlistConfirm = useDisclosure();
+  const mapAppSheet = useDisclosure();
   const { data: expenses } = useTripExpenses(tripId);
   const { data: allSchedules } = useTripSchedules(tripId);
   const queryClient = useQueryClient();
@@ -86,6 +98,7 @@ function SchedulePageContent() {
   const countryCode = useMemo(() => {
     return parseRegionId(tripInfo?.regionId)?.countryCode;
   }, [tripInfo?.regionId]);
+  const isDomestic = countryCode === "KR";
 
   // 일정 추가
   const {
@@ -370,6 +383,21 @@ function SchedulePageContent() {
                 label: "경비 추가하기",
                 onClick: handleOpenExpenseSheet,
               },
+              // 메모는 장소가 아니므로 지도로 열 수 없다
+              ...(isMemo(selectedSchedule)
+                ? []
+                : [
+                    {
+                      icon: Navigation,
+                      label: isDomestic ? "지도 앱에서 열기" : "구글 지도로 길찾기",
+                      onClick: isDomestic
+                        ? mapAppSheet.onOpen
+                        : () =>
+                            openExternalUrl(
+                              googleMapsUrl(selectedSchedule),
+                            ),
+                    },
+                  ]),
               // 메모는 장소가 아니므로 보관함으로 옮길 수 없다
               ...(isMemo(selectedSchedule)
                 ? []
@@ -387,6 +415,12 @@ function SchedulePageContent() {
                 isDangerous: true,
               },
             ]}
+          />
+
+          <OpenInMapSheet
+            isOpen={mapAppSheet.open}
+            onClose={mapAppSheet.onClose}
+            place={selectedSchedule}
           />
 
           <PlaceDetailEditSheet
