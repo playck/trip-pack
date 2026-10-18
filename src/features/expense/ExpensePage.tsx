@@ -34,7 +34,8 @@ export default function ExpensePage() {
     onSuccess: () => setIsSheetOpen(false),
   });
 
-  const [selectedDate, setSelectedDate] = useState<string>(ALL_TAB_VALUE);
+  // 사용자가 탭을 고르기 전에는 null — 아래에서 기본 탭을 정한다
+  const [pickedDate, setSelectedDate] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { showScrollTop, scrollToTop } = useScrollToTop();
   const queryClient = useQueryClient();
@@ -67,6 +68,12 @@ export default function ExpensePage() {
 
     return dates;
   }, [tripInfo]);
+
+  // 여행 기간이면 오늘 탭으로 연다 — + 버튼이 날짜 탭에만 있어서 바로 적을 수 있게
+  const today = dayjs().format("YYYY-MM-DD");
+  const selectedDate =
+    pickedDate ??
+    (dateList.some((d) => d.date === today) ? today : ALL_TAB_VALUE);
 
   // 일정 ID → 장소명 매핑
   const scheduleMap = useMemo(() => {

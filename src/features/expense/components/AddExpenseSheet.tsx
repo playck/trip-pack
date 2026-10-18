@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import dayjs from "dayjs";
 import { Link2 } from "lucide-react";
 import { useAtomValue } from "jotai";
 import {
@@ -163,7 +164,7 @@ export default function AddExpenseSheet({
         isOpen={isOpen}
         onClose={handleClose}
         keepOnTabFocus
-        title="경비 추가"
+        title={date ? `${dayjs(date).format("M월 D일")} 경비 추가` : "경비 추가"}
         size="fullscreen"
         primaryButton={{
           onClick: handleSave,

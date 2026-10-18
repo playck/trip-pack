@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import { colors } from "@/shared/constants/colors";
 import { HEADER_HEIGHT } from "@/shared/constants/layout";
@@ -21,8 +22,22 @@ export default function DateTabList({
   selectedDate,
   onSelectDate,
 }: DateTabListProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 선택된 날짜 탭을 가운데로 — 긴 여행에서 오늘 탭이 화면 밖에 있지 않게
+  useEffect(() => {
+    const container = containerRef.current;
+    const tab = container?.querySelector<HTMLElement>('[data-selected="true"]');
+    if (!container || !tab) return;
+    container.scrollTo({
+      left: tab.offsetLeft - (container.clientWidth - tab.clientWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [selectedDate]);
+
   return (
     <Box
+      ref={containerRef}
       position="sticky"
       top={`${HEADER_HEIGHT}px`}
       zIndex={10}
@@ -68,6 +83,7 @@ export default function DateTabList({
         {dateList.map((dateItem) => (
           <Box
             key={dateItem.date}
+            data-selected={selectedDate === dateItem.date}
             py={2}
             px={3}
             borderBottom="2px solid"
