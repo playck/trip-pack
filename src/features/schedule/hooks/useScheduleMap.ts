@@ -35,14 +35,19 @@ export interface DayRouteData {
  */
 export function useScheduleMap(
   allSchedules: Schedule[] | undefined,
-  regionCoordinates: Coordinates | null
+  regionCoordinates: Coordinates | null,
+  /** 사용자가 일차를 고르기 전 기본으로 보여줄 일차(여행 중이면 오늘) */
+  defaultDay?: number
 ) {
   const [focusedLocation, setFocusedLocation] = useState<Coordinates | null>(
     null
   );
   const [isMapFullScreen, setIsMapFullScreen] = useState(false);
   const [isMapCollapsed, setIsMapCollapsed] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  // undefined = 아직 안 고름(기본 일차), null = 전체
+  const [pickedDay, setSelectedDay] = useState<number | null | undefined>(
+    undefined
+  );
 
   const mapCenter = focusedLocation || regionCoordinates || DEFAULT_MAP_CENTER;
   const mapZoom = focusedLocation ? FOCUSED_MAP_ZOOM : DEFAULT_MAP_ZOOM;
@@ -110,6 +115,14 @@ export function useScheduleMap(
     const days = new Set(allMarkers.map((m) => m.dayNumber));
     return Array.from(days).sort((a, b) => a - b);
   }, [allMarkers]);
+
+  // 오늘 장소가 없으면 빈 지도 대신 전체를 보여준다
+  const selectedDay =
+    pickedDay !== undefined
+      ? pickedDay
+      : defaultDay !== undefined && availableDays.includes(defaultDay)
+        ? defaultDay
+        : null;
 
   const dayColorMap = useMemo(() => {
     const map = new Map<number, string>();

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Box,
   HStack,
@@ -8,7 +7,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { Plane, PlaneLanding, MoveRight, MoreVertical } from "lucide-react";
-import dayjs from "dayjs";
+import { useToday } from "@/shared/hooks/useToday";
 import { colors, hexColors, textColors } from "@/shared/constants/colors";
 import { useFlightStatus } from "@/features/flight/services/useFlightQueries";
 import { FlightStatusBadge } from "@/features/flight/components";
@@ -28,10 +27,7 @@ export default function FlightScheduleItem({
   onOpenActionSheet,
 }: FlightScheduleItemProps) {
   const isDeparture = flight.flight_type === "departure";
-  const isFlightDay = useMemo(
-    () => dayjs().format("YYYY-MM-DD") === flight.scheduled_date,
-    [flight.scheduled_date],
-  );
+  const isFlightDay = useToday() === flight.scheduled_date;
 
   // 출발 당일에만 실시간 운항 정보 조회
   const flightForStatus = isFlightDay ? flight : undefined;

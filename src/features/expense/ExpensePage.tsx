@@ -11,7 +11,7 @@ import TripInfoHeader from "@/shared/components/layout/TripInfoHeader";
 import { formatTripDateRange } from "@/shared/utiles/date";
 import FloatingAddButton from "@/shared/components/FloatingAddButton";
 import { ScrollToTopButton } from "@/shared/components";
-import { useScrollToTop } from "@/shared/hooks";
+import { useScrollToTop, useToday } from "@/shared/hooks";
 import { TripSettingsPanel } from "@/features/trip-settings";
 import { useTripInfo } from "@/shared/service/trip/useTripQuery";
 import { useTripGoneRedirect } from "@/shared/hooks/useTripGoneRedirect";
@@ -70,7 +70,7 @@ export default function ExpensePage() {
   }, [tripInfo]);
 
   // 여행 기간이면 오늘 탭으로 연다 — + 버튼이 날짜 탭에만 있어서 바로 적을 수 있게
-  const today = dayjs().format("YYYY-MM-DD");
+  const today = useToday();
   const selectedDate =
     pickedDate ??
     (dateList.some((d) => d.date === today) ? today : ALL_TAB_VALUE);

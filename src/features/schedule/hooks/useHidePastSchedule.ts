@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import dayjs from "dayjs";
 import { useAtom } from "jotai";
+import { useToday } from "@/shared/hooks/useToday";
 
 import { hidePastScheduleAtom } from "../store/hidePastScheduleStore";
 
@@ -16,11 +17,11 @@ export function useHidePastSchedule(
     setHidePastMap((prev) => ({ ...prev, [tripId]: !hidePast }));
   }, [tripId, hidePast, setHidePastMap]);
 
+  const today = useToday();
   const todayDayNumber = useMemo(() => {
     if (!startDate) return 0;
-    const today = dayjs().format("YYYY-MM-DD");
     return dayjs(today).diff(dayjs(startDate), "day") + 1;
-  }, [startDate]);
+  }, [startDate, today]);
 
   const tripDays = useMemo(() => {
     if (!startDate || !endDate) return 0;

@@ -6,6 +6,7 @@ import {
   IconButton,
   Timeline,
   Button,
+  Badge,
 } from "@chakra-ui/react";
 import { MapPin, StickyNote, Edit, Plane, PlaneLanding } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -36,6 +37,7 @@ interface DayScheduleCardProps {
   dayNumber: number;
   date: string;
   formattedDate: string;
+  isToday?: boolean;
   cardStickyTop?: number;
   onAddSchedule?: () => void;
   onAddMemo?: () => void;
@@ -50,6 +52,7 @@ export default function DayScheduleCard({
   tripId,
   dayNumber,
   formattedDate,
+  isToday = false,
   cardStickyTop = 0,
   onAddSchedule,
   onAddMemo,
@@ -193,6 +196,11 @@ export default function DayScheduleCard({
             <Text fontSize="xs" fontWeight="medium" color={textColors.tertiary}>
               {formattedDate}
             </Text>
+            {isToday && (
+              <Badge size="sm" colorPalette={colors.primary.palette}>
+                오늘
+              </Badge>
+            )}
           </HStack>
 
           <HStack gap={1}>

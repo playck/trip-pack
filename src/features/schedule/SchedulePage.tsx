@@ -177,6 +177,14 @@ function SchedulePageContent() {
     regionCoordinates !== null ||
     geocodingError !== null;
 
+  // 지난 일정 숨기기
+  const {
+    hidePast,
+    toggleHidePast,
+    todayDayNumber,
+    showToggle: showHidePastToggle,
+  } = useHidePastSchedule(tripId, tripInfo?.startDate, tripInfo?.endDate);
+
   const {
     isMapFullScreen,
     isMapCollapsed,
@@ -191,17 +199,9 @@ function SchedulePageContent() {
     setIsMapFullScreen,
     handleScheduleClick,
     handleToggleCollapse,
-  } = useScheduleMap(allSchedules, regionCoordinates);
+  } = useScheduleMap(allSchedules, regionCoordinates, todayDayNumber);
 
   const { showScrollTop, scrollToTop } = useScrollToTop();
-
-  // 지난 일정 숨기기
-  const {
-    hidePast,
-    toggleHidePast,
-    todayDayNumber,
-    showToggle: showHidePastToggle,
-  } = useHidePastSchedule(tripId, tripInfo?.startDate, tripInfo?.endDate);
 
   // 공유
   const { handleScheduleShare } = useShareSchedule();
@@ -319,6 +319,7 @@ function SchedulePageContent() {
                 hidePastDayNumber={
                   showHidePastToggle && hidePast ? todayDayNumber : undefined
                 }
+                todayDayNumber={todayDayNumber}
                 onAddSchedule={handleAddSchedule}
                 onAddMemo={handleAddMemo}
               />

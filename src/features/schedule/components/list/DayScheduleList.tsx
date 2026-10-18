@@ -16,6 +16,7 @@ interface DayScheduleListProps {
   isMapCollapsed?: boolean;
   regionName?: string;
   hidePastDayNumber?: number;
+  todayDayNumber?: number;
   onAddSchedule?: (dayNumber: number, date: string) => void;
   onAddMemo?: (dayNumber: number, date: string) => void;
 }
@@ -29,6 +30,7 @@ export default function DayScheduleList({
   isMapCollapsed = false,
   regionName,
   hidePastDayNumber,
+  todayDayNumber,
   onAddSchedule,
   onAddMemo,
 }: DayScheduleListProps) {
@@ -68,6 +70,7 @@ export default function DayScheduleList({
               dayNumber={dayNumber}
               date={date}
               formattedDate={formattedDate}
+              isToday={dayNumber === todayDayNumber}
               cardStickyTop={dayScheduleCardStickyTop}
               onAddSchedule={() => onAddSchedule?.(dayNumber, date)}
               onAddMemo={() => onAddMemo?.(dayNumber, date)}
